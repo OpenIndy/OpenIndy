@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>446</height>
+    <height>474</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,7 +35,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_entityType"/>
+        <widget class="QComboBox" name="comboBox_entityType">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -75,6 +79,9 @@
           <widget class="QComboBox" name="comboBox_group">
            <property name="editable">
             <bool>true</bool>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
@@ -119,7 +126,7 @@
             </sizepolicy>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
            </property>
           </widget>
          </item>
@@ -161,7 +168,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_mConfig"/>
+        <widget class="QComboBox" name="comboBox_mConfig">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -175,7 +186,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_nominalSystem"/>
+        <widget class="QComboBox" name="comboBox_nominalSystem">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -184,13 +199,6 @@
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
-       <item>
-        <widget class="QCheckBox" name="checkBox_movement">
-         <property name="text">
-          <string>movement</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="2,3">
          <item>
@@ -201,7 +209,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_startSystem"/>
+          <widget class="QComboBox" name="comboBox_startSystem">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -215,7 +227,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_destinationSystem"/>
+          <widget class="QComboBox" name="comboBox_destinationSystem">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

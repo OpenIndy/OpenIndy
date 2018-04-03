@@ -109,18 +109,31 @@ void ImportNominalDialog::initModels(){
     this->ui->comboBox_temperature_sa->setModel(&ModelManager::getUnitTypesModel(eTemperature));
 
     //set unit type defaults
-    this->ui->comboBox_distance_sa->setCurrentText(getUnitTypeName(eUnitMeter));
+    this->ui->comboBox_distance_sa->setCurrentText(getUnitTypeName(eUnitMilliMeter));
     this->ui->comboBox_angle_sa->setCurrentText(getUnitTypeName(eUnitDecimalDegree));
     this->ui->comboBox_temperature_sa->setCurrentText(getUnitTypeName(eUnitGrad));
 
     //assign plugin model
     this->ui->comboBox_plugin_sa->setModel(&ModelManager::getPluginNamesModel());
 
+    if(ModelManager::getPluginNamesModel().stringList().contains("OpenIndy Default Plugin")){
+        this->ui->comboBox_plugin_sa->setCurrentText("OpenIndy Default Plugin");
+    }
+
     //assign nominal systems model
     this->ui->comboBox_system_sa->setModel(&ModelManager::getNominalSystemsModel());
 
+    /*//set combobox size
+    int sizeSystem = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(),this->ui->comboBox_system_sa->width());
+    this->ui->comboBox_system_sa->view()->setMinimumWidth(sizeSystem);*/
+
     //assign group names model
     this->ui->comboBox_groupNames->setModel(&ModelManager::getGroupNamesModel());
+    //Set group01 as default for import
+    this->ui->comboBox_groupNames->setCurrentText("Group01");
+
+    /*int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_groupNames->width());
+    this->ui->comboBox_groupNames->view()->setMinimumWidth(sizeGroup);*/
 
 }
 

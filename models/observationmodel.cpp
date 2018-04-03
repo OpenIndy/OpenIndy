@@ -116,6 +116,12 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplayZ:
             return observation->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eObservationDisplayI:
+            return observation->getDisplayI(6);
+        case eObservationDisplayJ:
+            return observation->getDisplayJ(6);
+        case eObservationDisplayK:
+            return observation->getDisplayK(6);
         case eObservationDisplaySigmaX:
             return observation->getDisplaySigmaX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                  this->parameterDisplayConfig.getDisplayDigits(eMetric));
@@ -125,10 +131,18 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplaySigmaZ:
             return observation->getDisplaySigmaZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                  this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eObservationDisplaySigmaI:
+            return observation->getDisplaySigmaI(6);
+        case eObservationDisplaySigmaJ:
+            return observation->getDisplaySigmaJ(6);
+        case eObservationDisplaySigmaK:
+            return observation->getDisplaySigmaK(6);
         case eObservationDisplayIsValid:
-            return observation->getDisplayIsValid();
+            //return observation->getDisplayIsValid();
+            return QVariant();
         case eObservationDisplayIsSolved:
-            return observation->getDisplayIsSolved();
+            //return observation->getDisplayIsSolved();
+            return QVariant();
         case eObservationDisplayVX:
             if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
                 const Statistic &statistic = geometry->getFunctions().at(0)->getStatistic();
@@ -185,7 +199,17 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplayIsUsed:
             if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
                 QPointer<Function> function = geometry->getFunctions()[0];
-                return function->getIsUsed(0, observation->getId())?Qt::Checked:Qt::Unchecked;
+                return function->getShouldBeUsed(0, observation->getId())?Qt::Checked:Qt::Unchecked;
+            }
+            return Qt::Unchecked;
+        case eObservationDisplayIsSolved:
+            if(observation->getIsSolved()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        case eObservationDisplayIsValid:
+            if(observation->getIsValid()){
+                return Qt::Checked;
             }
             return Qt::Unchecked;
         }
@@ -235,6 +259,10 @@ Qt::ItemFlags ObservationModel::flags(const QModelIndex &index) const{
     ObservationDisplayAttributes attr = attributes.at(index.column());
     if(attr == eObservationDisplayIsUsed){
         return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+    }else if(attr = eObservationDisplayIsSolved){
+        return (myFlags | Qt::ItemIsUserCheckable);
+    }else if(attr = eObservationDisplayIsValid){
+        return (myFlags | Qt::ItemIsUserCheckable);
     }
 
     return myFlags;
@@ -349,6 +377,50 @@ const ParameterDisplayConfig &ObservationModel::getParameterDisplayConfig() cons
 void ObservationModel::setParameterDisplayConfig(const ParameterDisplayConfig &config){
     this->parameterDisplayConfig = config;
     this->updateModel();
+}
+
+void ObservationModel::setObservationUseStateByContextmenu(bool use, const QModelIndex &index)
+{
+    //check current job and model index
+    if(this->currentJob.isNull() || !index.isValid()){
+        return;
+    }
+
+    //get and check active feature
+    QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return;
+    }
+
+    //get and check active geometry
+    QPointer<Geometry> geometry(NULL);
+    if(getIsGeometry(feature->getFeatureTypeEnum())){
+        geometry = feature->getGeometry();
+    }else if(feature->getFeatureTypeEnum() == eStationFeature && !feature->getStation().isNull()){
+        geometry = feature->getStation()->getPosition();
+    }
+    if(geometry.isNull()){
+        return;
+    }
+
+    //get row and column indices
+    int rowIndex = index.row();
+    int columnIndex = index.column();
+
+    //get and check observation
+    QPointer<Observation> observation(NULL);
+    if(rowIndex < geometry->getObservations().size()){
+        observation = geometry->getObservations().at(rowIndex);
+    }
+    if(observation.isNull()){
+        return;
+    }
+
+    if(use){
+        emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), true, true);
+    }else{
+        emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), false, true);
+    }
 }
 
 /*!

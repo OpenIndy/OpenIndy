@@ -52,6 +52,9 @@ public:
     QString getFunctionDescription(const QModelIndex &index) const;
     QString getInputElementDescription(const QModelIndex &index) const;
 
+    //check if the function supports a weighted alignment
+    bool getSupportsWeights(const QModelIndex &index) const;
+
     //get user defined scalar input parameters
     QMap<QString, int> getIntegerParameter(const QModelIndex &index) const;
     QMap<QString, double> getDoubleParameter(const QModelIndex &index) const;

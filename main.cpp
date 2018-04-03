@@ -23,17 +23,17 @@ inline void mySleep(clock_t sec) // clock_t is a like typedef unsigned int clock
 
 const QString _date = __DATE__;
 const QString _time = __TIME__;
-const QString Company = "Fachhochschule Mainz";
+const QString Company = "sigma3D GmbH & Hochschule Mainz";
 const QString AppName = "OpenIndy";
-const QString AppUrl  = "www.fh-mainz.de";
-const QString AppAuthor = "B.Sc. Martin Lux, B.Sc. Benedikt Rauls, B.Sc. Jens Wambach, Prof. Dr.-Ing. Fredie kern";
-const QString AppAuthorMail = ",,,fredie.kern@fh-mainz.de";
-const QString AppDate = "2014 (" + _date + "," + _time + ")";
+const QString AppUrl  = "www.openIndy.de";
+const QString AppAuthor = "M.Sc. Martin Lux, M.Sc. Benedikt Rauls, M.Sc. Jens Wambach";
+const QString AppAuthorMail = "info@openindy.de";
+const QString AppDate = "2018 (" + _date + "," + _time + ")";
 
 #ifdef QT_NO_DEBUG
 const QString AppVersion = QString(OPENINDY_VERSION);
 #else
-const QString AppVersion = QString("%1 %2").arg(OPENINDY_VERSION).arg(" [DEBUG]");
+const QString AppVersion = QString("%1 %2").arg(OPENINDY_VERSION).arg(" [RELEASE]");
 #endif
 
 

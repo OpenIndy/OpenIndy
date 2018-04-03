@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql svg serialport network opengl xml websockets
+QT       += core gui sql svg serialport network opengl xml websockets multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4):
 
@@ -125,7 +125,17 @@ SOURCES += \
     $$PWD/../models/sensoraccuracymodel.cpp \
     $$PWD/../models/sensorparametersmodel.cpp \
     $$PWD/../ui/delegates/sensoraccuracydelegate.cpp \
-    $$PWD/../ui/delegates/sensorparametersdelegate.cpp
+    $$PWD/../ui/delegates/sensorparametersdelegate.cpp \
+    $$PWD/../models/bundlesystemsmodel.cpp \
+    $$PWD/../models/bundletemplatesmodel.cpp \
+    $$PWD/../models/treeitems/bundlegeometryitem.cpp \
+    $$PWD/../models/treeitems/bundlestationitem.cpp \
+    $$PWD/../models/bundlegeometriesmodel.cpp \
+    $$PWD/../models/bundlestationsmodel.cpp \
+    $$PWD/../models/functionweightstablemodel.cpp \
+    $$PWD/../models/functionweightproxymodel.cpp \
+    $$PWD/../models/functionweightdelegate.cpp \
+    $$PWD/../ui/dialogs/exportdialog.cpp
 
 # header files
 HEADERS  += \
@@ -212,7 +222,17 @@ HEADERS  += \
     $$PWD/../models/sensoraccuracymodel.h \
     $$PWD/../models/sensorparametersmodel.h \
     $$PWD/../ui/delegates/sensoraccuracydelegate.h \
-    $$PWD/../ui/delegates/sensorparametersdelegate.h
+    $$PWD/../ui/delegates/sensorparametersdelegate.h \
+    $$PWD/../models/bundlesystemsmodel.h \
+    $$PWD/../models/bundletemplatesmodel.h \
+    $$PWD/../models/treeitems/bundlegeometryitem.h \
+    $$PWD/../models/treeitems/bundlestationitem.h \
+    $$PWD/../models/bundlegeometriesmodel.h \
+    $$PWD/../models/bundlestationsmodel.h \
+    $$PWD/../models/functionweightstablemodel.h \
+    $$PWD/../models/functionweightproxymodel.h \
+    $$PWD/../models/functionweightdelegate.h \
+    $$PWD/../ui/dialogs/exportdialog.h
 
 # ui files
 FORMS    += \
@@ -233,7 +253,8 @@ FORMS    += \
     $$PWD/../ui/dialogs/nominalpropertiesdialog.ui \
     $$PWD/../ui/dialogs/aboutdialog.ui \
     $$PWD/../ui/dialogs/trafoparampropertiesdialog.ui \
-    $$PWD/../ui/dialogs/stationpropertiesdialog.ui
+    $$PWD/../ui/dialogs/stationpropertiesdialog.ui \
+    $$PWD/../ui/dialogs/exportdialog.ui
 
 # resource files
 RESOURCES += \

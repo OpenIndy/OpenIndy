@@ -854,6 +854,15 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                 }
             }
 
+            //load bundle adjustments
+            QDomElement bundle_plugin = coordinateSystem.firstChildElement("bundle");
+            if(!bundle_plugin.isNull()){
+                QPointer<BundleAdjustment> myBundle = ProjectExchanger::restoreBundleDependencies(bundle_plugin);
+                if(!myBundle.isNull()){
+                    myCoordinateSystem->getCoordinateSystem()->setBundlePlugin(myBundle);
+                }
+            }
+
             //set observations (made from a station system)
             QDomElement observations = coordinateSystem.firstChildElement("observations");
             if(!observations.isNull()){
@@ -934,11 +943,11 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement trafoParam = trafoParamList.at(j).toElement();
                     if(trafoParam.hasAttribute("ref") && ProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("ref").toInt())){
                         QPointer<FeatureWrapper> myTrafoParam = ProjectExchanger::myTransformationParameters.value(trafoParam.attribute("ref").toInt());
+                        //set the dependency for bundle system and trafoParam
                         myCoordinateSystem->getCoordinateSystem()->addTransformationParameter(myTrafoParam->getTrafoParam());
                     }
                 }
             }
-
         }
     }
 
@@ -1233,6 +1242,15 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
                 }
             }
 
+            //set measuredTargetGeometry
+            QDomElement measuredTargetGeom = observation.firstChildElement("measuredTargetGeometry");
+            if(!measuredTargetGeom.isNull() && measuredTargetGeom.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(measuredTargetGeom.attribute("ref").toInt())){
+
+                //get geometry and assign it
+                QPointer<FeatureWrapper> myMeasuredTargetGeom = ProjectExchanger::myGeometries.value(measuredTargetGeom.attribute("ref").toInt());
+                myObservation->setMeasuredTargetGeometry(myMeasuredTargetGeom->getGeometry());
+            }
+
         }
     }
 
@@ -1294,6 +1312,25 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                         shouldBeUsed = inputElement.attribute("shouldBeUsed").toInt();
                     }
 
+                    //set ignored destination parameters
+
+                    //create the list of ignored parameters
+                    QList<GeometryParameters> restoreIgnoredParameter;
+                    //look for the ignored destination parameter section in the xml file
+                    QDomElement ignoredDestinationParams = inputElement.firstChildElement("ignoredDestinationParams");
+                    // fill the list with ignored parameters
+                    if(!ignoredDestinationParams.isNull()){
+                        QDomNodeList ignoredParamList = ignoredDestinationParams.childNodes();
+                        for(int a=0; a<ignoredParamList.size();a++){
+
+                            QDomElement ignore = ignoredParamList.at(a).toElement();
+
+                            if(ignore.hasAttribute("parameter")){
+                                restoreIgnoredParameter.append(getGeometryParameterEnum(ignore.attribute("parameter")));
+                            }
+                        }
+                    }
+
                     //create and add input elements
                     if(inputElement.hasAttribute("index") && inputElement.hasAttribute("type") && inputElement.hasAttribute("ref")){
 
@@ -1304,6 +1341,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = station->getId();
                             element.typeOfElement = eStationElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
                             QPointer<CoordinateSystem> coordinateSystem = ProjectExchanger::myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
@@ -1312,6 +1350,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = coordinateSystem->getId();
                             element.typeOfElement = eCoordinateSystemElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
                             QPointer<TrafoParam> trafoParam = ProjectExchanger::myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
@@ -1320,6 +1359,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = trafoParam->getId();
                             element.typeOfElement = eTrafoParamElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myGeometries.contains(inputElement.attribute("ref").toInt())){
                             QPointer<FeatureWrapper> geometry = ProjectExchanger::myGeometries.value(inputElement.attribute("ref").toInt());
@@ -1327,6 +1367,7 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.geometry = geometry->getGeometry();
                             element.id = geometry->getGeometry()->getId();
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             switch(geometry->getFeatureTypeEnum()){
                             case eCircleFeature:
                                 element.circle = geometry->getCircle();
@@ -1413,11 +1454,13 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.id = observation->getId();
                             element.typeOfElement = eObservationElement;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
                         }else if(ProjectExchanger::myReadings.contains(inputElement.attribute("ref").toInt())){
                             QPointer<Reading> reading = ProjectExchanger::myReadings.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.shouldBeUsed = shouldBeUsed;
+                            element.ignoredDestinationParams =restoreIgnoredParameter;
                             switch(reading->getTypeOfReading()){
                             case eDistanceReading:
                                 element.distanceReading = reading;
@@ -1468,6 +1511,52 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
 
     return result;
 
+}
+
+/*!
+ * \brief ProjectExchanger::restoreBundleDependencies
+ * Helper method which gets a bundle adjustment tag as input and then returns a pointer to the bundle adjustment
+ * \param bundle
+ * \return
+ */
+QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomElement &bundle){
+    QPointer<BundleAdjustment> result;
+
+    if(!bundle.isNull()){
+
+        if(!bundle.hasAttribute("name") || !bundle.hasAttribute("plugin")){
+            return result;
+        }
+
+        sdb::Plugin plugin = SystemDbManager::getPlugin(bundle.attribute("plugin"));
+        QPointer<BundleAdjustment> myBundle(NULL);
+        if(plugin.file_path.compare("") != 0){
+            myBundle = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundle.attribute("name"));
+            if(myBundle.isNull()){
+                return result;
+            }
+        }else{
+            return result;
+        }
+
+        //load bundle from xml
+        myBundle->fromOpenIndyXML(bundle);
+
+        //add bundleCoordinateSystem
+        QDomElement bundleCoordSys = bundle.firstChildElement("bundleCoordinateSystem");
+        if(!bundleCoordSys.isNull() && bundleCoordSys.hasAttribute("ref")){
+            QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute("ref").toInt());
+            if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
+                myBundle->setBundleSystem(mySystem->getCoordinateSystem());
+                result = myBundle;
+            }else{
+                return result;
+            }
+        }else{
+            return result;
+        }
+    }
+    return result;
 }
 
 /*!

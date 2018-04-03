@@ -22,6 +22,8 @@ public:
     int getColumnPosition(const TrafoParamDisplayAttributes &column) const;
     void setColumnPosition(const TrafoParamDisplayAttributes &column, const int &index);
 
+    TrafoParamDisplayAttributes getDisplayAttributeAt(const int &column) const;
+
 private:
     void init();
 

@@ -3,6 +3,7 @@
 
 #include <QItemDelegate>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QModelIndex>
 #include <QAbstractTableModel>
 
@@ -25,6 +26,8 @@ public:
     void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const;
 
     QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+
+    bool activeFeatureIsNominal(const FeatureTableProxyModel *featureTablePM) const;
 
 };
 

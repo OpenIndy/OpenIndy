@@ -8,6 +8,7 @@ ParameterDisplayConfig::ParameterDisplayConfig(){
     //load default parameter display config
     this->init();
 
+
 }
 
 /*!
@@ -137,6 +138,24 @@ QMap<DimensionType, int> ParameterDisplayConfig::getDisplayDigits() const{
 }
 
 /*!
+ * \brief ParameterDisplayConfig::getUseSounds
+ * \return
+ */
+bool ParameterDisplayConfig::getUseSounds() const
+{
+    return this->useSounds;
+}
+
+/*!
+ * \brief ParameterDisplayConfig::setUseSounds
+ * \param use
+ */
+void ParameterDisplayConfig::setUseSounds(const bool use)
+{
+    this->useSounds = use;
+}
+
+/*!
  * \brief ParameterDisplayConfig::init
  * Set up default parameter display config
  */
@@ -152,5 +171,7 @@ void ParameterDisplayConfig::init(){
     this->angularDisplayDigits = 6;
     this->temperatureDisplayDigits = 2;
     this->dimensionlessDisplayDigits = 6;
+
+    this->useSounds = true;
 
 }

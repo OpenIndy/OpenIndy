@@ -55,6 +55,36 @@ QWidget* FeatureTableDelegate::createEditor(QWidget *parent, const QStyleOptionV
     case eFeatureDisplayGroup:
         editor = new QLineEdit(parent);
         break;
+    case eFeatureDisplayX:
+        if(activeFeatureIsNominal(model)){
+            editor = new QLineEdit(parent);
+        }
+        break;
+    case eFeatureDisplayY:
+        if(activeFeatureIsNominal(model)){
+            editor = new QLineEdit(parent);
+        }
+        break;
+    case eFeatureDisplayZ:
+        if(activeFeatureIsNominal(model)){
+            editor = new QLineEdit(parent);
+        }
+        break;
+    case eFeatureDisplayPrimaryI:
+        if(activeFeatureIsNominal(model)){
+            editor = new QLineEdit(parent);
+        }
+        break;
+    case eFeatureDisplayPrimaryJ:
+        if(activeFeatureIsNominal(model)){
+            editor = new QLineEdit(parent);
+        }
+        break;
+    case eFeatureDisplayPrimaryK:
+        if(activeFeatureIsNominal(model)){
+            editor = new QLineEdit(parent);
+        }
+        break;
     }
 
     return editor;
@@ -93,24 +123,72 @@ void FeatureTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
     }
 
     //set editor default input for some columns
-    QLineEdit *customEditor = NULL;
+    QLineEdit *customLineEdit = NULL;
     switch((FeatureDisplayAttributes)attr){
     case eFeatureDisplayName:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            customEditor->setText(index.data().toString());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            customLineEdit->setText(index.data().toString());
         }
         break;
     case eFeatureDisplayComment:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            customEditor->setText(index.data().toString());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            customLineEdit->setText(index.data().toString());
         }
         break;
     case eFeatureDisplayGroup:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            customEditor->setText(index.data().toString());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            customLineEdit->setText(index.data().toString());
+        }
+        break;
+    case eFeatureDisplayX:
+        if(activeFeatureIsNominal(model)){
+            customLineEdit = qobject_cast<QLineEdit*> (editor);
+            if(customLineEdit != NULL){
+                customLineEdit->setText(index.data().toString());
+            }
+        }
+        break;
+    case eFeatureDisplayY:
+        if(activeFeatureIsNominal(model)){
+            customLineEdit = qobject_cast<QLineEdit*> (editor);
+            if(customLineEdit != NULL){
+                customLineEdit->setText(index.data().toString());
+            }
+        }
+        break;
+    case eFeatureDisplayZ:
+        if(activeFeatureIsNominal(model)){
+            customLineEdit = qobject_cast<QLineEdit*> (editor);
+            if(customLineEdit != NULL){
+                customLineEdit->setText(index.data().toString());
+            }
+        }
+        break;
+    case eFeatureDisplayPrimaryI:
+        if(activeFeatureIsNominal(model)){
+            customLineEdit = qobject_cast<QLineEdit*> (editor);
+            if(customLineEdit != NULL){
+                customLineEdit->setText(index.data().toString());
+            }
+        }
+        break;
+    case eFeatureDisplayPrimaryJ:
+        if(activeFeatureIsNominal(model)){
+            customLineEdit = qobject_cast<QLineEdit*> (editor);
+            if(customLineEdit != NULL){
+                customLineEdit->setText(index.data().toString());
+            }
+        }
+        break;
+    case eFeatureDisplayPrimaryK:
+        if(activeFeatureIsNominal(model)){
+            customLineEdit = qobject_cast<QLineEdit*> (editor);
+            if(customLineEdit != NULL){
+                customLineEdit->setText(index.data().toString());
+            }
         }
         break;
     }
@@ -150,24 +228,72 @@ void FeatureTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
     }
 
     //set editor default input for some columns
-    QLineEdit *customEditor = NULL;
+    QLineEdit *customLineEdit = NULL;
     switch((FeatureDisplayAttributes)attr){
     case eFeatureDisplayName:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text());
         }
         break;
     case eFeatureDisplayComment:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text());
         }
         break;
     case eFeatureDisplayGroup:
-        customEditor = qobject_cast<QLineEdit*>(editor);
-        if(customEditor != NULL){
-            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customEditor->text());
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(customLineEdit != NULL){
+            featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text());
+        }
+        break;
+    case eFeatureDisplayX:
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(activeFeatureIsNominal(featureTableProxyModel)){
+            if(customLineEdit != NULL){
+                featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text().toDouble());
+            }
+        }
+        break;
+    case eFeatureDisplayY:
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(activeFeatureIsNominal(featureTableProxyModel)){
+            if(customLineEdit != NULL){
+                featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text().toDouble());
+            }
+        }
+        break;
+    case eFeatureDisplayZ:
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(activeFeatureIsNominal(featureTableProxyModel)){
+            if(customLineEdit != NULL){
+                featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text().toDouble());
+            }
+        }
+        break;
+    case eFeatureDisplayPrimaryI:
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(activeFeatureIsNominal(featureTableProxyModel)){
+            if(customLineEdit != NULL){
+                featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text().toDouble());
+            }
+        }
+        break;
+    case eFeatureDisplayPrimaryJ:
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(activeFeatureIsNominal(featureTableProxyModel)){
+            if(customLineEdit != NULL){
+                featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text().toDouble());
+            }
+        }
+        break;
+    case eFeatureDisplayPrimaryK:
+        customLineEdit = qobject_cast<QLineEdit*>(editor);
+        if(activeFeatureIsNominal(featureTableProxyModel)){
+            if(customLineEdit != NULL){
+                featureTableProxyModel->sourceModel()->setData(featureTableProxyModel->mapToSource(index), customLineEdit->text().toDouble());
+            }
         }
         break;
     }
@@ -201,4 +327,24 @@ QSize FeatureTableDelegate::sizeHint(const QStyleOptionViewItem &option, const Q
 
     return QSize(width, 22);
 
+}
+
+/*!
+ * \brief FeatureTableDelegate::activeFeatureIsNominal
+ * returns if the active feature is a nominal feature
+ * \return
+ */
+bool FeatureTableDelegate::activeFeatureIsNominal(const FeatureTableProxyModel *featureTablePM) const
+{
+    if(featureTablePM->getCurrentJob().isNull()){
+        return false;
+    }
+    if(!featureTablePM->getCurrentJob()->getActiveFeature().isNull()){
+        if(!featureTablePM->getCurrentJob()->getActiveFeature()->getGeometry().isNull()){
+            if(featureTablePM->getCurrentJob()->getActiveFeature()->getGeometry()->getIsNominal()){
+                return true;
+            }
+        }
+    }
+    return false;
 }

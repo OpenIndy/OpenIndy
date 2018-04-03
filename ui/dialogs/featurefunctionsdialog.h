@@ -16,6 +16,7 @@
 #include "oijob.h"
 #include "scalarparameterwidget.h"
 #include "multiselectionmodel.h"
+#include "functionweightdelegate.h"
 
 using namespace oi;
 
@@ -44,6 +45,8 @@ signals:
     //##############################################################
 
     void recalculateActiveFeature();
+
+    void setFunctionPos(int pos);
 
 private slots:
 
@@ -83,6 +86,12 @@ private slots:
     //recalculate the active feature
     void on_cmd_ok_clicked();
 
+    //resize table views
+    void resizeTableView();
+
+    //check if the function supports weights
+    bool checkSupportsWeights();
+
 private:
     Ui::FeatureFunctionsDialog *ui;
 
@@ -93,6 +102,7 @@ private:
     //widget with scalar input parameters
     ScalarParameterWidget *scalarParameterWidget;
 
+
     //##################################
     //methods to initialize GUI elements
     //##################################
@@ -102,79 +112,9 @@ private:
     void initGUI();
     void initModels();
 
+    void setFunctionParameters(const QModelIndex &index);
+    void setFunctionElements(const QModelIndex &index);
 
-
-
-
-
-
-
-
-    /*
-private slots:
-    void on_tableView_functionPlugins_doubleClicked(const QModelIndex &index);
-    void on_treeView_functions_clicked(const QModelIndex &index);
-    void deleteFunctionContextMenu(QPoint point);
-
-    void on_treeView_availableElements_clicked(const QModelIndex &index);
-    void on_treeView_availableElements_entered(const QModelIndex &index);
-
-    void on_treeView_usedElements_clicked(const QModelIndex &index);
-    void on_treeView_usedElements_activated(const QModelIndex &index);
-
-    void on_cmd_addElement_clicked();
-    void on_cmd_removeElement_clicked();
-
-    void closeEvent(QCloseEvent *event);
-
-    void on_tableView_functionPlugins_clicked(const QModelIndex &index);
-
-    void on_cmd_ok_clicked();
-
-public slots:
-    void receivePluginsModel(QSqlQueryModel *sqlModel);
-    void receiveFunctionsModel(QStandardItemModel *model);
-    void receiveAvailableElementsModel(AvailableElementsTreeViewProxyModel *model);
-    void receiveFunctionDescription(QString description);
-    void receiveUsedElementsModel(UsedElementsModel *model);
-    void receiveExtraParameterForFunction(QMap<QString, int> intParameter, QMap<QString, double> doubleParameter,
-                                       QMap<QString, QStringList> stringParameter, FunctionConfiguration config);
-
-    void functionConfigurationChanged();
-
-    void disableFunctionInteractions();
-    void deleteFunctionFromFeature(bool);
-    //void setActiveFeatureTitle(QString activeFeature);
-
-    void showEvent(QShowEvent *event);
-
-signals:
-    void sendPluginID(int ID);
-    void createFunction(int index);
-    void setSelectedFunction(int functionIndex, int neededElementIndex);
-    void deleteFunction(int index);
-    void addElement(FeatureTreeItem *element, int functionIndex, int elementIndex);
-    void removeElement(FeatureTreeItem *element, int functionIndex, int elementIndex);
-    void recalcActiveFeature();
-    void sendFunctionConfiguration(int functionIndex, FunctionConfiguration config);
-
-private:
-    Ui::FunctionPluginLoader *ui;
-
-    bool openCloseHelper;
-    QModelIndex selectedFunctionIndex;
-    QModelIndex deleteSelectedFunctionIndex;
-    QList<FeatureTreeItem *> selectedAvailableElements;
-    FeatureTreeItem *selectedUsedElement;
-
-    QSqlQueryModel *pluginsModel;
-
-    CustomParameterWidget *extraParameterWidget;
-
-    bool validateAvailableElements(QList<FeatureTreeItem*> selectedItems, AvailableElementsTreeViewProxyModel *model);
-    bool checkChildren(FeatureTreeItem *item, Configuration::ElementTypes neededType);
-    void setUpSelectedElements(QList<FeatureTreeItem*> &result, FeatureTreeItem *item, Configuration::ElementTypes neededType);
-*/
 };
 
 #endif // FEATUREFUNCTIONSDIALOG_H

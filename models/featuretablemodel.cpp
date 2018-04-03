@@ -76,10 +76,47 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         //return the color in which to display the feature at index.column()
         return this->getBackgroundValue(feature, columnIndex);
 
+    }else if(role == Qt::CheckStateRole && !feature->getGeometry().isNull()
+             && !feature->getGeometry()->getIsNominal()){
+
+        //get the display attribute
+        int attr = getFeatureDisplayAttributes().at(columnIndex);
+
+        //get common state and solved
+        switch((FeatureDisplayAttributes)attr){
+        case eFeatureDisplayIsCommon:
+            if(feature->getGeometry()->getIsCommon()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        case eFeatureDisplayIsSolved:
+            if(feature->getGeometry()->getIsSolved()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        }
+
+    }else if(role == Qt::CheckStateRole && !feature->getTrafoParam().isNull()){
+
+        int attr = getFeatureDisplayAttributes().at(columnIndex);
+
+        //get isSolved from TrafoParam
+        switch((TrafoParamDisplayAttributes)attr){
+        case eTrafoParamDisplayIsSolved:
+            if(feature->getTrafoParam()->getIsSolved()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        case eTrafoParamDisplayIsUsed:
+            if(feature->getTrafoParam()->getIsUsed()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
+        default:
+            break;
+        }
     }
-
     return QVariant();
-
 }
 
 /*!
@@ -181,15 +218,10 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
                 header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eAngular))));
                 break;
             }
-
         }
-
         return header;
-
     }
-
     return QVariant();
-
 }
 
 
@@ -200,8 +232,63 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
  * \return
  */
 Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
+
+    //get parent flags
     Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
-    return (myFlags | Qt::ItemIsEditable);
+
+    //check index
+    if(!index.isValid()){
+        return myFlags;
+    }
+
+    //get display attribute
+    int rowIndex = index.row();
+    int columnIndex = index.column();
+    int attr = getFeatureDisplayAttributes().at(columnIndex);
+
+    //get the feature to display at index.row()
+    if(this->currentJob->getFeatureCount() <= rowIndex){
+        return myFlags;
+    }
+    QPointer<FeatureWrapper> feature = this->currentJob->getFeaturesList().at(rowIndex);
+
+    //check the feature
+    if(feature.isNull() || feature->getFeature().isNull()){
+        return myFlags;
+    }
+
+    if(getIsFeatureDisplayAttribute(attr)){
+
+        //get and check display attribute
+        FeatureDisplayAttributes fAttr = (FeatureDisplayAttributes)attr;
+        if(fAttr == eFeatureDisplayName || fAttr == eFeatureDisplayComment
+                || fAttr == eFeatureDisplayGroup){
+            return (myFlags | Qt::ItemIsEditable);
+        }else if(fAttr == eFeatureDisplayIsCommon && !feature->getGeometry().isNull()
+                 && !feature->getGeometry()->getIsNominal()){
+            return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+        }else if(fAttr == eFeatureDisplayIsSolved){
+            return (myFlags | Qt::ItemIsUserCheckable);
+        }else if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            if(fAttr == eFeatureDisplayX || fAttr == eFeatureDisplayY || fAttr == eFeatureDisplayZ ||
+                    fAttr == eFeatureDisplayPrimaryI || eFeatureDisplayPrimaryJ || fAttr == eFeatureDisplayPrimaryK){
+                return (myFlags | Qt::ItemIsEditable);
+            }
+        }
+
+    }else if(getIsTrafoParamDisplayAttribute(attr)){
+
+        //get and check display attribute
+        TrafoParamDisplayAttributes fAttr = (TrafoParamDisplayAttributes)attr;
+
+        if(fAttr == eTrafoParamDisplayIsSolved){
+            return (myFlags | Qt::ItemIsUserCheckable);
+        }else if(fAttr == eTrafoParamDisplayIsUsed){//else if(fAttr == eTrafoParamDisplayIsUsed || fAttr == eTrafoParamDisplayIsDatumTransformation){
+            return(myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+        }
+    }
+    return myFlags;
+
 }
 
 /*!
@@ -240,7 +327,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     int attr = getFeatureDisplayAttributes().at(column);
 
     //if a non-trafo param feature has been edited
-    if(getIsFeatureDisplayAttribute(attr)){
+    if(getIsFeatureDisplayAttribute(attr) && role == Qt::EditRole){
 
         switch((FeatureDisplayAttributes)attr){
         case eFeatureDisplayName:{
@@ -287,11 +374,64 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 feature->getGeometry()->setMeasurementConfig(mConfig);
                 return true;
             }
-
         }
+        case eFeatureDisplayX:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownX, convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
+                return true;
+            }
+            break;
+        case eFeatureDisplayY:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownY,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
+                return true;
+            }
+            break;
+        case eFeatureDisplayZ:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownZ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eMetric)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
+                return true;
+            }
+            break;
+        case eFeatureDisplayPrimaryI:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownPrimaryI,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
+                return true;
+            }
+            break;
+        case eFeatureDisplayPrimaryJ:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownPrimaryJ,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
+                return true;
+            }
+            break;
+        case eFeatureDisplayPrimaryK:
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+                QMap<GeometryParameters, double> parameters;
+                parameters.insert(eUnknownPrimaryK,convertToDefault(value.toDouble(),this->parameterDisplayConfig.getDisplayUnit(eAngular)));
+                feature->getGeometry()->setUnknownParameters(parameters);
+                emit recalcActiveFeature();
+                return true;
+            }
+            break;
         }
 
-    }else if(getIsTrafoParamDisplayAttribute(attr)){
+    }else if(getIsTrafoParamDisplayAttribute(attr) && role == Qt::EditRole){
 
         switch((TrafoParamDisplayAttributes)attr){
         case eTrafoParamDisplayName:{
@@ -310,7 +450,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
             //commit the new feature name
             feature->getFeature()->setFeatureName(value.toString());
-
             return true;
 
         }case eTrafoParamDisplayComment:{
@@ -319,23 +458,36 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         }case eTrafoParamDisplayGroup:{
             feature->getFeature()->setGroupName(value.toString());
             return true;
-        }case eTrafoParamDisplayIsUsed:{
-            if(value.type() == QVariant::Bool){
-                feature->getTrafoParam()->setIsUsed(value.toBool());
-                return true;
-            }
-        }case eTrafoParamDisplayIsDatumTransformation:{
-            if(value.type() == QVariant::Bool){
-                feature->getTrafoParam()->setIsDatumTrafo(value.toBool());
-                return true;
-            }
         }
         }
 
+    }else if(!feature->getGeometry().isNull() && role == Qt::CheckStateRole){
+
+        switch((FeatureDisplayAttributes)attr){
+        case eFeatureDisplayIsCommon:{
+            bool isCommon = value.toBool();
+            feature->getGeometry()->setCommonState(isCommon);
+            emit recalcActiveFeature();
+            break;
+        }}
+
+    }else if(!feature->getTrafoParam().isNull() && role == Qt::CheckStateRole){
+
+        switch ((TrafoParamDisplayAttributes)attr) {
+        case eTrafoParamDisplayIsUsed:{
+            bool isUsed = value.toBool();
+            feature->getTrafoParam()->setIsUsed(isUsed);
+            break;
+        }/*case eTrafoParamDisplayIsDatumTransformation:{
+            bool isDatum = value.toBool();
+            feature->getTrafoParam()->setIsDatumTrafo(isDatum);
+            break;
+        }*/default:
+            break;
+        }
     }
 
     return false;
-
 }
 
 /*!
@@ -704,7 +856,7 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
         case eFeatureDisplayGroup:
             return feature->getFeature()->getGroupName();
         case eFeatureDisplayIsSolved:
-            return feature->getFeature()->getDisplayIsSolved();
+            return QVariant();
         case eFeatureDisplayIsUpdated:
             return feature->getFeature()->getDisplayIsUpdated();
         case eFeatureDisplayFunctions:
@@ -817,19 +969,16 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
         case eTrafoParamDisplayScaleZ:
             return feature->getFeature()->getDisplayScaleZ(this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
         case eTrafoParamDisplayIsUsed:
-            return feature->getFeature()->getDisplayIsUsed();
+            return QVariant();
         case eTrafoParamDisplayValidTime:
             return feature->getFeature()->getDisplayValidTime();
         case eTrafoParamDisplayIsMovement:
             return feature->getFeature()->getDisplayIsMovement();
         case eTrafoParamDisplayIsDatumTransformation:
-            return feature->getFeature()->getDisplayIsDatumTransformation();
+            return QVariant();
         }
-
     }
-
     return QVariant();
-
 }
 
 /*!
@@ -963,7 +1112,8 @@ void FeatureTableModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-
+    QObject::connect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
 }
 
 /*!
@@ -980,5 +1130,7 @@ void FeatureTableModel::disconnectJob(){
     QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged, this, &FeatureTableModel::updateModel);
 
 }

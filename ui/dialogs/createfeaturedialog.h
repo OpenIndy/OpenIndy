@@ -33,6 +33,8 @@ public:
     const FeatureTypes &getFeatureType() const;
     void setFeatureType(const FeatureTypes &type);
 
+    bool featureCreated(bool created);
+
 signals:
 
     //#######################################
@@ -52,6 +54,8 @@ private slots:
     void on_checkBox_nominal_toggled(bool checked);
     void on_checkBox_actual_toggled(bool checked);
 
+    void on_comboBox_entityType_currentIndexChanged(const QString &arg1);
+
 private:
 
     //##################################
@@ -65,11 +69,17 @@ private:
 
     void initFunctionsModel();
 
+    void toggleActualLabels(bool toggle);
+
+    void toggleNominalLabels(bool toggle);
+
     //################
     //GUI interactions
     //################
 
     void featureAttributesFromGUI(FeatureAttributes &attributes);
+
+    bool created;
 
 private:
     Ui::CreateFeatureDialog *ui;
@@ -81,6 +91,8 @@ private:
     FeatureTypes typeOfFeature;
 
     QPointer<AvailableFunctionsListProxyModel> functionListModel;
+
+    void setDialogName();
 
 };
 

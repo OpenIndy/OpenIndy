@@ -128,15 +128,12 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
     case eReadingDisplayZ:
         return reading->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                     this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplayRX:
-        return reading->getDisplayRX(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                     this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplayRY:
-        return reading->getDisplayRY(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                     this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplayRZ:
-        return reading->getDisplayRZ(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                     this->parameterDisplayConfig.getDisplayDigits(eAngular));
+    case eReadingDisplayI:
+        return reading->getDisplayI(6);
+    case eReadingDisplayJ:
+        return reading->getDisplayJ(6);
+    case eReadingDisplayK:
+        return reading->getDisplayK(6);
     case eReadingDisplayTemperature:
         return reading->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
                                               this->parameterDisplayConfig.getDisplayDigits(eTemperature));
@@ -158,15 +155,12 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
     case eReadingDisplaySigmaZ:
         return reading->getDisplaySigmaZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                          this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplaySigmaRX:
-        return reading->getDisplaySigmaRX(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                          this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplaySigmaRY:
-        return reading->getDisplaySigmaRY(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                          this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplaySigmaRZ:
-        return reading->getDisplaySigmaRZ(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                          this->parameterDisplayConfig.getDisplayDigits(eAngular));
+    case eReadingDisplaySigmaI:
+        return reading->getDisplaySigmaI(6);
+    case eReadingDisplaySigmaJ:
+        return reading->getDisplaySigmaJ(6);
+    case eReadingDisplaySigmaK:
+        return reading->getDisplaySigmaK(6);
     case eReadingDisplaySigmaTemperature:
         return reading->getDisplaySigmaTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
                                                    this->parameterDisplayConfig.getDisplayDigits(eTemperature));

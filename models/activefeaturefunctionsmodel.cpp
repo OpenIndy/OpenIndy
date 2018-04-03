@@ -289,6 +289,34 @@ QString ActiveFeatureFunctionsModel::getInputElementDescription(const QModelInde
 
 }
 
+bool ActiveFeatureFunctionsModel::getSupportsWeights(const QModelIndex &index) const
+{
+    //check index (has to be valid and its parent must not be the root item)
+    if(!index.isValid() || !index.parent().isValid()){
+        return false;
+    }
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return false;
+    }
+
+    //check and get active feature
+    if(this->currentJob->getActiveFeature().isNull() || this->currentJob->getActiveFeature()->getFeature().isNull()){
+        return false;
+    }
+    Feature *feature = this->currentJob->getActiveFeature()->getFeature();
+
+    //check and get function
+    if(index.parent().row() >= feature->getFunctions().size() || feature->getFunctions().at(index.parent().row()).isNull()){
+        return false;
+    }
+    Function *function = feature->getFunctions().at(index.parent().row());
+
+    //return true if the function supports weighted alignment
+    return function->getSupportWeights();
+}
+
 /*!
  * \brief ActiveFeatureFunctionsModel::getIntegerParameter
  * \param index

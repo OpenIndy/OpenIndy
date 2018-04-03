@@ -31,9 +31,22 @@ void CreateFeatureDialog::setFeatureType(const FeatureTypes &type){
 }
 
 /*!
+ * \brief CreateFeatureDialog::featureCreated
+ * \param created
+ * \return
+ */
+bool CreateFeatureDialog::featureCreated(bool created)
+{
+    this->created = created;
+    return created;
+}
+
+/*!
  * \brief CreateFeatureDialog::on_toolButton_ok_clicked
  */
 void CreateFeatureDialog::on_toolButton_ok_clicked(){
+
+    this->created = false;
 
     //get feature attributes from GUI elements and emit add features signal
     FeatureAttributes attributes;
@@ -42,21 +55,27 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
 
     //only set default function, if an actual feature has been created
     if(!attributes.isActual){
-        this->close();
+        if(this->created){
+            this->close();
+        }
         return;
     }
 
     //get selected function
     sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
     if(function.name.compare("") == 0 || function.plugin.name.compare("") == 0){
-        this->close();
+        if(this->created){
+            this->close();
+        }
         return;
     }
 
     //get and cast source model
     AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
     if(source_model == NULL){
-        this->close();
+        if(this->created){
+            this->close();
+        }
         return;
     }
 
@@ -66,8 +85,9 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
     functionPlugin.second = function.plugin.file_path;
     source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
 
-    this->close();
-
+    if(this->created){
+        this->close();
+    }
 }
 
 /*!
@@ -84,14 +104,7 @@ void CreateFeatureDialog::on_toolButton_cancel_clicked(){
 void CreateFeatureDialog::on_checkBox_nominal_toggled(bool checked){
 
     //set visible states of actual/nominal dependent GUI elements
-    if(checked){
-        this->ui->label_nominalSystem->setVisible(true);
-        this->ui->comboBox_nominalSystem->setVisible(true);
-    }else{
-        this->ui->label_nominalSystem->setVisible(false);
-        this->ui->comboBox_nominalSystem->setVisible(false);
-    }
-
+    this->toggleNominalLabels(checked);
 }
 
 /*!
@@ -101,18 +114,7 @@ void CreateFeatureDialog::on_checkBox_nominal_toggled(bool checked){
 void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
 
     //set visible states of actual/nominal dependent GUI elements
-    if(checked){
-        this->ui->label_function->setVisible(true);
-        this->ui->comboBox_function->setVisible(true);
-        this->ui->label_mConfig->setVisible(true);
-        this->ui->comboBox_mConfig->setVisible(true);
-    }else{
-        this->ui->label_function->setVisible(false);
-        this->ui->comboBox_function->setVisible(false);
-        this->ui->label_mConfig->setVisible(false);
-        this->ui->comboBox_mConfig->setVisible(false);
-    }
-
+    this->toggleActualLabels(checked);
 }
 
 /*!
@@ -130,6 +132,20 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     //init function models based on the current feature type
     this->initFunctionsModel();
+
+    this->ui->comboBox_entityType->setCurrentText(getFeatureTypeName(this->typeOfFeature));
+
+    this->setDialogName();
+
+    /*//set combobox size
+    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
+    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
+    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
+    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
+    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
+
+    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_group->width());
+    this->ui->comboBox_group->view()->setMinimumWidth(sizeGroup);*/
 
     event->accept();
 
@@ -162,12 +178,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_common->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
-        this->ui->checkBox_movement->setVisible(true);
         this->ui->label_mConfig->setVisible(false);
         this->ui->comboBox_mConfig->setVisible(false);
-
-        //set checked state
-        this->ui->checkBox_movement->setChecked(false);
 
     }else if(this->typeOfFeature == eStationFeature ||
              this->typeOfFeature == eCoordinateSystemFeature){
@@ -184,7 +196,6 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_actual->setVisible(false);
         this->ui->checkBox_nominal->setVisible(false);
         this->ui->checkBox_common->setVisible(false);
-        this->ui->checkBox_movement->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
         this->ui->label_mConfig->setVisible(false);
@@ -204,7 +215,6 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_actual->setVisible(true);
         this->ui->checkBox_nominal->setVisible(true);
         this->ui->checkBox_common->setVisible(true);
-        this->ui->checkBox_movement->setVisible(false);
         this->ui->label_entityType->setVisible(true);
         this->ui->comboBox_entityType->setVisible(true);
         this->ui->label_mConfig->setVisible(true);
@@ -229,7 +239,6 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_actual->setVisible(true);
         this->ui->checkBox_nominal->setVisible(true);
         this->ui->checkBox_common->setVisible(true);
-        this->ui->checkBox_movement->setVisible(false);
         this->ui->label_entityType->setVisible(false);
         this->ui->comboBox_entityType->setVisible(false);
         this->ui->label_mConfig->setVisible(true);
@@ -253,8 +262,15 @@ void CreateFeatureDialog::initModels(){
     this->ui->comboBox_startSystem->setModel(&ModelManager::getCoordinateSystemsModel());
     this->ui->comboBox_destinationSystem->setModel(&ModelManager::getCoordinateSystemsModel());
 
+    //set combobox size
+    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
+    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
+    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
+
     //set model for possible nominal systems of a nominal geometry
     this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
+    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
+    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
     //set model for available functions
     this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
@@ -290,6 +306,27 @@ void CreateFeatureDialog::initFunctionsModel(){
     this->ui->comboBox_function->setCurrentText(source_model->getDefaultFunction(this->typeOfFeature).first);
 
 }
+/*!
+ * \brief CreateFeatureDialog::toggleActualLabels
+ * \param toggle
+ */
+void CreateFeatureDialog::toggleActualLabels(bool toggle)
+{
+    this->ui->label_function->setVisible(toggle);
+    this->ui->comboBox_function->setVisible(toggle);
+    this->ui->label_mConfig->setVisible(toggle);
+    this->ui->comboBox_mConfig->setVisible(toggle);
+}
+
+/*!
+ * \brief CreateFeatureDialog::toggleNominalLabels
+ * \param toggle
+ */
+void CreateFeatureDialog::toggleNominalLabels(bool toggle)
+{
+    this->ui->label_nominalSystem->setVisible(toggle);
+    this->ui->comboBox_nominalSystem->setVisible(toggle);
+}
 
 /*!
  * \brief CreateFeatureDialog::featureAttributesFromGUI
@@ -308,7 +345,6 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
 
         attributes.startSystem = this->ui->comboBox_startSystem->currentText();
         attributes.destinationSystem = this->ui->comboBox_destinationSystem->currentText();
-        attributes.isMovement = this->ui->checkBox_movement->isChecked();
 
     }else if(getIsScalarEntity(this->typeOfFeature)){
 
@@ -336,5 +372,22 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.functionPlugin.first = function.name;
         attributes.functionPlugin.second = function.plugin.file_path;
     }
+}
 
+void CreateFeatureDialog::setDialogName()
+{
+
+    QString title = "create " + getFeatureTypeName(typeOfFeature);
+    this->setWindowTitle(title);
+}
+
+/*!
+ * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
+ * \param arg1
+ */
+void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &arg1)
+{
+    this-> typeOfFeature = getFeatureTypeEnum(arg1);
+    this->initModels();
+    this->initFunctionsModel();
 }

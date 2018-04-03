@@ -22,6 +22,20 @@
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
 
+enum DisplayActualNominal{
+    eActualNominal = 0,
+    eNominalActual
+};
+
+enum DisplayAttributes{
+    eName = 0,
+    eX = 1,
+    eY = 2,
+    eZ =3,
+    eD3D = 4,
+    eNotDeclared = 666
+};
+
 using namespace oi;
 
 /*!
@@ -29,7 +43,7 @@ using namespace oi;
  */
 class WatchWindowSettings{
 public:
-    WatchWindowSettings() : digits(2), readingType(eCartesianReading), polarType(0), reference(0){}
+    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal){}
 
     //decimal digits for watch window values
     int digits;
@@ -37,20 +51,19 @@ public:
     //reading type for the watch window values
     ReadingTypes readingType;
 
-    //polar type (0 = az,ze,di; 1 = cross,distance)
-    int polarType;
-
     //reference (0 = actual-nominal, 1 = nominal-actual)
-    int reference;
+    DisplayActualNominal reference;
 
     //display values and tolerance
-    QMap<QString, double> displayValues;
+    QMap<DisplayAttributes, double> displayValues;
 
 };
+
 
 namespace Ui {
 class WatchWindowDialog;
 }
+
 
 /*!
  * \brief The WatchWindowDialog class
@@ -77,15 +90,14 @@ signals:
     //inform about actions triggered by user
     //######################################
 
+    //####################
+    //start sensor actions
+    //####################
+
     void startMeasure();
     void useLastReading();
-    //void doSelfDefinedAction(QString key);
-    void keyPressed(Qt::Key key);
-
-    /*void sendSettingsReady(bool);
-    void sendCheckBoxReady(bool);
-    void sendGUIReady(bool);
-    void closeWatchWindow();*/
+    void startStreaming(ReadingTypes streamFormat);
+    void stopStreaming();
 
 private slots:
 
@@ -93,34 +105,27 @@ private slots:
     //actions triggered by user
     //#########################
 
-    void keyPressEvent(QKeyEvent * e);
-
     //update settings
     void on_spinBox_decimalDigits_valueChanged(int arg1);
-    void on_comboBox_readingTypes_currentIndexChanged(const QString &arg1);
-    void on_comboBox_polarMode_currentIndexChanged(const QString &arg1);
     void on_radioButton_actnom_clicked();
     void on_radioButton_nomact_clicked();
     void on_checkBox_x_clicked();
     void on_checkBox_y_clicked();
     void on_checkBox_z_clicked();
     void on_checkBox_d3d_clicked();
-    void on_checkBox_azimuth_clicked();
-    void on_checkBox_zenith_clicked();
-    void on_checkBox_distance_clicked();
-    void on_lineEdit_x_textChanged(const QString &arg1);
-    void on_lineEdit_y_textChanged(const QString &arg1);
-    void on_lineEdit_z_textChanged(const QString &arg1);
-    void on_lineEdit_d3d_textChanged(const QString &arg1);
-    void on_lineEdit_azimuth_textChanged(const QString &arg1);
-    void on_lineEdit_zenith_textChanged(const QString &arg1);
-    void on_lineEdit_distance_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_x_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_y_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_z_textChanged(const QString &arg1);
+    void on_lineEdit_tolerance_d3d_textChanged(const QString &arg1);
 
     //##################################
     //update watch window display values
     //##################################
 
     void realTimeReading(const QVariantMap &reading);
+
+    //switch tab and update geometries
+    void on_toolBox_currentChanged(int index);
 
 private:
 
@@ -132,14 +137,12 @@ private:
     void closeEvent(QCloseEvent *event);
 
     void initGUI();
-    void initModels();
 
     //##############################
     //connect job and active station
     //##############################
 
     void connectSensor();
-
     void connectJob();
 
     //#############################################
@@ -151,7 +154,6 @@ private:
     void getDefaultSettings();
     void resizeWatchWindowValues();
 
-private:
     Ui::WatchWindowDialog *ui;
 
     //#############################
@@ -169,7 +171,7 @@ private:
 
     //watch window values
     QVBoxLayout* masterLayout;
-    QMap<QString, QLabel*> streamData;
+    QMap<DisplayAttributes, QLabel*> streamData;
 
     //################
     //display settings
@@ -183,36 +185,18 @@ private:
 
     TrafoController trafoController;
 
+    //###############################################
+    //helper attribute to rescale the labels and text
+    //###############################################
 
+    bool lablesRescaled;
+    int oldWindowHeight;
+    int oldWindowWidth;
 
-
-
-
-
-/*
- *
- *     //bool isGUIReady;
- *    //bool isSettingsReady;
-    //bool isCheckboxReady;
- *
- *    QThread listenerThread;
-
-    double az;
- *
- *     WatchWindowListener *listener;
-    int activeReadingType;
-
-    bool checkFeatureValid();
-
-    QString getUnitString(QString attribute);
-
-    bool isVisible;
-
-    void stopStream();
-    void startStream();
-
-*/
-
+    //enums and functions for watchwindow settings
+    DisplayAttributes getAttributeValue(QString attributeName);
+    QString getAttributeName(DisplayAttributes attr);
+    DisplayAttributes getAttributesByInteger(int i);
 };
 
 #endif // WATCHWINDOW_H

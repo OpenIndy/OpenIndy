@@ -8,6 +8,7 @@
 #include <QListView>
 #include <QSignalMapper>
 #include <QClipboard>
+#include <QCloseEvent>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -33,10 +34,13 @@
 #include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
 #include "stationpropertiesdialog.h"
+#include "exportdialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
+#include "bundlestationsmodel.h"
 
+#include <QSound>
 using namespace oi;
 
 namespace Ui {
@@ -64,6 +68,8 @@ signals:
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeatures(const QSet<int> &featureIds);
 
+    bool featureCreated(bool);
+
     //remove observations
     void removeObservations(const int &featureId);
     void removeAllObservations();
@@ -88,6 +94,16 @@ signals:
 
     //import or export features
     void importNominals(const ExchangeParams &params);
+    void exportFeatures(const ExchangeParams &params);
+
+    //add or remove bundle system
+    void addBundleSystem();
+    void removeBundleSystem(const int &bundleId);
+
+    //load or calculate bundle
+    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
+    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
+    void runBundle(const int &bundleId);
 
     //save or load projects
     void saveProject();
@@ -138,6 +154,7 @@ private slots:
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+    void measurementDone(bool success);
 
     //display messages
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
@@ -159,30 +176,33 @@ private slots:
     void on_actionCreate_coordinatesystem_triggered();
     void on_actionCreate_scalar_entity_triggered();
     void on_actionCreate_trafoParam_triggered();
-    void on_actionCreate_cone_triggered();
+    //void on_actionCreate_cone_triggered();
     void on_actionCreate_cylinder_triggered();
-    void on_actionCreate_ellipsoid_triggered();
-    void on_actionCreate_hyperboloid_triggered();
-    void on_actionCreate_paraboloid_triggered();
-    void on_actionCreate_nurbs_triggered();
-    void on_actionCreate_pointcloud_triggered();
+    //void on_actionCreate_ellipsoid_triggered();
+    //void on_actionCreate_hyperboloid_triggered();
+    //void on_actionCreate_paraboloid_triggered();
+    //void on_actionCreate_nurbs_triggered();
+    //void on_actionCreate_pointcloud_triggered();
     void on_actionCreate_circle_triggered();
-    void on_actionCreate_torus_triggered();
-    void on_actionCreate_slotted_hole_triggered();
-    void on_actionCreate_ellipse_triggered();
+    //void on_actionCreate_torus_triggered();
+    //void on_actionCreate_slotted_hole_triggered();
+    //void on_actionCreate_ellipse_triggered();
 
     //plugin actions
     void on_actionLoad_plugins_triggered();
     void on_actionPlugin_manager_triggered();
 
     //import export actions
-    void on_action_importNominals_triggered();
+    void on_actionimport_triggered();
+    void on_actionexport_triggered();
 
     //feature table view interactions
     void on_tableView_features_clicked(const QModelIndex &index);
+    void on_tableView_features_doubleClicked(const QModelIndex &index);
     void tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_features_customContextMenuRequested(const QPoint &pos);
     void on_tableView_trafoParams_clicked(const QModelIndex &index);
+    void on_tableView_trafoParams_doubleClicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
 
@@ -215,6 +235,7 @@ private slots:
 
     //close OpenIndy
     void on_actionClose_triggered();
+    void closeEvent(QCloseEvent *event);
 
     //show measurement config dialog
     void on_actionMeasurement_Configuration_triggered();
@@ -238,6 +259,14 @@ private slots:
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
+    //add or remove bundle system
+    void on_pushButton_addBundle_clicked();
+    void on_pushButton_removeBundle_clicked();
+
+    //load or calculate bundle
+    void on_action_RunBundle_triggered();
+    void on_pushButton_loadBundleTemplate_clicked();
+
     //##############
     //helper methods
     //##############
@@ -256,6 +285,15 @@ private slots:
     //set up status bar
     void updateStatusBar();
 
+    //update bundle view
+    void bundleSelectionChanged();
+    void bundleSettingsChanged();
+
+    void on_actionShortcut_import_triggered();
+
+    //trafo Param create...already exist use
+    void createMessageBoxTrafoParamWarning();
+
 private:
     Ui::MainWindow *ui;
 
@@ -270,6 +308,7 @@ private:
     void connectController();
     void connectDialogs();
     void connectStatusBar();
+    void connectBundleView();
     void assignModels();
 
     //##################################
@@ -281,26 +320,38 @@ private:
     void initToolMenus();
     void initFilterComboBoxes();
     void initStatusBar();
+    void initBundleView();
 
     //##############################
     //methods to update GUI elements
     //##############################
 
+    //sensor type
     void activeSensorTypeChanged(const SensorTypes &type, const QList<SensorFunctions> &supportedActions, const QStringList &selfDefinedActions);
 
+    //magnify
     void updateMagnifyWindow(const QPointer<FeatureWrapper> &feature);
 
+    //filter
     void updateGroupFilterSize();
     void updateSystemFilterSize();
     void updateActualNominalFilterSize();
+
+    //bundle view
+    void resetBundleView();
+
+    //save project help function
+    void saveProjectAs();
 
     //############################
     //OpenIndy dialogs and widgets
     //############################
 
+    //dialogs
     CreateFeatureDialog createFeatureDialog;
     PluginLoaderDialog pluginLoaderDialog;
     ImportNominalDialog importNominalDialog;
+    ExportDialog exportDialog;
     LoadingDialog loadingDialog;
     FeatureFunctionsDialog featureFunctionsDialog;
     SensorConfigurationDialog sensorConfigurationDialog;
@@ -315,6 +366,9 @@ private:
     TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
     StationPropertiesDialog stationPropertiesDialog;
+
+    //widget with scalar input parameters
+    ScalarParameterWidget *bundleParameterWidget;
 
     //##########
     //sensor pad
@@ -343,6 +397,13 @@ private:
     QLabel *label_statusUnitAngular;
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
+
+    //######
+    //models
+    //######
+
+    QPointer<BundleStationsModel> bundleStationsModel;
+    QPointer<BundleGeometriesModel> bundleGeometriesModel;
 
     //#################
     //helper attributes

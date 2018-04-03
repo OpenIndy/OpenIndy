@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QShowEvent>
+#include <QDesktopWidget>
 
 namespace Ui {
 class LoadingDialog;
@@ -28,13 +30,14 @@ public slots:
 
     void updateProgress(const int &progress, const QString &msg) const; //progress (0-100)
 
-protected:
+private:
 
     //##################################
     //methods to initialize GUI elements
     //##################################
 
-    void closeEvent(QCloseEvent *e);
+    void showEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::LoadingDialog *ui;

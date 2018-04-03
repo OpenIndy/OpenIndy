@@ -55,6 +55,19 @@ void TrafoParamTableColumnConfig::setColumnPosition(const TrafoParamDisplayAttri
 }
 
 /*!
+ * \brief TrafoParamTableColumnConfig::getDisplayAttributeAt
+ * \param column
+ * \return
+ */
+TrafoParamDisplayAttributes TrafoParamTableColumnConfig::getDisplayAttributeAt(const int &column) const
+{
+    if(this->displayColumns.size() > column){
+        return this->displayColumns.at(column);
+    }
+    return eTrafoParamDisplayType;
+}
+
+/*!
  * \brief TrafoParamTableColumnConfig::init
  * Set up default column config
  */
@@ -66,7 +79,6 @@ void TrafoParamTableColumnConfig::init(){
     this->displayColumns.append(eTrafoParamDisplayGroup);
     this->displayColumns.append(eTrafoParamDisplayIsSolved);
     this->displayColumns.append(eTrafoParamDisplayIsUsed);
-    this->displayColumns.append(eTrafoParamDisplayIsDatumTransformation);
     this->displayColumns.append(eTrafoParamDisplayStartSystem);
     this->displayColumns.append(eTrafoParamDisplayDestinationSystem);
     this->displayColumns.append(eTrafoParamDisplayTranslationX);

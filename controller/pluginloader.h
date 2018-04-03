@@ -18,7 +18,7 @@
 #include "function.h"
 #include "simulationmodel.h"
 #include "tool.h"
-#include "networkadjustment.h"
+#include "bundleadjustment.h"
 #include "exchangeinterface.h"
 #include "exchangesimpleascii.h"
 #include "exchangedefinedformat.h"
@@ -65,7 +65,7 @@ public:
     static QPointer<Sensor> loadSensorPlugin(const QString &path, const QString &name);
     static QPointer<Function> loadFunctionPlugin(const QString &path, const QString &name);
     static QPointer<SimulationModel> loadSimulationPlugin(const QString &path, const QString &name);
-    static QPointer<NetworkAdjustment> loadNetworkAdjustmentPlugin(const QString &path, const QString &name);
+    static QPointer<BundleAdjustment> loadBundleAdjustmentPlugin(const QString &path, const QString &name);
     static QPointer<Tool> loadToolPlugin(const QString &path, const QString &name);
     static QPointer<ExchangeSimpleAscii> loadExchangeSimpleAsciiPlugin(const QString &path, const QString &name);
     static QPointer<ExchangeDefinedFormat> loadExchangeDefinedFormatPlugin(const QString &path, const QString &name);
@@ -73,7 +73,7 @@ public:
     static QList<QPointer<Sensor> > loadSensorPlugins(const QString &path);
     static QList<QPointer<Function> > loadFunctionPlugins(const QString &path);
     static QList<QPointer<SimulationModel> > loadSimulationPlugins(const QString &path);
-    static QList<QPointer<NetworkAdjustment> > loadNetworkAdjustmentPlugins(const QString &path);
+    static QList<QPointer<BundleAdjustment> > loadBundleAdjustmentPlugins(const QString &path);
     static QList<QPointer<Tool> > loadToolPlugins(const QString &path);
     static QList<QPointer<ExchangeSimpleAscii> > loadExchangeSimpleAsciiPlugins(const QString &path);
     static QList<QPointer<ExchangeDefinedFormat> > loadExchangeDefinedFormatPlugins(const QString &path);

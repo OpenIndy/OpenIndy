@@ -26,10 +26,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initToolMenus();
     this->initFilterComboBoxes();
     this->initStatusBar();
+    this->initBundleView();
+
+    //connect bundle view
+    this->connectBundleView();
 
     //initially resize table view to fit the default job
     this->resizeTableView();
 
+    tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
+
+    this->ui->tabWidget_bundle->setTabEnabled(2,false);
+    this->ui->tabWidget_bundle->setTabEnabled(3,false);
+
+    this->resizeTableView();
 }
 
 /*!
@@ -312,6 +322,14 @@ void MainWindow::currentJobChanged(){
         this->setWindowTitle("");
     }
 
+    //pass job to models
+    if(!this->bundleStationsModel.isNull()){
+        this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
+    }
+    if(!this->bundleGeometriesModel.isNull()){
+        this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
+    }
+
 }
 
 /*!
@@ -362,6 +380,22 @@ void MainWindow::measurementCompleted(){
         this->control.startAimAndMeasure();
     }
 
+}
+
+/*!
+ * \brief MainWindow::measurementDone plays a sound for successful and failed measurement if checked in settings
+ * \param success
+ */
+void MainWindow::measurementDone(bool success)
+{
+    if(ModelManager::getParameterDisplayConfig().getUseSounds()){
+        if(success){
+            QSound::play(":/sounds/measure_success.wav");
+        }else{
+            QSound::play(":/sounds/measure_fail.wav");
+        }
+    }
+    return;
 }
 
 /*!
@@ -468,36 +502,36 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         if(feature.isNull() || feature->getFeature().isNull()){
             return;
         }
-
-        QMessageBox msgBox;
-        msgBox.setText(QString("Delete observations of feature %1?").arg(feature->getFeature()->getFeatureName()));
-        msgBox.setInformativeText("");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-        int ret = msgBox.exec();
-        switch (ret) {
-        case QMessageBox::Yes:
-            this->removeObservationOfActiveFeature();
-            break;
-        }
+        this->removeObservationOfActiveFeature();
         break;
-
     }case Qt::Key_C: //copy to clipboard
 
         if(e->modifiers() == Qt::CTRL){
             this->copyToClipboard();
         }
         break;
-
     case Qt::Key_V: //paste from clipboard
 
         if(e->modifiers() == Qt::CTRL){
             this->pasteFromClipboard();
         }
         break;
+    case Qt::Key_S: //save project
 
+        if(e->modifiers() == Qt::CTRL){
+            emit this->saveProject();
+        }
+        break;
+    case Qt::Key_F1: //open properties dialog
+
+        //get and check the active feature
+        QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+        if(feature.isNull() || feature->getFeature().isNull()){
+            return;
+        }
+        this->showFeatureProperties(true);
+        break;
     }
-
 }
 
 /*!
@@ -565,14 +599,6 @@ void MainWindow::on_actionCreate_trafoParam_triggered(){
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_cone_triggered
- */
-void MainWindow::on_actionCreate_cone_triggered(){
-    this->createFeatureDialog.setFeatureType(eConeFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
  * \brief MainWindow::on_actionCreate_cylinder_triggered
  */
 void MainWindow::on_actionCreate_cylinder_triggered(){
@@ -581,74 +607,18 @@ void MainWindow::on_actionCreate_cylinder_triggered(){
 }
 
 /*!
- * \brief MainWindow::on_actionCreate_ellipsoid_triggered
- */
-void MainWindow::on_actionCreate_ellipsoid_triggered(){
-    this->createFeatureDialog.setFeatureType(eEllipsoidFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
- * \brief MainWindow::on_actionCreate_hyperboloid_triggered
- */
-void MainWindow::on_actionCreate_hyperboloid_triggered(){
-    this->createFeatureDialog.setFeatureType(eHyperboloidFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
- * \brief MainWindow::on_actionCreate_paraboloid_triggered
- */
-void MainWindow::on_actionCreate_paraboloid_triggered(){
-    this->createFeatureDialog.setFeatureType(eParaboloidFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
- * \brief MainWindow::on_actionCreate_nurbs_triggered
- */
-void MainWindow::on_actionCreate_nurbs_triggered(){
-    this->createFeatureDialog.setFeatureType(eNurbsFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
  * \brief MainWindow::on_actionCreate_pointcloud_triggered
  */
-void MainWindow::on_actionCreate_pointcloud_triggered(){
+/*void MainWindow::on_actionCreate_pointcloud_triggered(){
     this->createFeatureDialog.setFeatureType(ePointCloudFeature);
     this->createFeatureDialog.show();
-}
+}*/
 
 /*!
  * \brief MainWindow::on_actionCreate_circle_triggered
  */
 void MainWindow::on_actionCreate_circle_triggered(){
     this->createFeatureDialog.setFeatureType(eCircleFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
- * \brief MainWindow::on_actionCreate_torus_triggered
- */
-void MainWindow::on_actionCreate_torus_triggered(){
-    this->createFeatureDialog.setFeatureType(eTorusFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
- * \brief MainWindow::on_actionCreate_slotted_hole_triggered
- */
-void MainWindow::on_actionCreate_slotted_hole_triggered(){
-    this->createFeatureDialog.setFeatureType(eSlottedHoleFeature);
-    this->createFeatureDialog.show();
-}
-
-/*!
- * \brief MainWindow::on_actionCreate_ellipse_triggered
- */
-void MainWindow::on_actionCreate_ellipse_triggered(){
-    this->createFeatureDialog.setFeatureType(eEllipseFeature);
     this->createFeatureDialog.show();
 }
 
@@ -667,10 +637,19 @@ void MainWindow::on_actionPlugin_manager_triggered(){
 }
 
 /*!
- * \brief MainWindow::on_action_importNominals_triggered
+ * \brief MainWindow::on_actionimport_triggered
  */
-void MainWindow::on_action_importNominals_triggered(){
+void MainWindow::on_actionimport_triggered()
+{
     this->importNominalDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_actionexport_triggered
+ */
+void MainWindow::on_actionexport_triggered()
+{
+    this->exportDialog.show();
 }
 
 /*!
@@ -694,6 +673,41 @@ void MainWindow::on_tableView_features_clicked(const QModelIndex &index){
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
 
+}
+
+/*!
+ * \brief MainWindow::on_tableView_features_doubleClicked
+ * \param index
+ */
+void MainWindow::on_tableView_features_doubleClicked(const QModelIndex &index)
+{
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
+
+    FeatureTableColumnConfig ftc = model->getFeatureTableColumnConfig();
+    qDebug() << "col " << index.column();
+    qDebug() << ftc.getDisplayAttributeAt(index.column());
+
+    if(model->getFeatureTableColumnConfig().getDisplayAttributeAt(index.column()) == eFeatureDisplayFunctions){
+
+        QPointer<FeatureWrapper> selectedFeature = sourceModel->getCurrentJob()->getActiveFeature();
+
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            this->on_actionSet_function_triggered();
+        }
+    }
 }
 
 /*!
@@ -749,6 +763,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionSet_function_triggered()));
+        }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
@@ -757,9 +775,15 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         //if the active feature is a geometry
         if(!selectedFeature->getGeometry().isNull()){
 
-            menu->addAction(QIcon(""), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                                  this, SLOT(removeObservationOfActiveFeature()));
 
+        }
+
+        if(!selectedFeature->getStation().isNull()){
+
+            menu->addAction(QString("activate station %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionActivate_station_triggered()));
         }
 
     }
@@ -789,6 +813,42 @@ void MainWindow::on_tableView_trafoParams_clicked(const QModelIndex &index){
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
 
+}
+
+/*!
+ * \brief MainWindow::on_tableView_trafoParams_doubleClicked
+ * \param index
+ */
+void MainWindow::on_tableView_trafoParams_doubleClicked(const QModelIndex &index)
+{
+    //get and check model
+    TrafoParamTableProxyModel *model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
+
+    TrafoParamTableColumnConfig ftc = model->getTrafoParamTableColumnConfig();
+    qDebug() << "col " << index.column();
+    qDebug() << ftc.getDisplayAttributeAt(index.column());
+
+
+    if(model->getTrafoParamTableColumnConfig().getDisplayAttributeAt(index.column()) == eTrafoParamDisplayFunctions){
+
+        QPointer<FeatureWrapper> selectedFeature = sourceModel->getCurrentJob()->getActiveFeature();
+
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            this->on_actionSet_function_triggered();
+        }
+    }
 }
 
 /*!
@@ -843,6 +903,10 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionSet_function_triggered()));
+        }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
@@ -1109,10 +1173,7 @@ void MainWindow::on_actionSave_triggered(){
  * \brief MainWindow::on_actionSave_as_triggered
  */
 void MainWindow::on_actionSave_as_triggered(){
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
-    if(filename.compare("") != 0){
-        emit this->saveProject(filename);
-    }
+    this->saveProjectAs();
 }
 
 /*!
@@ -1120,6 +1181,26 @@ void MainWindow::on_actionSave_as_triggered(){
  */
 void MainWindow::on_actionClose_triggered(){
     this->close();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("close application");
+    msgBox.setText("Do you want to save changes?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+
+    int ret = msgBox.exec();
+
+    if(ret == QMessageBox::Yes){
+        emit this->saveProject();
+        event->accept();
+    }else if(ret == QMessageBox::No){
+        event->accept();
+    }else if(ret == QMessageBox::Cancel){
+        event->ignore();
+    }
 }
 
 /*!
@@ -1167,9 +1248,15 @@ void MainWindow::on_actionActivate_station_triggered(){
     }
     QModelIndex index = selection.at(0);
 
+    //get active feature to check station name
+    QPointer<FeatureWrapper> actStation = sourceModel->getActiveFeature();
+    if(actStation.isNull() || actStation->getFeature().isNull()){
+        return;
+    }
+
     //let the user confirm the task
     QMessageBox msgBox;
-    msgBox.setText(QString("Do you really want to activate station %1?").arg(index.data(Qt::DisplayRole).toString()));
+    msgBox.setText(QString("Do you really want to activate station %1?").arg(actStation->getFeature()->getFeatureName()));
     msgBox.setInformativeText("");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::Yes);
@@ -1237,13 +1324,24 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
 void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_features->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
  * \brief MainWindow::on_actionRemoveObservations_triggered
  */
 void MainWindow::on_actionRemoveObservations_triggered(){
-    emit this->removeAllObservations();
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("clear observations");
+    msgBox.setText("This action will clear all observations.");
+    msgBox.setInformativeText("Continue?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+
+    if(msgBox.exec() == QMessageBox::Yes){
+      emit this->removeAllObservations();
+    }
 }
 
 /*!
@@ -1266,9 +1364,19 @@ void MainWindow::removeObservationOfActiveFeature(){
     //get and check the active feature
     QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
     if(!feature.isNull() && !feature->getFeature().isNull()){
-        emit this->removeObservations(feature->getFeature()->getId());
-    }
 
+        QMessageBox msgBox;
+        msgBox.setText(QString("Delete observations of feature %1?").arg(feature->getFeature()->getFeatureName()));
+        msgBox.setInformativeText("");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        switch (ret) {
+        case QMessageBox::Yes:
+            emit this->removeObservations(feature->getFeature()->getId());
+            break;
+        }
+    }
 }
 
 /*!
@@ -1276,6 +1384,94 @@ void MainWindow::removeObservationOfActiveFeature(){
  */
 void MainWindow::on_actionAbout_OpenIndy_triggered(){
     this->aboutDialog.show();
+}
+
+/*!
+ * \brief MainWindow::on_pushButton_addBundle_clicked
+ */
+void MainWindow::on_pushButton_addBundle_clicked(){
+    emit this->addBundleSystem();
+}
+
+/*!
+ * \brief MainWindow::on_pushButton_removeBundle_clicked
+ */
+void MainWindow::on_pushButton_removeBundle_clicked(){
+
+    //get selected bundle system
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return;
+    }
+    QModelIndex index = selection.at(0);
+
+    //get system id
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //remove bundle system
+    emit this->removeBundleSystem(id);
+
+}
+
+/*!
+ * \brief MainWindow::on_action_RunBundle_triggered
+ */
+void MainWindow::on_action_RunBundle_triggered(){
+
+    //get selected bundle system
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    if(selection.size() != 1){
+        return;
+    }
+    QModelIndex index = selection.at(0);
+
+    //get system id
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //get selected bundle parameters
+    //TODO zu verwendende stations ermitteln
+    //TODO zu schätzende Parameter je station ermitteln
+
+    //calculate bundle
+    emit this->runBundle(id);
+
+}
+
+/*!
+ * \brief MainWindow::on_pushButton_loadBundleTemplate_clicked
+ */
+void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
+
+    //get selected bundle system
+    QModelIndexList bundleSelection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    if(bundleSelection.size() != 1){
+        return;
+    }
+    QModelIndex index = bundleSelection.at(0);
+
+    //get system id
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //get selected bundle template
+    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
+    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
+    if(bundleTemplate.isEmpty()){
+        return;
+    }
+
+    //load template
+    emit this->loadBundleTemplate(id, bundleTemplate);
+    this->bundleSelectionChanged();
+
 }
 
 /*!
@@ -1404,6 +1600,19 @@ void MainWindow::aimAndMeasureFeatures(){
  * \param checked
  */
 void MainWindow::deleteFeatures(bool checked){
+
+    //security check, if you really want to delete
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("delete selected features");
+    msgBox.setText("Do you want to delete the selected features?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+
+    int ret = msgBox.exec();
+
+    if(ret == QMessageBox::No){
+        return;
+    }
 
     //init variables
     QSortFilterProxyModel *model = NULL;
@@ -1628,6 +1837,159 @@ void MainWindow::updateStatusBar(){
 }
 
 /*!
+ * \brief MainWindow::bundleSelectionChanged
+ * Is called whenever another bundle is selected
+ */
+void MainWindow::bundleSelectionChanged(){
+
+    //check job
+    if(ModelManager::getCurrentJob().isNull()){
+        return;
+    }
+
+    //get selection
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+
+    //update visibility depending on current selection
+    if(selection.size() != 1){
+        this->ui->tabWidget_bundle->setEnabled(false);
+        this->ui->pushButton_removeBundle->setEnabled(false);
+        this->ui->pushButton_runBundle->setEnabled(false);
+        return;
+    }else{
+        this->ui->tabWidget_bundle->setEnabled(true);
+        this->ui->pushButton_removeBundle->setEnabled(true);
+        this->ui->pushButton_runBundle->setEnabled(true);
+    }
+
+    //get system id
+    QModelIndex index = selection.at(0);
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //reset old parameters
+    this->resetBundleView();
+
+    //get and check bundle plugin and template
+    QJsonObject bundleTemplate = this->control.getBundleTemplate(id);
+    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment(id);
+    if(bundlePlugin.isNull()){
+        return;
+    }
+
+    //set up scalar parameters
+    ScalarInputParams scalarParams = bundlePlugin->getScalarInputParams();
+    this->bundleParameterWidget->setEnabled(true);
+    this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
+    this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
+    this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+
+    //set up input stations
+    QJsonArray inputStations;
+    const QList<BundleStation> &stations = bundlePlugin->getInputStations();
+    foreach(const BundleStation &station, stations){
+
+        //get and check station
+        QPointer<FeatureWrapper> feature = ModelManager::getCurrentJob()->getFeatureById(station.id);
+        if(feature.isNull() || feature->getStation().isNull()){
+            continue;
+        }
+        QString name = feature->getStation()->getFeatureName();
+
+        //create json object
+        QJsonObject inputStation;
+        inputStation.insert("name", QJsonValue(name));
+        inputStation.insert("used", QJsonValue(true));
+        inputStation.insert("id", QJsonValue(station.id));
+        inputStation.insert("tx", QJsonValue(station.tx));
+        inputStation.insert("ty", QJsonValue(station.ty));
+        inputStation.insert("tz", QJsonValue(station.tz));
+        inputStation.insert("rx", QJsonValue(station.rx));
+        inputStation.insert("ry", QJsonValue(station.ry));
+        inputStation.insert("rz", QJsonValue(station.rz));
+        inputStation.insert("m", QJsonValue(station.m));
+        inputStations.append(inputStation);
+
+    }
+    this->ui->treeView_inputStations->setEnabled(true);
+    this->bundleStationsModel->setBundleTemplate(bundleTemplate);
+    this->bundleStationsModel->setStations(inputStations);
+
+    //set up input geometries
+    inputStations = this->bundleStationsModel->getStations();
+    this->ui->treeView_inputGeometries->setEnabled(true);
+    this->bundleGeometriesModel->setStations(inputStations);
+
+    //set up result
+
+}
+
+/*!
+ * \brief MainWindow::bundleSettingsChanged
+ * Is called whenever the settings of a bundle have changed
+ */
+void MainWindow::bundleSettingsChanged(){
+
+    //get selection
+    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+
+    //get system id
+    if(selection.size() != 1){
+        return;
+    }
+    QModelIndex index = selection.at(0);
+    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
+    if(id < 0){
+        return;
+    }
+
+    //create parameter object
+    QJsonObject param;
+
+    //set up scalar parameters
+    const QMap<QString, int> &intParams = this->bundleParameterWidget->getIntParameter();
+    const QMap<QString, double> &doubleParams = this->bundleParameterWidget->getDoubleParameter();
+    const QMap<QString, QString> &stringParams = this->bundleParameterWidget->getStringParameter();
+    QJsonArray integerParameter, doubleParameter, stringParameter;
+    QMap<QString, int>::ConstIterator intIterator;
+    for(intIterator = intParams.constBegin(); intIterator != intParams.constEnd(); intIterator++){
+        QJsonObject parameter;
+        parameter.insert("name", intIterator.key());
+        parameter.insert("value", intIterator.value());
+        integerParameter.append(parameter);
+    }
+    QMap<QString, double>::ConstIterator doubleIterator;
+    for(doubleIterator = doubleParams.constBegin(); doubleIterator != doubleParams.constEnd(); intIterator++){
+        QJsonObject parameter;
+        parameter.insert("name", doubleIterator.key());
+        parameter.insert("value", doubleIterator.value());
+        doubleParameter.append(parameter);
+    }
+    QMap<QString, QString>::ConstIterator stringIterator;
+    for(stringIterator = stringParams.constBegin(); stringIterator != stringParams.constEnd(); intIterator++){
+        QJsonObject parameter;
+        parameter.insert("name", stringIterator.key());
+        parameter.insert("value", stringIterator.value());
+        stringParameter.append(parameter);
+    }
+    param.insert("integerParameter", integerParameter);
+    param.insert("doubleParameter", doubleParameter);
+    param.insert("stringParameter", stringParameter);
+
+    //set up input stations
+    QJsonArray stations = this->bundleStationsModel->getStations();
+    param.insert("inputStations", stations);
+
+    //update bundle geometries model
+    this->bundleGeometriesModel->setStations(stations);
+
+    emit this->updateBundleAdjustment(id, param);
+
+}
+
+/*!
  * \brief MainWindow::connectController
  */
 void MainWindow::connectController(){
@@ -1636,6 +1998,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::log, &this->control, &Controller::log, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addFeatures, &this->control, &Controller::addFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::importNominals, &this->control, &Controller::importNominals, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::exportFeatures, &this->control, &Controller::exportFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
@@ -1648,6 +2011,12 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::removeAllObservations, &this->control, &Controller::removeAllObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeFeatures, &this->control, &Controller::removeFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeActiveStationSensor, &this->control, &Controller::removeActiveStationSensor, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::addBundleSystem, &this->control, &Controller::addBundleSystem, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::removeBundleSystem, &this->control, &Controller::removeBundleSystem, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::loadBundleTemplate, &this->control, &Controller::loadBundleTemplate, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -1660,6 +2029,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionStarted, this, &MainWindow::sensorActionStarted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
@@ -1670,6 +2040,9 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
+    QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::featureCreated, Qt::AutoConnection);
+
+    QObject::connect(&this->control, &Controller::requestMessageBoxTrafoParam, this, &MainWindow::createMessageBoxTrafoParamWarning, Qt::AutoConnection);
 }
 
 /*!
@@ -1679,12 +2052,14 @@ void MainWindow::connectDialogs(){
 
     //connect create feature dialog
     QObject::connect(&this->createFeatureDialog, &CreateFeatureDialog::addFeatures, this, &MainWindow::addFeatures, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::featureCreated, &this->createFeatureDialog, &CreateFeatureDialog::featureCreated, Qt::AutoConnection);
 
     //connect console
     QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
 
-    //connect import dialogs
+    //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
+    QObject::connect(&this->exportDialog, &ExportDialog::startExport, this, &MainWindow::exportFeatures, Qt::AutoConnection);
 
     //connect loading dialog
     QObject::connect(&this->control, &Controller::nominalImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
@@ -1722,6 +2097,10 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
 
+    //connect watch window dialog
+    QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
+    QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+
 }
 
 /*!
@@ -1731,6 +2110,27 @@ void MainWindow::connectStatusBar(){
 
     //connect unit updates
     QObject::connect(&this->control, &Controller::updateStatusBar, this, &MainWindow::updateStatusBar, Qt::AutoConnection);
+
+}
+
+/*!
+ * \brief MainWindow::connectBundleView
+ */
+void MainWindow::connectBundleView(){
+
+    //connect bundle selection
+    QObject::connect(this->ui->listView_bundle->selectionModel(), &QItemSelectionModel::selectionChanged,
+                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
+    QObject::connect(&ModelManager::getBundleSystemsModel(), &BundleSystemsModel::layoutChanged,
+                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
+
+    //connect scalar parameters widget
+    QObject::connect(this->bundleParameterWidget, &ScalarParameterWidget::scalarParametersChanged,
+                     this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
+
+    //connect input stations model
+    QObject::connect(this->bundleStationsModel, &BundleStationsModel::stationsChanged,
+                     this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
 
 }
 
@@ -1760,6 +2160,18 @@ void MainWindow::assignModels(){
     //assign actual nominal filter model
     this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
 
+    //assign bundle models
+    this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
+    this->ui->comboBox_bundleTemplate->setModel(&ModelManager::getBundleTemplatesModel());
+    this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
+    this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
+    this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
+    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this);
+    this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
+    this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
+
+    QObject::connect(&ModelManager::getFeatureTableModel(),&FeatureTableModel::recalcActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
+
 }
 
 /*!
@@ -1769,9 +2181,11 @@ void MainWindow::initFeatureTableViews(){
 
     //resize rows and columns to table view contents on double click
     QObject::connect(this->ui->tableView_features->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
-    this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
+    //this->ui->tableView_features->verticalHeader()->setDefaultSectionSize(22);
+    QObject::connect(this->ui->tableView_features->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
-    this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
+    //this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
+    QObject::connect(this->ui->tableView_trafoParams->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
 
     //enable context menu
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -1801,15 +2215,15 @@ void MainWindow::initSensorPad(){
     this->actionInitialize->setText("initialize");
     this->actionMeasure = new QAction(0);
     this->actionMeasure->setShortcut(Qt::Key_F3);
-    this->actionMeasure->setText("measure");
+    this->actionMeasure->setText("measure (F3)");
     this->actionAim = new QAction(0);
     this->actionAim->setShortcut(QKeySequence(Qt::ALT + Qt::Key_A));
-    this->actionAim->setText("aim");
+    this->actionAim->setText("aim (ALT + A)");
     this->actionMove = new QAction(0);
     this->actionMove->setText("move");
     this->actionHome = new QAction(0);
     this->actionHome->setShortcut(Qt::Key_F9);
-    this->actionHome->setText("home");
+    this->actionHome->setText("home (F9)");
     this->actionChangeMotorState = new QAction(0);
     this->actionChangeMotorState->setText("change motor state");
     this->actionToggleSightOrientation = new QAction(0);
@@ -1943,6 +2357,28 @@ void MainWindow::initStatusBar(){
 }
 
 /*!
+ * \brief MainWindow::initBundleView
+ */
+void MainWindow::initBundleView(){
+
+    //load bundle templates
+    ModelManager::getBundleTemplatesModel().loadTemplates();
+    this->ui->comboBox_bundleTemplate->setCurrentIndex(0);
+
+    //set initial visibility
+    this->ui->tabWidget_bundle->setEnabled(false);
+    this->ui->pushButton_removeBundle->setEnabled(false);
+    this->ui->pushButton_runBundle->setEnabled(false);
+
+    //init bundle parameter widget
+    QGridLayout *extraParameterLayout = new QGridLayout();
+    this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
+    this->bundleParameterWidget = new ScalarParameterWidget();
+    extraParameterLayout->addWidget(this->bundleParameterWidget);
+
+}
+
+/*!
  * \brief MainWindow::activeSensorTypeChanged
  * Depending on the active stations's sensor set visibility of sensor pad actions
  * \param type
@@ -2068,8 +2504,9 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
     if(!feature->getGeometry().isNull()){
         this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
+    }else{
+        this->ui->label_magnifyActualNominal->setText("-/-");
     }
-    this->ui->label_magnifyActualNominal->setText("actual");
 
     //resize labels to maximum
     QFont fontActualNominal = this->ui->label_magnifyActualNominal->font();
@@ -2109,19 +2546,10 @@ void MainWindow::updateGroupFilterSize(){
     if(job.isNull()){
         return;
     }
-
-    //get the largest group name
-    const QStringList &groupNames = job->getFeatureGroupList();
-    QString largestGroup = "All Groups";
-    foreach(const QString &group, groupNames){
-        if(group.length() > largestGroup.length()){
-            largestGroup = group;
-        }
-    }
-
-    //update combobox width with respect to the largest item
-    this->ui->comboBox_groups->setMinimumContentsLength(largestGroup.length());
-
+/*
+    //set combobox size
+    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(),this->ui->comboBox_groups->width());
+    this->ui->comboBox_groups->view()->setMinimumWidth(sizeGroup);*/
 }
 
 /*!
@@ -2135,9 +2563,10 @@ void MainWindow::updateSystemFilterSize(){
         return;
     }
 
-    //get the largest system name
+    /*//get the largest system name
     const QList<QPointer<CoordinateSystem> > &nominalSystems = job->getCoordinateSystemsList();
     QList<QPointer<CoordinateSystem> > &stationSystems = job->getStationSystemsList();
+    QList<QPointer<CoordinateSystem> > &bundleSystems = job->getBundleSystemList();
     QString largestSystemName = "";
     foreach(const QPointer<CoordinateSystem> &system, nominalSystems){
         if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
@@ -2149,9 +2578,23 @@ void MainWindow::updateSystemFilterSize(){
             largestSystemName = system->getFeatureName();
         }
     }
+    foreach(const QPointer<CoordinateSystem> &system, bundleSystems){
+        if(!system.isNull() && system->getFeatureName().length() > largestSystemName.length()){
+            largestSystemName = system->getFeatureName();
+        }
+    }
 
-    //update combobox width with respect to the largest item
-    this->ui->comboBox_activeCoordSystem->setMinimumContentsLength(largestSystemName.length());
+    //calculate width of popup dependend on size of group name
+    QFont font;
+    QFontMetrics fm(font);
+    int width = fm.width(largestSystemName);
+    int boxWidth = this->ui->comboBox_activeCoordSystem->width();
+
+    if((width + (0.1*width)) > boxWidth){ // if text is bigger than combobox
+        this->ui->comboBox_activeCoordSystem->view()->setMinimumWidth(width + (0.1 * width));
+    }else{ // if combobox is bigger than text
+        this->ui->comboBox_activeCoordSystem->view()->setMinimumWidth(boxWidth);
+    }*/
 
 }
 
@@ -2160,16 +2603,65 @@ void MainWindow::updateSystemFilterSize(){
  */
 void MainWindow::updateActualNominalFilterSize(){
 
-    //get the largest group name
-    QStringList actualNominalfilters = ModelManager::getActualNominalFilterModel().stringList();
-    QString largestFilter = "";
-    foreach(const QString &filter, actualNominalfilters){
-        if(filter.length() > largestFilter.length()){
-            largestFilter = filter;
-        }
+    /*//set combobox size
+    int sizeFilter = oi::getDropDownMenuSize(ModelManager::getActualNominalFilterModel().stringList(),this->ui->comboBox_actualNominal->width());
+    this->ui->comboBox_actualNominal->view()->setMinimumWidth(sizeFilter);*/
+}
+
+/*!
+ * \brief MainWindow::resetBundleView
+ * Resets the bundle view
+ */
+void MainWindow::resetBundleView(){
+
+    //reset scalar parameters
+    this->bundleParameterWidget->blockSignals(true);
+    this->bundleParameterWidget->clearAll();
+    this->bundleParameterWidget->setEnabled(false);
+    this->bundleParameterWidget->blockSignals(false);
+
+    //reset input stations
+    QJsonArray stations;
+    QObject::disconnect(this->bundleStationsModel, &BundleStationsModel::stationsChanged,
+                        this, &MainWindow::bundleSettingsChanged);
+    this->bundleStationsModel->setStations(stations);
+    this->ui->treeView_inputStations->setEnabled(false);
+    QObject::connect(this->bundleStationsModel, &BundleStationsModel::stationsChanged,
+                     this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
+
+    //reset input geometries
+    this->bundleGeometriesModel->setStations(stations);
+    this->ui->treeView_inputGeometries->setEnabled(false);
+
+}
+
+/*!
+ * \brief MainWindow::saveAsProject
+ * creates a file name for save path and emits the signal to save
+ */
+void MainWindow::saveProjectAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
+    if(filename.compare("") != 0){
+        emit this->saveProject(filename);
     }
+}
 
-    //update combobox width with respect to the largest item
-    this->ui->comboBox_actualNominal->setMinimumContentsLength(largestFilter.length());
+/*!
+ * \brief MainWindow::on_actionShortcut_import_triggered
+ * shortcut for import nominal features
+ */
+void MainWindow::on_actionShortcut_import_triggered()
+{
+    on_actionimport_triggered();
+}
 
+void MainWindow::createMessageBoxTrafoParamWarning()
+{
+    QMessageBox msgBox;
+    msgBox.setText("Transformation with these coordinate systems already exists and is used.");
+    msgBox.setInformativeText("New transformation is created but not set to use.");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
 }

@@ -83,11 +83,13 @@ void FeatureTableColumnConfig::init(){
     this->displayColumns.append(eFeatureDisplayObservations);
     this->displayColumns.append(eFeatureDisplayMeasurementConfig);
     this->displayColumns.append(eFeatureDisplayFunctions);
+    this->displayColumns.append(eFeatureDisplayIsCommon);
     this->displayColumns.append(eFeatureDisplayPrimaryI);
     this->displayColumns.append(eFeatureDisplayPrimaryJ);
     this->displayColumns.append(eFeatureDisplayPrimaryK);
     this->displayColumns.append(eFeatureDisplayRadiusA);
     this->displayColumns.append(eFeatureDisplayIsSolved);
     this->displayColumns.append(eFeatureDisplayComment);
-
+    this->displayColumns.append(eFeatureDisplayAngle);
+    this->displayColumns.append(eFeatureDisplayDistance);
 }

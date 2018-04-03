@@ -53,6 +53,10 @@ ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
+BundleSystemsModel ModelManager::bundleSystemsModel;
+BundleTemplatesModel ModelManager::bundleTemplatesModel;
+FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
+FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -289,6 +293,14 @@ QStringListModel &ModelManager::getNominalSystemsModel(){
 }
 
 /*!
+ * \brief ModelManager::getBundleSystemsModel
+ * \return
+ */
+BundleSystemsModel &ModelManager::getBundleSystemsModel(){
+    return ModelManager::bundleSystemsModel;
+}
+
+/*!
  * \brief ModelManager::getGroupNamesModel
  * \return
  */
@@ -376,6 +388,24 @@ FunctionTableProxyModel &ModelManager::getFunctionTableProxyModel(){
  */
 ActiveFeatureFunctionsModel &ModelManager::getActiveFeatureFunctionsModel(){
     return ModelManager::activeFeatureFunctionsModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionWeightTableModel
+ * \return
+ */
+FunctionWeightsTableModel &ModelManager::getFunctionWeightTableModel()
+{
+    return ModelManager::functionWeightsTableModel;
+}
+
+/*!
+ * \brief ModelManager::getFunctionWeightProxyModel
+ * \return
+ */
+FunctionWeightProxyModel &ModelManager::getFunctionWeightProxyModel()
+{
+    return ModelManager::functionWeightProxyModel;
 }
 
 /*!
@@ -504,6 +534,14 @@ ReadingModel &ModelManager::getReadingModel(){
  */
 ReadingProxyModel &ModelManager::getReadingProxyModel(){
     return ModelManager::readingProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getBundleTemplatesModel
+ * \return
+ */
+BundleTemplatesModel &ModelManager::getBundleTemplatesModel(){
+    return ModelManager::bundleTemplatesModel;
 }
 
 /*!
@@ -687,6 +725,7 @@ QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(QObject *pare
 
 /*!
  * \brief ModelManager::getSensorParametersModel
+ * \param parent
  * \return
  */
 QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *parent){
@@ -700,6 +739,26 @@ QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *
 
     return model;
 
+}
+
+/*!
+ * \brief ModelManager::getBundleStationsModel
+ * \param parent
+ * \return
+ */
+QPointer<BundleStationsModel> ModelManager::getBundleStationsModel(QObject *parent){
+    QPointer<BundleStationsModel> model = new BundleStationsModel(parent);
+    return model;
+}
+
+/*!
+ * \brief ModelManager::getBundleGeometriesModel
+ * \param parent
+ * \return
+ */
+QPointer<BundleGeometriesModel> ModelManager::getBundleGeometriesModel(QObject *parent){
+    QPointer<BundleGeometriesModel> model = new BundleGeometriesModel(parent);
+    return model;
 }
 
 /*!
@@ -781,6 +840,7 @@ void ModelManager::featureNameChanged(const int &featureId, const QString &oldNa
     QPointer<FeatureWrapper> feature = ModelManager::currentJob->getFeatureById(featureId);
     if(!feature.isNull() && (!feature->getCoordinateSystem().isNull() || !feature->getStation().isNull())){
         ModelManager::updateCoordinateSystemsModel();
+        ModelManager::updateNominalSystemsModel();
     }
 
     //resort table model
@@ -810,6 +870,9 @@ void ModelManager::updateJob(){
 
     //pass the job to all static models that need it
     ModelManager::featureTableModel.setCurrentJob(ModelManager::currentJob);
+
+    ModelManager::featureTableProxyModel.setCurrentJob(ModelManager::currentJob);
+
     ModelManager::featureTreeViewModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::activeFeatureFunctionsModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::functionTableProxyModel.setCurrentJob(ModelManager::currentJob);
@@ -817,6 +880,9 @@ void ModelManager::updateJob(){
     ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
+
+    ModelManager::functionWeightsTableModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
     QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
@@ -981,6 +1047,10 @@ void ModelManager::updateGroupsModel(){
     //add default entry (all groups)
     groups.push_front("All Groups");
 
+    if(groups.size() == 1 && !groups.contains("Group01")){
+        groups.append("Group01");
+    }
+
     ModelManager::groupNamesModel.setStringList(groups);
 
 }
@@ -1010,6 +1080,8 @@ void ModelManager::initFeatureTreeViewModels(){
 
     //assign source models
     ModelManager::availableElementsTreeViewProxyModel.setSourceModel(&ModelManager::featureTreeViewModel);
+
+    ModelManager::functionWeightProxyModel.setSourceModel(&ModelManager::functionWeightsTableModel);
 
     //connect models
     if(ModelManager::myInstance.isNull()){

@@ -12,7 +12,7 @@ QString OiMetaData::iid_ConstructFunction = ConstructFunction_iidd;
 QString OiMetaData::iid_FitFunction = FitFunction_iidd;
 QString OiMetaData::iid_GenerateFeatureFunction = GenerateFeatureFunction_iidd;
 QString OiMetaData::iid_GeodeticFunction = GeodeticFunction_iidd;
-QString OiMetaData::iid_NetworkAdjustment = NetworkAdjustment_iidd;
+QString OiMetaData::iid_BundleAdjustment = BundleAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
 QString OiMetaData::iid_SystemTransformation = SystemTransformation_iidd;
 QString OiMetaData::iid_Simulation = Simulation_iidd;
@@ -38,7 +38,7 @@ bool OiMetaData::findIID(const QString &iid){
         return true;
     }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
         return true;
-    }else if(iid.compare(OiMetaData::iid_NetworkAdjustment) == 0){
+    }else if(iid.compare(OiMetaData::iid_BundleAdjustment) == 0){
         return true;
     }else if(iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
         return true;

@@ -69,44 +69,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_statistic">
-      <attribute name="title">
-       <string>statistic</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,1">
-           <item>
-            <widget class="QLabel" name="label_displayFunction">
-             <property name="text">
-              <string>function statistic:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_displayedFunction"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QTableView" name="tableView_displayedfunctionStatistic"/>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_protocol">
-      <attribute name="title">
-       <string>protocol</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QTextBrowser" name="textBrowser_protocol"/>
-       </item>
-      </layout>
-     </widget>
     </widget>
    </item>
   </layout>

@@ -81,6 +81,7 @@ public slots:
 
     //import or export features
     void importNominals(const ExchangeParams &params);
+    void exportFeatures(const ExchangeParams &params);
 
     //add or remove observations
     void importObservations(const QString &filename);
@@ -93,6 +94,17 @@ public slots:
     void setObservationTableColumnConfig(const ObservationTableColumnConfig &config);
     void setReadingTableColumnConfig(const ReadingTableColumnConfig &config);
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+
+    //add or remove bundle system
+    void addBundleSystem();
+    void removeBundleSystem(const int &id);
+
+    //load or calculate bundle
+    QJsonObject getBundleTemplate(const int &bundleId);
+    QPointer<BundleAdjustment> getBundleAdjustment(const int &bundleId);
+    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
+    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
+    void runBundle(const int &bundleId);
 
     //save or load a job
     void saveProject();
@@ -113,6 +125,8 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(const QString &task);
+    void startWatchWindow(ReadingTypes streamFormat);
+    void stopWatchWindow();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
@@ -134,6 +148,8 @@ signals:
     void stationSetChanged();
     void trafoParamSetChanged();
     void geometrySetChanged();
+
+    bool featureCreated(bool created);
 
     //group(s) added or removed
     void availableGroupsChanged();
@@ -175,7 +191,7 @@ signals:
     void trafoParamSystemsChanged(const int &featureId);
     void trafoParamIsUsedChanged(const int &featureId);
     void trafoParamValidTimeChanged(const int &featureId);
-    void trafoParamIsMovementChanged(const int &featureId);
+    //void trafoParamIsMovementChanged(const int &featureId);
 
     //whole job instance changed
     void currentJobChanged();
@@ -198,14 +214,17 @@ signals:
     //sensor actions
     //##############
 
+    //sensor actions
     void sensorActionStarted(const QString &name);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
+    void measurementDone(bool success);
 
     //#############
     //show messages
     //#############
 
+    //messaging
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showClientMessage(const QString &msg, const MessageTypes &msgType);
@@ -230,6 +249,9 @@ signals:
     void startWebSocketServer();
     void stopWebSocketServer();
 
+    //error create trafo Param
+    void requestMessageBoxTrafoParam();
+
 private slots:
 
     //###################################
@@ -251,14 +273,15 @@ private:
     //helper methods
     //##############
 
+    //set OpenIndy job
     void setJob(const QPointer<OiJob> &job);
 
+    //init configs and plugins
     void initDisplayConfigs();
     void initConfigManager();
     void initToolPlugins();
 
-    void connectToolPlugin(const QPointer<Tool> &tool);
-
+    //register meta types
     void registerMetaTypes();
 
     //start or stop OpenIndy server
@@ -271,13 +294,17 @@ private:
     void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
                                  const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 
-    //######################
-    //connect helper objects
-    //######################
+    //###############
+    //set up connects
+    //###############
 
+    //connect helper objects
     void connectDataExchanger();
     void connectFeatureUpdater();
     void connectRequestHandler();
+
+    //connect tools
+    void connectToolPlugin(const QPointer<Tool> &tool);
 
 private:
 

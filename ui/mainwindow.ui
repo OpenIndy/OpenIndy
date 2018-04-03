@@ -49,7 +49,10 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,14">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetFixedSize</enum>
+        </property>
         <item>
          <widget class="QComboBox" name="comboBox_activeCoordSystem">
           <property name="sizePolicy">
@@ -101,6 +104,9 @@
           </property>
           <property name="sizeAdjustPolicy">
            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>0</number>
           </property>
           <property name="modelColumn">
            <number>0</number>
@@ -175,7 +181,7 @@ background-position: center center;</string>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_graphic">
+        <widget class="QWidget" name="tab_bundle">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -183,22 +189,204 @@ background-position: center center;</string>
           </sizepolicy>
          </property>
          <attribute name="title">
-          <string>graphic</string>
+          <string>bundle</string>
          </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
-            <item>
-             <widget class="QTreeView" name="treeView_featureOverview"/>
-            </item>
-            <item>
-             <widget class="Line" name="line">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QSplitter" name="splitter">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QWidget" name="layoutWidget">
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_removeBundle">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../res/res.qrc">
+                    <normaloff>:/Images/icons/edit_remove.png</normaloff>:/Images/icons/edit_remove.png</iconset>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_addBundle">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="../res/res.qrc">
+                    <normaloff>:/Images/icons/edit_add.png</normaloff>:/Images/icons/edit_add.png</iconset>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QListView" name="listView_bundle"/>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_runBundle">
+                  <property name="text">
+                   <string>run bundle</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QTabWidget" name="tabWidget_bundle">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>5</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="currentIndex">
+              <number>2</number>
+             </property>
+             <widget class="QWidget" name="tab_bundleGeneralSettings">
+              <attribute name="title">
+               <string>general settings</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                   <item>
+                    <widget class="QLabel" name="label_bundleTemplate">
+                     <property name="font">
+                      <font>
+                       <weight>75</weight>
+                       <bold>true</bold>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>template</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="comboBox_bundleTemplate"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButton_loadBundleTemplate">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>24</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>load</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_4">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <item>
+                    <widget class="QWidget" name="widget_bundleParameters" native="true"/>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_6">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
-            </item>
-           </layout>
+             <widget class="QWidget" name="tab_bundleInputGeometries">
+              <attribute name="title">
+               <string>input geometries</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_7">
+               <item row="0" column="0">
+                <widget class="QTreeView" name="treeView_inputGeometries"/>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_bundleInputStations">
+              <attribute name="title">
+               <string>input stations</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="0" column="0">
+                <widget class="QTreeView" name="treeView_inputStations"/>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_bundleResults">
+              <attribute name="title">
+               <string>results</string>
+              </attribute>
+             </widget>
+            </widget>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -231,42 +419,17 @@ background-position: center center;</string>
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menu_import">
-     <property name="title">
-      <string>import</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../res/res.qrc">
-       <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
-     </property>
-     <addaction name="action_importNominals"/>
-     <addaction name="action_importMeasurementConfigs"/>
-     <addaction name="action_importSensorConfigs"/>
-    </widget>
-    <widget class="QMenu" name="menu_export">
-     <property name="title">
-      <string>export</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../res/res.qrc">
-       <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
-     </property>
-     <addaction name="action_exportNominals"/>
-     <addaction name="action_exportMeasurementConfigs"/>
-     <addaction name="action_exportSensorConfigs"/>
-    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
-    <addaction name="menu_import"/>
-    <addaction name="menu_export"/>
+    <addaction name="actionimport"/>
+    <addaction name="actionexport"/>
     <addaction name="actionClose"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionShow_help"/>
     <addaction name="actionAbout_OpenIndy"/>
    </widget>
    <widget class="QMenu" name="menuSensor">
@@ -278,6 +441,7 @@ background-position: center center;</string>
     <addaction name="actionSet_sensor"/>
     <addaction name="actionMeasurement_Configuration"/>
     <addaction name="actionStationProperties"/>
+    <addaction name="action_RunBundle"/>
    </widget>
    <widget class="QMenu" name="menuFunctions">
     <property name="title">
@@ -328,12 +492,6 @@ background-position: center center;</string>
     <addaction name="actionCreate_trafoParam"/>
     <addaction name="actionCreate_cylinder"/>
     <addaction name="actionCreate_scalar_entity"/>
-    <addaction name="actionCreate_cone"/>
-    <addaction name="actionCreate_ellipsoid"/>
-    <addaction name="actionCreate_hyperboloid"/>
-    <addaction name="actionCreate_paraboloid"/>
-    <addaction name="actionCreate_nurbs"/>
-    <addaction name="actionCreate_pointcloud"/>
     <addaction name="actionCreate_circle"/>
    </widget>
    <widget class="QMenu" name="menuReport">
@@ -361,6 +519,7 @@ background-position: center center;</string>
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
+   <addaction name="actionShortcut_import"/>
    <addaction name="actionControl_pad"/>
    <addaction name="actionSet_sensor"/>
    <addaction name="actionMeasurement_Configuration"/>
@@ -557,19 +716,13 @@ color: rgb(255, 255, 255);
    <addaction name="actionCreate_circle"/>
    <addaction name="actionCreate_sphere"/>
    <addaction name="actionCreate_cylinder"/>
-   <addaction name="actionCreate_cone"/>
-   <addaction name="actionCreate_ellipse"/>
-   <addaction name="actionCreate_slotted_hole"/>
    <addaction name="separator"/>
-   <addaction name="actionCreate_paraboloid"/>
-   <addaction name="actionCreate_ellipsoid"/>
-   <addaction name="actionCreate_torus"/>
-   <addaction name="actionCreate_hyperboloid"/>
    <addaction name="separator"/>
-   <addaction name="actionCreate_nurbs"/>
-   <addaction name="actionCreate_pointcloud"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_magnify">
+   <property name="windowTitle">
+    <string>magnify</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
@@ -666,9 +819,6 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>Show Help</string>
-   </property>
-   <property name="shortcut">
-    <string>F1</string>
    </property>
   </action>
   <action name="actionControl_pad">
@@ -1087,10 +1237,65 @@ color: rgb(255, 255, 255);
     <string>active station properties</string>
    </property>
   </action>
+  <action name="action_RunBundle">
+   <property name="text">
+    <string>run bundle</string>
+   </property>
+  </action>
+  <action name="actionShortcut_import">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</iconset>
+   </property>
+   <property name="text">
+    <string>import</string>
+   </property>
+   <property name="toolTip">
+    <string>opens the import nominals dialog</string>
+   </property>
+  </action>
+  <action name="actionimport">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
+   </property>
+   <property name="text">
+    <string>import</string>
+   </property>
+  </action>
+  <action name="actionexport">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
+   </property>
+   <property name="text">
+    <string>export</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="../res/res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_runBundle</sender>
+   <signal>clicked()</signal>
+   <receiver>action_RunBundle</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

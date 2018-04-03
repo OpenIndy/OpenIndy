@@ -42,6 +42,12 @@
 #include "functionstatisticmodel.h"
 #include "sensoraccuracymodel.h"
 #include "sensorparametersmodel.h"
+#include "bundlesystemsmodel.h"
+#include "bundletemplatesmodel.h"
+#include "bundlestationsmodel.h"
+#include "bundlegeometriesmodel.h"
+#include "functionweightstablemodel.h"
+#include "functionweightproxymodel.h"
 
 using namespace oi;
 
@@ -131,6 +137,7 @@ public:
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
     static QStringListModel &getNominalSystemsModel();
+    static BundleSystemsModel &getBundleSystemsModel();
 
     //group name model
     static QStringListModel &getGroupNamesModel();
@@ -155,6 +162,8 @@ public:
     static FunctionTableModel &getFunctionTableModel();
     static FunctionTableProxyModel &getFunctionTableProxyModel();
     static ActiveFeatureFunctionsModel &getActiveFeatureFunctionsModel();
+    static FunctionWeightsTableModel &getFunctionWeightTableModel();
+    static FunctionWeightProxyModel &getFunctionWeightProxyModel();
 
     //sensor models
     static QStringListModel &getSensorTypeNamesModel();
@@ -180,6 +189,9 @@ public:
     static ReadingModel &getReadingModel();
     static ReadingProxyModel &getReadingProxyModel();
 
+    //bundle templates
+    static BundleTemplatesModel &getBundleTemplatesModel();
+
     //############################################################
     //get dynamic models (models that are newly created each time)
     //############################################################
@@ -200,6 +212,10 @@ public:
     static QPointer<SensorConfigurationProxyModel> getSensorConfigurationProxyModel(QPointer<SensorConfigurationModel> sourceModel);
     static QPointer<SensorAccuracyModel> getSensorAccuracyModel(QObject *parent = NULL);
     static QPointer<SensorParametersModel> getSensorParametersModel(QObject *parent = NULL);
+
+    //bundle models
+    static QPointer<BundleStationsModel> getBundleStationsModel(QObject *parent = NULL);
+    static QPointer<BundleGeometriesModel> getBundleGeometriesModel(QObject *parent = NULL);
 
 private slots:
 
@@ -237,6 +253,7 @@ private:
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;
     static QStringListModel nominalSystemsModel;
+    static BundleSystemsModel bundleSystemsModel;
 
     //group name model
     static QStringListModel groupNamesModel;
@@ -264,6 +281,8 @@ private:
     static FunctionTableProxyModel functionTableProxyModel;
     static ActiveFeatureFunctionsModel activeFeatureFunctionsModel;
     static AvailableFunctionsListModel functionsListModel;
+    static FunctionWeightsTableModel functionWeightsTableModel;
+    static FunctionWeightProxyModel functionWeightProxyModel;
 
     //sensor models
     static QStringListModel sensorTypeNamesModel;
@@ -288,6 +307,9 @@ private:
     static ObservationProxyModel observationProxyModel;
     static ReadingModel readingModel;
     static ReadingProxyModel readingProxyModel;
+
+    //bundle templates
+    static BundleTemplatesModel bundleTemplatesModel;
 
     //##################
     //empty dummy models

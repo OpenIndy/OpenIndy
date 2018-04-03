@@ -9,8 +9,6 @@ int OiWebSocketServer::currentId = 0;
 OiWebSocketServer::OiWebSocketServer(QObject *parent) :
     QWebSocketServer("OiServer", QWebSocketServer::NonSecureMode, parent){
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     //create web socket streamer
     this->streamer = new OiWebSocketStreamer();
 
@@ -75,8 +73,6 @@ void OiWebSocketServer::stopServer(){
  * \param socketDescriptor
  */
 void OiWebSocketServer::incomingConnection(){
-
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
     //create web socket instance
     QPointer<QWebSocket> mySocket = this->nextPendingConnection();

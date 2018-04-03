@@ -7,7 +7,7 @@
  * \param parent
  */
 OiWebSocket::OiWebSocket(QObject *parent) : internalRef(OiWebSocketServer::generateUniqueId()), QObject(parent){
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+
 }
 
 /*!
@@ -28,8 +28,6 @@ OiWebSocket::~OiWebSocket(){
  * \return
  */
 bool OiWebSocket::setSocket(const QPointer<QWebSocket> &mySocket){
-
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
 
     //check and set socket
     if(!this->socket.isNull() || mySocket.isNull()){
@@ -70,8 +68,6 @@ void OiWebSocket::close(){
  */
 void OiWebSocket::receiveResponse(const oi::OiRequestResponse &response){
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     //send response to client
     if(this->internalRef == response.requesterId || response.requesterId == -1){
         this->socket->sendTextMessage(response.response.toByteArray());
@@ -85,14 +81,10 @@ void OiWebSocket::receiveResponse(const oi::OiRequestResponse &response){
  */
 void OiWebSocket::readMessage(const QString &msg){
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
-
     //create new xml request
     OiRequestResponse request;
     request.requesterId = this->internalRef;
     request.request.setContent(msg);
-
-    qDebug() << request.request.toString();
 
     emit this->sendRequest(request);
 
