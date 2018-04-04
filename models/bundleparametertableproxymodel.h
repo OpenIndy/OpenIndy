@@ -1,5 +1,5 @@
-#ifndef TRAFOPARAMTABLEPROXYMODEL_H
-#define TRAFOPARAMTABLEPROXYMODEL_H
+#ifndef BUNDLEPARAMETERTABLEPROXYMODEL_H
+#define BUNDLEPARAMETERTABLEPROXYMODEL_H
 
 #include <QSortFilterProxyModel>
 #include <QPointer>
@@ -11,14 +11,14 @@
 using namespace oi;
 
 /*!
- * \brief The TrafoParamTableProxyModel class
+ * \brief The BundleParameterTableProxyModel class
  */
-class TrafoParamTableProxyModel : public QSortFilterProxyModel
+class BundleParameterTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
 public:
-    explicit TrafoParamTableProxyModel(QObject *parent = 0);
+    explicit BundleParameterTableProxyModel(QObject *parent = 0);
 
     //#########################
     //get or set display config
@@ -66,7 +66,6 @@ private:
     //#############
 
     bool isBundleStationTrafo(const QPointer<TrafoParam> &param) const;
-    
 };
 
-#endif // TRAFOPARAMTABLEPROXYMODEL_H
+#endif // BUNDLEPARAMETERTABLEPROXYMODEL_H

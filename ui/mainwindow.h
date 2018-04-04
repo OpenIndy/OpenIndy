@@ -205,6 +205,8 @@ private slots:
     void on_tableView_trafoParams_doubleClicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
+    void tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
+    void on_tableView_bundleParameter_clicked(const QModelIndex &index);
 
     //function dialog
     void on_actionSet_function_triggered();

@@ -919,6 +919,18 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 }
 
 /*!
+ * \brief MainWindow::tableViewBundleParamsSelectionChangedByKeyboard
+ * \param selected
+ * \param deselected
+ */
+void MainWindow::tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected)
+{
+    if(selected.isValid() && deselected.isValid()){
+        this->on_tableView_bundleParameter_clicked(selected);
+    }
+}
+
+/*!
  * \brief MainWindow::on_actionSet_function_triggered
  */
 void MainWindow::on_actionSet_function_triggered(){
@@ -1324,8 +1336,10 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
 void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_bundleParameter->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_features->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_bundleParameter->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
@@ -2147,6 +2161,9 @@ void MainWindow::assignModels(){
     this->ui->tableView_trafoParams->setModel(&ModelManager::getTrafoParamTableProxyModel());
     TrafoParamDelegate *trafoParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParams->setItemDelegate(trafoParamTableDelegate);
+    this->ui->tableView_bundleParameter->setModel(&ModelManager::getBundleParameterTableProxyModel());
+    TrafoParamDelegate *bundleParamTableDelegate = new TrafoParamDelegate();
+    this->ui->tableView_bundleParameter->setItemDelegate(bundleParamTableDelegate);
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
@@ -2186,14 +2203,18 @@ void MainWindow::initFeatureTableViews(){
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     //this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
     QObject::connect(this->ui->tableView_trafoParams->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_bundleParameter->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_bundleParameter->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
 
     //enable context menu
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParams->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->tableView_bundleParameter->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_bundleParameter->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewBundleParamsSelectionChangedByKeyboard, Qt::AutoConnection);
 
 }
 
@@ -2664,4 +2685,22 @@ void MainWindow::createMessageBoxTrafoParamWarning()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
+}
+
+void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
+{
+    //get and check model
+    BundleParameterTableProxyModel *model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
 }
