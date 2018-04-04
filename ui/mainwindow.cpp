@@ -40,6 +40,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
 
     this->resizeTableView();
+
+    //load default bundle plugin
+    if(job->getBundleSystemList().size() >0){
+        int bundleID = job->getBundleSystemList().at(0)->getId();
+        this->loadDefaultBundlePlugIn(bundleID);
+    }
 }
 
 /*!
@@ -2645,6 +2651,23 @@ void MainWindow::saveProjectAs()
     if(filename.compare("") != 0){
         emit this->saveProject(filename);
     }
+}
+
+/*!
+ * \brief MainWindow::loadDefaultBundlePlugIn
+ */
+void MainWindow::loadDefaultBundlePlugIn(int bundleID)
+{
+    //get selected bundle template
+    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
+    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
+    if(bundleTemplate.isEmpty()){
+        return;
+    }
+
+    //load template
+    emit this->loadBundleTemplate(bundleID, bundleTemplate);
+    this->bundleSelectionChanged();
 }
 
 /*!

@@ -925,8 +925,9 @@ const QPointer<OiJob> &Controller::createDefaultJob(){
     station->setActiveStationState(true);
     station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
-    return this->job;
+    this->addBundleSystem();
 
+    return this->job;
 }
 
 /*!
