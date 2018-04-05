@@ -149,17 +149,58 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
     }else{ //if feature names are not equal
 
         //use the actual of a nominal for sorting
-        if(!left->getGeometry().isNull() && left->getGeometry()->getIsNominal()
-                && !left->getGeometry()->getActual().isNull()){
-            leftId = left->getGeometry()->getActual()->getId();
-        }
-        if(!right->getGeometry().isNull() && right->getGeometry()->getIsNominal()
-                && !right->getGeometry()->getActual().isNull()){
-            rightId = right->getGeometry()->getActual()->getId();
-        }
+        if(!left->getGeometry().isNull()){
 
+            if(!left->getGeometry()->getIsNominal()){
+
+                if(left->getGeometry()->getNominals().size() > 0){
+                    if(left->getGeometry()->getId() < left->getGeometry()->getNominals().at(0)->getId()){
+                        leftId = left->getGeometry()->getId();
+                    }else{
+                        leftId = left->getGeometry()->getNominals().at(0)->getId();
+                    }
+                }else{
+                    leftId = left->getGeometry()->getId();
+                }
+            }else{
+
+                if(!left->getGeometry()->getActual().isNull()){
+                    if(left->getGeometry()->getId() < left->getGeometry()->getActual()->getId()){
+                        leftId = left->getGeometry()->getId();
+                    }else{
+                        leftId = left->getGeometry()->getActual()->getId();
+                    }
+                }else{
+                    leftId = left->getGeometry()->getId();
+                }
+            }
+        }
+        if(!right->getGeometry().isNull()){
+
+            if(!right->getGeometry()->getIsNominal()){
+
+                if(right->getGeometry()->getNominals().size() > 0){
+                    if(right->getGeometry()->getId() < right->getGeometry()->getNominals().at(0)->getId()){
+                        rightId = right->getGeometry()->getId();
+                    }else{
+                        rightId = right->getGeometry()->getNominals().at(0)->getId();
+                    }
+                }else{
+                    rightId = right->getGeometry()->getId();
+                }
+            }else{
+
+                if(!right->getGeometry()->getActual().isNull()){
+                    if(right->getGeometry()->getId() < right->getGeometry()->getActual()->getId()){
+                        rightId = right->getGeometry()->getId();
+                    }else{
+                        rightId = right->getGeometry()->getActual()->getId();
+                    }
+                }else{
+                    rightId = right->getGeometry()->getId();
+                }
+            }
+        }
         return leftId < rightId;
-
     }
-
 }
