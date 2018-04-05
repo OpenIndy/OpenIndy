@@ -120,6 +120,8 @@ bool FeatureSorter::lessThan(const QPointer<FeatureWrapper> &left, const QPointe
 
 /*!
  * \brief FeatureSorter::sortStandard
+ * adding an actual feature to a nominal, or a nominal feature to an existing actual will not impact the order of all features in the job.
+ * the added feature will be added next to the existing one
  * \param left
  * \param right
  * \return
@@ -148,11 +150,13 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
 
     }else{ //if feature names are not equal
 
-        //use the actual of a nominal for sorting
+        //check the ID of the actual and nominal if this feature
         if(!left->getGeometry().isNull()){
 
             if(!left->getGeometry()->getIsNominal()){
 
+                //check for the lower ID and use this for sorting
+                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
                 if(left->getGeometry()->getNominals().size() > 0){
                     if(left->getGeometry()->getId() < left->getGeometry()->getNominals().at(0)->getId()){
                         leftId = left->getGeometry()->getId();
@@ -164,6 +168,8 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
                 }
             }else{
 
+                //check for the lower ID and use this for sorting
+                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
                 if(!left->getGeometry()->getActual().isNull()){
                     if(left->getGeometry()->getId() < left->getGeometry()->getActual()->getId()){
                         leftId = left->getGeometry()->getId();
@@ -179,6 +185,8 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
 
             if(!right->getGeometry()->getIsNominal()){
 
+                //check for the lower ID and use this for sorting
+                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
                 if(right->getGeometry()->getNominals().size() > 0){
                     if(right->getGeometry()->getId() < right->getGeometry()->getNominals().at(0)->getId()){
                         rightId = right->getGeometry()->getId();
@@ -190,6 +198,8 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
                 }
             }else{
 
+                //check for the lower ID and use this for sorting
+                //so the order of the job will not be swapped, and the new feature will be added to the existing feature
                 if(!right->getGeometry()->getActual().isNull()){
                     if(right->getGeometry()->getId() < right->getGeometry()->getActual()->getId()){
                         rightId = right->getGeometry()->getId();
