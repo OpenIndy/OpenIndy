@@ -171,6 +171,7 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     params.units.insert(eMetric, getUnitTypeEnum(this->ui->comboBox_distance_sa->currentText()));
     params.units.insert(eAngular, getUnitTypeEnum(this->ui->comboBox_angle_sa->currentText()));
     params.units.insert(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperature_sa->currentText()));
+    params.createActual = this->ui->checkBox_createActual->isChecked();
 
     //start the import
     emit this->startImport(params);
