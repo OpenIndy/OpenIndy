@@ -718,7 +718,7 @@ void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bund
     feature->getCoordinateSystem()->setBundleTemplate(bundleTemplate);
     feature->getCoordinateSystem()->setBundlePlugin(bundlePlugin);
 
-    this->log(QString("Bundle template %1 loaded successfully").arg(bundleTemplate.value("name").toString()), eInformationMessage, eMessageBoxMessage);
+    this->log(QString("Bundle template %1 loaded successfully").arg(bundleTemplate.value("name").toString()), eInformationMessage, eConsoleMessage);
 
 }
 
