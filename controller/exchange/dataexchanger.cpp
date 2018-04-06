@@ -321,7 +321,7 @@ void DataExchanger::importFeatures(const bool &success){
     //add the imported features to current OpenIndy job
     QList<QPointer<FeatureWrapper> > features = this->exchange->getFeatures();
 
-    bool import = this->currentJob->addFeatures(features);
+    bool import = this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
 
     //add actuals to nominals at import
     if(this->exchangeParams.createActual){
