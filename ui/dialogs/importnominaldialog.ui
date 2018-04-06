@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>608</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -28,7 +28,7 @@
   <property name="windowTitle">
    <string>import nominals</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget_import">
      <property name="enabled">
@@ -41,8 +41,8 @@
       <attribute name="title">
        <string>simple ascii</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
           <widget class="QLineEdit" name="lineEdit_file_sa">
@@ -66,7 +66,7 @@
          </item>
         </layout>
        </item>
-       <item row="1" column="0">
+       <item>
         <spacer name="verticalSpacer_6">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -82,7 +82,7 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_plugin_sa">
@@ -106,7 +106,7 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_exchange_sa">
@@ -130,7 +130,7 @@
          </item>
         </layout>
        </item>
-       <item row="4" column="0">
+       <item>
         <spacer name="verticalSpacer_7">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -146,7 +146,7 @@
          </property>
         </spacer>
        </item>
-       <item row="5" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_coordSys_sa">
@@ -170,7 +170,7 @@
          </item>
         </layout>
        </item>
-       <item row="6" column="0">
+       <item>
         <spacer name="verticalSpacer_12">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -186,7 +186,7 @@
          </property>
         </spacer>
        </item>
-       <item row="7" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_geometry_sa">
@@ -210,7 +210,7 @@
          </item>
         </layout>
        </item>
-       <item row="8" column="0">
+       <item>
         <spacer name="verticalSpacer_8">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -226,7 +226,7 @@
          </property>
         </spacer>
        </item>
-       <item row="9" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_groups">
@@ -253,7 +253,7 @@
          </item>
         </layout>
        </item>
-       <item row="10" column="0">
+       <item>
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -269,7 +269,7 @@
          </property>
         </spacer>
        </item>
-       <item row="11" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_separator_sa">
@@ -289,7 +289,7 @@
          </item>
         </layout>
        </item>
-       <item row="12" column="0">
+       <item>
         <widget class="QCheckBox" name="checkBox_skipFirst_sa">
          <property name="font">
           <font>
@@ -302,7 +302,7 @@
          </property>
         </widget>
        </item>
-       <item row="13" column="0">
+       <item>
         <spacer name="verticalSpacer_9">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -318,7 +318,7 @@
          </property>
         </spacer>
        </item>
-       <item row="14" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_distanceUnit_sa">
@@ -342,7 +342,7 @@
          </item>
         </layout>
        </item>
-       <item row="15" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_angleUnit_sa">
@@ -366,7 +366,7 @@
          </item>
         </layout>
        </item>
-       <item row="16" column="0">
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,2">
          <item>
           <widget class="QLabel" name="label_temperatureUnit_sa">
@@ -390,7 +390,7 @@
          </item>
         </layout>
        </item>
-       <item row="17" column="0">
+       <item>
         <spacer name="verticalSpacer_10">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -406,8 +406,15 @@
          </property>
         </spacer>
        </item>
-       <item row="18" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+         <item>
+          <widget class="QCheckBox" name="checkBox_createActual">
+           <property name="text">
+            <string>create actual</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
@@ -421,16 +428,46 @@
            </property>
           </spacer>
          </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QCheckBox" name="checkBox_createActual">
+          <widget class="QCheckBox" name="checkBox_overwriteExisting">
            <property name="text">
-            <string>create actual</string>
+            <string>overwrite existing features</string>
            </property>
           </widget>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
-       <item row="19" column="0">
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>18</width>
+           <height>24</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_12">
          <item>
           <spacer name="horizontalSpacer_3">

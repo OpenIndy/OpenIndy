@@ -52,6 +52,7 @@ public:
     double temperatureDigits;
 
     bool createActual;
+    bool overwrite;
 
 };
 
