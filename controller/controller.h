@@ -151,6 +151,8 @@ signals:
 
     bool featureCreated(bool created);
 
+    void setExchangeParams(ExchangeParams exchangeParams);
+
     //group(s) added or removed
     void availableGroupsChanged();
     void activeGroupChanged();
