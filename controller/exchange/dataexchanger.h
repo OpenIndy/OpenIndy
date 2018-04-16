@@ -14,6 +14,7 @@
 #include "pluginloader.h"
 #include "console.h"
 #include "observationimporter.h"
+#include "measurementconfigmanager.h"
 
 using namespace oi;
 
@@ -36,6 +37,11 @@ public:
 
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
+
+    const QPointer<MeasurementConfigManager> &getMeasurementConfigManager();
+    void setMesaurementConfigManager(const QPointer<MeasurementConfigManager> &manager);
+
+    void setExchangeParams(ExchangeParams exchangeParams);
 
     //######################
     //start import or export
@@ -96,6 +102,14 @@ private:
     //#########################
 
     QThread exchangeThread;
+
+    QPointer<MeasurementConfigManager> mConfigManager;
+
+    //#############
+    //helper method
+    //#############
+    void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
+                                 const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 
 };
 
