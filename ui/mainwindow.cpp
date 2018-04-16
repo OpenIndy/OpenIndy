@@ -2066,6 +2066,7 @@ void MainWindow::connectDialogs(){
     //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
     QObject::connect(&this->exportDialog, &ExportDialog::startExport, this, &MainWindow::exportFeatures, Qt::AutoConnection);
+    QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, &this->control, &Controller::setExchangeParams, Qt::AutoConnection);
 
     //connect loading dialog
     QObject::connect(&this->control, &Controller::nominalImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);

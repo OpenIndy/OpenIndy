@@ -1806,6 +1806,7 @@ void Controller::initConfigManager(){
     QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
     QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
+    this->exchanger.setMesaurementConfigManager(this->measurementConfigManager);
 }
 
 /*!
@@ -2026,6 +2027,7 @@ void Controller::connectDataExchanger(){
     QObject::connect(&this->exchanger, &DataExchanger::observationImportFinished, this, &Controller::observationImportFinished, Qt::AutoConnection);
     QObject::connect(&this->exchanger, &DataExchanger::updateObservationImportProgress, this, &Controller::observationImportProgressUpdated, Qt::AutoConnection);
 
+    QObject::connect(this, &Controller::setExchangeParams, &this->exchanger, &DataExchanger::setExchangeParams, Qt::AutoConnection);
 }
 
 /*!

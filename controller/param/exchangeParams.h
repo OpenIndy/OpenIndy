@@ -51,6 +51,9 @@ public:
     double angleDigits;
     double temperatureDigits;
 
+    bool createActual;
+    bool overwrite;
+
 };
 
 #endif // EXCHANGEPARAMS_H
