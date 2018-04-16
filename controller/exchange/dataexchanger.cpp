@@ -341,7 +341,23 @@ void DataExchanger::importFeatures(const bool &success){
                 //mconfig and function from default
                 MeasurementConfig mConfig;
                 if(!this->mConfigManager.isNull()){
-                    mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                    //TODO fix that all measurement configs are saved in the database OI-373
+                    //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+
+                    //Workaround until bug is fixed
+                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
+                    if(mConfigs.size() > 0){
+                        bool fpExists = false;
+                        foreach (MeasurementConfig mC, mConfigs) {
+                            if(mC.getName().compare("FastPoint") == 0){
+                                mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                                fpExists = true;
+                            }
+                        }
+                        if(!fpExists){
+                            mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
+                        }
+                    }
                     fAttr.mConfig = mConfig.getName();
                 }
 
