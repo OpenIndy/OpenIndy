@@ -1,10 +1,10 @@
-#include "trafoparamtableproxymodel.h"
+#include "bundleparametertableproxymodel.h".h"
 
 /*!
- * \brief TrafoParamTableProxyModel::TrafoParamTableProxyModel
+ * \brief BundleParameterTableProxyModel::TrafoParamTableProxyModel
  * \param parent
  */
-TrafoParamTableProxyModel::TrafoParamTableProxyModel(QObject *parent) :
+BundleParameterTableProxyModel::BundleParameterTableProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
 }
@@ -13,25 +13,25 @@ TrafoParamTableProxyModel::TrafoParamTableProxyModel(QObject *parent) :
  * \brief TrafoParamTableProxyModel::getTrafoParamTableColumnConfig
  * \return
  */
-const TrafoParamTableColumnConfig &TrafoParamTableProxyModel::getTrafoParamTableColumnConfig() const{
+const TrafoParamTableColumnConfig &BundleParameterTableProxyModel::getTrafoParamTableColumnConfig() const{
     return this->trafoParamTableColumnConfig;
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::setTrafoParamTableColumnConfig
+ * \brief BundleParameterTableProxyModel::setTrafoParamTableColumnConfig
  * \param config
  */
-void TrafoParamTableProxyModel::setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config){
+void BundleParameterTableProxyModel::setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config){
     this->trafoParamTableColumnConfig = config;
     this->invalidateFilter();
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::mapFromSource
+ * \brief BundleParameterTableProxyModel::mapFromSource
  * \param sourceIndex
  * \return
  */
-QModelIndex TrafoParamTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+QModelIndex BundleParameterTableProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
     //get and check proxyIndex
     QModelIndex proxyIndex = QSortFilterProxyModel::mapFromSource(sourceIndex);
@@ -49,11 +49,11 @@ QModelIndex TrafoParamTableProxyModel::mapFromSource(const QModelIndex &sourceIn
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::mapToSource
+ * \brief BundleParameterTableProxyModel::mapToSource
  * \param proxyIndex
  * \return
  */
-QModelIndex TrafoParamTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+QModelIndex BundleParameterTableProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
     //get and check sourceIndex
     QModelIndex sourceIndex = QSortFilterProxyModel::mapToSource(proxyIndex);
@@ -82,12 +82,12 @@ QModelIndex TrafoParamTableProxyModel::mapToSource(const QModelIndex &proxyIndex
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::filterAcceptsRow
+ * \brief BundleParameterTableProxyModel::filterAcceptsRow
  * \param source_row
  * \param source_parent
  * \return
  */
-bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
+bool BundleParameterTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const{
 
     //get and cast source model
     FeatureTableModel *source_model = dynamic_cast<FeatureTableModel *>(this->sourceModel());
@@ -117,7 +117,7 @@ bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelInd
     }
 
     //check if trafo param is bundle trafo param
-    if(this->isBundleStationTrafo(feature->getTrafoParam())){
+    if(!this->isBundleStationTrafo(feature->getTrafoParam())){
         return false;
     }
 
@@ -136,12 +136,12 @@ bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelInd
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::filterAcceptsColumn
+ * \brief BundleParameterTableProxyModel::filterAcceptsColumn
  * \param source_column
  * \param source_parent
  * \return
  */
-bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
+bool BundleParameterTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
 
     //get and check display attribute
     if(getFeatureDisplayAttributes().size() < source_column){
@@ -163,21 +163,21 @@ bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QMo
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::lessThan
+ * \brief BundleParameterTableProxyModel::lessThan
  * \param left
  * \param right
  * \return
  */
-bool TrafoParamTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
+bool BundleParameterTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
     return true;
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::isBundleStationTrafo
+ * \brief BundleParameterTableProxyModel::isBundleStationTrafo
  * \param param
  * \return
  */
-bool TrafoParamTableProxyModel::isBundleStationTrafo(const QPointer<TrafoParam> &param) const
+bool BundleParameterTableProxyModel::isBundleStationTrafo(const QPointer<TrafoParam> &param) const
 {
     if((param->getStartSystem()->getIsStationSystem() && param->getDestinationSystem()->getIsBundleSystem()) ||
             (param->getStartSystem()->getIsBundleSystem() && param->getDestinationSystem()->getIsStationSystem())){

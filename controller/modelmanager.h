@@ -48,6 +48,7 @@
 #include "bundlegeometriesmodel.h"
 #include "functionweightstablemodel.h"
 #include "functionweightproxymodel.h"
+#include "bundleparametertableproxymodel.h"
 
 using namespace oi;
 
@@ -133,6 +134,7 @@ public:
     static FeatureTreeViewModel &getFeatureTreeViewModel();
     static AvailableElementsTreeViewProxyModel &getAvailableElementsTreeViewProxyModel();
     static UsedElementsModel &getUsedElementsModel();
+    static BundleParameterTableProxyModel &getBundleParameterTableProxyModel();
 
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
@@ -249,6 +251,7 @@ private:
     static FeatureTreeViewModel featureTreeViewModel;
     static AvailableElementsTreeViewProxyModel availableElementsTreeViewProxyModel;
     static UsedElementsModel usedElementsModel;
+    static BundleParameterTableProxyModel bundleParameterTableProxyModel;
 
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;

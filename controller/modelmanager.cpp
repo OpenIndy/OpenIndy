@@ -57,6 +57,7 @@ BundleSystemsModel ModelManager::bundleSystemsModel;
 BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
+BundleParameterTableProxyModel ModelManager::bundleParameterTableProxyModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -274,6 +275,15 @@ AvailableElementsTreeViewProxyModel &ModelManager::getAvailableElementsTreeViewP
  */
 UsedElementsModel &ModelManager::getUsedElementsModel(){
     return ModelManager::usedElementsModel;
+}
+
+/*!
+ * \brief ModelManager::getBundleParameterTableProxyModel
+ * \return
+ */
+BundleParameterTableProxyModel &ModelManager::getBundleParameterTableProxyModel()
+{
+    return ModelManager::bundleParameterTableProxyModel;
 }
 
 /*!
@@ -1063,12 +1073,14 @@ void ModelManager::initFeatureTableModels(){
     //assign source models
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
     ModelManager::trafoParamTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
+    ModelManager::bundleParameterTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
 
     //connect models
     if(ModelManager::myInstance.isNull()){
         QObject::connect(&ModelManager::featureTableModel, &FeatureTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::featureTableProxyModel, &FeatureTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::trafoParamTableProxyModel, &TrafoParamTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+        QObject::connect(&ModelManager::bundleParameterTableProxyModel, &BundleParameterTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
     }
 
 }

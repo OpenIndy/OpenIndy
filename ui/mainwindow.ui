@@ -275,7 +275,7 @@ background-position: center center;</string>
               </sizepolicy>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_bundleGeneralSettings">
               <attribute name="title">
@@ -357,6 +357,16 @@ background-position: center center;</string>
                   </layout>
                  </item>
                 </layout>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_bundleparameter">
+              <attribute name="title">
+               <string>bundle parameter</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_8">
+               <item row="0" column="0">
+                <widget class="QTableView" name="tableView_bundleParameter"/>
                </item>
               </layout>
              </widget>
