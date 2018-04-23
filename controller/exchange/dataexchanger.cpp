@@ -375,6 +375,16 @@ void DataExchanger::importFeatures(const bool &success){
         }
     }
 
+    //get the specified coordinate system by its defined name from exchange parameters and set this one true
+    //so destination system from import nominals is active system and all nominal values will be shown directly
+    QList<QPointer<CoordinateSystem> >coordSystemList = this->currentJob->getCoordinateSystemsList();
+    foreach (QPointer<CoordinateSystem> cs, coordSystemList) {
+        if(cs->getFeatureName().compare(this->exchangeParams.nominalSystem) == 0){
+            this->currentJob->getActiveCoordinateSystem()->setActiveCoordinateSystemState(false);
+            cs->setActiveCoordinateSystemState(true);
+        }
+    }
+
     //delete exchange instance because it is not necessary anymore
     delete this->exchange;
 

@@ -76,9 +76,8 @@ void MainWindow::importNominalsFinished(const bool &success){
     }else{
         emit this->log("Nominals not imported successfully", eErrorMessage, eMessageBoxMessage);
     }
-
+    this->resizeTableView();
     this->loadingDialog.close();
-
 }
 
 /*!
