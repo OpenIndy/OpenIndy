@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
+    this->createFeatureDialog.setCurrentJob(job);
 
     //assign models of ModelManager to GUI-elements
     this->assignModels();
@@ -2120,7 +2121,6 @@ void MainWindow::connectDialogs(){
     //connect watch window dialog
     QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
     QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
-
 }
 
 /*!
