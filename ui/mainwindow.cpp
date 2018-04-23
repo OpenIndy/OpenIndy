@@ -78,7 +78,6 @@ void MainWindow::importNominalsFinished(const bool &success){
     }
     this->resizeTableView();
     this->loadingDialog.close();
-    this->ui->comboBox_activeCoordSystem->setCurrentText("PART");
 }
 
 /*!
