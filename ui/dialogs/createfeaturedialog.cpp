@@ -174,6 +174,8 @@ void CreateFeatureDialog::initGUI(){
     this->ui->checkBox_common->setChecked(false);
     this->ui->checkBox_nominal->setChecked(false);
 
+    this->ui->lineEdit_name->setFocus();
+
     if(!this->currentJob.isNull()){
         //set default feature name depending on existing features
         int featureCount = this->currentJob->getFeatureCount();
