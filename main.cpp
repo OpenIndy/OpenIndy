@@ -69,20 +69,24 @@ int main(int argc, char *argv[])
     QSplashScreen *splash;
     if (!isSilent)
     {
-      QPixmap pixmap( "splash.png" );  // splash.png has to be placed next to the *.exe
+      QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");  // splash.png has to be placed next to the *.exe
       QString tmp;
 
       splash = new QSplashScreen(pixmap);
 
       splash->show();
-      tmp = a.applicationName() + " " + a.applicationVersion() + "\n"
+      /*tmp = a.applicationName() + " " + a.applicationVersion() + "\n"
                                       + a.organizationName() + "\n"
                                       + AppUrl + "\n"
                                       + AppAuthor + "\n"
-                                      + "main window starts up ...";
-      splash->showMessage(tmp,Qt::AlignBottom | Qt::AlignHCenter);
+                                      + "main window starts up ...";*/
+      tmp = AppUrl + "\n"
+              + AppAuthorMail + "\n"
+              + AppAuthor;
 
-      mySleep(0.5); // nur so, damit der SplashScreen etwas länger angezeigt wird
+      splash->showMessage(tmp,Qt::AlignBottom | Qt::AlignHCenter,Qt::white);
+
+      mySleep(1.0); // nur so, damit der SplashScreen etwas länger angezeigt wird
     }
     MainWindow w;
 
