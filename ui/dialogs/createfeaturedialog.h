@@ -35,6 +35,8 @@ public:
 
     bool featureCreated(bool created);
 
+    void setCurrentJob(const QPointer<OiJob> &job);
+
 signals:
 
     //#######################################
@@ -93,6 +95,8 @@ private:
     QPointer<AvailableFunctionsListProxyModel> functionListModel;
 
     void setDialogName();
+
+    QPointer<OiJob> currentJob;
 
 };
 

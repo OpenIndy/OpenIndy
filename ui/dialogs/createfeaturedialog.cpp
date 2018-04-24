@@ -42,6 +42,15 @@ bool CreateFeatureDialog::featureCreated(bool created)
 }
 
 /*!
+ * \brief CreateFeatureDialog::setCurrentJob
+ * \param job
+ */
+void CreateFeatureDialog::setCurrentJob(const QPointer<OiJob> &job)
+{
+    this->currentJob = job;
+}
+
+/*!
  * \brief CreateFeatureDialog::on_toolButton_ok_clicked
  */
 void CreateFeatureDialog::on_toolButton_ok_clicked(){
@@ -159,7 +168,27 @@ void CreateFeatureDialog::initGUI(){
 
     //general defaults
     this->ui->lineEdit_name->setText("");
+    this->ui->comboBox_group->setCurrentIndex(0);
     this->ui->spinBox_count->setValue(1);
+    this->ui->checkBox_actual->setChecked(true);
+    this->ui->checkBox_common->setChecked(false);
+    this->ui->checkBox_nominal->setChecked(false);
+
+    this->ui->lineEdit_name->setFocus();
+
+    if(!this->currentJob.isNull()){
+        //set default feature name depending on existing features
+        int featureCount = this->currentJob->getFeatureCount();
+        QString featureName = "";
+        if(featureCount < 9){
+            featureName.append("Feature").append("0").append(QString::number(featureCount+1));
+        }else{
+            featureName.append("Feature").append(QString::number(featureCount+1));
+        }
+        this->ui->lineEdit_name->setText(featureName);
+    }else{
+        this->ui->lineEdit_name->setText("");
+    }
 
     //GUI inits based on type of feature
     if(this->typeOfFeature == eTrafoParamFeature){
@@ -183,6 +212,22 @@ void CreateFeatureDialog::initGUI(){
 
     }else if(this->typeOfFeature == eStationFeature ||
              this->typeOfFeature == eCoordinateSystemFeature){
+
+        if(!this->currentJob.isNull()){
+            //predefined Stationname depending on existing stations
+            if(this->typeOfFeature == eStationFeature){
+                int count = this->currentJob->getStationsList().size();
+                QString stationName = "";
+                if(count < 9){
+                    stationName.append("STATION").append("0").append(QString::number(count+1));
+                }else{
+                    stationName.append("STATION").append(QString::number(count+1));
+                }
+                this->ui->lineEdit_name->setText(stationName);
+            }
+        }else{
+            this->ui->lineEdit_name->setText("");
+        }
 
         //set visibility
         this->ui->label_startSystem->setVisible(false);
