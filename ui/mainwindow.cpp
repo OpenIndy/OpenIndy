@@ -877,6 +877,7 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 
     //create menu
     QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
 
     //get trafo param table models
     TrafoParamTableProxyModel *model = static_cast<TrafoParamTableProxyModel*>(this->ui->tableView_trafoParams->model());
@@ -1712,6 +1713,10 @@ void MainWindow::copyToClipboard(){
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
         selection = selectionModel->selectedIndexes();
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
+        model = this->ui->tableView_bundleParameter->model();
+        selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        selection = selectionModel->selectedIndexes();
     }
 
     //check and sort selection
@@ -1790,6 +1795,15 @@ void MainWindow::pasteFromClipboard(){
         //get selection
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
 
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
+
+        model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
+        if(model == NULL){
+            return;
+        }
+
+        //get selection
+        selectionModel = this->ui->tableView_bundleParameter->selectionModel();
     }
 
     //get and check source model
@@ -2050,6 +2064,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::goToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
@@ -2689,6 +2704,20 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
     //load template
     emit this->loadBundleTemplate(bundleID, bundleTemplate);
     this->bundleSelectionChanged();
+}
+
+/*!
+ * \brief MainWindow::goToNextFeature
+ * Jumping to the next feature in the feature list after an successful measurement
+ */
+void MainWindow::goToNextFeature(bool success)
+{
+    if(success){
+        if(this->ui->actiongo_to_next_feature->isChecked()){
+            this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
+        }
+    }
+    return;
 }
 
 /*!
