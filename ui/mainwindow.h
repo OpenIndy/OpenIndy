@@ -339,6 +339,9 @@ private:
     //load default bundle plugin
     void loadDefaultBundlePlugIn(int bundleID);
 
+    //go automatically to next feature
+    void goToNextFeature(bool success);
+
     //############################
     //OpenIndy dialogs and widgets
     //############################
