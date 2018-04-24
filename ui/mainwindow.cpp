@@ -2063,6 +2063,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::goToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
@@ -2703,6 +2704,20 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
     //load template
     emit this->loadBundleTemplate(bundleID, bundleTemplate);
     this->bundleSelectionChanged();
+}
+
+/*!
+ * \brief MainWindow::goToNextFeature
+ * Jumping to the next feature in the feature list after an successful measurement
+ */
+void MainWindow::goToNextFeature(bool success)
+{
+    if(success){
+        if(this->ui->actiongo_to_next_feature->isChecked()){
+            this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
+        }
+    }
+    return;
 }
 
 /*!

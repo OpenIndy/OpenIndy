@@ -68,6 +68,7 @@
         <file>icons/featureToolBar.png</file>
         <file>icons/simulation.png</file>
         <file>icons/streamingLogo.png</file>
+        <file>icons/OpenIndy_splash.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file>icons/toolbars/feature/Circle.png</file>
