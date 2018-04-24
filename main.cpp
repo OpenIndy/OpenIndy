@@ -75,11 +75,6 @@ int main(int argc, char *argv[])
       splash = new QSplashScreen(pixmap);
 
       splash->show();
-      /*tmp = a.applicationName() + " " + a.applicationVersion() + "\n"
-                                      + a.organizationName() + "\n"
-                                      + AppUrl + "\n"
-                                      + AppAuthor + "\n"
-                                      + "main window starts up ...";*/
       tmp = AppUrl + "\n"
               + AppAuthorMail + "\n"
               + AppAuthor;
