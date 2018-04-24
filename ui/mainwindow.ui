@@ -483,6 +483,7 @@ background-position: center center;</string>
      <string>Settings</string>
     </property>
     <addaction name="actionView_settings"/>
+    <addaction name="actiongo_to_next_feature"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -1283,6 +1284,23 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>export</string>
+   </property>
+  </action>
+  <action name="actiongo_to_next_feature">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>go to next feature</string>
+   </property>
+   <property name="toolTip">
+    <string>jump to next feature in list after successful measurement</string>
+   </property>
+   <property name="statusTip">
+    <string>measurement</string>
    </property>
   </action>
  </widget>
