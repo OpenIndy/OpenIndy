@@ -38,6 +38,33 @@ void DataExchanger::setCurrentJob(const QPointer<OiJob> &job){
 }
 
 /*!
+ * \brief DataExchanger::getMeasurementConfigManager
+ * \return
+ */
+const QPointer<MeasurementConfigManager> &DataExchanger::getMeasurementConfigManager()
+{
+    return this->getMeasurementConfigManager();
+}
+
+/*!
+ * \brief DataExchanger::setMesaurementConfigManager
+ * \param manager
+ */
+void DataExchanger::setMesaurementConfigManager(const QPointer<MeasurementConfigManager> &manager)
+{
+    this->mConfigManager = manager;
+}
+
+/*!
+ * \brief DataExchanger::setExchangeParams
+ * \param exchangeParams
+ */
+void DataExchanger::setExchangeParams(ExchangeParams exchangeParams)
+{
+    this->exchangeParams = exchangeParams;
+}
+
+/*!
  * \brief DataExchanger::importData
  * \param params
  * \return
@@ -293,7 +320,70 @@ void DataExchanger::importFeatures(const bool &success){
 
     //add the imported features to current OpenIndy job
     QList<QPointer<FeatureWrapper> > features = this->exchange->getFeatures();
-    bool import = this->currentJob->addFeatures(features);
+
+    bool import = this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
+
+    //add actuals to nominals at import
+    if(this->exchangeParams.createActual){
+
+        foreach (QPointer<FeatureWrapper> fw, features) {
+            if(fw->getFeatureTypeEnum() == ePointFeature){
+                FeatureAttributes fAttr;
+                fAttr.count = 1;
+                fAttr.typeOfFeature = fw->getFeatureTypeEnum();
+                fAttr.name = fw->getFeature()->getFeatureName();
+                fAttr.group = fw->getFeature()->getGroupName();
+
+                fAttr.isActual = true;
+                fAttr.isNominal = false;
+                fAttr.isCommon = false;
+
+                //mconfig and function from default
+                MeasurementConfig mConfig;
+                if(!this->mConfigManager.isNull()){
+                    //TODO fix that all measurement configs are saved in the database OI-373
+                    //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+
+                    //Workaround until bug is fixed
+                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
+                    if(mConfigs.size() > 0){
+                        bool fpExists = false;
+                        foreach (MeasurementConfig mC, mConfigs) {
+                            if(mC.getName().compare("FastPoint") == 0){
+                                mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                                fpExists = true;
+                            }
+                        }
+                        if(!fpExists){
+                            mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
+                        }
+                    }
+                    fAttr.mConfig = mConfig.getName();
+                }
+
+                //function
+                sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
+                QPair<QString, QString> functionPlugin;
+                functionPlugin.first = defaultFunction.name;
+                functionPlugin.second = defaultFunction.plugin.file_path;
+                fAttr.functionPlugin = functionPlugin;
+
+                QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
+
+                this->addFunctionsAndMConfigs(addedFeatures,mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
+            }
+        }
+    }
+
+    //get the specified coordinate system by its defined name from exchange parameters and set this one true
+    //so destination system from import nominals is active system and all nominal values will be shown directly
+    QList<QPointer<CoordinateSystem> >coordSystemList = this->currentJob->getCoordinateSystemsList();
+    foreach (QPointer<CoordinateSystem> cs, coordSystemList) {
+        if(cs->getFeatureName().compare(this->exchangeParams.nominalSystem) == 0){
+            this->currentJob->getActiveCoordinateSystem()->setActiveCoordinateSystemState(false);
+            cs->setActiveCoordinateSystemState(true);
+        }
+    }
 
     //delete exchange instance because it is not necessary anymore
     delete this->exchange;
@@ -347,4 +437,49 @@ void DataExchanger::importObservationsFinished(const bool &success){
 
     emit this->observationImportFinished(success);
 
+}
+
+/*!
+ * \brief DataExchanger::addFunctionsAndMConfigs
+ * \param actuals
+ * \param mConfig
+ * \param path
+ * \param fName
+ */
+void DataExchanger::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals, const MeasurementConfig &mConfig, const QString &path, const QString &fName)
+{
+    //check job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    foreach(const QPointer<FeatureWrapper> &feature, actuals){
+
+        //check feature
+        if(feature.isNull() || feature->getFeature().isNull()){
+            continue;
+        }
+
+        //check if the feature is a nominal geometry
+        if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
+            continue;
+        }
+
+        //load function plugin
+        QPointer<Function> function(NULL);
+        if(path != 0 && fName != 0){
+            function = PluginLoader::loadFunctionPlugin(path, fName);
+        }
+
+        //assign function and measurement config to feature
+        this->currentJob->blockSignals(true);
+        if(!function.isNull()){
+            feature->getFeature()->addFunction(function);
+        }
+        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+            feature->getGeometry()->setMeasurementConfig(mConfig);
+        }
+        this->currentJob->blockSignals(false);
+
+    }
 }

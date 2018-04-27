@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
+    this->createFeatureDialog.setCurrentJob(job);
 
     //assign models of ModelManager to GUI-elements
     this->assignModels();
@@ -40,6 +41,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
 
     this->resizeTableView();
+
+    //load default bundle plugin
+    if(job->getBundleSystemList().size() >0){
+        int bundleID = job->getBundleSystemList().at(0)->getId();
+        this->loadDefaultBundlePlugIn(bundleID);
+    }
 }
 
 /*!
@@ -70,9 +77,8 @@ void MainWindow::importNominalsFinished(const bool &success){
     }else{
         emit this->log("Nominals not imported successfully", eErrorMessage, eMessageBoxMessage);
     }
-
+    this->resizeTableView();
     this->loadingDialog.close();
-
 }
 
 /*!
@@ -871,6 +877,7 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 
     //create menu
     QMenu *menu = new QMenu();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
 
     //get trafo param table models
     TrafoParamTableProxyModel *model = static_cast<TrafoParamTableProxyModel*>(this->ui->tableView_trafoParams->model());
@@ -916,6 +923,18 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
+}
+
+/*!
+ * \brief MainWindow::tableViewBundleParamsSelectionChangedByKeyboard
+ * \param selected
+ * \param deselected
+ */
+void MainWindow::tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected)
+{
+    if(selected.isValid() && deselected.isValid()){
+        this->on_tableView_bundleParameter_clicked(selected);
+    }
 }
 
 /*!
@@ -1324,8 +1343,10 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
 void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_bundleParameter->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_features->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_bundleParameter->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
@@ -1692,6 +1713,10 @@ void MainWindow::copyToClipboard(){
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
         selection = selectionModel->selectedIndexes();
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
+        model = this->ui->tableView_bundleParameter->model();
+        selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        selection = selectionModel->selectedIndexes();
     }
 
     //check and sort selection
@@ -1770,6 +1795,15 @@ void MainWindow::pasteFromClipboard(){
         //get selection
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
 
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
+
+        model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
+        if(model == NULL){
+            return;
+        }
+
+        //get selection
+        selectionModel = this->ui->tableView_bundleParameter->selectionModel();
     }
 
     //get and check source model
@@ -2030,6 +2064,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::goToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
@@ -2060,6 +2095,7 @@ void MainWindow::connectDialogs(){
     //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
     QObject::connect(&this->exportDialog, &ExportDialog::startExport, this, &MainWindow::exportFeatures, Qt::AutoConnection);
+    QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, &this->control, &Controller::setExchangeParams, Qt::AutoConnection);
 
     //connect loading dialog
     QObject::connect(&this->control, &Controller::nominalImportProgressUpdated, &this->loadingDialog, &LoadingDialog::updateProgress, Qt::AutoConnection);
@@ -2100,7 +2136,6 @@ void MainWindow::connectDialogs(){
     //connect watch window dialog
     QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
     QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
-
 }
 
 /*!
@@ -2147,6 +2182,9 @@ void MainWindow::assignModels(){
     this->ui->tableView_trafoParams->setModel(&ModelManager::getTrafoParamTableProxyModel());
     TrafoParamDelegate *trafoParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_trafoParams->setItemDelegate(trafoParamTableDelegate);
+    this->ui->tableView_bundleParameter->setModel(&ModelManager::getBundleParameterTableProxyModel());
+    TrafoParamDelegate *bundleParamTableDelegate = new TrafoParamDelegate();
+    this->ui->tableView_bundleParameter->setItemDelegate(bundleParamTableDelegate);
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
@@ -2186,14 +2224,18 @@ void MainWindow::initFeatureTableViews(){
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     //this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
     QObject::connect(this->ui->tableView_trafoParams->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_bundleParameter->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_bundleParameter->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
 
     //enable context menu
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParams->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->tableView_bundleParameter->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_bundleParameter->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewBundleParamsSelectionChangedByKeyboard, Qt::AutoConnection);
 
 }
 
@@ -2648,6 +2690,37 @@ void MainWindow::saveProjectAs()
 }
 
 /*!
+ * \brief MainWindow::loadDefaultBundlePlugIn
+ */
+void MainWindow::loadDefaultBundlePlugIn(int bundleID)
+{
+    //get selected bundle template
+    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
+    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
+    if(bundleTemplate.isEmpty()){
+        return;
+    }
+
+    //load template
+    emit this->loadBundleTemplate(bundleID, bundleTemplate);
+    this->bundleSelectionChanged();
+}
+
+/*!
+ * \brief MainWindow::goToNextFeature
+ * Jumping to the next feature in the feature list after an successful measurement
+ */
+void MainWindow::goToNextFeature(bool success)
+{
+    if(success){
+        if(this->ui->actiongo_to_next_feature->isChecked()){
+            this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
+        }
+    }
+    return;
+}
+
+/*!
  * \brief MainWindow::on_actionShortcut_import_triggered
  * shortcut for import nominal features
  */
@@ -2664,4 +2737,22 @@ void MainWindow::createMessageBoxTrafoParamWarning()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
+}
+
+void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
+{
+    //get and check model
+    BundleParameterTableProxyModel *model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //set active feature
+    sourceModel->setActiveFeature(model->mapToSource(index));
 }

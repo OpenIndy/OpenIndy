@@ -176,17 +176,8 @@ private slots:
     void on_actionCreate_coordinatesystem_triggered();
     void on_actionCreate_scalar_entity_triggered();
     void on_actionCreate_trafoParam_triggered();
-    //void on_actionCreate_cone_triggered();
     void on_actionCreate_cylinder_triggered();
-    //void on_actionCreate_ellipsoid_triggered();
-    //void on_actionCreate_hyperboloid_triggered();
-    //void on_actionCreate_paraboloid_triggered();
-    //void on_actionCreate_nurbs_triggered();
-    //void on_actionCreate_pointcloud_triggered();
     void on_actionCreate_circle_triggered();
-    //void on_actionCreate_torus_triggered();
-    //void on_actionCreate_slotted_hole_triggered();
-    //void on_actionCreate_ellipse_triggered();
 
     //plugin actions
     void on_actionLoad_plugins_triggered();
@@ -205,6 +196,8 @@ private slots:
     void on_tableView_trafoParams_doubleClicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
+    void tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
+    void on_tableView_bundleParameter_clicked(const QModelIndex &index);
 
     //function dialog
     void on_actionSet_function_triggered();
@@ -342,6 +335,12 @@ private:
 
     //save project help function
     void saveProjectAs();
+
+    //load default bundle plugin
+    void loadDefaultBundlePlugIn(int bundleID);
+
+    //go automatically to next feature
+    void goToNextFeature(bool success);
 
     //############################
     //OpenIndy dialogs and widgets

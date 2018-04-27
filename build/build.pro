@@ -135,7 +135,8 @@ SOURCES += \
     $$PWD/../models/functionweightstablemodel.cpp \
     $$PWD/../models/functionweightproxymodel.cpp \
     $$PWD/../models/functionweightdelegate.cpp \
-    $$PWD/../ui/dialogs/exportdialog.cpp
+    $$PWD/../ui/dialogs/exportdialog.cpp \
+    $$PWD/../models/bundleparametertableproxymodel.cpp
 
 # header files
 HEADERS  += \
@@ -232,7 +233,8 @@ HEADERS  += \
     $$PWD/../models/functionweightstablemodel.h \
     $$PWD/../models/functionweightproxymodel.h \
     $$PWD/../models/functionweightdelegate.h \
-    $$PWD/../ui/dialogs/exportdialog.h
+    $$PWD/../ui/dialogs/exportdialog.h \
+    $$PWD/../models/bundleparametertableproxymodel.h
 
 # ui files
 FORMS    += \
