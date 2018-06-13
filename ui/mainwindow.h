@@ -287,6 +287,8 @@ private slots:
     //trafo Param create...already exist use
     void createMessageBoxTrafoParamWarning();
 
+    void on_actiondifferences_triggered();
+
 private:
     Ui::MainWindow *ui;
 

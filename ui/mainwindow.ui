@@ -470,6 +470,7 @@ background-position: center center;</string>
     <addaction name="actionSimulation"/>
     <addaction name="actionSensor_real_time_data"/>
     <addaction name="actionMagnify"/>
+    <addaction name="actiondifferences"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -801,6 +802,21 @@ color: rgb(255, 255, 255);
         </size>
        </property>
       </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_differences_2">
+   <property name="windowTitle">
+    <string>differences</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_9">
+     <item row="0" column="0">
+      <widget class="QTableView" name="tableView_FeatureDifferences"/>
      </item>
     </layout>
    </widget>
@@ -1301,6 +1317,11 @@ color: rgb(255, 255, 255);
    </property>
    <property name="statusTip">
     <string>measurement</string>
+   </property>
+  </action>
+  <action name="actiondifferences">
+   <property name="text">
+    <string>differences</string>
    </property>
   </action>
  </widget>

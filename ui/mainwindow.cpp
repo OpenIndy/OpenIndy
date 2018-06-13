@@ -35,7 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //initially resize table view to fit the default job
     this->resizeTableView();
 
+    tabifyDockWidget(this->ui->dockWidget_differences_2, this->ui->dockWidget_Console);
     tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
+    this->ui->dockWidget_differences_2->raise();
 
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
@@ -2755,4 +2757,17 @@ void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
 
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
+}
+
+/*!
+ * \brief MainWindow::on_actiondifferences_triggered
+ */
+void MainWindow::on_actiondifferences_triggered()
+{
+    //show and hide differences of features with actual and nominals
+    if(this->ui->dockWidget_differences_2->isVisible()){
+        this->ui->dockWidget_differences_2->setVisible(false);
+    }else{
+        this->ui->dockWidget_differences_2->setVisible(true);
+    }
 }
