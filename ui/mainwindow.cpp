@@ -35,9 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //initially resize table view to fit the default job
     this->resizeTableView();
 
-    tabifyDockWidget(this->ui->dockWidget_differences_2, this->ui->dockWidget_Console);
+    tabifyDockWidget(this->ui->dockWidget_differences, this->ui->dockWidget_Console);
     tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
-    this->ui->dockWidget_differences_2->raise();
+    this->ui->dockWidget_differences->raise();
 
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
@@ -1346,9 +1346,11 @@ void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_FeatureDifferences->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_features->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_FeatureDifferences->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
@@ -2187,6 +2189,7 @@ void MainWindow::assignModels(){
     this->ui->tableView_bundleParameter->setModel(&ModelManager::getBundleParameterTableProxyModel());
     TrafoParamDelegate *bundleParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_bundleParameter->setItemDelegate(bundleParamTableDelegate);
+    this->ui->tableView_FeatureDifferences->setModel(&ModelManager::getFeatureDifferenceTableModel());
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
@@ -2226,6 +2229,8 @@ void MainWindow::initFeatureTableViews(){
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     //this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
     QObject::connect(this->ui->tableView_trafoParams->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_FeatureDifferences->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_FeatureDifferences->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_bundleParameter->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_bundleParameter->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
 
@@ -2765,9 +2770,9 @@ void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
 void MainWindow::on_actiondifferences_triggered()
 {
     //show and hide differences of features with actual and nominals
-    if(this->ui->dockWidget_differences_2->isVisible()){
-        this->ui->dockWidget_differences_2->setVisible(false);
+    if(this->ui->dockWidget_differences->isVisible()){
+        this->ui->dockWidget_differences->setVisible(false);
     }else{
-        this->ui->dockWidget_differences_2->setVisible(true);
+        this->ui->dockWidget_differences->setVisible(true);
     }
 }

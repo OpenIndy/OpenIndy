@@ -806,7 +806,7 @@ color: rgb(255, 255, 255);
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_differences_2">
+  <widget class="QDockWidget" name="dockWidget_differences">
    <property name="windowTitle">
     <string>differences</string>
    </property>

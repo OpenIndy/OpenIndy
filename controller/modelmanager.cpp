@@ -58,6 +58,7 @@ BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
 BundleParameterTableProxyModel ModelManager::bundleParameterTableProxyModel;
+FeatureDifferenceTableModel ModelManager::featureDifferenceTableModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -284,6 +285,15 @@ UsedElementsModel &ModelManager::getUsedElementsModel(){
 BundleParameterTableProxyModel &ModelManager::getBundleParameterTableProxyModel()
 {
     return ModelManager::bundleParameterTableProxyModel;
+}
+
+/*!
+ * \brief ModelManager::getFeatureDifferenceTableModel
+ * \return
+ */
+FeatureDifferenceTableModel &ModelManager::getFeatureDifferenceTableModel()
+{
+    return ModelManager::featureDifferenceTableModel;
 }
 
 /*!
@@ -891,6 +901,7 @@ void ModelManager::updateJob(){
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::featureDifferenceTableModel.setCurrentJob(ModelManager::currentJob);
 
     ModelManager::functionWeightsTableModel.setCurrentJob(ModelManager::currentJob);
 
@@ -1081,6 +1092,7 @@ void ModelManager::initFeatureTableModels(){
         QObject::connect(&ModelManager::featureTableProxyModel, &FeatureTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::trafoParamTableProxyModel, &TrafoParamTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::bundleParameterTableProxyModel, &BundleParameterTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+        QObject::connect(&ModelManager::featureDifferenceTableModel, &FeatureDifferenceTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
     }
 
 }
