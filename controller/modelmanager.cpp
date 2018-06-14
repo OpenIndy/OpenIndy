@@ -59,6 +59,7 @@ FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
 BundleParameterTableProxyModel ModelManager::bundleParameterTableProxyModel;
 FeatureDifferenceTableModel ModelManager::featureDifferenceTableModel;
+FeatureDifferenceProxyModel ModelManager::featureDifferenceProxyModel;
 
 /*!
  * \brief ModelManager::ModelManager
@@ -294,6 +295,15 @@ BundleParameterTableProxyModel &ModelManager::getBundleParameterTableProxyModel(
 FeatureDifferenceTableModel &ModelManager::getFeatureDifferenceTableModel()
 {
     return ModelManager::featureDifferenceTableModel;
+}
+
+/*!
+ * \brief ModelManager::getFeatureDifferenceProxyModel
+ * \return
+ */
+FeatureDifferenceProxyModel &ModelManager::getFeatureDifferenceProxyModel()
+{
+    return ModelManager::featureDifferenceProxyModel;
 }
 
 /*!
@@ -902,6 +912,7 @@ void ModelManager::updateJob(){
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::featureDifferenceTableModel.setCurrentJob(ModelManager::currentJob);
+    ModelManager::featureDifferenceProxyModel.setCurrentJob(ModelManager::currentJob);
 
     ModelManager::functionWeightsTableModel.setCurrentJob(ModelManager::currentJob);
 
@@ -957,6 +968,7 @@ void ModelManager::updateParameterDisplayConfig(){
     ModelManager::featureTableModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
     ModelManager::observationModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
     ModelManager::readingModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
+    ModelManager::featureDifferenceTableModel.setParameterDisplayConfig(ModelManager::parameterDisplayConfig);
 
     if(!ModelManager::myInstance.isNull()){
         emit ModelManager::myInstance->parameterDisplayConfigChanged(ModelManager::parameterDisplayConfig);
@@ -1085,6 +1097,7 @@ void ModelManager::initFeatureTableModels(){
     ModelManager::featureTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
     ModelManager::trafoParamTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
     ModelManager::bundleParameterTableProxyModel.setSourceModel(&ModelManager::featureTableModel);
+    ModelManager::featureDifferenceProxyModel.setSourceModel(&ModelManager::featureDifferenceTableModel);
 
     //connect models
     if(ModelManager::myInstance.isNull()){
@@ -1093,6 +1106,7 @@ void ModelManager::initFeatureTableModels(){
         QObject::connect(&ModelManager::trafoParamTableProxyModel, &TrafoParamTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::bundleParameterTableProxyModel, &BundleParameterTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
         QObject::connect(&ModelManager::featureDifferenceTableModel, &FeatureDifferenceTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+        QObject::connect(&ModelManager::featureDifferenceProxyModel, &FeatureDifferenceProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
     }
 
 }

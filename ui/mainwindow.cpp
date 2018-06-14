@@ -2189,7 +2189,7 @@ void MainWindow::assignModels(){
     this->ui->tableView_bundleParameter->setModel(&ModelManager::getBundleParameterTableProxyModel());
     TrafoParamDelegate *bundleParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_bundleParameter->setItemDelegate(bundleParamTableDelegate);
-    this->ui->tableView_FeatureDifferences->setModel(&ModelManager::getFeatureDifferenceTableModel());
+    this->ui->tableView_FeatureDifferences->setModel(&ModelManager::getFeatureDifferenceProxyModel());
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());

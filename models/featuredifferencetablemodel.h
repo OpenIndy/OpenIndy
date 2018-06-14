@@ -9,6 +9,7 @@
 #include "oijob.h"
 #include "types.h"
 #include "util.h"
+#include "parameterdisplayconfig.h"
 
 using namespace oi;
 
@@ -46,6 +47,13 @@ public:
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
 
+    //#########################
+    //get or set display config
+    //#########################
+
+    const ParameterDisplayConfig &getParameterDisplayConfig() const;
+    void setParameterDisplayConfig(const ParameterDisplayConfig &config);
+
 signals:
 
     //#########################
@@ -69,7 +77,15 @@ private:
     void connectJob();
     void disconnectJob();
 
+    QString getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const;
+
     QPointer<OiJob> currentJob;
+
+    //##############
+    //display config
+    //##############
+
+    ParameterDisplayConfig parameterDisplayConfig;
 };
 
 #endif // FEATUREDIFFERENCETABLEMODEL_H
