@@ -54,6 +54,9 @@ public:
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
+    //set tolerance
+    void setTolerance(double tolerance);
+
 signals:
 
     //#########################
@@ -77,7 +80,7 @@ private:
     void connectJob();
     void disconnectJob();
 
-    QString getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const;
+    QMap<bool, double> getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const;
 
     QPointer<OiJob> currentJob;
 
@@ -86,6 +89,9 @@ private:
     //##############
 
     ParameterDisplayConfig parameterDisplayConfig;
+
+    double tolerance;
+    double value;
 };
 
 #endif // FEATUREDIFFERENCETABLEMODEL_H

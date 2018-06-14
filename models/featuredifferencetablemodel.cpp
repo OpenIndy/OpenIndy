@@ -8,6 +8,8 @@
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(const QPointer<OiJob> &job, QObject *parent)
 {
     this->setCurrentJob(job);
+    tolerance = 0.2;
+    value = 0.0;
 }
 
 /*!
@@ -71,12 +73,28 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
         return QVariant();
     }
 
+    double value = 0.0;
     if(role == Qt::DisplayRole){
 
         if(index.column() == 0){
             return feature->getFeature()->getFeatureName();
         }else{
-            return this->getDifference(feature, index);
+            QMap<bool, double> result = this->getDifference(feature, index);
+
+            if(result.keys().at(0)){
+                value = result.value(true);
+                value = convertFromDefault(value, this->parameterDisplayConfig.getDisplayUnit(eMetric));
+                return QString::number(value, 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            }else{
+                return "-/-";
+            }
+        }
+    }else if(role == Qt::BackgroundRole){
+
+        if(abs(value) > abs(convertFromDefault(this->tolerance, this->parameterDisplayConfig.getDisplayUnit(eMetric)))){
+            return QColor(Qt::red);
+        }else{
+            return QVariant();
         }
     }
     return QVariant();
@@ -100,17 +118,17 @@ QVariant FeatureDifferenceTableModel::headerData(int section, Qt::Orientation or
         case 0:
             return "feature name";
         case 1:
-            return "dX";
+            return QString("dX" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric)));
         case 2:
-            return "dY";
+            return QString("dY" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric)));
         case 3:
-            return "dZ";
+            return QString("dZ" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric)));
         case 4:
-            return "dI";
+            return QString("dI" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eDimensionless)));
         case 5:
-            return "dJ";
+            return QString("dJ" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eDimensionless)));
         case 6:
-            return "dK";
+            return QString("dK" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eDimensionless)));
         default:
             break;
         }
@@ -191,6 +209,15 @@ void FeatureDifferenceTableModel::setParameterDisplayConfig(const ParameterDispl
 }
 
 /*!
+ * \brief FeatureDifferenceTableModel::setTolerance
+ * \param tolerance
+ */
+void FeatureDifferenceTableModel::setTolerance(double tolerance)
+{
+    this->tolerance = tolerance;
+}
+
+/*!
  * \brief FeatureDifferenceTableModel::updateModel
  */
 void FeatureDifferenceTableModel::updateModel()
@@ -241,14 +268,14 @@ void FeatureDifferenceTableModel::disconnectJob()
  * calculate the difference between actual and nominal, if there is no actual, or no nominal return -/-
  * \return
  */
-QString FeatureDifferenceTableModel::getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const
+QMap<bool, double> FeatureDifferenceTableModel::getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const
 {
-    QString diff = "-/-";
-
-    double diffValue = 0.0;
+    double value = 0.0;
+    QMap<bool, double> result;
 
     if(feature.isNull() || feature->getGeometry().isNull()){
-        return diff;
+        result.insert(false, value);
+        return result;
     }
 
     if(!feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getNominals().isEmpty() && feature->getGeometry()->hasPosition()){
@@ -258,19 +285,23 @@ QString FeatureDifferenceTableModel::getDifference(QPointer<FeatureWrapper> feat
 
                 switch (index.column()) {
                 case 1: //x
-                    diffValue = feature->getGeometry()->getPosition().getVector().getAt(1) - geom->getPosition().getVector().getAt(1);
-                    return diff = QString::number(convertFromDefault(diffValue, this->parameterDisplayConfig.getDisplayUnit(eMetric)), 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                    value = feature->getGeometry()->getPosition().getVector().getAt(0) - geom->getPosition().getVector().getAt(0);
+                    result.insert(true, value);
+                    return result;
                 case 2: //y
-                    diffValue = feature->getGeometry()->getPosition().getVector().getAt(2) - geom->getPosition().getVector().getAt(2);
-                    return diff = QString::number(convertFromDefault(diffValue, this->parameterDisplayConfig.getDisplayUnit(eMetric)), 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                    value = feature->getGeometry()->getPosition().getVector().getAt(1) - geom->getPosition().getVector().getAt(1);
+                    result.insert(true, value);
+                    return result;
                 case 3: //z
-                    diffValue = feature->getGeometry()->getPosition().getVector().getAt(3) - geom->getPosition().getVector().getAt(3);
-                    return diff = QString::number(convertFromDefault(diffValue, this->parameterDisplayConfig.getDisplayUnit(eMetric)), 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                    value = feature->getGeometry()->getPosition().getVector().getAt(2) - geom->getPosition().getVector().getAt(2);
+                    result.insert(true, value);
+                    return result;
                 default:
                     break;
                 }
             }else{
-                return diff;
+                result.insert(false, value);
+                return result;
             }
         }
     }
@@ -282,22 +313,27 @@ QString FeatureDifferenceTableModel::getDifference(QPointer<FeatureWrapper> feat
 
                 switch (index.column()) {
                 case 4: //i
-                    diffValue = feature->getGeometry()->getDirection().getVector().getAt(1) - geom->getDirection().getVector().getAt(1);
-                    return diff = QString::number(convertFromDefault(diffValue, this->parameterDisplayConfig.getDisplayUnit(eDimensionless)), 'f', this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+                    value = feature->getGeometry()->getDirection().getVector().getAt(0) - geom->getDirection().getVector().getAt(0);
+                    result.insert(true, value);
+                    return result;
                 case 5: //j
-                    diffValue = feature->getGeometry()->getDirection().getVector().getAt(2) - geom->getDirection().getVector().getAt(2);
-                    return diff = QString::number(convertFromDefault(diffValue, this->parameterDisplayConfig.getDisplayUnit(eDimensionless)), 'f', this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
-                case 7: //k
-                    diffValue = feature->getGeometry()->getDirection().getVector().getAt(3) - geom->getDirection().getVector().getAt(3);
-                    return diff = QString::number(convertFromDefault(diffValue, this->parameterDisplayConfig.getDisplayUnit(eDimensionless)), 'f', this->parameterDisplayConfig.getDisplayDigits(eDimensionless));
+                    value = feature->getGeometry()->getDirection().getVector().getAt(1) - geom->getDirection().getVector().getAt(1);
+                    result.insert(true, value);
+                    return result;
+                case 6: //k
+                    value = feature->getGeometry()->getDirection().getVector().getAt(2) - geom->getDirection().getVector().getAt(2);
+                    result.insert(true, value);
+                    return result;
                 default:
                     break;
                 }
             }else{
-                return diff;
+                result.insert(false, value);
+                return result;
             }
         }
     }
 
-    return diff;
+    result.insert(false, value);
+    return result;
 }

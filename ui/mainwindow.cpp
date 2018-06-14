@@ -2776,3 +2776,12 @@ void MainWindow::on_actiondifferences_triggered()
         this->ui->dockWidget_differences->setVisible(true);
     }
 }
+
+void MainWindow::on_lineEdit_tolerance_textEdited(const QString &arg1)
+{
+    bool *check = false;
+    double value = arg1.toDouble(check);
+    if(check){
+        ModelManager::getFeatureDifferenceTableModel().setTolerance(value);
+    }
+}

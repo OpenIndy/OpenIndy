@@ -289,6 +289,8 @@ private slots:
 
     void on_actiondifferences_triggered();
 
+    void on_lineEdit_tolerance_textEdited(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 
