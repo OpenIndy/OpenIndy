@@ -470,6 +470,7 @@ background-position: center center;</string>
     <addaction name="actionSimulation"/>
     <addaction name="actionSensor_real_time_data"/>
     <addaction name="actionMagnify"/>
+    <addaction name="actiondifferences"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
@@ -600,7 +601,102 @@ background-position: center center;</string>
     <bool>false</bool>
    </attribute>
   </widget>
+  <widget class="QToolBar" name="toolBar_features">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+   <addaction name="actionCreate_station"/>
+   <addaction name="actionCreate_trafoParam"/>
+   <addaction name="actionCreate_coordinatesystem"/>
+   <addaction name="separator"/>
+   <addaction name="actionCreate_scalar_entity"/>
+   <addaction name="separator"/>
+   <addaction name="actionCreate_point"/>
+   <addaction name="actionCreate_line"/>
+   <addaction name="actionCreate_plane"/>
+   <addaction name="actionCreate_circle"/>
+   <addaction name="actionCreate_sphere"/>
+   <addaction name="actionCreate_cylinder"/>
+   <addaction name="separator"/>
+   <addaction name="separator"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_differences">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>differences</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_9">
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1,3">
+       <item>
+        <widget class="QLabel" name="label_tolerance">
+         <property name="text">
+          <string>tolerance [actual-nominal]</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_tolerance">
+         <property name="text">
+          <string>0.2</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QTableView" name="tableView_FeatureDifferences"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <widget class="QDockWidget" name="dockWidget_Console">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -693,43 +789,6 @@ color: rgb(255, 255, 255);
     </layout>
    </widget>
   </widget>
-  <widget class="QToolBar" name="toolBar_features">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>50</width>
-     <height>50</height>
-    </size>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>true</bool>
-   </attribute>
-   <addaction name="actionCreate_station"/>
-   <addaction name="actionCreate_trafoParam"/>
-   <addaction name="actionCreate_coordinatesystem"/>
-   <addaction name="separator"/>
-   <addaction name="actionCreate_scalar_entity"/>
-   <addaction name="separator"/>
-   <addaction name="actionCreate_point"/>
-   <addaction name="actionCreate_line"/>
-   <addaction name="actionCreate_plane"/>
-   <addaction name="actionCreate_circle"/>
-   <addaction name="actionCreate_sphere"/>
-   <addaction name="actionCreate_cylinder"/>
-   <addaction name="separator"/>
-   <addaction name="separator"/>
-  </widget>
   <widget class="QDockWidget" name="dockWidget_magnify">
    <property name="windowTitle">
     <string>magnify</string>
@@ -739,31 +798,6 @@ color: rgb(255, 255, 255);
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,1,5">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_magnifyName">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>featName</string>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="2">
       <widget class="QLabel" name="label_magnifyActualNominal">
        <property name="sizePolicy">
@@ -801,6 +835,31 @@ color: rgb(255, 255, 255);
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_magnifyName">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>featName</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -1301,6 +1360,11 @@ color: rgb(255, 255, 255);
    </property>
    <property name="statusTip">
     <string>measurement</string>
+   </property>
+  </action>
+  <action name="actiondifferences">
+   <property name="text">
+    <string>differences</string>
    </property>
   </action>
  </widget>
