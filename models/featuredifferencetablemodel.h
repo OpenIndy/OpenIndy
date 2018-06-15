@@ -37,9 +37,6 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    //bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-
-
     //###############################
     //get or set current OpenIndy job
     //###############################
@@ -54,7 +51,9 @@ public:
     const ParameterDisplayConfig &getParameterDisplayConfig() const;
     void setParameterDisplayConfig(const ParameterDisplayConfig &config);
 
-    //set tolerance
+    //######################
+    //set tolerance for view
+    //######################
     void setTolerance(double tolerance);
 
 signals:
@@ -74,6 +73,7 @@ private slots:
     void updateModel();
 
 private:
+
     //###########
     //current job
     //###########
@@ -91,7 +91,6 @@ private:
     ParameterDisplayConfig parameterDisplayConfig;
 
     double tolerance;
-    double value;
 };
 
 #endif // FEATUREDIFFERENCETABLEMODEL_H

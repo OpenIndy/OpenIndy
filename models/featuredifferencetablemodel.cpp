@@ -8,8 +8,7 @@
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(const QPointer<OiJob> &job, QObject *parent)
 {
     this->setCurrentJob(job);
-    tolerance = 0.2;
-    value = 0.0;
+    this->tolerance = 0.2;
 }
 
 /*!
@@ -18,7 +17,7 @@ FeatureDifferenceTableModel::FeatureDifferenceTableModel(const QPointer<OiJob> &
  */
 FeatureDifferenceTableModel::FeatureDifferenceTableModel(QObject *parent)
 {
-
+    this->tolerance = 0.2;
 }
 
 /*!
@@ -41,7 +40,7 @@ int FeatureDifferenceTableModel::rowCount(const QModelIndex &parent) const
  */
 int FeatureDifferenceTableModel::columnCount(const QModelIndex &parent) const
 {
-    return 7; // name x y z dI dJ dK
+    return 4; //name x y z
 }
 
 /*!
@@ -69,6 +68,7 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
         return QVariant();
     }
 
+    //only actual geometries with nominals
     if(feature->getGeometry().isNull() || feature->getGeometry()->getIsNominal() || feature->getGeometry()->getNominals().isEmpty()){
         return QVariant();
     }
@@ -89,12 +89,17 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
                 return "-/-";
             }
         }
-    }else if(role == Qt::BackgroundRole){
+    }else if(role == Qt::TextColorRole){
 
-        if(abs(value) > abs(convertFromDefault(this->tolerance, this->parameterDisplayConfig.getDisplayUnit(eMetric)))){
-            return QColor(Qt::red);
-        }else{
-            return QVariant();
+        QMap<bool, double> result = this->getDifference(feature, index);
+        value = result.value(true);
+        value = convertFromDefault(value, this->parameterDisplayConfig.getDisplayUnit(eMetric));
+        if(result.keys().at(0)){
+            if(abs(value) > abs(this->tolerance)){
+                return QColor(Qt::red);
+            }else{
+                return QVariant();
+            }
         }
     }
     return QVariant();
@@ -123,12 +128,6 @@ QVariant FeatureDifferenceTableModel::headerData(int section, Qt::Orientation or
             return QString("dY" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric)));
         case 3:
             return QString("dZ" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric)));
-        case 4:
-            return QString("dI" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eDimensionless)));
-        case 5:
-            return QString("dJ" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eDimensionless)));
-        case 6:
-            return QString("dK" + getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eDimensionless)));
         default:
             break;
         }
@@ -147,18 +146,6 @@ Qt::ItemFlags FeatureDifferenceTableModel::flags(const QModelIndex &index) const
     Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
     return myFlags;
 }
-
-/*!
- * \brief FeatureDifferenceTableModel::setData
- * \param index
- * \param value
- * \param role
- * \return
- */
-/*bool FeatureDifferenceTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    return false;
-}*/
 
 /*!
  * \brief FeatureDifferenceTableModel::getCurrentJob
@@ -185,7 +172,6 @@ void FeatureDifferenceTableModel::setCurrentJob(const QPointer<OiJob> &job)
         this->currentJob = job;
         this->connectJob();
         this->updateModel();
-
     }
 }
 
@@ -215,6 +201,7 @@ void FeatureDifferenceTableModel::setParameterDisplayConfig(const ParameterDispl
 void FeatureDifferenceTableModel::setTolerance(double tolerance)
 {
     this->tolerance = tolerance;
+    this->updateModel();
 }
 
 /*!
@@ -294,34 +281,6 @@ QMap<bool, double> FeatureDifferenceTableModel::getDifference(QPointer<FeatureWr
                     return result;
                 case 3: //z
                     value = feature->getGeometry()->getPosition().getVector().getAt(2) - geom->getPosition().getVector().getAt(2);
-                    result.insert(true, value);
-                    return result;
-                default:
-                    break;
-                }
-            }else{
-                result.insert(false, value);
-                return result;
-            }
-        }
-    }
-
-    if(!feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getNominals().isEmpty() && feature->getGeometry()->hasDirection()){
-
-        foreach (QPointer<Geometry> geom, feature->getGeometry()->getNominals()) {
-            if(geom->getIsSolved() && feature->getGeometry()->getIsSolved()){
-
-                switch (index.column()) {
-                case 4: //i
-                    value = feature->getGeometry()->getDirection().getVector().getAt(0) - geom->getDirection().getVector().getAt(0);
-                    result.insert(true, value);
-                    return result;
-                case 5: //j
-                    value = feature->getGeometry()->getDirection().getVector().getAt(1) - geom->getDirection().getVector().getAt(1);
-                    result.insert(true, value);
-                    return result;
-                case 6: //k
-                    value = feature->getGeometry()->getDirection().getVector().getAt(2) - geom->getDirection().getVector().getAt(2);
                     result.insert(true, value);
                     return result;
                 default:
