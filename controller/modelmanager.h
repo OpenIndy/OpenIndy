@@ -49,6 +49,8 @@
 #include "functionweightstablemodel.h"
 #include "functionweightproxymodel.h"
 #include "bundleparametertableproxymodel.h"
+#include "featuredifferencetablemodel.h"
+#include "featuredifferenceproxymodel.h"
 
 using namespace oi;
 
@@ -135,6 +137,8 @@ public:
     static AvailableElementsTreeViewProxyModel &getAvailableElementsTreeViewProxyModel();
     static UsedElementsModel &getUsedElementsModel();
     static BundleParameterTableProxyModel &getBundleParameterTableProxyModel();
+    static FeatureDifferenceTableModel &getFeatureDifferenceTableModel();
+    static FeatureDifferenceProxyModel &getFeatureDifferenceProxyModel();
 
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
@@ -252,6 +256,8 @@ private:
     static AvailableElementsTreeViewProxyModel availableElementsTreeViewProxyModel;
     static UsedElementsModel usedElementsModel;
     static BundleParameterTableProxyModel bundleParameterTableProxyModel;
+    static FeatureDifferenceTableModel featureDifferenceTableModel;
+    static FeatureDifferenceProxyModel featureDifferenceProxyModel;
 
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;

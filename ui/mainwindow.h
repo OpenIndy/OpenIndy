@@ -273,6 +273,7 @@ private slots:
 
     //copy values from and to clipboard
     void copyToClipboard();
+    void copyDifferencesToClipboard();
     void pasteFromClipboard();
 
     //set up status bar
@@ -286,6 +287,12 @@ private slots:
 
     //trafo Param create...already exist use
     void createMessageBoxTrafoParamWarning();
+
+    void on_actiondifferences_triggered();
+
+    void on_lineEdit_tolerance_returnPressed();
+
+    void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;
