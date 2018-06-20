@@ -347,7 +347,7 @@ private:
     void loadDefaultBundlePlugIn(int bundleID);
 
     //go automatically to next feature
-    void goToNextFeature(bool success);
+    void autoSwitchToNextFeature(bool sucessMeasure);
 
     //############################
     //OpenIndy dialogs and widgets

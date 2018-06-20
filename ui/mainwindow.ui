@@ -541,6 +541,7 @@ background-position: center center;</string>
    <addaction name="actionSensor_real_time_data"/>
    <addaction name="actionConsole"/>
    <addaction name="actionRemoveObservations"/>
+   <addaction name="actiongo_to_next_feature"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolbarCreateFeature">
@@ -1350,13 +1351,17 @@ color: rgb(255, 255, 255);
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>false</bool>
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/feature/anchor.png</normaloff>:/icons/icons/toolbars/feature/anchor.png</iconset>
    </property>
    <property name="text">
-    <string>go to next feature</string>
+    <string>switch automatically to next feature</string>
    </property>
    <property name="toolTip">
-    <string>jump to next feature in list after successful measurement</string>
+    <string>jump to next feature in list after successful measurement if not activated</string>
    </property>
    <property name="statusTip">
     <string>measurement</string>

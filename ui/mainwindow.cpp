@@ -779,6 +779,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
                             this, SLOT(on_actionSet_function_triggered()));
         }
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"), QString("edit measurement config for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionMeasurement_Configuration_triggered()));
+        }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
@@ -2136,7 +2140,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::goToNextFeature, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::autoSwitchToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
@@ -2786,10 +2790,10 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
  * \brief MainWindow::goToNextFeature
  * Jumping to the next feature in the feature list after an successful measurement
  */
-void MainWindow::goToNextFeature(bool success)
+void MainWindow::autoSwitchToNextFeature(bool sucessMeasure)
 {
-    if(success){
-        if(this->ui->actiongo_to_next_feature->isChecked()){
+    if(sucessMeasure){
+        if(!this->ui->actiongo_to_next_feature->isChecked()){
             this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
         }
     }
