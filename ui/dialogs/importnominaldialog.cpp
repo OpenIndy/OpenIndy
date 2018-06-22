@@ -73,7 +73,7 @@ void ImportNominalDialog::on_pushButton_file_sa_clicked(){
 
     QString path = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
-                                                     tr("Files (*.*)"));
+                                                     tr("Files (*.txt)"));
     this->ui->lineEdit_file_sa->setText(path);
 
 }

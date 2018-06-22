@@ -793,7 +793,8 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
             menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                                  this, SLOT(removeObservationOfActiveFeature()));
-
+            menu->addAction(QIcon(""), QString("aim to feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            &this->control, SLOT(startAim()));
         }
 
         if(!selectedFeature->getStation().isNull()){

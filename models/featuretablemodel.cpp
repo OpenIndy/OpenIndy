@@ -849,6 +849,8 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
         switch((FeatureDisplayAttributes)attr){
         case eFeatureDisplayType:
             return feature->getFeature()->getDisplayType();
+        case eFeatureDisplayIsActual:
+            return feature->getFeature()->getDisplayIsActual();
         case eFeatureDisplayName:
             return feature->getFeature()->getFeatureName();
         case eFeatureDisplayComment:
