@@ -37,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     tabifyDockWidget(this->ui->dockWidget_Console, this->ui->dockWidget_magnify);
 
+    //set default tolerance to 0.2 and commit to the model
+    this->ui->lineEdit_tolerance->setText("0.2");
+    ModelManager::getFeatureDifferenceTableModel().setTolerance(0.2);
+
+    this->ui->dockWidget_differences->setMaximumWidth(400);
+
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
 
@@ -773,6 +779,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
                             this, SLOT(on_actionSet_function_triggered()));
         }
+        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"), QString("edit measurement config for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            this, SLOT(on_actionMeasurement_Configuration_triggered()));
+        }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
@@ -783,7 +793,8 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
             menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                                  this, SLOT(removeObservationOfActiveFeature()));
-
+            menu->addAction(QIcon(""), QString("aim to feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                            &this->control, SLOT(startAim()));
         }
 
         if(!selectedFeature->getStation().isNull()){
@@ -1344,9 +1355,11 @@ void MainWindow::resizeTableView(){
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_FeatureDifferences->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_features->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    this->ui->tableView_FeatureDifferences->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 /*!
@@ -1705,7 +1718,11 @@ void MainWindow::copyToClipboard(){
     QModelIndexList selection;
 
     //get selection of the active table view
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+    if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
+        model = this->ui->tableView_FeatureDifferences->model();
+        selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
+        selection = selectionModel->selectedIndexes();
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
         selection = selectionModel->selectedIndexes();
@@ -1716,6 +1733,10 @@ void MainWindow::copyToClipboard(){
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
         model = this->ui->tableView_bundleParameter->model();
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        selection = selectionModel->selectedIndexes();
+    }else if(this->ui->dockWidget_differences->isActiveWindow()){
+        model = this->ui->tableView_FeatureDifferences->model();
+        selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
         selection = selectionModel->selectedIndexes();
     }
 
@@ -1761,7 +1782,63 @@ void MainWindow::copyToClipboard(){
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->clear();
     clipboard->setText(copy_table);
+}
 
+/*!
+ * \brief MainWindow::copyDifferencesToClipboard
+ */
+void MainWindow::copyDifferencesToClipboard()
+{
+    //init variables
+    QAbstractItemModel *model = NULL;
+    QItemSelectionModel *selectionModel = NULL;
+    QModelIndexList selection;
+
+    model = this->ui->tableView_FeatureDifferences->model();
+    selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
+    selection = selectionModel->selectedIndexes();
+
+    //check and sort selection
+    if(selection.size() <= 0){
+        return;
+    }
+    qSort(selection);
+
+    //###############################
+    //copy the selection to clipboard
+    //###############################
+
+    QString copy_table;
+    QModelIndex last = selection.last();
+    QModelIndex previous = selection.first();
+    selection.removeFirst();
+
+    //loop over all selected rows and columns
+    for(int i = 0; i < selection.size(); i++){
+
+        QVariant data = model->data(previous);
+        QString text = data.toString();
+
+        QModelIndex index = selection.at(i);
+        copy_table.append(text);
+
+        //if new line
+        if(index.row() != previous.row()){
+            copy_table.append("\n");
+        }else{ //if same line, but new column
+            copy_table.append("\t");
+        }
+        previous = index;
+    }
+
+    //get last selected cell
+    copy_table.append(model->data(last).toString());
+    copy_table.append("\n");
+
+    //set values to clipboard, so you can paste them elsewhere
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->clear();
+    clipboard->setText(copy_table);
 }
 
 /*!
@@ -2064,7 +2141,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::sensorActionFinished, this, &MainWindow::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementCompleted, this, &MainWindow::measurementCompleted, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::measurementDone, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::goToNextFeature, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::autoSwitchToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
@@ -2185,6 +2262,7 @@ void MainWindow::assignModels(){
     this->ui->tableView_bundleParameter->setModel(&ModelManager::getBundleParameterTableProxyModel());
     TrafoParamDelegate *bundleParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_bundleParameter->setItemDelegate(bundleParamTableDelegate);
+    this->ui->tableView_FeatureDifferences->setModel(&ModelManager::getFeatureDifferenceProxyModel());
 
     //assign console model
     this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
@@ -2224,6 +2302,8 @@ void MainWindow::initFeatureTableViews(){
     QObject::connect(this->ui->tableView_trafoParams->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     //this->ui->tableView_trafoParams->verticalHeader()->setDefaultSectionSize(22);
     QObject::connect(this->ui->tableView_trafoParams->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_FeatureDifferences->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
+    QObject::connect(this->ui->tableView_FeatureDifferences->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_bundleParameter->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_bundleParameter->verticalHeader(), &QHeaderView::sectionDoubleClicked, this, &MainWindow::resizeTableView, Qt::AutoConnection);
 
@@ -2231,6 +2311,7 @@ void MainWindow::initFeatureTableViews(){
     this->ui->tableView_features->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_trafoParams->setContextMenuPolicy(Qt::CustomContextMenu);
     this->ui->tableView_bundleParameter->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->ui->tableView_FeatureDifferences->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
@@ -2710,10 +2791,10 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
  * \brief MainWindow::goToNextFeature
  * Jumping to the next feature in the feature list after an successful measurement
  */
-void MainWindow::goToNextFeature(bool success)
+void MainWindow::autoSwitchToNextFeature(bool sucessMeasure)
 {
-    if(success){
-        if(this->ui->actiongo_to_next_feature->isChecked()){
+    if(sucessMeasure){
+        if(!this->ui->actiongo_to_next_feature->isChecked()){
             this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
         }
     }
@@ -2755,4 +2836,57 @@ void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
 
     //set active feature
     sourceModel->setActiveFeature(model->mapToSource(index));
+}
+
+/*!
+ * \brief MainWindow::on_actiondifferences_triggered
+ */
+void MainWindow::on_actiondifferences_triggered()
+{
+    //show and hide differences of features with actual and nominals
+    if(this->ui->dockWidget_differences->isVisible()){
+        this->ui->dockWidget_differences->setVisible(false);
+    }else{
+        this->ui->dockWidget_differences->setVisible(true);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_lineEdit_tolerance_returnPressed
+ */
+void MainWindow::on_lineEdit_tolerance_returnPressed()
+{
+    bool check = false;
+    double value = this->ui->lineEdit_tolerance->text().toDouble(&check);
+    if(check){
+        ModelManager::getFeatureDifferenceTableModel().setTolerance(value);
+    }
+}
+
+/*!
+ * \brief MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested
+ * \param pos
+ */
+void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos)
+{
+    //create menu and add delete action
+    QMenu *menu = new QMenu();
+
+    //get feature table models
+    FeatureDifferenceProxyModel *model = static_cast<FeatureDifferenceProxyModel*>(this->ui->tableView_FeatureDifferences->model());
+    if(model == NULL){
+        delete menu;
+        return;
+    }
+    FeatureDifferenceTableModel *sourceModel = static_cast<FeatureDifferenceTableModel*>(model->sourceModel());
+    if(sourceModel == NULL){
+        delete menu;
+        return;
+    }
+
+    //get the selected index (where the right click was done)
+    QModelIndex selectedIndex = this->ui->tableView_FeatureDifferences->indexAt(pos);
+
+    menu->addAction("copy to clipboard", this, SLOT(copyDifferencesToClipboard()));
+    menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
 }
