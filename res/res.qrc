@@ -99,6 +99,7 @@
         <file>icons/toolbars/standard/Sensor Set.png</file>
         <file>icons/toolbars/standard/Watch Window.png</file>
         <file>icons/toolbars/standard/import_icon.PNG</file>
+        <file>icons/toolbars/feature/anchor.png</file>
     </qresource>
     <qresource prefix="/">
         <file>sounds/measure_fail.wav</file>

@@ -74,8 +74,9 @@ void FeatureTableColumnConfig::init(){
 
     //default columns in default order
     this->displayColumns.append(eFeatureDisplayType);
-    this->displayColumns.append(eFeatureDisplayName);
+    this->displayColumns.append(eFeatureDisplayIsActual);
     this->displayColumns.append(eFeatureDisplayGroup);
+    this->displayColumns.append(eFeatureDisplayName);
     this->displayColumns.append(eFeatureDisplayX);
     this->displayColumns.append(eFeatureDisplayY);
     this->displayColumns.append(eFeatureDisplayZ);
