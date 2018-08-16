@@ -15,6 +15,7 @@ node {
             del "${currentWorkSpace}\bin\debug\oiLogFile.log"
             del "${currentWorkSpace}\bin\debug\openIndyMath1.dll"
             del "${currentWorkSpace}\bin\debug\openIndyCore1.dll"
+            RMDIR "${currentWorkSpace}\bin\debug\plugins"
 			xcopy "${currentWorkSpace}\db\oisystemdb.sqlite" "${currentWorkSpace}\bin\debug"
 			xcopy "${currentWorkSpace}\lib\OpenIndy-Core\bin\debug\openIndyCore1.dll" "${currentWorkSpace}\bin\debug"
 			xcopy "${currentWorkSpace}\lib\OpenIndy-Core\lib\OpenIndy-Math\bin\debug\openIndyMath1.dll" "${currentWorkSpace}\bin\debug"/)
@@ -32,6 +33,7 @@ node {
             del "${currentWorkSpace}\bin\release\oiLogFile.log"
             del "${currentWorkSpace}\bin\release\openIndyMath1.dll"
             del "${currentWorkSpace}\bin\release\openIndyCore1.dll"
+            RMDIR "${currentWorkSpace}\bin\release\plugins"
 			xcopy "${currentWorkSpace}\db\oisystemdb.sqlite" "${currentWorkSpace}\bin\release"
 			xcopy "${currentWorkSpace}\lib\OpenIndy-Core\bin\release\openIndyCore1.dll" "${currentWorkSpace}\bin\release"
 			xcopy "${currentWorkSpace}\lib\OpenIndy-Core\lib\OpenIndy-Math\bin\release\openIndyMath1.dll" "${currentWorkSpace}\bin\release"/)
