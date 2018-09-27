@@ -121,17 +121,7 @@ bool TrafoParamTableProxyModel::filterAcceptsRow(int source_row, const QModelInd
         return false;
     }
 
-    //filter by group name
-    if(source_model->getCurrentJob()->getActiveGroup().compare("All Groups") == 0){
-        return true;
-    }else{
-        if(feature->getFeature()->getGroupName().compare(source_model->getCurrentJob()->getActiveGroup()) == 0){
-            return true;
-        }
-        return false;
-    }
-
-    return false;
+    return true;
 
 }
 
