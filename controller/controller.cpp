@@ -1635,6 +1635,17 @@ void Controller::measurementFinished(const int &geomId, const QList<QPointer<Rea
 
     }
 
+    //check if feature has a fit function, else regret measurement
+    if(feature->getGeometry()->getFunctions().size() == 0 || feature->getGeometry()->getFunctions().first().isNull()){
+        this->log("Measurement failed - no fit function set", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    if(feature->getGeometry()->getFunctions().first()->getMetaData().iid != FitFunction_iidd){
+        this->log("Measurement failed - no fit function set", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
     //add observations
     this->job->addMeasurementResults(geomId, readings);
 
