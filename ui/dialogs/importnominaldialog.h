@@ -62,6 +62,8 @@ private:
 
     void initModels();
 
+    QString importPath;
+
 private:
     Ui::ImportNominalDialog *ui;
 
