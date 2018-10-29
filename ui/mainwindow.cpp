@@ -53,8 +53,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         int bundleID = job->getBundleSystemList().at(0)->getId();
         this->loadDefaultBundlePlugIn(bundleID);
     }
-
-    ProjectConfig::loadConfigFile();
 }
 
 /*!
@@ -2896,4 +2894,14 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
 
     menu->addAction("copy to clipboard", this, SLOT(copyDifferencesToClipboard()));
     menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
+}
+
+/*!
+ * \brief MainWindow::showEvent
+ * \param e
+ */
+void MainWindow::showEvent(QShowEvent *e)
+{
+    ProjectConfig::loadConfigFile();
+    e->accept();
 }

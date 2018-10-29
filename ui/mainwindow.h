@@ -296,6 +296,8 @@ private slots:
 
     void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
 
+    void showEvent(QShowEvent *e);
+
 private:
     Ui::MainWindow *ui;
 

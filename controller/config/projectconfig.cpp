@@ -53,7 +53,7 @@ void ProjectConfig::setProjectPath(const QString &value)
  */
 bool ProjectConfig::loadConfigFile()
 {
-    QFile file("/config/projectConfigs/projectConfig.xml");
+    QFile file(QCoreApplication::applicationDirPath() + "/config/projectConfigs/projectConfig.xml");
     QFileInfo info(file);
 
     if(info.exists()){
@@ -73,13 +73,13 @@ bool ProjectConfig::loadConfigFile()
         if(importPathElem.isNull()){
             return false;
         }
-        importNominalPath = importPathElem.nodeValue();
+        importNominalPath = importPathElem.text();
 
         QDomElement projectPathElem = root.firstChildElement("projectPath");
         if(projectPathElem.isNull()){
             return false;
         }
-        projectPath = projectPathElem.nodeValue();
+        projectPath = projectPathElem.text();
 
         return true;
     }
