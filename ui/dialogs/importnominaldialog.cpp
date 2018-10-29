@@ -8,7 +8,6 @@
 ImportNominalDialog::ImportNominalDialog(QWidget *parent) :
     QDialog(parent), ui(new Ui::ImportNominalDialog)
 {
-    this->importPath = "";
     this->ui->setupUi(this);
 }
 
@@ -72,24 +71,13 @@ void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QStr
  */
 void ImportNominalDialog::on_pushButton_file_sa_clicked(){
 
-    QString path = "";
-    if(this->importPath.compare("") == 0){
+    QString path = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                     ProjectConfig::getImportNominalPath(),
+                                                     tr("Files (*.txt)"));
 
-        path = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                         "",
-                                                         tr("Files (*.txt)"));
-        QStringList pathParts = path.split("'\'");
-        for(int i=0; i<pathParts.size()-1; i++) {
-            this->importPath.append(pathParts.at(i));
-        }
-    }else{
-        path = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                         this->importPath,
-                                                         tr("Files (*.txt)"));
-        QStringList pathParts = path.split("'\'");
-        for(int i=0; i<pathParts.size()-1; i++) {
-            this->importPath.append(pathParts.at(i));
-        }
+    if(!path.isEmpty()){
+        QFileInfo info(path);
+        ProjectConfig::setImportNominalPath(info.absolutePath());
     }
 
     this->ui->lineEdit_file_sa->setText(path);

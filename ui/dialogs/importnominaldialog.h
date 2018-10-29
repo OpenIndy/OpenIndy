@@ -14,6 +14,7 @@
 #include "util.h"
 #include "modelmanager.h"
 #include "exchangeParams.h"
+#include "projectconfig.h"
 
 using namespace oi;
 
@@ -61,8 +62,6 @@ private:
     void showEvent(QShowEvent *event);
 
     void initModels();
-
-    QString importPath;
 
 private:
     Ui::ImportNominalDialog *ui;

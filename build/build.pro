@@ -138,7 +138,8 @@ SOURCES += \
     $$PWD/../ui/dialogs/exportdialog.cpp \
     $$PWD/../models/bundleparametertableproxymodel.cpp \
     $$PWD/../models/featuredifferencetablemodel.cpp \
-    $$PWD/../models/featuredifferenceproxymodel.cpp
+    $$PWD/../models/featuredifferenceproxymodel.cpp \
+    $$PWD/../controller/config/projectconfig.cpp
 
 # header files
 HEADERS  += \
@@ -238,7 +239,8 @@ HEADERS  += \
     $$PWD/../ui/dialogs/exportdialog.h \
     $$PWD/../models/bundleparametertableproxymodel.h \
     $$PWD/../models/featuredifferencetablemodel.h \
-    $$PWD/../models/featuredifferenceproxymodel.h
+    $$PWD/../models/featuredifferenceproxymodel.h \
+    $$PWD/../controller/config/projectconfig.h
 
 # ui files
 FORMS    += \
