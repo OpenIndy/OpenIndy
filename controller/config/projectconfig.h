@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QCoreApplication>
-#include <QDebug>
 
 class ProjectConfig
 {
