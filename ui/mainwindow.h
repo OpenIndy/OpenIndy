@@ -40,6 +40,8 @@
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
 
+#include "projectconfig.h"
+
 #include <QSound>
 using namespace oi;
 
