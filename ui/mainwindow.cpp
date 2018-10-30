@@ -1175,14 +1175,16 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "xml (*.xml)");
-    if(filename.compare("") == 0){
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", ProjectConfig::getProjectPath(), "xml (*.xml)");
+    if(filename.isEmpty()){
         return;
     }
 
     QPointer<QIODevice> device = new QFile(filename);
     QFileInfo info(filename);
     QString projectName = info.fileName();
+
+    ProjectConfig::setProjectPath(info.absolutePath());
 
     //clear current selection in table view
     this->ui->tableView_features->clearSelection();
@@ -2764,8 +2766,11 @@ void MainWindow::resetBundleView(){
  */
 void MainWindow::saveProjectAs()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
-    if(filename.compare("") != 0){
+    QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
+
+    if(!filename.isEmpty()){
+        QFileInfo info(filename);
+        ProjectConfig::setProjectPath(info.absolutePath());
         emit this->saveProject(filename);
     }
 }
@@ -2889,4 +2894,14 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
 
     menu->addAction("copy to clipboard", this, SLOT(copyDifferencesToClipboard()));
     menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
+}
+
+/*!
+ * \brief MainWindow::showEvent
+ * \param e
+ */
+void MainWindow::showEvent(QShowEvent *e)
+{
+    ProjectConfig::loadConfigFile();
+    e->accept();
 }

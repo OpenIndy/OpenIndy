@@ -14,6 +14,7 @@
 #include "util.h"
 #include "modelmanager.h"
 #include "exchangeParams.h"
+#include "projectconfig.h"
 
 using namespace oi;
 

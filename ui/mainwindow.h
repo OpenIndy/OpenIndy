@@ -40,6 +40,8 @@
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
 
+#include "projectconfig.h"
+
 #include <QSound>
 using namespace oi;
 
@@ -293,6 +295,8 @@ private slots:
     void on_lineEdit_tolerance_returnPressed();
 
     void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
+
+    void showEvent(QShowEvent *e);
 
 private:
     Ui::MainWindow *ui;
