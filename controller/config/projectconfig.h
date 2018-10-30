@@ -36,6 +36,9 @@ public:
     static bool getUseSounds();
     static void setUseSounds(bool value);
 
+    //********************************************
+    //save and load functions for all config files
+    //********************************************
 
     static bool loadProjectPathConfigFile();
     static bool saveProjectPathConfigFile();

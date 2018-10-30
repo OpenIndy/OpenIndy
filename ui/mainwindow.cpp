@@ -2902,7 +2902,9 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
  */
 void MainWindow::showEvent(QShowEvent *e)
 {
+    //load and restore project unit settings
     ProjectConfig::loadProjectPathConfigFile();
+    //parse them to the model, to display all values in correct unit
     this->settingsDialog.updateDisplayConfigFromSelection();
     e->accept();
 }

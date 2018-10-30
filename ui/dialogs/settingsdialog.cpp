@@ -19,9 +19,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     //init GUI elements and assign models
     this->initModels();
+    //load config from file
     ProjectConfig::loadProjectSettingsConfigFile();
     this->initGUI();
-    this->updateDisplayConfigFromSelection();
+    this->updateDisplayConfigFromSelection(); //no signal emit in constructor call!!!
 }
 
 /*!
@@ -153,7 +154,7 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
     config.setDisplayUnitType(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
     config.setUseSounds(this->ui->checkBox_sounds->isChecked());
 
-    if(this->isVisible()){
+    if(this->isVisible()){//online save the changes after editing in GUI
 
         ProjectConfig::setAngularDigits(this->ui->lineEdit_angleDigits->text().toInt());
         ProjectConfig::setDistanceDigits(this->ui->lineEdit_distanceDigits->text().toInt());

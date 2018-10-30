@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 
-
 QString ProjectConfig::importNominalPath;
 QString ProjectConfig::projectPath;
 
@@ -191,7 +190,7 @@ void ProjectConfig::setUseSounds(bool value)
 }
 
 /*!
- * \brief ProjectConfig::loadConfigFile
+ * \brief ProjectConfig::loadProjectPathConfigFile
  * \return
  */
 bool ProjectConfig::loadProjectPathConfigFile()
@@ -230,7 +229,7 @@ bool ProjectConfig::loadProjectPathConfigFile()
 }
 
 /*!
- * \brief ProjectConfig::saveConfigFile
+ * \brief ProjectConfig::saveProjectPathConfigFile
  * \return
  */
 bool ProjectConfig::saveProjectPathConfigFile()
