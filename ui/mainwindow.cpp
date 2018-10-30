@@ -2902,6 +2902,7 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
  */
 void MainWindow::showEvent(QShowEvent *e)
 {
-    ProjectConfig::loadConfigFile();
+    ProjectConfig::loadProjectPathConfigFile();
+    this->settingsDialog.updateDisplayConfigFromSelection();
     e->accept();
 }
