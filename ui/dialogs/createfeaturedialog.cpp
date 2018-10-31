@@ -94,6 +94,9 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
     functionPlugin.second = function.plugin.file_path;
     source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
 
+    //set default measurement config
+    SystemDbManager::setDefaultMeasurementConfig(attributes.mConfig , getFeatureTypeName(this->typeOfFeature));
+
     if(this->created){
         this->close();
     }

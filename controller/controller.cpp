@@ -358,7 +358,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
         this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-
+    measurementConfigManager->addSavedMeasurementConfig(mConfig);
     //set measurement config for the active feature
     activeFeature->getGeometry()->setMeasurementConfig(mConfig);
 
@@ -1536,6 +1536,14 @@ void Controller::log(const QString &msg, const MessageTypes &msgType, const Mess
         break;
     }
 
+}
+
+/*!
+ * \brief Controller::initConfigs
+ */
+void Controller::initConfigs()
+{
+    this->initConfigManager();
 }
 
 /*!

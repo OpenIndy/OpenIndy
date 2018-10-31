@@ -8,6 +8,8 @@
 #include "featurewrapper.h"
 #include "featureattributes.h"
 #include "modelmanager.h"
+#include "systemdbmanager.h"
+#include "util.h"
 
 using namespace oi;
 
