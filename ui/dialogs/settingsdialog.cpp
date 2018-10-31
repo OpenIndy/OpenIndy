@@ -19,7 +19,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     //init GUI elements and assign models
     this->initModels();
+    //load config from file
+    ProjectConfig::loadProjectSettingsConfigFile();
     this->initGUI();
+    this->updateDisplayConfigFromSelection(); //no signal emit in constructor call!!!
 }
 
 /*!
@@ -88,6 +91,9 @@ void SettingsDialog::showEvent(QShowEvent *event){
     this->move( screen.center() - this->rect().center() );
     this->ui->tabWidget_settings->setTabEnabled(2,false);
     this->ui->tabWidget_settings->setTabEnabled(3,false);
+    ProjectConfig::loadProjectSettingsConfigFile();
+    this->initGUI();
+    this->updateDisplayConfigFromSelection();
 }
 
 /*!
@@ -105,13 +111,13 @@ void SettingsDialog::initGUI(){
     this->ui->checkBox_sounds->blockSignals(true);
 
     //set default unit
-    this->ui->comboBox_angleType->setCurrentText(getUnitTypeName(ModelManager::getParameterDisplayConfig().getDisplayUnit(eAngular)));
-    this->ui->comboBox_distanceType->setCurrentText(getUnitTypeName(ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric)));
-    this->ui->comboBox_temperatureType->setCurrentText(getUnitTypeName(ModelManager::getParameterDisplayConfig().getDisplayUnit(eTemperature)));
-    this->ui->lineEdit_angleDigits->setText(QString::number(ModelManager::getParameterDisplayConfig().getDisplayDigits(eAngular)));
-    this->ui->lineEdit_distanceDigits->setText(QString::number(ModelManager::getParameterDisplayConfig().getDisplayDigits(eMetric)));
-    this->ui->lineEdit_temperatureDigits->setText(QString::number(ModelManager::getParameterDisplayConfig().getDisplayDigits(eTemperature)));
-    this->ui->checkBox_sounds->setChecked(ModelManager::getParameterDisplayConfig().getUseSounds());
+    this->ui->comboBox_angleType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getAngularUnit())));
+    this->ui->comboBox_distanceType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getMetricUnit())));
+    this->ui->comboBox_temperatureType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getTemperatureUnit())));
+    this->ui->lineEdit_angleDigits->setText(QString::number(ProjectConfig::getAngularDigits()));
+    this->ui->lineEdit_distanceDigits->setText(QString::number(ProjectConfig::getDistanceDigits()));
+    this->ui->lineEdit_temperatureDigits->setText(QString::number(ProjectConfig::getTemperatureDigits()));
+    this->ui->checkBox_sounds->setChecked(ProjectConfig::getUseSounds());
 
     //from now on trigger changes
     this->ui->comboBox_angleType->blockSignals(false);
@@ -147,6 +153,17 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
     config.setDisplayUnitType(eMetric, getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
     config.setDisplayUnitType(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
     config.setUseSounds(this->ui->checkBox_sounds->isChecked());
+
+    if(this->isVisible()){//online save the changes after editing in GUI
+
+        ProjectConfig::setAngularDigits(this->ui->lineEdit_angleDigits->text().toInt());
+        ProjectConfig::setDistanceDigits(this->ui->lineEdit_distanceDigits->text().toInt());
+        ProjectConfig::setTemperatureDigits(this->ui->lineEdit_temperatureDigits->text().toInt());
+        ProjectConfig::setAngularUnit(getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
+        ProjectConfig::setMetricUnit(getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
+        ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
+        ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
+    }
 
     emit this->setDisplayConfig(config);
 }
