@@ -347,11 +347,7 @@ void DataExchanger::importFeatures(const bool &success){
 
                     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
 
-                    if(!elementConfigName.isEmpty()){
-                        mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
-                    }else{
-                        mConfig = this->mConfigManager->getSavedMeasurementConfig(this->mConfigManager->getSavedMeasurementConfigs().at(0).getName());
-                    }
+                    mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
 
                     /*//Workaround until bug is fixed
                     QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();

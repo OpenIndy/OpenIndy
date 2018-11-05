@@ -1963,6 +1963,11 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     attr.group = geometry->getGroupName();
     attr.isActual = true;
 
+    //get measurement config
+    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
+    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(elementConfigName);
+    attr.mConfig = mConfig.getName();
+
     //create actual
     this->job->addFeatures(attr);
     if(geometry->getActual().isNull() || geometry->getActual()->getFeatureWrapper().isNull()){
@@ -1972,10 +1977,7 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     //set function and measurement config
     QList<QPointer<FeatureWrapper> > actuals;
     actuals.append(geometry->getActual()->getFeatureWrapper());
-    MeasurementConfig mConfig;
-    if(!this->measurementConfigManager.isNull()){
-        mConfig = this->measurementConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(attr.typeOfFeature));
-    }
+
     sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(attr.typeOfFeature);
     this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
 
