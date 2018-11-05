@@ -149,18 +149,13 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
 
     this->setDialogName();
 
-    /*//set combobox size
-    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
-    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
-    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
-    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
-    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
-
-    int sizeGroup = oi::getDropDownMenuSize(ModelManager::getGroupNamesModel().stringList(), this->ui->comboBox_group->width());
-    this->ui->comboBox_group->view()->setMinimumWidth(sizeGroup);*/
+    //get default mConfig in combobox
+    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(this->typeOfFeature)));
+    if(!elementConfigName.isEmpty()){
+        this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
+    }
 
     event->accept();
-
 }
 
 /*!

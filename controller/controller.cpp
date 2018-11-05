@@ -1982,8 +1982,6 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
 
     return true;
-
-
 }
 
 /*!
