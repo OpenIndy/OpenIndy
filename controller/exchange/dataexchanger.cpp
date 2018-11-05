@@ -343,8 +343,17 @@ void DataExchanger::importFeatures(const bool &success){
                 if(!this->mConfigManager.isNull()){
                     //TODO fix that all measurement configs are saved in the database OI-373
                     //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+                    //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
 
-                    //Workaround until bug is fixed
+                    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
+
+                    if(!elementConfigName.isEmpty()){
+                        mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
+                    }else{
+                        mConfig = this->mConfigManager->getSavedMeasurementConfig(this->mConfigManager->getSavedMeasurementConfigs().at(0).getName());
+                    }
+
+                    /*//Workaround until bug is fixed
                     QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
                     if(mConfigs.size() > 0){
                         bool fpExists = false;
@@ -358,7 +367,7 @@ void DataExchanger::importFeatures(const bool &success){
                             mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
                         }
                     }
-                    fAttr.mConfig = mConfig.getName();
+                    fAttr.mConfig = mConfig.getName();*/
                 }
 
                 //function

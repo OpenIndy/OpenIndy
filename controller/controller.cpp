@@ -361,7 +361,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
     measurementConfigManager->addSavedMeasurementConfig(mConfig);
     //set measurement config for the active feature
     activeFeature->getGeometry()->setMeasurementConfig(mConfig);
-
+    SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(activeFeature->getFeatureTypeEnum()));
 }
 
 /*!
