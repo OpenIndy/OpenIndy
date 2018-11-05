@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->lineEdit_tolerance->setText("0.2");
     ModelManager::getFeatureDifferenceTableModel().setTolerance(0.2);
 
-    this->ui->dockWidget_differences->setMaximumWidth(400);
+    this->ui->dockWidget_differences->setMaximumWidth(600);
 
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);

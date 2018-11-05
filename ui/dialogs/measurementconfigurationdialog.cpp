@@ -179,6 +179,13 @@ void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
         return;
     }
 
+    QMessageBox msgBox;
+    msgBox.setText("Please check if the deleted measurement config is still in use and replace it by an existing measurement config.");
+    msgBox.setInformativeText("");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    int ret = msgBox.exec();
+
     mConfigModel->removeMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
     //deselect measurement configs and disable widget
