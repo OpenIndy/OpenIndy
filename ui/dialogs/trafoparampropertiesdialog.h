@@ -6,6 +6,7 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 #include <QPointer>
+#include <QMessageBox>
 
 #include "modelmanager.h"
 
