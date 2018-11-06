@@ -375,6 +375,62 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 return true;
             }
         }
+        case eFeatureDisplayFunctions:{
+
+            //check if the feature is a geometry
+            if(feature->getGeometry().isNull()){
+                return false;
+            }
+
+            QStringList functionNames = value.toString().split(QRegularExpression("\\W+"), QString::SkipEmptyParts);
+
+            if(functionNames.size() > 0){
+
+                QList<sdb::Function> allFunctions = SystemDbManager::getFunctions();
+
+                //test output vom clipboard
+                foreach (QString s, functionNames) {
+                    qDebug() << s;
+
+                    foreach (sdb::Function f, allFunctions) {
+                        if(f.name.compare(s) == 0){
+
+                            QPointer<Function> function(NULL);
+                            function = PluginLoader::loadFunctionPlugin(f.plugin.file_path, f.name);
+
+                            if(!function.isNull()){
+
+                                if(function->getMetaData().iid == FitFunction_iidd || function->getMetaData().iid == ConstructFunction_iidd){
+
+                                    int functionCount = feature->getFeature()->getFunctions().size();
+                                    //remove old functions
+                                    for(int i=0; i<functionCount; i++){
+                                        feature->getFeature()->removeFunction(functionCount - i -1);
+                                    }
+                                    //add new function
+                                    feature->getFeature()->addFunction(function);
+
+                                    //save new function as default for this element type
+
+                                    //TODO SAVE IN DATABASE
+                                    SystemDbManager::setDefaultFunction(feature->getFeatureTypeEnum(), f.name,
+                                                                        f.plugin.file_path);
+
+                                }else{
+                                    if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
+                                            && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd ||
+                                                feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd)){
+
+                                        feature->getFeature()->addFunction(function);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         case eFeatureDisplayX:
             if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
                 QMap<GeometryParameters, double> parameters;
