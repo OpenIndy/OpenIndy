@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QColor>
+#include <QMessageBox>
 
 #include "oijob.h"
 #include "types.h"

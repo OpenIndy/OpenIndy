@@ -1742,6 +1742,25 @@ void MainWindow::copyToClipboard(){
         selection = selectionModel->selectedIndexes();
     }
 
+    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
+
+        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
+
+        if(functionColumn == eFeatureDisplayFunctions) {
+
+            int activeFeatureID = this->control.getActiveFeature()->getFeature()->getId();
+            QString copy_table;
+            copy_table.append(QString::number(activeFeatureID));
+            copy_table.append("\n");
+
+            QClipboard *clipboard = QApplication::clipboard();
+            clipboard->clear();
+            clipboard->setText(copy_table);
+
+            return;
+        }
+    }
+
     //check and sort selection
     if(selection.size() <= 0){
         return;
@@ -1773,7 +1792,6 @@ void MainWindow::copyToClipboard(){
             copy_table.append("\t");
         }
         previous = index;
-
     }
 
     //get last selected cell

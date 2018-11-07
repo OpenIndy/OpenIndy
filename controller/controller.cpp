@@ -1770,6 +1770,15 @@ void Controller::setJob(const QPointer<OiJob> &job){
 }
 
 /*!
+ * \brief Controller::getActiveFeature
+ * \return
+ */
+QPointer<FeatureWrapper> Controller::getActiveFeature()
+{
+    return this->job->getActiveFeature();
+}
+
+/*!
  * \brief Controller::initDisplayConfigs
  * Sets up initial display configs and passes them to model manager
  */
