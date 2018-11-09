@@ -358,10 +358,10 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
         this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-
+    measurementConfigManager->addSavedMeasurementConfig(mConfig);
     //set measurement config for the active feature
     activeFeature->getGeometry()->setMeasurementConfig(mConfig);
-
+    SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(activeFeature->getFeatureTypeEnum()));
 }
 
 /*!
@@ -1539,6 +1539,14 @@ void Controller::log(const QString &msg, const MessageTypes &msgType, const Mess
 }
 
 /*!
+ * \brief Controller::initConfigs
+ */
+void Controller::initConfigs()
+{
+    this->initConfigManager();
+}
+
+/*!
  * \brief Controller::activeStationChangedCallback
  */
 void Controller::activeStationChangedCallback(){
@@ -1955,6 +1963,11 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     attr.group = geometry->getGroupName();
     attr.isActual = true;
 
+    //get measurement config
+    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
+    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(elementConfigName);
+    attr.mConfig = mConfig.getName();
+
     //create actual
     this->job->addFeatures(attr);
     if(geometry->getActual().isNull() || geometry->getActual()->getFeatureWrapper().isNull()){
@@ -1964,16 +1977,11 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     //set function and measurement config
     QList<QPointer<FeatureWrapper> > actuals;
     actuals.append(geometry->getActual()->getFeatureWrapper());
-    MeasurementConfig mConfig;
-    if(!this->measurementConfigManager.isNull()){
-        mConfig = this->measurementConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(attr.typeOfFeature));
-    }
+
     sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(attr.typeOfFeature);
     this->addFunctionsAndMConfigs(actuals, mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
 
     return true;
-
-
 }
 
 /*!
