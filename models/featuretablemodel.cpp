@@ -376,6 +376,97 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 return true;
             }
         }
+        case eFeatureDisplayFunctions:{
+
+            //check if the feature is a geometry
+            if(feature->getGeometry().isNull()){
+                return false;
+            }
+            //get the feature to copy functions from
+            QPointer<FeatureWrapper> copyFeature = this->currentJob->getFeatureById(value.toInt());
+
+            if(!copyFeature.isNull() && !copyFeature->getFeature().isNull() && !copyFeature->getFeature()->getFunctions().size() == 0){
+
+                if(copyFeature->getFeature()->getId() == feature->getFeature()->getId()){
+                    //dont overwrite the functions of the feature you copy from. If you do, you will reset the parameters to default values.
+                    return false;
+                }
+
+                if(copyFeature->getFeatureTypeEnum() != feature->getFeatureTypeEnum()){
+
+                    QMessageBox msgBox;
+                    msgBox.setText(QString("Cannot copy functions from feature type %1 to feature type %2.").arg(copyFeature->getFeatureTypeString())
+                                   .arg(feature->getFeatureTypeString()));
+                    msgBox.setStandardButtons(QMessageBox::Ok);
+                    msgBox.setDefaultButton(QMessageBox::Ok);
+                    int ret = msgBox.exec();
+
+                    return false;
+                }
+
+                QStringList functionNames;
+                foreach (QPointer<Function> func, copyFeature->getFeature()->getFunctions()) {
+                    functionNames.append(func->getMetaData().name);
+                }
+
+                if(functionNames.size() > 0){
+                    //*******************************************************
+                    // work around : get all functions and compare the names. then get the function plugin path to create the function.
+                    // the plugin path is not stored correctly in the metadata of the functions (It is a bug!!), thats why this workaraound is needed
+                    //*******************************************************
+                    QList<sdb::Function> allFunctions = SystemDbManager::getFunctions();
+
+                    foreach (QString s, functionNames) {
+                        foreach (sdb::Function f, allFunctions) {
+                            if(f.name.compare(s) == 0){
+
+                                QPointer<Function> function(NULL);
+                                function = PluginLoader::loadFunctionPlugin(f.plugin.file_path, f.name);
+
+                                if(!function.isNull()){
+
+                                    //fit and construct functions
+                                    if(function->getMetaData().iid == FitFunction_iidd || function->getMetaData().iid == ConstructFunction_iidd){
+
+                                        int functionCount = feature->getFeature()->getFunctions().size();
+                                        //remove old functions
+                                        for(int i=0; i<functionCount; i++){
+                                            feature->getFeature()->removeFunction(functionCount - i -1);
+                                        }
+                                        //add new function
+                                        feature->getFeature()->addFunction(function);
+
+                                        //save new default function for element type in the database
+                                        SystemDbManager::setDefaultFunction(feature->getFeatureTypeEnum(), f.name,
+                                                                            f.plugin.file_path);
+
+                                    }else{ //other functions
+
+                                        if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
+                                                && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd ||
+                                                    feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd)){
+
+                                            feature->getFeature()->addFunction(function);
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    //assign function parameters from copied function to the new functions
+                    if(feature->getFeature()->getFunctions().size() == copyFeature->getFeature()->getFunctions().size()){
+                        for(int i = 0; i < feature->getFeature()->getFunctions().size(); i++){
+                            feature->getFeature()->getFunctions().at(i)->setScalarInputParams(
+                                        copyFeature->getFeature()->getFunctions().at(i)->getScalarInputParams());
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }
         case eFeatureDisplayX:
             if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
                 QMap<GeometryParameters, double> parameters;

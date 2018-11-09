@@ -56,6 +56,7 @@ public slots:
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeatures(const QSet<int> &featureIds);
+    QPointer<FeatureWrapper> getActiveFeature();
 
     //change feature parameters
     void setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters);
