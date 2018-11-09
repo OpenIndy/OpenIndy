@@ -15,6 +15,8 @@
 #include "console.h"
 #include "observationimporter.h"
 #include "measurementconfigmanager.h"
+#include "systemdbmanager.h"
+#include "util.h"
 
 using namespace oi;
 

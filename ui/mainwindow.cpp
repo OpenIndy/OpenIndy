@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->lineEdit_tolerance->setText("0.2");
     ModelManager::getFeatureDifferenceTableModel().setTolerance(0.2);
 
-    this->ui->dockWidget_differences->setMaximumWidth(400);
+    this->ui->dockWidget_differences->setMaximumWidth(600);
 
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
@@ -2146,6 +2146,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -2922,5 +2923,8 @@ void MainWindow::showEvent(QShowEvent *e)
     ProjectConfig::loadProjectPathConfigFile();
     //parse them to the model, to display all values in correct unit
     this->settingsDialog.updateDisplayConfigFromSelection();
+
+    emit loadAndSaveConfigs();
+
     e->accept();
 }

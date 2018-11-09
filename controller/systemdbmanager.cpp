@@ -1227,7 +1227,7 @@ bool SystemDbManager::removeMeasurementConfig(const QString &name){
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
 
-        QString query = QString("DELETE FROM measurementConfigs WHERE name = '%1';").arg(name);
+        QString query = QString("DELETE FROM measurementConfig WHERE name = '%1';").arg(name);
 
         QSqlQuery command(SystemDbManager::db);
         check = command.exec(query);

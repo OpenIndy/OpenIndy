@@ -417,19 +417,20 @@ void MeasurementConfigManager::loadFromConfigFolder(){
             //delete the config file permanently
             mConfigFile.remove();
             continue;
-
         }
         mConfigNames.append(savedConfig.getName());
 
-        //add the loaded measurement config to the list of saved configs
-        this->savedMeasurementConfigMap.insert(savedConfig.getName(), savedConfig);
-        this->savedMeasurementConfigList.append(savedConfig);
+        this->addSavedMeasurementConfig(savedConfig);
 
+        //add the loaded measurement config to the list of saved configs
+        if(!this->savedMeasurementConfigMap.contains(savedConfig.getName())){
+            this->savedMeasurementConfigMap.insert(savedConfig.getName(), savedConfig);
+            this->savedMeasurementConfigList.append(savedConfig);
+        }
     }
 
     //emit signals
     emit this->measurementConfigurationsChanged();
-
 }
 
 /*!
@@ -506,8 +507,10 @@ void MeasurementConfigManager::saveMeasurementConfig(const MeasurementConfig &mC
     //add mConfig to the list of saved configs
     //########################################
 
-    this->savedMeasurementConfigMap.insert(mConfig.getName(), mConfig);
-    this->savedMeasurementConfigList.append(mConfig);
+    if(!this->savedMeasurementConfigMap.contains(mConfig.getName())){
+        this->savedMeasurementConfigMap.insert(mConfig.getName(), mConfig);
+        this->savedMeasurementConfigList.append(mConfig);
+    }
 
     //############
     //emit signals

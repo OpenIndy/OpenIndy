@@ -89,14 +89,23 @@ void TrafoParamPropertiesDialog::on_toolButton_cancel_clicked(){
  */
 void TrafoParamPropertiesDialog::on_toolButton_ok_clicked(){
 
-    //get a map of unknown parameters
-    QMap<TrafoParamParameters, double> parameters;
-    this->getParametersFromGUI(parameters);
+    QMessageBox msgBox;
+    msgBox.setText("Editing transformation parameters may result in invalid data!!");
+    msgBox.setInformativeText("Do you want to continue?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+    int ret = msgBox.exec();
 
-    emit this->trafoParamParametersChanged(this->id, parameters);
+    if(ret == QMessageBox::Yes){
+
+        //get a map of unknown parameters
+        QMap<TrafoParamParameters, double> parameters;
+        this->getParametersFromGUI(parameters);
+
+        emit this->trafoParamParametersChanged(this->id, parameters);
+    }
 
     this->close();
-
 }
 
 /*!

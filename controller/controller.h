@@ -132,6 +132,9 @@ public slots:
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
 
+    //init configs from mainwindowSlot
+    void initConfigs();
+
 signals:
 
     //#################################################

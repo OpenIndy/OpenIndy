@@ -115,6 +115,9 @@ signals:
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
+    //load sensorconfigs and measurementconfigs from folders and store in databas
+    void loadAndSaveConfigs();
+
 private slots:
 
     //#############################
