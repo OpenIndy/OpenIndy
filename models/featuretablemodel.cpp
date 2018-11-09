@@ -386,6 +386,11 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
             if(!copyFeature.isNull() && !copyFeature->getFeature().isNull() && !copyFeature->getFeature()->getFunctions().size() == 0){
 
+                if(copyFeature->getFeature()->getId() == feature->getFeature()->getId()){
+                    //dont overwrite the functions of the feature you copy from. If you do, you will reset the parameters to default values.
+                    return false;
+                }
+
                 if(copyFeature->getFeatureTypeEnum() != feature->getFeatureTypeEnum()){
 
                     QMessageBox msgBox;
@@ -393,6 +398,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                    .arg(feature->getFeatureTypeString()));
                     msgBox.setStandardButtons(QMessageBox::Ok);
                     msgBox.setDefaultButton(QMessageBox::Ok);
+                    int ret = msgBox.exec();
 
                     return false;
                 }

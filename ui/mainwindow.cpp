@@ -709,8 +709,6 @@ void MainWindow::on_tableView_features_doubleClicked(const QModelIndex &index)
     sourceModel->setActiveFeature(model->mapToSource(index));
 
     FeatureTableColumnConfig ftc = model->getFeatureTableColumnConfig();
-    qDebug() << "col " << index.column();
-    qDebug() << ftc.getDisplayAttributeAt(index.column());
 
     if(model->getFeatureTableColumnConfig().getDisplayAttributeAt(index.column()) == eFeatureDisplayFunctions){
 
