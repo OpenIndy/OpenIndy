@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QColor>
+#include <QMessageBox>
 
 #include "oijob.h"
 #include "types.h"
@@ -12,6 +13,8 @@
 #include "parameterdisplayconfig.h"
 #include "console.h"
 #include "measurementconfigmanager.h"
+#include "pluginloader.h"
+#include "systemdbmanager.h"
 
 using namespace oi;
 

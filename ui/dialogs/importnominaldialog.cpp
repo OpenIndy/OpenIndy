@@ -72,8 +72,14 @@ void ImportNominalDialog::on_comboBox_exchange_sa_currentIndexChanged(const QStr
 void ImportNominalDialog::on_pushButton_file_sa_clicked(){
 
     QString path = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                     "",
+                                                     ProjectConfig::getImportNominalPath(),
                                                      tr("Files (*.txt)"));
+
+    if(!path.isEmpty()){
+        QFileInfo info(path);
+        ProjectConfig::setImportNominalPath(info.absolutePath());
+    }
+
     this->ui->lineEdit_file_sa->setText(path);
 
 }

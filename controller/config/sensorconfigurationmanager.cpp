@@ -415,11 +415,13 @@ void SensorConfigurationManager::loadFromConfigFolder(){
 
         }
         sConfigNames.append(savedConfig.getName());
+        this->addSavedSensorConfig(savedConfig);
 
         //add the loaded sensor config to the list of saved configs
-        this->savedSensorConfigsMap.insert(savedConfig.getName(), savedConfig);
-        this->savedSensorConfigsList.append(savedConfig);
-
+        if(!this->savedSensorConfigsMap.contains(savedConfig.getName())){
+            this->savedSensorConfigsMap.insert(savedConfig.getName(), savedConfig);
+            this->savedSensorConfigsList.append(savedConfig);
+        }
     }
 
     //get default sensor config
@@ -515,8 +517,10 @@ void SensorConfigurationManager::saveSensorConfig(const SensorConfiguration &sCo
     //add sConfig to the list of saved configs
     //########################################
 
-    this->savedSensorConfigsMap.insert(sConfig.getName(), sConfig);
-    this->savedSensorConfigsList.append(sConfig);
+    if(!this->savedSensorConfigsMap.contains(sConfig.getName())){
+        this->savedSensorConfigsMap.insert(sConfig.getName(), sConfig);
+        this->savedSensorConfigsList.append(sConfig);
+    }
 
     //############
     //emit signals

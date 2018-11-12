@@ -11,6 +11,7 @@
 
 #include "modelmanager.h"
 #include "parameterdisplayconfig.h"
+#include "projectconfig.h"
 
 using namespace oi;
 
@@ -25,6 +26,8 @@ class SettingsDialog : public QDialog
 public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
+
+    void updateDisplayConfigFromSelection();
 
 signals:
 
@@ -62,7 +65,7 @@ private:
     //helper methods
     //##############
 
-    void updateDisplayConfigFromSelection();
+
 
 private:
     Ui::SettingsDialog *ui;

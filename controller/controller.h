@@ -56,6 +56,7 @@ public slots:
     //add or remove features
     void addFeatures(const FeatureAttributes &attributes);
     void removeFeatures(const QSet<int> &featureIds);
+    QPointer<FeatureWrapper> getActiveFeature();
 
     //change feature parameters
     void setNominalParameters(const int &featureId, const QMap<GeometryParameters, double> &parameters);
@@ -130,6 +131,9 @@ public slots:
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
+
+    //init configs from mainwindowSlot
+    void initConfigs();
 
 signals:
 

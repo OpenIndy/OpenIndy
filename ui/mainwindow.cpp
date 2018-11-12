@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->lineEdit_tolerance->setText("0.2");
     ModelManager::getFeatureDifferenceTableModel().setTolerance(0.2);
 
-    this->ui->dockWidget_differences->setMaximumWidth(400);
+    this->ui->dockWidget_differences->setMaximumWidth(600);
 
     this->ui->tabWidget_bundle->setTabEnabled(2,false);
     this->ui->tabWidget_bundle->setTabEnabled(3,false);
@@ -709,8 +709,6 @@ void MainWindow::on_tableView_features_doubleClicked(const QModelIndex &index)
     sourceModel->setActiveFeature(model->mapToSource(index));
 
     FeatureTableColumnConfig ftc = model->getFeatureTableColumnConfig();
-    qDebug() << "col " << index.column();
-    qDebug() << ftc.getDisplayAttributeAt(index.column());
 
     if(model->getFeatureTableColumnConfig().getDisplayAttributeAt(index.column()) == eFeatureDisplayFunctions){
 
@@ -1175,14 +1173,16 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
-    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", "", "xml (*.xml)");
-    if(filename.compare("") == 0){
+    QString filename = QFileDialog::getOpenFileName(this, "Choose a file", ProjectConfig::getProjectPath(), "xml (*.xml)");
+    if(filename.isEmpty()){
         return;
     }
 
     QPointer<QIODevice> device = new QFile(filename);
     QFileInfo info(filename);
     QString projectName = info.fileName();
+
+    ProjectConfig::setProjectPath(info.absolutePath());
 
     //clear current selection in table view
     this->ui->tableView_features->clearSelection();
@@ -1740,6 +1740,25 @@ void MainWindow::copyToClipboard(){
         selection = selectionModel->selectedIndexes();
     }
 
+    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
+
+        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
+
+        if(functionColumn == eFeatureDisplayFunctions) {
+
+            int activeFeatureID = this->control.getActiveFeature()->getFeature()->getId();
+            QString copy_table;
+            copy_table.append(QString::number(activeFeatureID));
+            copy_table.append("\n");
+
+            QClipboard *clipboard = QApplication::clipboard();
+            clipboard->clear();
+            clipboard->setText(copy_table);
+
+            return;
+        }
+    }
+
     //check and sort selection
     if(selection.size() <= 0){
         return;
@@ -1771,7 +1790,6 @@ void MainWindow::copyToClipboard(){
             copy_table.append("\t");
         }
         previous = index;
-
     }
 
     //get last selected cell
@@ -2128,6 +2146,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -2764,8 +2783,11 @@ void MainWindow::resetBundleView(){
  */
 void MainWindow::saveProjectAs()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Choose a filename", "oiProject", "xml (*.xml)");
-    if(filename.compare("") != 0){
+    QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
+
+    if(!filename.isEmpty()){
+        QFileInfo info(filename);
+        ProjectConfig::setProjectPath(info.absolutePath());
         emit this->saveProject(filename);
     }
 }
@@ -2889,4 +2911,20 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
 
     menu->addAction("copy to clipboard", this, SLOT(copyDifferencesToClipboard()));
     menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
+}
+
+/*!
+ * \brief MainWindow::showEvent
+ * \param e
+ */
+void MainWindow::showEvent(QShowEvent *e)
+{
+    //load and restore project unit settings
+    ProjectConfig::loadProjectPathConfigFile();
+    //parse them to the model, to display all values in correct unit
+    this->settingsDialog.updateDisplayConfigFromSelection();
+
+    emit loadAndSaveConfigs();
+
+    e->accept();
 }
