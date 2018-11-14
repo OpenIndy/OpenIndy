@@ -1915,6 +1915,22 @@ void MainWindow::pasteFromClipboard(){
     }
     qSort(selection);
 
+    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
+        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
+
+        if(functionColumn == eFeatureDisplayFunctions){
+
+            if(selection.size() > 1){
+                QMessageBox msgBox;
+                msgBox.setText("Only select one feature to paste functions to.");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                int ret = msgBox.exec();
+                return;
+            }
+        }
+    }
+
     //get values from clipboard, so you can copy them
     QClipboard *clipboard = QApplication::clipboard();
     QString copy_table = clipboard->text();
