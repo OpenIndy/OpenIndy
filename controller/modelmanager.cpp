@@ -1077,8 +1077,13 @@ void ModelManager::updateGroupsModel(){
         groups = ModelManager::currentJob->getFeatureGroupList();
     }
 
-    //add default entry (all groups)
-    groups.push_front("All Groups");
+    //add default entry (all groups) if not exists
+    if(groups.size() == 0){
+        groups.append("All Groups");
+    }
+    if(groups.first().compare("All Groups") != 0){
+        groups.push_front("All Groups");
+    }
 
     if(groups.size() == 1 && !groups.contains("Group01")){
         groups.append("Group01");
