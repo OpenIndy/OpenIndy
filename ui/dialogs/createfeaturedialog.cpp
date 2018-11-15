@@ -382,6 +382,9 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
     attributes.count = this->ui->spinBox_count->value();
     attributes.name = this->ui->lineEdit_name->text();
     attributes.group = this->ui->comboBox_group->currentText();
+    if(attributes.group.compare("All Groups") == 0){
+        attributes.group = "";
+    }
 
     //fill feature type specific attributes
     if(this->typeOfFeature == eTrafoParamFeature){
