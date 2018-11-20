@@ -2234,6 +2234,7 @@ void MainWindow::connectDialogs(){
 
     //connect actual properties dialog
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
+    QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::removeObservationsById, &this->control, &Controller::removeObservationsById, Qt::AutoConnection);
 
     //connect nominal properties dialog
     QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);

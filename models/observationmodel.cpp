@@ -379,17 +379,22 @@ void ObservationModel::setParameterDisplayConfig(const ParameterDisplayConfig &c
     this->updateModel();
 }
 
-void ObservationModel::setObservationUseStateByContextmenu(bool use, const QModelIndex &index)
-{
+/*!
+ * \brief ObservationModel::getObservation
+ * \param index
+ * \return
+ */
+QPointer<Observation> ObservationModel::getObservation(const QModelIndex &index) {
+    QPointer<Observation> observation(NULL);
     //check current job and model index
     if(this->currentJob.isNull() || !index.isValid()){
-        return;
+        return observation;
     }
 
     //get and check active feature
     QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
     if(feature.isNull() || feature->getFeature().isNull()){
-        return;
+        return observation;
     }
 
     //get and check active geometry
@@ -400,7 +405,7 @@ void ObservationModel::setObservationUseStateByContextmenu(bool use, const QMode
         geometry = feature->getStation()->getPosition();
     }
     if(geometry.isNull()){
-        return;
+        return observation;
     }
 
     //get row and column indices
@@ -408,19 +413,42 @@ void ObservationModel::setObservationUseStateByContextmenu(bool use, const QMode
     int columnIndex = index.column();
 
     //get and check observation
-    QPointer<Observation> observation(NULL);
+
     if(rowIndex < geometry->getObservations().size()){
         observation = geometry->getObservations().at(rowIndex);
     }
+    return observation;
+}
+
+/*!
+ * \brief ObservationModel::setObservationUseStateByContextmenu
+ * \param use
+ * \param index
+ */
+void ObservationModel::setObservationUseStateByContextmenu(bool use, const QModelIndex &index)
+{
+    QPointer<Observation> observation = this->getObservation(index);
     if(observation.isNull()){
         return;
     }
-
     if(use){
-        emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), true, true);
+        emit this->setShouldBeUsed(this->currentJob->getActiveFeature(), 0, 0, observation->getId(), true, true);
     }else{
-        emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), false, true);
+        emit this->setShouldBeUsed(this->currentJob->getActiveFeature(), 0, 0, observation->getId(), false, true);
     }
+}
+/*!
+ * \brief ObservationModel::getObservationIdByIndex
+ * \param index
+ * \return
+ */
+int ObservationModel::getObservationIdByIndex(const QModelIndex &index)
+{
+    QPointer<Observation> observation = this->getObservation(index);
+    if(observation.isNull()){
+        return -1;
+    }
+    return observation->getId();
 }
 
 /*!
