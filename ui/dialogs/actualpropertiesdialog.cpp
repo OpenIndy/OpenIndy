@@ -60,8 +60,9 @@ void ActualPropertiesDialog::on_tableView_observation_customContextMenuRequested
     menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("import observations"), this, SLOT(importObservationsMenuClicked(bool)));
 
     //add use / unuse actions
-    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("use selected observation(s)"), this, SLOT(useObservations(bool)));
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations(bool)));
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("use selected observation(s)"), this, SLOT(useObservations()));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations()));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected observation(s)"), this, SLOT(deleteObservations()));
 
     //get observation table models
     ObservationProxyModel *model = static_cast<ObservationProxyModel*>(this->ui->tableView_observation->model());
@@ -238,6 +239,45 @@ void ActualPropertiesDialog::initModels(){
 }
 
 /*!
+ * \brief ActualPropertiesDialog::getSelection
+ * \return
+ */
+QModelIndexList ActualPropertiesDialog::getSelection()
+{
+    //init variables
+    QPointer<QSortFilterProxyModel> model;
+    QPointer<QItemSelectionModel> selectionModel;
+    QModelIndexList selection;
+
+    //get models of observation tabview
+    if(this->ui->tabWidget_selectedFeature->currentWidget() != this->ui->tab_observations){
+        return selection;
+    }
+
+    model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+    if(model == NULL){
+        return selection;
+    }
+
+    //get selection
+    selectionModel = this->ui->tableView_observation->selectionModel();
+
+    //get and check source model
+    ObservationModel *sourceModel = static_cast<ObservationModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return selection;
+    }
+
+    //get selected indexes
+    selection = selectionModel->selectedIndexes();
+    if(selection.size() > 0){
+        qSort(selection);
+    }
+
+    return selection;
+}
+
+/*!
  * \brief ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuRequested
  * \param pos
  */
@@ -246,8 +286,8 @@ void ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuReque
     //create  menu and add delete action
     QMenu *menu = new QMenu();
 
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("use selected observation(s)"), this, SLOT(useObservations(bool)));
-    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations(bool)));
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("use selected observation(s)"), this, SLOT(useObservations()));
+    menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("unuse selected observation(s)"), this, SLOT(unUseObservations()));
 
     //get observation table models
     ObservationProxyModel *model = static_cast<ObservationProxyModel*>(this->ui->tableView_observation->model());
@@ -265,86 +305,56 @@ void ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuReque
 
 /*!
  * \brief ActualPropertiesDialog::unUseObservations
- * \param use
  */
-void ActualPropertiesDialog::unUseObservations(bool use)
+void ActualPropertiesDialog::unUseObservations()
 {
     //init variables
-    QPointer<QSortFilterProxyModel> model;
-    QPointer<QItemSelectionModel> selectionModel;
     QModelIndexList selection;
 
-    //get models of observation tabview
-    if(this->ui->tabWidget_selectedFeature->currentWidget() != this->ui->tab_observations){
-        return;
-    }
-
-    model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get selection
-    selectionModel = this->ui->tableView_observation->selectionModel();
-
-    //get and check source model
-    ObservationModel *sourceModel = static_cast<ObservationModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
     //get selected indexes
-    selection = selectionModel->selectedIndexes();
-    if(selection.size() <= 0){
-        //emit this->log("No observations selected", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-    qSort(selection);
-
-    foreach (QModelIndex idx, selection) {
-        emit this->useObservation(false, idx);
+    selection = this->getSelection();
+    if(selection.size() > 0){
+        foreach (QModelIndex idx, selection) {
+            emit this->useObservation(false, idx);
+        }
     }
 }
 
 /*!
- * \brief ActualPropertiesDialog::useUnuseObservations
- * \param use
+ * \brief ActualPropertiesDialog::useObservations
  */
-void ActualPropertiesDialog::useObservations(bool use)
+void ActualPropertiesDialog::useObservations()
 {
     //init variables
-    QPointer<QSortFilterProxyModel> model;
-    QPointer<QItemSelectionModel> selectionModel;
     QModelIndexList selection;
 
-    //get models of observation tabview
-    if(this->ui->tabWidget_selectedFeature->currentWidget() != this->ui->tab_observations){
-        return;
+    //get selected indexes
+    selection = this->getSelection();
+    if(selection.size() > 0){
+        foreach (QModelIndex idx, selection) {
+            emit this->useObservation(true, idx);
+        }
     }
+}
 
-    model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get selection
-    selectionModel = this->ui->tableView_observation->selectionModel();
-
-    //get and check source model
-    ObservationModel *sourceModel = static_cast<ObservationModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
+/*!
+ * \brief ActualPropertiesDialog::deleteObservations
+ */
+void ActualPropertiesDialog::deleteObservations()
+{
+    //init variables
+    QModelIndexList selection;
 
     //get selected indexes
-    selection = selectionModel->selectedIndexes();
-    if(selection.size() <= 0){
-        //emit this->log("No observations selected", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-    qSort(selection);
-
-    foreach (QModelIndex idx, selection) {
-        emit this->useObservation(true, idx);
+    selection = this->getSelection();
+    if(selection.size() > 0){
+        QList<int> selectedIds;
+        foreach (QModelIndex idx, selection) {
+            int i = ModelManager::getObservationModel().getObservationIdByIndex(idx);
+            if (i >= 0) {
+                selectedIds.append(i);
+            }
+        }   
+        emit this->removeObservationsById(selectedIds);
     }
 }

@@ -53,6 +53,7 @@ public:
 public slots:
 
     void setObservationUseStateByContextmenu(bool use, const QModelIndex &index);
+    int getObservationIdByIndex(const QModelIndex &index);
 
 signals:
 
@@ -102,6 +103,7 @@ private:
 
     ParameterDisplayConfig parameterDisplayConfig;
 
+    QPointer<Observation> getObservation(const QModelIndex &index);
 };
 
 #endif // OBSERVATIONMODEL_H
