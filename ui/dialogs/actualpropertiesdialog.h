@@ -51,6 +51,7 @@ signals:
 
     void useObservation(bool use, const QModelIndex &index);
     void unUseObservation(bool use, const QModelIndex &index);
+    void removeObservationsById(const QList<int> selectedIds);
 
 private slots:
 
@@ -80,8 +81,9 @@ private slots:
 
     void on_tabWidget_selectedFeature_customContextMenuRequested(const QPoint &pos);
 
-    void useObservations(bool use);
-    void unUseObservations(bool use);
+    void useObservations();
+    void unUseObservations();
+    void deleteObservations();
 
 private:
 
@@ -93,6 +95,7 @@ private:
 
     void initGUI();
     void initModels();
+    QModelIndexList getSelection();
 
     //#################
     //helper attributes

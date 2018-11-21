@@ -440,6 +440,17 @@ void Controller::removeObservations(const int &featureId){
 
 }
 
+void Controller::removeObservationsById(const QList<int> selectedIds)
+{
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->removeObservations(this->job->getActiveFeature()->getFeature()->getId(), selectedIds);
+}
+
 /*!
  * \brief Controller::removeAllObservations
  */

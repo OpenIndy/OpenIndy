@@ -382,12 +382,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             if(feature->getGeometry().isNull()){
                 return false;
             }
-
-            //only actual features have a function
-            if(feature->getGeometry()->getIsNominal()){
-                return false;
-            }
-
             //get the feature to copy functions from
             QPointer<FeatureWrapper> copyFeature = this->currentJob->getFeatureById(value.toInt());
 

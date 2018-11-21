@@ -87,6 +87,7 @@ public slots:
     //add or remove observations
     void importObservations(const QString &filename);
     void removeObservations(const int &featureId);
+    void removeObservationsById(const QList<int> selectedIds);
     void removeAllObservations();
 
     //set display configs
