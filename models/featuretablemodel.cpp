@@ -336,6 +336,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             bool isNominal = (!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal());
             QPointer<CoordinateSystem> nominalSystem(NULL);
             if(isNominal){
+                return false;
                 nominalSystem = feature->getGeometry()->getNominalSystem();
             }
 
