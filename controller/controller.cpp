@@ -802,6 +802,13 @@ void Controller::saveProject(){
         device->close();
     }else{
         this->log(QString("Cannot open file %1").arg(name), eInformationMessage, eStatusBarMessage);
+        QMessageBox msgBox;
+        msgBox.setText("data source could not be found.");
+        msgBox.setInformativeText("Please check your saved data, before you continue.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+        return;
     }
 
     this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
@@ -822,6 +829,9 @@ void Controller::saveProject(const QString &fileName){
 
     //set name
     QFileInfo info(fileName);
+    if(!info.absoluteDir().exists()){
+        return;
+    }
     this->job->setJobName(info.fileName());
 
     //set device
