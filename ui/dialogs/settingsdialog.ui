@@ -169,6 +169,20 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+           <item>
+            <widget class="QLabel" name="label_autoSaveInterval">
+             <property name="text">
+              <string>Project auto save interval [minutes]</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_autoSaveInterval"/>
+           </item>
+          </layout>
+         </item>
         </layout>
        </widget>
       </widget>

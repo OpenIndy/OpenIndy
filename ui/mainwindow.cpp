@@ -2949,7 +2949,12 @@ void MainWindow::showEvent(QShowEvent *e)
 }
 
 void MainWindow::startAutoSave() {
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), &this->control, SLOT(saveProject()));
-    timer->start(1000 * 60 * 10); // 10 minutes
+    int i = ProjectConfig::getAutoSaveInterval();
+    qDebug() << "auto save interval: " << i << "minutes" << (i>0 ? "" : ": disabled");
+
+    if(i>0) {
+        QTimer *timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), &this->control, SLOT(saveProject()));
+        timer->start(60000 * ProjectConfig::getAutoSaveInterval());
+    }
 }

@@ -36,6 +36,9 @@ public:
     static bool getUseSounds();
     static void setUseSounds(bool value);
 
+    static int getAutoSaveInterval();
+    static void setAutoSaveInterval(int value);
+
     //********************************************
     //save and load functions for all config files
     //********************************************
@@ -60,6 +63,8 @@ private:
     static int temperatureDigits;
 
     static bool useSounds;
+
+    static int autoSaveInterval;
 };
 
 #endif // PROJECTCONFIG_H

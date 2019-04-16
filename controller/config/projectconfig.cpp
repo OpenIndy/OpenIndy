@@ -17,6 +17,7 @@ int ProjectConfig::angularDigits;
 int ProjectConfig::temperatureDigits;
 
 bool ProjectConfig::useSounds;
+int ProjectConfig::autoSaveInterval;
 
 /*!
  * \brief ProjectConfig::getImportNominalPath
@@ -189,6 +190,17 @@ void ProjectConfig::setUseSounds(bool value)
     saveprojectSettingsConfigFile();
 }
 
+int ProjectConfig::getAutoSaveInterval()
+{
+    return autoSaveInterval;
+}
+
+void ProjectConfig::setAutoSaveInterval(int value)
+{
+    autoSaveInterval = value;
+    saveprojectSettingsConfigFile();
+}
+
 /*!
  * \brief ProjectConfig::loadProjectPathConfigFile
  * \return
@@ -330,6 +342,13 @@ bool ProjectConfig::loadProjectSettingsConfigFile()
         }
         useSounds = projectSoundSettingsElem.text().toInt();
 
+        QDomElement projectAutoSaveIntervalElem = root.firstChildElement("projectAutoSaveInterval");
+        if(projectAutoSaveIntervalElem.isNull()){
+            autoSaveInterval = 10; // default minutes
+        } else {
+            autoSaveInterval = projectAutoSaveIntervalElem.text().toInt();
+        }
+
         return true;
     }
     return false;
@@ -378,6 +397,10 @@ bool ProjectConfig::saveprojectSettingsConfigFile()
     QDomText projectSoundSettingsElemText = xmlDoc.createTextNode(QString::number(useSounds));
     projectSoundSettingsElem.appendChild(projectSoundSettingsElemText);
     root.appendChild(projectSoundSettingsElem);
+
+    QDomElement projectAutoSaveIntervalElem = xmlDoc.createElement("projectAutoSaveInterval");
+    projectAutoSaveIntervalElem.appendChild(xmlDoc.createTextNode(QString::number(autoSaveInterval)));
+    root.appendChild(projectAutoSaveIntervalElem);
 
     xmlDoc.appendChild(root);
 

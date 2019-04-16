@@ -80,6 +80,10 @@ void SettingsDialog::on_lineEdit_temperatureDigits_textChanged(const QString &ar
     this->updateDisplayConfigFromSelection();
 }
 
+void SettingsDialog::on_lineEdit_autoSaveInterval_textChanged(const QString &arg1){
+    this->updateDisplayConfigFromSelection();
+}
+
 /*!
  * \brief SettingsDialog::showEvent
  * \param event
@@ -109,6 +113,7 @@ void SettingsDialog::initGUI(){
     this->ui->lineEdit_distanceDigits->blockSignals(true);
     this->ui->lineEdit_temperatureDigits->blockSignals(true);
     this->ui->checkBox_sounds->blockSignals(true);
+    this->ui->lineEdit_autoSaveInterval->blockSignals(true);
 
     //set default unit
     this->ui->comboBox_angleType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getAngularUnit())));
@@ -118,6 +123,7 @@ void SettingsDialog::initGUI(){
     this->ui->lineEdit_distanceDigits->setText(QString::number(ProjectConfig::getDistanceDigits()));
     this->ui->lineEdit_temperatureDigits->setText(QString::number(ProjectConfig::getTemperatureDigits()));
     this->ui->checkBox_sounds->setChecked(ProjectConfig::getUseSounds());
+    this->ui->lineEdit_autoSaveInterval->setText(QString::number(ProjectConfig::getAutoSaveInterval()));
 
     //from now on trigger changes
     this->ui->comboBox_angleType->blockSignals(false);
@@ -127,6 +133,7 @@ void SettingsDialog::initGUI(){
     this->ui->lineEdit_distanceDigits->blockSignals(false);
     this->ui->lineEdit_temperatureDigits->blockSignals(false);
     this->ui->checkBox_sounds->blockSignals(false);
+    this->ui->lineEdit_autoSaveInterval->blockSignals(false);
 }
 
 /*!
@@ -163,6 +170,7 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
         ProjectConfig::setMetricUnit(getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
         ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
         ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
+        ProjectConfig::setAutoSaveInterval(this->ui->lineEdit_autoSaveInterval->text().toInt());
     }
 
     emit this->setDisplayConfig(config);
