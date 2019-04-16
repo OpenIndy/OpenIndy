@@ -53,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         int bundleID = job->getBundleSystemList().at(0)->getId();
         this->loadDefaultBundlePlugIn(bundleID);
     }
+
+    this->startAutoSave();
 }
 
 /*!
@@ -2944,4 +2946,10 @@ void MainWindow::showEvent(QShowEvent *e)
     emit loadAndSaveConfigs();
 
     e->accept();
+}
+
+void MainWindow::startAutoSave() {
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), &this->control, SLOT(saveProject()));
+    timer->start(1000 * 60 * 10); // 10 minutes
 }
