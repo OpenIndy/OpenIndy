@@ -12,7 +12,7 @@ QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
 QPointer<MeasurementConfigManager> ProjectExchanger::mConfigManager;
 
 /*!
- * \brief ProjectExchanger::saveProject
+ * \brief ProjectExchanger::saveProject create XML-Document, "saves" the project / job to XML and compute a digest
  * \param job
  * \return
  */
@@ -29,12 +29,8 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     //get current date and time
     QString dateTime = QDateTime::currentDateTime().toString(Qt::ISODate);
 
-    //create XML root and set general project attributes
+    //create XML root, set general project attributes later
     QDomElement root = project.createElement("oiProjectData");
-    root.setAttribute("name", job->getJobName());
-    root.setAttribute("date", dateTime);
-    root.setAttribute("idCount", QString::number(job->generateUniqueId()));
-    root.setAttribute("version", QString(OPENINDY_VERSION));
     project.appendChild(root);
 
     //add active station and active coordinate system
@@ -166,6 +162,25 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     root.appendChild(configs);
 
+    // create hash / digest over xml with out oiProjectData Attributes
+    QByteArray arr;
+    QTextStream stream(&arr);
+    project.save(stream, 4 /*indent*/);
+    stream.flush();
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+    hash.addData(arr);
+    QString digest = hash.result().toHex();
+
+    // set hash / digest
+    job->setDigest(digest);
+
+    // set general project attributes
+    root.setAttribute("name", job->getJobName());
+    root.setAttribute("date", dateTime);
+    root.setAttribute("idCount", QString::number(job->generateUniqueId()));
+    root.setAttribute("version", QString(OPENINDY_VERSION));
+    root.setAttribute("digest", digest);
+
     return project;
 
 }
@@ -225,6 +240,10 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
     //set id count
     if(project.documentElement().hasAttribute("idCount")){
         job->nextId = project.documentElement().attribute("idCount").toInt() + 1;
+    }
+
+    if(project.documentElement().hasAttribute("digest")){
+        job->setDigest(project.documentElement().attribute("digest"));
     }
 
     //add project measurement configs to config manager

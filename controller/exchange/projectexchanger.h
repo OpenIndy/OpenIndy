@@ -10,6 +10,7 @@
 #include <QtXml>
 #include <QPointer>
 #include <QFile>
+#include <QCryptographicHash>
 
 #include "function.h"
 #include "systemdbmanager.h"
