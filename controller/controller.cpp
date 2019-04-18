@@ -819,8 +819,14 @@ void Controller::saveProject(){
         return;
     }
 
+    QMutexLocker locker(&saveProjectMutex); // synchronize write file
+
     //get project xml
+    QString preDigest = this->job->getDigest();
     QDomDocument project = ProjectExchanger::saveProject(this->job);
+    if(preDigest == job->getDigest()) {
+        return;
+    }
     if(project.isNull()){
         this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
         return;
@@ -832,6 +838,8 @@ void Controller::saveProject(){
         QTextStream stream(device);
         project.save(stream, 4);
         device->close();
+
+        this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
     }else{
         this->log(QString("Cannot open file %1").arg(name), eInformationMessage, eStatusBarMessage);
         QMessageBox msgBox;
@@ -842,8 +850,6 @@ void Controller::saveProject(){
         int ret = msgBox.exec();
         return;
     }
-
-    this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
 
 }
 
@@ -862,35 +868,17 @@ void Controller::saveProject(const QString &fileName){
     //set name
     QFileInfo info(fileName);
     if(!info.absoluteDir().exists()){
+        this->log("Directory not exists", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    this->job->setJobName(info.fileName());
+    this->job->setJobName(fileName);
 
     //set device
-    QPointer<QIODevice> device = new QFile(fileName);
-    this->job->setJobDevice(device);
+    this->job->setJobDevice(new QFile(fileName));
 
-    //get project xml
-    QDomDocument project = ProjectExchanger::saveProject(this->job);
-    if(project.isNull()){
-        this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
+    this->saveProject();
 
-    //save project xml
-    bool isOpen = this->job->getJobDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    if(isOpen){
-        QTextStream stream(this->job->getJobDevice());
-        project.save(stream, 4);
-        this->job->getJobDevice()->close();
-    }else{
-        this->log(QString("Cannot open file %1").arg(info.fileName()), eInformationMessage, eStatusBarMessage);
-    }
-
-    emit this->currentJobChanged();
-
-    this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
-
+    emit this->currentJobChanged(); // maybe changed TODO: emit if this->saveProject(); is successful
 }
 
 /*!
