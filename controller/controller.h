@@ -48,6 +48,8 @@ public:
 
     const QList<QPointer<Tool> > &getAvailableTools() const;
 
+    bool hasProjectDigestChanged();
+
 public slots:
 
     //#######################
