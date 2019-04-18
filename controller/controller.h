@@ -9,6 +9,8 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "oijob.h"
 #include "modelmanager.h"
@@ -342,6 +344,9 @@ private:
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;
+
+    // synchronize saveProject calls
+    QMutex saveProjectMutex;
 
 };
 
