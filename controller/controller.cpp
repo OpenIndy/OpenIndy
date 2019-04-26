@@ -1817,7 +1817,7 @@ QPointer<FeatureWrapper> Controller::getActiveFeature()
 void Controller::initDisplayConfigs(){
 
     //create default configs
-    FeatureTableColumnConfig featureTableColumnConfig;
+    FeatureTableColumnConfig featureTableColumnConfig(ProjectConfig::getDisplayColumns());
     TrafoParamTableColumnConfig trafoParamTableColumnConfig;
     ObservationTableColumnConfig observationTableColumnConfig;
     ReadingTableColumnConfig readingTableColumnConfig;
