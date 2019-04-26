@@ -9,6 +9,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
+    //load config from file
+    ProjectConfig::loadProjectSettingsConfigFile();
+
     //initialize and connect model manager
     ModelManager::init();
     if(!ModelManager::myInstance.isNull()){
