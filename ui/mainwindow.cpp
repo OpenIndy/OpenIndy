@@ -2662,7 +2662,7 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     //update contents
     this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
     if(!feature->getGeometry().isNull()){
-        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
+        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nom":"act");
     }else{
         this->ui->label_magnifyActualNominal->setText("-/-");
     }
@@ -2672,25 +2672,22 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     double h = this->ui->label_magnifyActualNominal->height();
     double w = this->ui->label_magnifyActualNominal->width();
     QFontMetrics fmActualNominal(fontActualNominal);
-    double scaleW = w/fmActualNominal.width(this->ui->label_magnifyActualNominal->text());
+    const double tw = fmActualNominal.width(this->ui->label_magnifyActualNominal->text());
+    double scaleW = w/tw;
     double scaleH = h/fmActualNominal.height();
-    if(scaleH > scaleW){
-        fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF()*scaleW);
-    }else{
-        fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF()*scaleH);
-    }
+    fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF() * std::min(scaleH, scaleW));
     this->ui->label_magnifyActualNominal->setFont(fontActualNominal);
+
+    // set label witdh
+    this->ui->label_magnifyActualNominal->setFixedWidth(tw * std::min(scaleH, scaleW));
+
     QFont fontName = this->ui->label_magnifyName->font();
     h = this->ui->label_magnifyName->height();
-    w = this->ui->label_magnifyName->width();
+    w = this->ui->label_magnifyName->width() + (w - tw * std::min(scaleH, scaleW)); // with delta size of label_magnifyActualNominal
     QFontMetrics fmName(fontName);
     scaleW = w/fmName.width(this->ui->label_magnifyName->text());
     scaleH = h/fmName.height();
-    if(scaleH > scaleW){
-        fontName.setPointSizeF(fontName.pointSizeF()*scaleW);
-    }else{
-        fontName.setPointSizeF(fontName.pointSizeF()*scaleH);
-    }
+    fontName.setPointSizeF(fontName.pointSizeF() * std::min(scaleH, scaleW));
     this->ui->label_magnifyName->setFont(fontName);
 
 }
