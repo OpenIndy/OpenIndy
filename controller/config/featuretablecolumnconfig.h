@@ -15,6 +15,7 @@ class FeatureTableColumnConfig
 {
 public:
     FeatureTableColumnConfig();
+    FeatureTableColumnConfig(QList<FeatureDisplayAttributes>);
 
     bool getColumnVisibility(const FeatureDisplayAttributes &column) const;
     void setColumnVisibility(const FeatureDisplayAttributes &column, const bool &isVisible);
