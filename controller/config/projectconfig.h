@@ -1,9 +1,11 @@
 #ifndef PROJECTCONFIG_H
 #define PROJECTCONFIG_H
 
+#include <QList>
 #include <QString>
 #include <QCoreApplication>
 #include "types.h"
+
 
 class ProjectConfig
 {
@@ -36,6 +38,8 @@ public:
     static bool getUseSounds();
     static void setUseSounds(bool value);
 
+    static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
+
     //********************************************
     //save and load functions for all config files
     //********************************************
@@ -60,6 +64,9 @@ private:
     static int temperatureDigits;
 
     static bool useSounds;
+
+    static QList<oi::FeatureDisplayAttributes> displayColumns;
+
 };
 
 #endif // PROJECTCONFIG_H
