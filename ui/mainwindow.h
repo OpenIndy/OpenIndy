@@ -304,8 +304,8 @@ private slots:
 
     void showEvent(QShowEvent *e);
 
-    void enableObservationOfActiveFeature();
-    void disableObservationOfActiveFeature();
+    void enableObservationsOfActiveFeature();
+    void disableObservationsOfActiveFeature();
 
 private:
     Ui::MainWindow *ui;

@@ -786,10 +786,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
         // TODO show if feature has observations
         menu->addAction(QIcon(), QString("enable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(enableObservationOfActiveFeature()));
+                        this, SLOT(enableObservationsOfActiveFeature()));
         // TODO show if feature has observations
         menu->addAction(QIcon(), QString("disable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(disableObservationOfActiveFeature()));
+                        this, SLOT(disableObservationsOfActiveFeature()));
 
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
@@ -2956,7 +2956,7 @@ void MainWindow::showEvent(QShowEvent *e)
     e->accept();
 }
 
-void MainWindow::enableObservationOfActiveFeature() {
+void MainWindow::enableObservationsOfActiveFeature() {
     //get and check model
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
     if(model == NULL){
@@ -2976,7 +2976,7 @@ void MainWindow::enableObservationOfActiveFeature() {
     }
 }
 
-void MainWindow::disableObservationOfActiveFeature() {
+void MainWindow::disableObservationsOfActiveFeature() {
     //get and check model
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
     if(model == NULL){
