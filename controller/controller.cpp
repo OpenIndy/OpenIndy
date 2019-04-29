@@ -440,6 +440,29 @@ void Controller::removeObservations(const int &featureId){
 
 }
 
+void Controller::enableObservations(const int &featureId) {
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->enableObservations(featureId);
+
+}
+void Controller::disableObservations(const int &featureId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->disableObservations(featureId);
+
+}
+
 void Controller::removeObservationsById(const QList<int> selectedIds)
 {
     //check job

@@ -76,6 +76,9 @@ signals:
     void removeObservations(const int &featureId);
     void removeAllObservations();
 
+    void enableObservations(const int &featureId);
+    void disableObservations(const int &featureId);
+
     //remove the sensor of the active station
     void removeActiveStationSensor();
 
@@ -300,6 +303,9 @@ private slots:
     void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
 
     void showEvent(QShowEvent *e);
+
+    void enableObservationOfActiveFeature();
+    void disableObservationOfActiveFeature();
 
 private:
     Ui::MainWindow *ui;

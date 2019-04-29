@@ -89,6 +89,8 @@ public slots:
     void removeObservations(const int &featureId);
     void removeObservationsById(const QList<int> selectedIds);
     void removeAllObservations();
+    void enableObservations(const int &featureId);
+    void disableObservations(const int &featureId);
 
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);
