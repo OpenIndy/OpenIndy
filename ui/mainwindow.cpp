@@ -2957,26 +2957,14 @@ void MainWindow::showEvent(QShowEvent *e)
 }
 
 void MainWindow::enableObservationsOfActiveFeature() {
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get and check the active feature
-    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
-    if(!feature.isNull() && !feature->getFeature().isNull()){
-        emit this->enableObservations(feature->getFeature()->getId());
-    }
+    enableOrDisableObservationsOfActiveFeature(true);
 }
 
 void MainWindow::disableObservationsOfActiveFeature() {
+    enableOrDisableObservationsOfActiveFeature(false);
+}
+
+void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
     //get and check model
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
     if(model == NULL){
@@ -2992,6 +2980,10 @@ void MainWindow::disableObservationsOfActiveFeature() {
     //get and check the active feature
     QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
     if(!feature.isNull() && !feature->getFeature().isNull()){
-        emit this->disableObservations(feature->getFeature()->getId());
+        if(enable) {
+            emit this->enableObservations(feature->getFeature()->getId());
+        } else {
+            emit this->disableObservations(feature->getFeature()->getId());
+        }
     }
 }
