@@ -9,6 +9,9 @@ FeatureTableColumnConfig::FeatureTableColumnConfig(){
     this->init();
 
 }
+FeatureTableColumnConfig::FeatureTableColumnConfig(QList<FeatureDisplayAttributes> displayColumns) {
+    this->displayColumns = displayColumns;
+}
 
 /*!
  * \brief FeatureTableColumnConfig::getColumnVisibility

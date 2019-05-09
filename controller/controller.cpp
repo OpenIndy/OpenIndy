@@ -9,6 +9,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
+    //load config from file
+    ProjectConfig::loadProjectSettingsConfigFile();
+
     //initialize and connect model manager
     ModelManager::init();
     if(!ModelManager::myInstance.isNull()){
@@ -437,6 +440,29 @@ void Controller::removeObservations(const int &featureId){
     }
 
     this->job->removeObservations(featureId);
+
+}
+
+void Controller::enableObservations(const int &featureId) {
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->enableObservations(featureId);
+
+}
+void Controller::disableObservations(const int &featureId){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->disableObservations(featureId);
 
 }
 
@@ -1814,7 +1840,7 @@ QPointer<FeatureWrapper> Controller::getActiveFeature()
 void Controller::initDisplayConfigs(){
 
     //create default configs
-    FeatureTableColumnConfig featureTableColumnConfig;
+    FeatureTableColumnConfig featureTableColumnConfig(ProjectConfig::getDisplayColumns());
     TrafoParamTableColumnConfig trafoParamTableColumnConfig;
     ObservationTableColumnConfig observationTableColumnConfig;
     ReadingTableColumnConfig readingTableColumnConfig;

@@ -530,12 +530,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->pasteFromClipboard();
         }
         break;
-    case Qt::Key_S: //save project
-
-        if(e->modifiers() == Qt::CTRL){
-            emit this->saveProject();
-        }
-        break;
     case Qt::Key_F1: //open properties dialog
 
         //get and check the active feature
@@ -785,6 +779,14 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         }
         menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
+
+        // TODO show if feature has observations
+        menu->addAction(QIcon(), QString("enable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        this, SLOT(enableObservationsOfActiveFeature()));
+        // TODO show if feature has observations
+        menu->addAction(QIcon(), QString("disable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+                        this, SLOT(disableObservationsOfActiveFeature()));
+
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
 
@@ -2156,6 +2158,8 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::loadProject, &this->control, &Controller::loadProject, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeObservations, &this->control, &Controller::removeObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeAllObservations, &this->control, &Controller::removeAllObservations, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::enableObservations, &this->control, &Controller::enableObservations, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::disableObservations, &this->control, &Controller::disableObservations, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeFeatures, &this->control, &Controller::removeFeatures, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::removeActiveStationSensor, &this->control, &Controller::removeActiveStationSensor, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::addBundleSystem, &this->control, &Controller::addBundleSystem, Qt::AutoConnection);
@@ -2664,7 +2668,7 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     //update contents
     this->ui->label_magnifyName->setText(feature->getFeature()->getFeatureName());
     if(!feature->getGeometry().isNull()){
-        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nominal":"actual");
+        this->ui->label_magnifyActualNominal->setText(feature->getGeometry()->getIsNominal()?"nom":"act");
     }else{
         this->ui->label_magnifyActualNominal->setText("-/-");
     }
@@ -2674,25 +2678,22 @@ void MainWindow::updateMagnifyWindow(const QPointer<FeatureWrapper> &feature){
     double h = this->ui->label_magnifyActualNominal->height();
     double w = this->ui->label_magnifyActualNominal->width();
     QFontMetrics fmActualNominal(fontActualNominal);
-    double scaleW = w/fmActualNominal.width(this->ui->label_magnifyActualNominal->text());
+    const double tw = fmActualNominal.width(this->ui->label_magnifyActualNominal->text());
+    double scaleW = w/tw;
     double scaleH = h/fmActualNominal.height();
-    if(scaleH > scaleW){
-        fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF()*scaleW);
-    }else{
-        fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF()*scaleH);
-    }
+    fontActualNominal.setPointSizeF(fontActualNominal.pointSizeF() * std::min(scaleH, scaleW));
     this->ui->label_magnifyActualNominal->setFont(fontActualNominal);
+
+    // set label witdh
+    this->ui->label_magnifyActualNominal->setFixedWidth(tw * std::min(scaleH, scaleW));
+
     QFont fontName = this->ui->label_magnifyName->font();
     h = this->ui->label_magnifyName->height();
-    w = this->ui->label_magnifyName->width();
+    w = this->ui->label_magnifyName->width() + (w - tw * std::min(scaleH, scaleW)); // with delta size of label_magnifyActualNominal
     QFontMetrics fmName(fontName);
     scaleW = w/fmName.width(this->ui->label_magnifyName->text());
     scaleH = h/fmName.height();
-    if(scaleH > scaleW){
-        fontName.setPointSizeF(fontName.pointSizeF()*scaleW);
-    }else{
-        fontName.setPointSizeF(fontName.pointSizeF()*scaleH);
-    }
+    fontName.setPointSizeF(fontName.pointSizeF() * std::min(scaleH, scaleW));
     this->ui->label_magnifyName->setFont(fontName);
 
 }
@@ -2956,5 +2957,37 @@ void MainWindow::startAutoSave() {
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), &this->control, SLOT(saveProject()));
         timer->start(60000 * ProjectConfig::getAutoSaveInterval());
+    }
+}
+
+void MainWindow::enableObservationsOfActiveFeature() {
+    enableOrDisableObservationsOfActiveFeature(true);
+}
+
+void MainWindow::disableObservationsOfActiveFeature() {
+    enableOrDisableObservationsOfActiveFeature(false);
+}
+
+void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
+    //get and check model
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    //get and check source model
+    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(sourceModel == NULL){
+        return;
+    }
+
+    //get and check the active feature
+    QPointer<FeatureWrapper> feature = sourceModel->getActiveFeature();
+    if(!feature.isNull() && !feature->getFeature().isNull()){
+        if(enable) {
+            emit this->enableObservations(feature->getFeature()->getId());
+        } else {
+            emit this->disableObservations(feature->getFeature()->getId());
+        }
     }
 }

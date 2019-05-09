@@ -19,8 +19,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     //init GUI elements and assign models
     this->initModels();
-    //load config from file
-    ProjectConfig::loadProjectSettingsConfigFile();
     this->initGUI();
     this->updateDisplayConfigFromSelection(); //no signal emit in constructor call!!!
 }
@@ -95,7 +93,6 @@ void SettingsDialog::showEvent(QShowEvent *event){
     this->move( screen.center() - this->rect().center() );
     this->ui->tabWidget_settings->setTabEnabled(2,false);
     this->ui->tabWidget_settings->setTabEnabled(3,false);
-    ProjectConfig::loadProjectSettingsConfigFile();
     this->initGUI();
     this->updateDisplayConfigFromSelection();
 }

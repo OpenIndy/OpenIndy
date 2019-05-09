@@ -25,6 +25,7 @@
 #include "projectexchanger.h"
 #include "pluginloader.h"
 #include "oiwebsocketserver.h"
+#include "projectconfig.h"
 
 using namespace oi;
 
@@ -89,6 +90,8 @@ public slots:
     void removeObservations(const int &featureId);
     void removeObservationsById(const QList<int> selectedIds);
     void removeAllObservations();
+    void enableObservations(const int &featureId);
+    void disableObservations(const int &featureId);
 
     //set display configs
     void setFeatureTableColumnConfig(const FeatureTableColumnConfig &config);

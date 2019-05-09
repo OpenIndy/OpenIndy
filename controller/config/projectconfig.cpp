@@ -19,6 +19,8 @@ int ProjectConfig::temperatureDigits;
 bool ProjectConfig::useSounds;
 int ProjectConfig::autoSaveInterval;
 
+QList<oi::FeatureDisplayAttributes> ProjectConfig::displayColumns;
+
 /*!
  * \brief ProjectConfig::getImportNominalPath
  * \return
@@ -201,6 +203,10 @@ void ProjectConfig::setAutoSaveInterval(int value)
     saveprojectSettingsConfigFile();
 }
 
+QList<oi::FeatureDisplayAttributes> ProjectConfig::getDisplayColumns() {
+    return displayColumns;
+}
+
 /*!
  * \brief ProjectConfig::loadProjectPathConfigFile
  * \return
@@ -284,6 +290,7 @@ bool ProjectConfig::saveProjectPathConfigFile()
  */
 bool ProjectConfig::loadProjectSettingsConfigFile()
 {
+
     QFile file(QCoreApplication::applicationDirPath() + "/config/projectConfigs/projectSettingsConfig.xml");
     QFileInfo info(file);
 
@@ -349,6 +356,95 @@ bool ProjectConfig::loadProjectSettingsConfigFile()
             autoSaveInterval = projectAutoSaveIntervalElem.text().toInt();
         }
 
+        // TODO auf xpath umstellen
+        QDomElement projectFeatureViewSettingsElem = root.firstChildElement("projectFeatureViewSettings");
+        if(!projectFeatureViewSettingsElem.isNull()){
+            QDomElement columnsElem = projectFeatureViewSettingsElem.firstChildElement("columns");
+            if(!columnsElem.isNull()) {
+                QDomNodeList columns = columnsElem.elementsByTagName("column");
+                for (int i=0; i<columns.length(); i++) {
+                    QDomElement colum = columns.at(i).toElement();
+
+                    // TODO dynamisch bestimmen, ist z. Z. nicht mögliche, da die enums nicht als Q_ENUMS bzw. Q_ENUM deklariert sind
+                    const QString name = colum.attribute("name");
+                    if(QString::compare(name, "Type", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayType);
+                    } else if(QString::compare(name, "Name", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayName);
+                    } else if(QString::compare(name, "Comment", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayComment);
+                    } else if(QString::compare(name, "Group", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayGroup);
+                    } else if(QString::compare(name, "IsSolved", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayIsSolved);
+                    } else if(QString::compare(name, "IsUpdated", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayIsUpdated);
+                    } else if(QString::compare(name, "Functions", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayFunctions);
+                    } else if(QString::compare(name, "UsedFor", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayUsedFor);
+                    } else if(QString::compare(name, "PreviouslyNeeded", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayPreviouslyNeeded);
+                    } else if(QString::compare(name, "StDev", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayStDev);
+                    } else if(QString::compare(name, "MeasurementConfig", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayMeasurementConfig);
+                    } else if(QString::compare(name, "Observations", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayObservations);
+                    } else if(QString::compare(name, "IsCommon", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayIsCommon);
+                    } else if(QString::compare(name, "IsActual", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayIsActual);
+                    } else if(QString::compare(name, "X", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayX);
+                    } else if(QString::compare(name, "Y", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayY);
+                    } else if(QString::compare(name, "Z", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayZ);
+                    } else if(QString::compare(name, "PrimaryI", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayPrimaryI);
+                    } else if(QString::compare(name, "PrimaryJ", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayPrimaryJ);
+                    } else if(QString::compare(name, "PrimaryK", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayPrimaryK);
+                    } else if(QString::compare(name, "RadiusA", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayRadiusA);
+                    } else if(QString::compare(name, "RadiusB", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayRadiusB);
+                    } else if(QString::compare(name, "SecondaryI", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplaySecondaryI);
+                    } else if(QString::compare(name, "SecondaryJ", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplaySecondaryJ);
+                    } else if(QString::compare(name, "SecondaryK", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplaySecondaryK);
+                    } else if(QString::compare(name, "Aperture", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayAperture);
+                    } else if(QString::compare(name, "A", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayA);
+                    } else if(QString::compare(name, "B", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayB);
+                    } else if(QString::compare(name, "C", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayC);
+                    } else if(QString::compare(name, "Angle", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayAngle);
+                    } else if(QString::compare(name, "Distance", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayDistance);
+                    } else if(QString::compare(name, "MeasurementSeries", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayMeasurementSeries);
+                    } else if(QString::compare(name, "Temperature", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayTemperature);
+                    } else if(QString::compare(name, "Length", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayLength);
+                    } else if(QString::compare(name, "ExpansionOriginX", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginX);
+                    } else if(QString::compare(name, "ExpansionOriginY", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginY);
+                    } else if(QString::compare(name, "ExpansionOriginZ", Qt::CaseInsensitive) == 0) {
+                         displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginZ);
+                    }
+                }
+            }
+        }
         return true;
     }
     return false;
@@ -401,6 +497,132 @@ bool ProjectConfig::saveprojectSettingsConfigFile()
     QDomElement projectAutoSaveIntervalElem = xmlDoc.createElement("projectAutoSaveInterval");
     projectAutoSaveIntervalElem.appendChild(xmlDoc.createTextNode(QString::number(autoSaveInterval)));
     root.appendChild(projectAutoSaveIntervalElem);
+
+    QDomElement projectFeatureViewSettingsElem = xmlDoc.createElement("projectFeatureViewSettings");
+    QDomElement columnsElem = xmlDoc.createElement("columns");
+    projectFeatureViewSettingsElem.appendChild(columnsElem);
+
+    QList<oi::FeatureDisplayAttributes>::iterator it;
+    for(it = displayColumns.begin(); it != displayColumns.end(); ++it) {
+        const oi::FeatureDisplayAttributes& fda = *it;
+        QDomElement column = xmlDoc.createElement("column");
+        switch(fda) {
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayType):
+            column.setAttribute("name", "Type");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayName):
+            column.setAttribute("name", "Name");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayComment):
+            column.setAttribute("name", "Comment");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayGroup):
+            column.setAttribute("name", "Group");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayIsSolved):
+            column.setAttribute("name", "IsSolved");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayIsUpdated):
+            column.setAttribute("name", "IsUpdated");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayFunctions):
+            column.setAttribute("name", "Functions");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayUsedFor):
+            column.setAttribute("name", "UsedFor");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayPreviouslyNeeded):
+            column.setAttribute("name", "PreviouslyNeeded");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayStDev):
+            column.setAttribute("name", "StDev");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayMeasurementConfig):
+            column.setAttribute("name", "MeasurementConfig");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayObservations):
+            column.setAttribute("name", "Observations");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayIsCommon):
+            column.setAttribute("name", "IsCommon");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayIsActual):
+            column.setAttribute("name", "IsActual");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayX):
+            column.setAttribute("name", "X");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayY):
+            column.setAttribute("name", "Y");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayZ):
+            column.setAttribute("name", "Z");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayPrimaryI):
+            column.setAttribute("name", "PrimaryI");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayPrimaryJ):
+            column.setAttribute("name", "PrimaryJ");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayPrimaryK):
+            column.setAttribute("name", "PrimaryK");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayRadiusA):
+            column.setAttribute("name", "RadiusA");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayRadiusB):
+            column.setAttribute("name", "RadiusB");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplaySecondaryI):
+            column.setAttribute("name", "SecondaryI");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplaySecondaryJ):
+            column.setAttribute("name", "SecondaryJ");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplaySecondaryK):
+            column.setAttribute("name", "SecondaryK");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayAperture):
+            column.setAttribute("name", "Aperture");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayA):
+            column.setAttribute("name", "A");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayB):
+            column.setAttribute("name", "B");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayC):
+            column.setAttribute("name", "C");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayAngle):
+            column.setAttribute("name", "Angle");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayDistance):
+            column.setAttribute("name", "Distance");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayMeasurementSeries):
+            column.setAttribute("name", "MeasurementSeries");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayTemperature):
+            column.setAttribute("name", "Temperature");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayLength):
+            column.setAttribute("name", "Length");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginX):
+            column.setAttribute("name", "ExpansionOriginX");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginY):
+            column.setAttribute("name", "ExpansionOriginY");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginZ):
+            column.setAttribute("name", "ExpansionOriginZ");
+            break;
+        }
+        columnsElem.appendChild(column);
+
+    }
+    root.appendChild(projectFeatureViewSettingsElem);
 
     xmlDoc.appendChild(root);
 

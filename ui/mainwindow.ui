@@ -814,7 +814,7 @@ color: rgb(255, 255, 255);
         </font>
        </property>
        <property name="text">
-        <string>featActNom</string>
+        <string>-/-</string>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -828,6 +828,9 @@ color: rgb(255, 255, 255);
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -852,7 +855,7 @@ color: rgb(255, 255, 255);
         </font>
        </property>
        <property name="text">
-        <string>featName</string>
+        <string>-/-</string>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -1037,6 +1040,9 @@ color: rgb(255, 255, 255);
    </property>
    <property name="text">
     <string>save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSave_as">

@@ -447,16 +447,12 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayX = convertFromDefault(displayX, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayX) >= qFabs(this->settings.displayValues.value(eX))){
-            streamData.value(eX)->setPalette(Qt::red);
-        }else{
-            streamData.value(eX)->setPalette(Qt::green);
-        }
+        QString color = (qFabs(displayX) >= qFabs(this->settings.displayValues.value(eX)) ? "#FF0000" : "#00FF00");
 
         //format display value
         name = "<p align=\"left\">x</p>";
         value = "<p align=\"right\">" + QString::number(displayX, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
+        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eX)->setText(displayValue);
 
         numVisibleElements++;
@@ -475,16 +471,12 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayY = convertFromDefault(displayY, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayY) >= qFabs(this->settings.displayValues.value(eY))){
-            streamData.value(eY)->setPalette(Qt::red);
-        }else{
-            streamData.value(eY)->setPalette(Qt::green);
-        }
+        QString color = (qFabs(displayY) >= qFabs(this->settings.displayValues.value(eY)) ? "#FF0000" : "#00FF00");
 
         //format display value
         name = "<p align=\"left\">y</p>";
         value = "<p align=\"right\">" + QString::number(displayY, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
+        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eY)->setText(displayValue);
 
         numVisibleElements++;
@@ -503,16 +495,12 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayZ = convertFromDefault(displayZ, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayZ) >= qFabs(this->settings.displayValues.value(eZ))){
-            streamData.value(eZ)->setPalette(Qt::red);
-        }else{
-            streamData.value(eZ)->setPalette(Qt::green);
-        }
+        QString color = (qFabs(displayZ) >= qFabs(this->settings.displayValues.value(eZ)) ? "#FF0000" : "#00FF00");
 
         //format display value
         name = "<p align=\"left\">z</p>";
         value = "<p align=\"right\">" + QString::number(displayZ, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
+        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eZ)->setText(displayValue);
 
         numVisibleElements++;
@@ -528,16 +516,12 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         displayD3D = convertFromDefault(displayD3D, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
 
         //set color depending on tolerance
-        if(qFabs(displayD3D) >= qFabs(this->settings.displayValues.value(eD3D))){
-            streamData.value(eD3D)->setPalette(Qt::red);
-        }else{
-            streamData.value(eD3D)->setPalette(Qt::green);
-        }
+        QString color = (qFabs(displayD3D) >= qFabs(this->settings.displayValues.value(eD3D)) ? "#FF0000" : "#00FF00");
 
         //format display value
         name = "<p align=\"left\">d3D</p>";
         value = "<p align=\"right\">" + QString::number(displayD3D, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"80%\">" + value + "</td> </tr></table>";
+        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eD3D)->setText(displayValue);
 
         numVisibleElements++;

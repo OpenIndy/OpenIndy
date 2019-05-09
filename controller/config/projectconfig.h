@@ -1,6 +1,7 @@
 #ifndef PROJECTCONFIG_H
 #define PROJECTCONFIG_H
 
+#include <QList>
 #include <QString>
 #include <QCoreApplication>
 #include "types.h"
@@ -39,6 +40,8 @@ public:
     static int getAutoSaveInterval();
     static void setAutoSaveInterval(int value);
 
+    static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
+
     //********************************************
     //save and load functions for all config files
     //********************************************
@@ -65,6 +68,9 @@ private:
     static bool useSounds;
 
     static int autoSaveInterval;
+
+    static QList<oi::FeatureDisplayAttributes> displayColumns;
+
 };
 
 #endif // PROJECTCONFIG_H
