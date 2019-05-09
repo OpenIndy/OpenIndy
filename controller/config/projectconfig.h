@@ -37,6 +37,9 @@ public:
     static bool getUseSounds();
     static void setUseSounds(bool value);
 
+    static int getAutoSaveInterval();
+    static void setAutoSaveInterval(int value);
+
     static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
 
     //********************************************
@@ -63,6 +66,8 @@ private:
     static int temperatureDigits;
 
     static bool useSounds;
+
+    static int autoSaveInterval;
 
     static QList<oi::FeatureDisplayAttributes> displayColumns;
 

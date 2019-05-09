@@ -1060,7 +1060,7 @@ color: rgb(255, 255, 255);
      <normaloff>:/Images/icons/settings.png</normaloff>:/Images/icons/settings.png</iconset>
    </property>
    <property name="text">
-    <string>view settings</string>
+    <string>edit settings</string>
    </property>
   </action>
   <action name="actionCreate_scalar_entity">

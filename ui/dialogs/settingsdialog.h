@@ -49,6 +49,7 @@ private slots:
     void on_lineEdit_angleDigits_textChanged(const QString &arg1);
     void on_lineEdit_distanceDigits_textChanged(const QString &arg1);
     void on_lineEdit_temperatureDigits_textChanged(const QString &arg1);
+    void on_lineEdit_autoSaveInterval_textChanged(const QString &arg1);
 
 private:
 

@@ -362,6 +362,8 @@ private:
     //go automatically to next feature
     void autoSwitchToNextFeature(bool sucessMeasure);
 
+    void startAutoSave();
+
     //############################
     //OpenIndy dialogs and widgets
     //############################

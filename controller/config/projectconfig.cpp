@@ -17,6 +17,7 @@ int ProjectConfig::angularDigits;
 int ProjectConfig::temperatureDigits;
 
 bool ProjectConfig::useSounds;
+int ProjectConfig::autoSaveInterval;
 
 QList<oi::FeatureDisplayAttributes> ProjectConfig::displayColumns;
 
@@ -191,6 +192,17 @@ void ProjectConfig::setUseSounds(bool value)
     saveprojectSettingsConfigFile();
 }
 
+int ProjectConfig::getAutoSaveInterval()
+{
+    return autoSaveInterval;
+}
+
+void ProjectConfig::setAutoSaveInterval(int value)
+{
+    autoSaveInterval = value;
+    saveprojectSettingsConfigFile();
+}
+
 QList<oi::FeatureDisplayAttributes> ProjectConfig::getDisplayColumns() {
     return displayColumns;
 }
@@ -337,6 +349,13 @@ bool ProjectConfig::loadProjectSettingsConfigFile()
         }
         useSounds = projectSoundSettingsElem.text().toInt();
 
+        QDomElement projectAutoSaveIntervalElem = root.firstChildElement("projectAutoSaveInterval");
+        if(projectAutoSaveIntervalElem.isNull()){
+            autoSaveInterval = 10; // default minutes
+        } else {
+            autoSaveInterval = projectAutoSaveIntervalElem.text().toInt();
+        }
+
         // TODO auf xpath umstellen
         QDomElement projectFeatureViewSettingsElem = root.firstChildElement("projectFeatureViewSettings");
         if(!projectFeatureViewSettingsElem.isNull()){
@@ -474,6 +493,10 @@ bool ProjectConfig::saveprojectSettingsConfigFile()
     QDomText projectSoundSettingsElemText = xmlDoc.createTextNode(QString::number(useSounds));
     projectSoundSettingsElem.appendChild(projectSoundSettingsElemText);
     root.appendChild(projectSoundSettingsElem);
+
+    QDomElement projectAutoSaveIntervalElem = xmlDoc.createElement("projectAutoSaveInterval");
+    projectAutoSaveIntervalElem.appendChild(xmlDoc.createTextNode(QString::number(autoSaveInterval)));
+    root.appendChild(projectAutoSaveIntervalElem);
 
     QDomElement projectFeatureViewSettingsElem = xmlDoc.createElement("projectFeatureViewSettings");
     QDomElement columnsElem = xmlDoc.createElement("columns");
