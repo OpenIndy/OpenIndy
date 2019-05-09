@@ -6,7 +6,6 @@
 #include <QCoreApplication>
 #include "types.h"
 
-
 class ProjectConfig
 {
 public:
