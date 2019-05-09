@@ -76,6 +76,9 @@ signals:
     void removeObservations(const int &featureId);
     void removeAllObservations();
 
+    void enableObservations(const int &featureId);
+    void disableObservations(const int &featureId);
+
     //remove the sensor of the active station
     void removeActiveStationSensor();
 
@@ -301,6 +304,9 @@ private slots:
 
     void showEvent(QShowEvent *e);
 
+    void enableObservationsOfActiveFeature();
+    void disableObservationsOfActiveFeature();
+
 private:
     Ui::MainWindow *ui;
 
@@ -424,6 +430,8 @@ private:
 
     //ordered list of feature id's that are currently aimed and measured (ALT + F3)
     QList<int> measureFeatures;
+
+    void enableOrDisableObservationsOfActiveFeature(bool);
 
 };
 
