@@ -528,12 +528,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->pasteFromClipboard();
         }
         break;
-    case Qt::Key_S: //save project
-
-        if(e->modifiers() == Qt::CTRL){
-            emit this->saveProject();
-        }
-        break;
     case Qt::Key_F1: //open properties dialog
 
         //get and check the active feature

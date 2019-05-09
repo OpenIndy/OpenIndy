@@ -1038,6 +1038,9 @@ color: rgb(255, 255, 255);
    <property name="text">
     <string>save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionSave_as">
    <property name="icon">
