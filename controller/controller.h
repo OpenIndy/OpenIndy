@@ -25,6 +25,7 @@
 #include "projectexchanger.h"
 #include "pluginloader.h"
 #include "oiwebsocketserver.h"
+#include "projectconfig.h"
 
 using namespace oi;
 

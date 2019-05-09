@@ -160,6 +160,7 @@ const FeatureTableColumnConfig &ModelManager::getFeatureTableColumnConfig(){
  */
 void ModelManager::setFeatureTableColumnConfig(const FeatureTableColumnConfig &config){
     ModelManager::featureTableColumnConfig = config;
+    featureTableProxyModel.setFeatureTableColumnConfig(config); // TODO oder war dafür updateFeatureTableColumnConfig() vorgesehen
     ModelManager::updateFeatureTableColumnConfig();
 }
 
