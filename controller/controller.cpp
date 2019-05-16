@@ -794,7 +794,13 @@ void Controller::runBundle(const int &bundleId){
 
 }
 
+/*!
+ * \brief check if digest has changed and update digest in job
+ */
 bool Controller::hasProjectDigestChanged() {
+    if(this->job.isNull()){
+        return false;
+    }
     QString preDigest = this->job->getDigest();
     ProjectExchanger::saveProject(this->job);
     return preDigest == job->getDigest();
