@@ -244,6 +244,9 @@ const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project
 
     if(project.documentElement().hasAttribute("digest")){
         job->setDigest(project.documentElement().attribute("digest"));
+    } else { // not available, then compute
+        // compute digest and store digest in job
+        ProjectExchanger::saveProject(job);
     }
 
     //add project measurement configs to config manager
