@@ -2961,8 +2961,14 @@ void MainWindow::startAutoSave() {
 
     if(i>0) {
         QTimer *timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), &this->control, SLOT(saveProject()));
-        timer->start(60000 * ProjectConfig::getAutoSaveInterval());
+        connect(timer, SIGNAL(timeout()), this, SLOT(autoSaveProject()));
+        timer->start(60000 * i);
+    }
+}
+
+void MainWindow::autoSaveProject() {
+    if(this->control.hasProjectDigestChanged()) {
+        emit this->saveProject();
     }
 }
 

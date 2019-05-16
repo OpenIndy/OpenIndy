@@ -307,6 +307,8 @@ private slots:
     void enableObservationsOfActiveFeature();
     void disableObservationsOfActiveFeature();
 
+    void autoSaveProject();
+
 private:
     Ui::MainWindow *ui;
 
