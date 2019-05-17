@@ -836,11 +836,12 @@ void Controller::saveProject(){
     }
 
     //save project xml
-    bool isOpen = device->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    if(isOpen){
-        QTextStream stream(device);
+    QFileDevice *fileDevice = qobject_cast<QFileDevice *>(device.data());
+    QSaveFile saveFile(fileDevice->fileName());
+    if(saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
+        QTextStream stream(&saveFile);
         project.save(stream, 4);
-        device->close();
+        saveFile.commit();
 
         this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
     }else{

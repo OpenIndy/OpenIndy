@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QString>
 #include <QIODevice>
+#include <QSaveFile>
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
