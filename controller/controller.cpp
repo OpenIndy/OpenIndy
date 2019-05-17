@@ -828,11 +828,8 @@ void Controller::saveProject(){
     QMutexLocker locker(&saveProjectMutex); // synchronize write file
 
     //get project xml
-    QString preDigest = this->job->getDigest();
     QDomDocument project = ProjectExchanger::saveProject(this->job);
-    if(preDigest == job->getDigest()) {
-        return;
-    }
+
     if(project.isNull()){
         this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
         return;
