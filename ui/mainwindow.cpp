@@ -1219,21 +1219,27 @@ void MainWindow::on_actionClose_triggered(){
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("close application");
-    msgBox.setText("Do you want to save changes?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Yes);
+    // direct call (no "emit" use), therefore is no need to handle the event in the controller
+    if(!this->control.hasProjectDigestChanged()) {
 
-    int ret = msgBox.exec();
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("close application");
+        msgBox.setText("Do you want to save changes?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Yes);
 
-    if(ret == QMessageBox::Yes){
-        emit this->saveProject();
+        int ret = msgBox.exec();
+
+        if(ret == QMessageBox::Yes){
+            emit this->saveProject();
+            event->accept();
+        }else if(ret == QMessageBox::No){
+            event->accept();
+        }else if(ret == QMessageBox::Cancel){
+            event->ignore();
+        }
+    } else {
         event->accept();
-    }else if(ret == QMessageBox::No){
-        event->accept();
-    }else if(ret == QMessageBox::Cancel){
-        event->ignore();
     }
 }
 
@@ -2955,8 +2961,14 @@ void MainWindow::startAutoSave() {
 
     if(i>0) {
         QTimer *timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), &this->control, SLOT(saveProject()));
-        timer->start(60000 * ProjectConfig::getAutoSaveInterval());
+        connect(timer, SIGNAL(timeout()), this, SLOT(autoSaveProject()));
+        timer->start(60000 * i);
+    }
+}
+
+void MainWindow::autoSaveProject() {
+    if(this->control.hasProjectDigestChanged()) {
+        emit this->saveProject();
     }
 }
 

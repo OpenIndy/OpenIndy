@@ -5,10 +5,13 @@
 #include <QPointer>
 #include <QString>
 #include <QIODevice>
+#include <QSaveFile>
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
 #include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "oijob.h"
 #include "modelmanager.h"
@@ -47,6 +50,8 @@ public:
     //###############################
 
     const QList<QPointer<Tool> > &getAvailableTools() const;
+
+    bool hasProjectDigestChanged();
 
 public slots:
 
@@ -343,6 +348,9 @@ private:
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;
+
+    // synchronize saveProject calls
+    QMutex saveProjectMutex;
 
 };
 

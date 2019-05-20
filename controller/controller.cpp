@@ -795,6 +795,18 @@ void Controller::runBundle(const int &bundleId){
 }
 
 /*!
+ * \brief check if digest has changed and update digest in job
+ */
+bool Controller::hasProjectDigestChanged() {
+    if(this->job.isNull()){
+        return false;
+    }
+    QString preDigest = this->job->getDigest();
+    ProjectExchanger::saveProject(this->job);
+    return preDigest == job->getDigest();
+}
+
+/*!
  * \brief Controller::saveProject
  */
 void Controller::saveProject(){
@@ -813,19 +825,25 @@ void Controller::saveProject(){
         return;
     }
 
+    QMutexLocker locker(&saveProjectMutex); // synchronize write file
+
     //get project xml
     QDomDocument project = ProjectExchanger::saveProject(this->job);
+
     if(project.isNull()){
         this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //save project xml
-    bool isOpen = device->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    if(isOpen){
-        QTextStream stream(device);
+    QFileDevice *fileDevice = qobject_cast<QFileDevice *>(device.data());
+    QSaveFile saveFile(fileDevice->fileName());
+    if(saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
+        QTextStream stream(&saveFile);
         project.save(stream, 4);
-        device->close();
+        saveFile.commit();
+
+        this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
     }else{
         this->log(QString("Cannot open file %1").arg(name), eInformationMessage, eStatusBarMessage);
         QMessageBox msgBox;
@@ -836,8 +854,6 @@ void Controller::saveProject(){
         int ret = msgBox.exec();
         return;
     }
-
-    this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
 
 }
 
@@ -856,35 +872,17 @@ void Controller::saveProject(const QString &fileName){
     //set name
     QFileInfo info(fileName);
     if(!info.absoluteDir().exists()){
+        this->log("Directory not exists", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    this->job->setJobName(info.fileName());
+    this->job->setJobName(fileName);
 
     //set device
-    QPointer<QIODevice> device = new QFile(fileName);
-    this->job->setJobDevice(device);
+    this->job->setJobDevice(new QFile(fileName));
 
-    //get project xml
-    QDomDocument project = ProjectExchanger::saveProject(this->job);
-    if(project.isNull()){
-        this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
+    this->saveProject();
 
-    //save project xml
-    bool isOpen = this->job->getJobDevice()->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-    if(isOpen){
-        QTextStream stream(this->job->getJobDevice());
-        project.save(stream, 4);
-        this->job->getJobDevice()->close();
-    }else{
-        this->log(QString("Cannot open file %1").arg(info.fileName()), eInformationMessage, eStatusBarMessage);
-    }
-
-    emit this->currentJobChanged();
-
-    this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
-
+    emit this->currentJobChanged(); // maybe changed TODO: emit if this->saveProject(); is successful
 }
 
 /*!
