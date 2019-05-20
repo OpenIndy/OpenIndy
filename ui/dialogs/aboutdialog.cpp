@@ -11,7 +11,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
     this->ui->label_oicoreversion->setText(OPENINDY_CORE_VERSION);
     this->ui->label_oimathversion->setText(OPENINDY_MATH_VERSION);
     this->ui->label_oiversion->setText(OPENINDY_VERSION);
-    this->ui->label_BuildNumber->setText("release64Bit_0.18.0_27");
+    QString oibranch = OPENINDY_BRANCH;
+    QString oiversion = OPENINDY_VERSION;
+    QString oiBuild = QString::number(OPENINDY_BUILD);
+    this->ui->label_BuildNumber->setText(oibranch + "_" + oiversion + "_" + oiBuild);
+
 }
 
 AboutDialog::~AboutDialog()
