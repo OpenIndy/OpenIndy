@@ -17,7 +17,7 @@ using namespace oi;
 
 /*!
  * \brief The ExchangeParams class
- * Holds parameters for exchange plugins
+ * Holds parameters for all exchange plugins, even if the current plugin does not need all parameters
  */
 class ExchangeParams
 {
