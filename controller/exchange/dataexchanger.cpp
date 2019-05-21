@@ -321,6 +321,45 @@ void DataExchanger::importFeatures(const bool &success){
     //add the imported features to current OpenIndy job
     QList<QPointer<FeatureWrapper> > features = this->exchange->getFeatures();
 
+    if(this->exchangeParams.importMeasurements) {
+
+        foreach (QPointer<FeatureWrapper> importedFeature, features) {
+            QList<QPointer<FeatureWrapper>> jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
+            if (jobFeatures.isEmpty()) {
+                qDebug() << "features not found: " << importedFeature->getFeature()->getFeatureName();
+                continue;
+            //} else if(jobFeatures.size() > 1) { // TODO nach gruppen filtern
+            //    qDebug() << "more than one feature found: " << fw->getFeature()->getFeatureName();
+            //    continue;
+            }
+
+            qDebug() << "getFeatureTypeEnum " << importedFeature->getFeatureTypeEnum();
+
+            //Function importMeasurements;
+            //importMeasurements.exec(jobFeatures.first());
+            foreach(QPointer<FeatureWrapper> jobFeature, jobFeatures) {
+                if(jobFeature->getPoint()->getIsNominal()) {
+                    qDebug() << "isNominal: " << jobFeature->getPoint()->getFeatureName();
+                    continue;
+                }
+                QList<QPointer<Reading>> importedReadings;
+                ReadingCartesian reading;
+                OiVec p = importedFeature->getPoint()->getPosition().getVector();
+                reading.xyz.setAt(0, p.getAt(0));
+                reading.xyz.setAt(1, p.getAt(1));
+                reading.xyz.setAt(2, p.getAt(2));
+                reading.sigmaXyz.setAt(0, 0.);
+                reading.sigmaXyz.setAt(1, 0.);
+                reading.sigmaXyz.setAt(2, 0.);
+                reading.isValid = true;
+                importedReadings.append(new Reading(reading));
+                this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
+
+            }
+        }
+
+        return;
+    }
     bool import = this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
 
     //add actuals to nominals at import
