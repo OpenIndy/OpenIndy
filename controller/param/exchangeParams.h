@@ -53,7 +53,7 @@ public:
 
     bool createActual;
     bool overwrite;
-
+    bool importMeasurements;
 };
 
 #endif // EXCHANGEPARAMS_H
