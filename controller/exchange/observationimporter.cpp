@@ -113,6 +113,13 @@ bool ObservationImporter::importObservations(){
             QString line = in.readLine();
             readSize += line.size();
 
+            if(line.startsWith("#") // skip comment
+               || line.startsWith(";") // skip comment
+               || line.trimmed().isEmpty() // skip empty lines
+                ) {
+                continue;
+            }
+
             //split the line at whitespaces and check number of columns
             QStringList columns = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
             if(columns.size() != 3){
