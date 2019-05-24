@@ -325,7 +325,7 @@ void DataExchanger::importFeatures(const bool &success){
     QList<QPointer<FeatureWrapper> > features = this->exchange->getFeatures();
 
     if(this->exchangeParams.importMeasurements) {
-
+        QDateTime curDateTime = QDateTime::currentDateTime();
         foreach (QPointer<FeatureWrapper> importedFeature, features) {
             QList<QPointer<FeatureWrapper>> jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
             if (jobFeatures.isEmpty()) {
@@ -345,17 +345,22 @@ void DataExchanger::importFeatures(const bool &success){
                     qDebug() << "isNominal: " << jobFeature->getPoint()->getFeatureName();
                     continue;
                 }
-                QList<QPointer<Reading>> importedReadings;
-                ReadingCartesian reading;
                 OiVec p = importedFeature->getPoint()->getPosition().getVector();
-                reading.xyz.setAt(0, p.getAt(0));
-                reading.xyz.setAt(1, p.getAt(1));
-                reading.xyz.setAt(2, p.getAt(2));
-                reading.sigmaXyz.setAt(0, 0.);
-                reading.sigmaXyz.setAt(1, 0.);
-                reading.sigmaXyz.setAt(2, 0.);
-                reading.isValid = true;
-                importedReadings.append(new Reading(reading));
+
+                QList<QPointer<Reading>> importedReadings;
+
+                ReadingCartesian rCartesian;
+                rCartesian.xyz.setAt(0, p.getAt(0));
+                rCartesian.xyz.setAt(1, p.getAt(1));
+                rCartesian.xyz.setAt(2, p.getAt(2));
+                rCartesian.isValid = true;
+                QPointer<Reading> reading = new Reading(rCartesian);
+                reading->setSensorFace(eFrontSide);
+                reading->setMeasuredAt(curDateTime);
+                reading->setImported(true);
+
+                importedReadings.append(reading);
+
                 this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
 
             }
