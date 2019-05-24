@@ -346,6 +346,62 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
     }
 }
 
+void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
+
+    foreach (QPointer<FeatureWrapper> fw, features) {
+        if(fw->getFeatureTypeEnum() == ePointFeature){
+            FeatureAttributes fAttr;
+            fAttr.count = 1;
+            fAttr.typeOfFeature = fw->getFeatureTypeEnum();
+            fAttr.name = fw->getFeature()->getFeatureName();
+            fAttr.group = fw->getFeature()->getGroupName();
+
+            fAttr.isActual = true;
+            fAttr.isNominal = false;
+            fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
+
+            //mconfig and function from default
+            MeasurementConfig mConfig;
+            if(!this->mConfigManager.isNull()){
+                //TODO fix that all measurement configs are saved in the database OI-373
+                //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+                //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
+
+                QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
+
+                mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
+
+                /*//Workaround until bug is fixed
+                QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
+                if(mConfigs.size() > 0){
+                    bool fpExists = false;
+                    foreach (MeasurementConfig mC, mConfigs) {
+                        if(mC.getName().compare("FastPoint") == 0){
+                            mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                            fpExists = true;
+                        }
+                    }
+                    if(!fpExists){
+                        mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
+                    }
+                }
+                fAttr.mConfig = mConfig.getName();*/
+            }
+
+            //function
+            sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
+            QPair<QString, QString> functionPlugin;
+            functionPlugin.first = defaultFunction.name;
+            functionPlugin.second = defaultFunction.plugin.file_path;
+            fAttr.functionPlugin = functionPlugin;
+
+            QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
+
+            this->addFunctionsAndMConfigs(addedFeatures,mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
+        }
+    }
+}
+
 /*!
  * \brief DataExchanger::importFeatures
  * \param success
@@ -370,59 +426,7 @@ void DataExchanger::importFeatures(const bool &success){
 
     //add actuals to nominals at import
     if(this->exchangeParams.createActual){
-
-        foreach (QPointer<FeatureWrapper> fw, features) {
-            if(fw->getFeatureTypeEnum() == ePointFeature){
-                FeatureAttributes fAttr;
-                fAttr.count = 1;
-                fAttr.typeOfFeature = fw->getFeatureTypeEnum();
-                fAttr.name = fw->getFeature()->getFeatureName();
-                fAttr.group = fw->getFeature()->getGroupName();
-
-                fAttr.isActual = true;
-                fAttr.isNominal = false;
-                fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
-
-                //mconfig and function from default
-                MeasurementConfig mConfig;
-                if(!this->mConfigManager.isNull()){
-                    //TODO fix that all measurement configs are saved in the database OI-373
-                    //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
-                    //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
-
-                    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
-
-                    mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
-
-                    /*//Workaround until bug is fixed
-                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
-                    if(mConfigs.size() > 0){
-                        bool fpExists = false;
-                        foreach (MeasurementConfig mC, mConfigs) {
-                            if(mC.getName().compare("FastPoint") == 0){
-                                mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
-                                fpExists = true;
-                            }
-                        }
-                        if(!fpExists){
-                            mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
-                        }
-                    }
-                    fAttr.mConfig = mConfig.getName();*/
-                }
-
-                //function
-                sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
-                QPair<QString, QString> functionPlugin;
-                functionPlugin.first = defaultFunction.name;
-                functionPlugin.second = defaultFunction.plugin.file_path;
-                fAttr.functionPlugin = functionPlugin;
-
-                QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
-
-                this->addFunctionsAndMConfigs(addedFeatures,mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
-            }
-        }
+        createActuals(features);
     }
 
     //get the specified coordinate system by its defined name from exchange parameters and set this one true

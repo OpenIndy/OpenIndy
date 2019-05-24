@@ -115,6 +115,7 @@ private:
 
     // import readings of features
     void importMeasurements(QList<QPointer<FeatureWrapper>> features);
+    void createActuals(QList<QPointer<FeatureWrapper>> features);
 
 };
 
