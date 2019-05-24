@@ -54,6 +54,7 @@ public:
     bool createActual;
     bool overwrite;
     bool importMeasurements;
+    bool readCommonColumn; // read "common point" column and mark actual point as common
 };
 
 #endif // EXCHANGEPARAMS_H

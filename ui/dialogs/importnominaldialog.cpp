@@ -180,6 +180,7 @@ void ImportNominalDialog::on_pushButton_import_sa_clicked(){
     params.createActual = this->ui->checkBox_createActual->isChecked();
     params.overwrite = this->ui->checkBox_overwriteExisting->isChecked();
     params.importMeasurements = this->ui->checkBox_importMeasurements->isChecked();
+    params.readCommonColumn = this->ui->checkBox_readCommonColumn->isChecked();
 
     //start the import
     emit this->startImport(params);
