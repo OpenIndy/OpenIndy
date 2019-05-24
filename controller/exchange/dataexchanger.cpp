@@ -378,7 +378,7 @@ void DataExchanger::importFeatures(const bool &success){
 
                 fAttr.isActual = true;
                 fAttr.isNominal = false;
-                fAttr.isCommon = false;
+                fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
 
                 //mconfig and function from default
                 MeasurementConfig mConfig;
