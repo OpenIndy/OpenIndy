@@ -127,6 +127,9 @@ bool DataExchanger::importData(const ExchangeParams &params){
             columns.append(ExchangeSimpleAscii::eColumnX);
             columns.append(ExchangeSimpleAscii::eColumnY);
             columns.append(ExchangeSimpleAscii::eColumnZ);
+            if(params.readCommonColumn) {
+                columns.append(ExchangeSimpleAscii::eColumnCommonState);
+            }
             simpleAscii->setUserDefinedColumns(columns);
 
             //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
