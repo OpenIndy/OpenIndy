@@ -137,6 +137,8 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
     case eReadingDisplayTemperature:
         return reading->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
                                               this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+    case eReadingDisplayImported:
+        return reading->isImported() ? "imported" : "";
     case eReadingDisplaySigmaAzimuth:
         return reading->getDisplaySigmaAzimuth(this->parameterDisplayConfig.getDisplayUnit(eAngular),
                                                this->parameterDisplayConfig.getDisplayDigits(eAngular));
