@@ -341,7 +341,7 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
             importedReadings.append(reading);
 
             this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
-            // TODO message
+            emit this->sendMessage(QString("import reading to feature: \"%1\"").arg(jobFeature->getPoint()->getFeatureName()), eInformationMessage, eConsoleMessage);
         }
     }
 }
@@ -422,22 +422,22 @@ void DataExchanger::importFeatures(const bool &success){
         importMeasurements(features);
         importSuccess = true;
     } else {
-      //TODO
-    }
-    importSuccess = this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
+        // add features
+        importSuccess = this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
 
-    //add actuals to nominals at import
-    if(this->exchangeParams.createActual){
-        createActuals(features);
-    }
+        // add actuals to nominals at import
+        if(this->exchangeParams.createActual){
+            createActuals(features);
+        }
 
-    //get the specified coordinate system by its defined name from exchange parameters and set this one true
-    //so destination system from import nominals is active system and all nominal values will be shown directly
-    QList<QPointer<CoordinateSystem> >coordSystemList = this->currentJob->getCoordinateSystemsList();
-    foreach (QPointer<CoordinateSystem> cs, coordSystemList) {
-        if(cs->getFeatureName().compare(this->exchangeParams.nominalSystem) == 0){
-            this->currentJob->getActiveCoordinateSystem()->setActiveCoordinateSystemState(false);
-            cs->setActiveCoordinateSystemState(true);
+        //get the specified coordinate system by its defined name from exchange parameters and set this one true
+        //so destination system from import nominals is active system and all nominal values will be shown directly
+        QList<QPointer<CoordinateSystem> >coordSystemList = this->currentJob->getCoordinateSystemsList();
+        foreach (QPointer<CoordinateSystem> cs, coordSystemList) {
+            if(cs->getFeatureName().compare(this->exchangeParams.nominalSystem) == 0){
+                this->currentJob->getActiveCoordinateSystem()->setActiveCoordinateSystemState(false);
+                cs->setActiveCoordinateSystemState(true);
+            }
         }
     }
 
