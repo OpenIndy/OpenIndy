@@ -76,6 +76,7 @@ void ReadingTableColumnConfig::init(){
     this->displayColumns.append(eReadingDisplayJ);
     this->displayColumns.append(eReadingDisplayK);
     this->displayColumns.append(eReadingDisplayTemperature);
+    this->displayColumns.append(eReadingDisplayImported);
     /*this->displayColumns.append(eReadingDisplaySigmaAzimuth);
     this->displayColumns.append(eReadingDisplaySigmaZenith);
     this->displayColumns.append(eReadingDisplaySigmaDistance);
