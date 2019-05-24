@@ -310,6 +310,42 @@ bool DataExchanger::importObservations(const QString &filename){
 
 }
 
+void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features) {
+    QDateTime curDateTime = QDateTime::currentDateTime();
+    foreach (QPointer<FeatureWrapper> importedFeature, features) {
+        QList<QPointer<FeatureWrapper>> jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
+        if (jobFeatures.isEmpty()) {
+            qDebug() << "features not found: " << importedFeature->getFeature()->getFeatureName();
+            continue;
+        }
+
+        foreach(QPointer<FeatureWrapper> jobFeature, jobFeatures) {
+            if(jobFeature->getPoint()->getIsNominal()) {
+                qDebug() << "isNominal: " << jobFeature->getPoint()->getFeatureName();
+                continue;
+            }
+            OiVec p = importedFeature->getPoint()->getPosition().getVector();
+
+            QList<QPointer<Reading>> importedReadings;
+
+            ReadingCartesian rCartesian;
+            rCartesian.xyz.setAt(0, p.getAt(0));
+            rCartesian.xyz.setAt(1, p.getAt(1));
+            rCartesian.xyz.setAt(2, p.getAt(2));
+            rCartesian.isValid = true;
+            QPointer<Reading> reading = new Reading(rCartesian);
+            reading->setSensorFace(eFrontSide);
+            reading->setMeasuredAt(curDateTime);
+            reading->setImported(true);
+
+            importedReadings.append(reading);
+
+            this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
+            // TODO message
+        }
+    }
+}
+
 /*!
  * \brief DataExchanger::importFeatures
  * \param success
@@ -325,48 +361,10 @@ void DataExchanger::importFeatures(const bool &success){
     QList<QPointer<FeatureWrapper> > features = this->exchange->getFeatures();
 
     if(this->exchangeParams.importMeasurements) {
-        QDateTime curDateTime = QDateTime::currentDateTime();
-        foreach (QPointer<FeatureWrapper> importedFeature, features) {
-            QList<QPointer<FeatureWrapper>> jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
-            if (jobFeatures.isEmpty()) {
-                qDebug() << "features not found: " << importedFeature->getFeature()->getFeatureName();
-                continue;
-            //} else if(jobFeatures.size() > 1) { // TODO nach gruppen filtern
-            //    qDebug() << "more than one feature found: " << fw->getFeature()->getFeatureName();
-            //    continue;
-            }
-
-            qDebug() << "getFeatureTypeEnum " << importedFeature->getFeatureTypeEnum();
-
-            //Function importMeasurements;
-            //importMeasurements.exec(jobFeatures.first());
-            foreach(QPointer<FeatureWrapper> jobFeature, jobFeatures) {
-                if(jobFeature->getPoint()->getIsNominal()) {
-                    qDebug() << "isNominal: " << jobFeature->getPoint()->getFeatureName();
-                    continue;
-                }
-                OiVec p = importedFeature->getPoint()->getPosition().getVector();
-
-                QList<QPointer<Reading>> importedReadings;
-
-                ReadingCartesian rCartesian;
-                rCartesian.xyz.setAt(0, p.getAt(0));
-                rCartesian.xyz.setAt(1, p.getAt(1));
-                rCartesian.xyz.setAt(2, p.getAt(2));
-                rCartesian.isValid = true;
-                QPointer<Reading> reading = new Reading(rCartesian);
-                reading->setSensorFace(eFrontSide);
-                reading->setMeasuredAt(curDateTime);
-                reading->setImported(true);
-
-                importedReadings.append(reading);
-
-                this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
-
-            }
-        }
-
-        return;
+        // import only reading to existing actuals
+        importMeasurements(features);
+    } else {
+      //TODO
     }
     bool import = this->currentJob->addFeatures(features, this->exchangeParams.overwrite);
 
