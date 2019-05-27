@@ -105,6 +105,7 @@ bool ObservationImporter::importObservations(){
         qint64 readSize = 0;
         qint64 numObservations = 0;
 
+        QDateTime curDateTime = QDateTime::currentDateTime();
         //read all lines
         QTextStream in(device);
         while (!in.atEnd()){
@@ -112,6 +113,13 @@ bool ObservationImporter::importObservations(){
             //get current line
             QString line = in.readLine();
             readSize += line.size();
+
+            if(line.startsWith("#") // skip comment
+               || line.startsWith(";") // skip comment
+               || line.trimmed().isEmpty() // skip empty lines
+                ) {
+                continue;
+            }
 
             //split the line at whitespaces and check number of columns
             QStringList columns = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
@@ -144,7 +152,8 @@ bool ObservationImporter::importObservations(){
             rCartesian.isValid = true;
             QPointer<Reading> reading = new Reading(rCartesian);
             reading->setSensorFace(eFrontSide);
-            reading->setMeasuredAt(QDateTime::currentDateTime());
+            reading->setMeasuredAt(curDateTime);
+            reading->setImported(true);
 
             //add reading to list of imported readings
             readings.append(reading);

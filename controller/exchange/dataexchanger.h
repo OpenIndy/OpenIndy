@@ -113,6 +113,10 @@ private:
     void addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > &actuals,
                                  const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 
+    // import readings of features
+    void importMeasurements(QList<QPointer<FeatureWrapper>> features);
+    void createActuals(QList<QPointer<FeatureWrapper>> features);
+
 };
 
 #endif // OIDATAEXCHANGER_H

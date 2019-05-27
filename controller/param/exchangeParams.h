@@ -17,7 +17,7 @@ using namespace oi;
 
 /*!
  * \brief The ExchangeParams class
- * Holds parameters for exchange plugins
+ * Holds parameters for all exchange plugins, even if the current plugin does not need all parameters
  */
 class ExchangeParams
 {
@@ -53,7 +53,8 @@ public:
 
     bool createActual;
     bool overwrite;
-
+    bool importMeasurements;
+    bool readCommonColumn; // read "common point" column and mark actual point as common
 };
 
 #endif // EXCHANGEPARAMS_H
