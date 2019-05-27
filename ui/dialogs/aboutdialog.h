@@ -1,6 +1,10 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
+#ifndef OPENINDY_BUILD
+#define OPENINDY_BUILD -1
+#endif
+
 #include <QDialog>
 #include <QShowEvent>
 #include <QDesktopWidget>
