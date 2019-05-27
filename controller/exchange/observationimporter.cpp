@@ -151,7 +151,7 @@ bool ObservationImporter::importObservations(){
             rCartesian.xyz.setAt(2, xyz[2]);
             rCartesian.isValid = true;
             QPointer<Reading> reading = new Reading(rCartesian);
-            reading->setSensorFace(eFrontSide);
+            reading->setSensorFace(eUndefinedSide);
             reading->setMeasuredAt(curDateTime);
             reading->setImported(true);
 
