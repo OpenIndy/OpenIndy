@@ -366,6 +366,8 @@ private:
 
     void startAutoSave();
 
+    int saveProjectIfDigestChanged();
+
     //############################
     //OpenIndy dialogs and widgets
     //############################
