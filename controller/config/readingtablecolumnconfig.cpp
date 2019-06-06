@@ -65,7 +65,7 @@ void ReadingTableColumnConfig::init(){
     this->displayColumns.append(eReadingDisplayType);
     this->displayColumns.append(eReadingDisplayTime);
     this->displayColumns.append(eReadingDisplaySensor);
-    this->displayColumns.append(eReadingDisplayIsFrontSide);
+    this->displayColumns.append(eReadingDisplaySide);
     this->displayColumns.append(eReadingDisplayAzimuth);
     this->displayColumns.append(eReadingDisplayZenith);
     this->displayColumns.append(eReadingDisplayDistance);
