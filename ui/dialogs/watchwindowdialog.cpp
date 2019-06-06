@@ -268,7 +268,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *featureNameLayout = new QHBoxLayout();
     featureNameLayout->addWidget(featureName, 1);
     this->masterLayout->addLayout(featureNameLayout, 1);
-    this->layoutIndex[eName] = this->masterLayout->count()-1;
+    this->masterLayoutIndex[eName] = this->masterLayout->count()-1;
     streamData.insert(eName, featureName);
 
     //x
@@ -281,7 +281,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *xLayout = new QHBoxLayout();
     xLayout->addWidget(x, 1);
     this->masterLayout->addLayout(xLayout, 1);
-    this->layoutIndex[eX] = this->masterLayout->count()-1;
+    this->masterLayoutIndex[eX] = this->masterLayout->count()-1;
     streamData.insert(eX, x);
 
     //y
@@ -294,7 +294,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *yLayout = new QHBoxLayout();
     yLayout->addWidget(y, 1);
     this->masterLayout->addLayout(yLayout, 1);
-    this->layoutIndex[eY] = this->masterLayout->count()-1;
+    this->masterLayoutIndex[eY] = this->masterLayout->count()-1;
     streamData.insert(eY, y);
 
     //z
@@ -306,8 +306,8 @@ void WatchWindowDialog::initGUI(){
     z->setScaledContents(true);
     QHBoxLayout *zLayout = new QHBoxLayout();
     zLayout->addWidget(z, 1);
-    this->layoutIndex[eZ] = this->masterLayout->count()-1;
     this->masterLayout->addLayout(zLayout, 1);
+    this->masterLayoutIndex[eZ] = this->masterLayout->count()-1;
     streamData.insert(eZ, z);
 
     //d3D
@@ -320,7 +320,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *d3DLayout = new QHBoxLayout();
     d3DLayout->addWidget(d3D, 1);
     masterLayout->addLayout(d3DLayout, 1);
-    this->layoutIndex[eD3D] = this->masterLayout->count()-1;
+    this->masterLayoutIndex[eD3D] = this->masterLayout->count()-1;
     streamData.insert(eD3D, d3D);
 
     //assign master layout
@@ -553,7 +553,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     for ( int i = eX; i != eNotDeclared; i++ ) {
         DisplayAttributes attr = static_cast<DisplayAttributes>(i);
         if(!visibleLayouts.contains(attr)){
-            this->masterLayout->setStretch(layoutIndex[attr], 0);
+            this->masterLayout->setStretch(masterLayoutIndex[attr], 0);
         }
     }
 
@@ -561,7 +561,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     for ( int i = eName; i != eNotDeclared; i++ ) {
         DisplayAttributes attr = static_cast<DisplayAttributes>(i);
         if(visibleLayouts.contains(attr)){
-            this->masterLayout->setStretch(layoutIndex[attr], 1);
+            this->masterLayout->setStretch(masterLayoutIndex[attr], 1);
         }
     }
 

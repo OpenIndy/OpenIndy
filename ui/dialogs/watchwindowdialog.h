@@ -172,7 +172,7 @@ private:
     //watch window values
     QVBoxLayout* masterLayout;
     QMap<DisplayAttributes, QLabel*> streamData;
-    QMap<DisplayAttributes, int> layoutIndex;
+    QMap<DisplayAttributes, int> masterLayoutIndex;
 
     //################
     //display settings
