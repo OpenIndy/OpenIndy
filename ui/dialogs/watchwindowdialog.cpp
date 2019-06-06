@@ -266,11 +266,8 @@ void WatchWindowDialog::initGUI(){
     featureName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     featureName->setScaledContents(true);
     QHBoxLayout *featureNameLayout = new QHBoxLayout();
-    featureNameLayout->addWidget(featureName);
-    featureNameLayout->setStretch(0,1);
-    featureNameLayout->setProperty("OI_MASTERLAYOUT_KEY", eName);
-    this->masterLayout->addLayout(featureNameLayout);
-    this->masterLayout->setStretch(0, 1);
+    featureNameLayout->addWidget(featureName, 1);
+    this->masterLayout->addLayout(featureNameLayout, 1);
     streamData.insert(eName, featureName);
 
     //x
@@ -283,9 +280,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *xLayout = new QHBoxLayout();
     xLayout->addWidget(x);
     xLayout->setStretch(0,1);
-    xLayout->setProperty("OI_MASTERLAYOUT_KEY", eX);
-    this->masterLayout->addLayout(xLayout);
-    this->masterLayout->setStretch(1,1);
+    this->masterLayout->addLayout(xLayout, 1);
     streamData.insert(eX, x);
 
     //y
@@ -298,10 +293,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *yLayout = new QHBoxLayout();
     yLayout->addWidget(y);
     yLayout->setStretch(0,1);
-    yLayout->setProperty("OI_MASTERLAYOUT_KEY", eY);
-    this->masterLayout->addLayout(yLayout);
-    //this->masterLayout->addWidget(y);
-    this->masterLayout->setStretch(2,1);
+    this->masterLayout->addLayout(yLayout, 1);
     streamData.insert(eY, y);
 
     //z
@@ -314,10 +306,7 @@ void WatchWindowDialog::initGUI(){
     QHBoxLayout *zLayout = new QHBoxLayout();
     zLayout->addWidget(z);
     zLayout->setStretch(0,1);
-    zLayout->setProperty("OI_MASTERLAYOUT_KEY", eZ);
-    this->masterLayout->addLayout(zLayout);
-    //this->masterLayout->addWidget(z);
-    this->masterLayout->setStretch(3, 1);
+    this->masterLayout->addLayout(zLayout, 1);
     streamData.insert(eZ, z);
 
     //d3D
@@ -331,13 +320,19 @@ void WatchWindowDialog::initGUI(){
     d3DLayout->addWidget(d3D);
     d3DLayout->setStretch(0,1);
     d3DLayout->setProperty("OI_MASTERLAYOUT_KEY", eD3D);
-    masterLayout->addLayout(d3DLayout);
-    //this->masterLayout->addWidget(d3D);
-    this->masterLayout->setStretch(4, 1);
+    masterLayout->addLayout(d3DLayout, 1);
     streamData.insert(eD3D, d3D);
 
     //assign master layout
     this->ui->pageWatchWindow->setLayout(this->masterLayout);
+}
+
+int WatchWindowDialog::getIndex(DisplayAttributes attr) {
+    for(int i = 0; i < masterLayout->count(); i++) {
+
+
+    }
+    return -1;
 }
 
 /*!

@@ -197,6 +197,7 @@ private:
     DisplayAttributes getAttributeValue(QString attributeName);
     QString getAttributeName(DisplayAttributes attr);
     DisplayAttributes getAttributesByInteger(int i);
+    int getIndex(DisplayAttributes attr);
 };
 
 #endif // WATCHWINDOW_H
