@@ -29,11 +29,11 @@ enum DisplayActualNominal{
 
 enum DisplayAttributes{
     eName = 0,
-    eX = 1,
-    eY = 2,
-    eZ =3,
-    eD3D = 4,
-    eNotDeclared = 666
+    eX,
+    eY,
+    eZ,
+    eD3D,
+    eNotDeclared // should be the last element!
 };
 
 using namespace oi;
