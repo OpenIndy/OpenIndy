@@ -261,70 +261,36 @@ void WatchWindowDialog::initGUI(){
     f.setFamily("Arial");
 
     //feature name
-    QLabel *featureName = new QLabel();
-    featureName->setAlignment(Qt::AlignVCenter);
-    featureName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    featureName->setScaledContents(true);
-    QHBoxLayout *featureNameLayout = new QHBoxLayout();
-    featureNameLayout->addWidget(featureName, 1);
-    this->masterLayout->addLayout(featureNameLayout, 1);
-    this->masterLayoutIndex[eName] = this->masterLayout->count()-1;
-    streamData.insert(eName, featureName);
+    addLabel(eName, f);
 
     //x
-    QLabel *x = new QLabel();
-    x->setFont(f);
-    x->setAutoFillBackground(true);
-    x->setAlignment(Qt::AlignVCenter);
-    x->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    x->setScaledContents(true);
-    QHBoxLayout *xLayout = new QHBoxLayout();
-    xLayout->addWidget(x, 1);
-    this->masterLayout->addLayout(xLayout, 1);
-    this->masterLayoutIndex[eX] = this->masterLayout->count()-1;
-    streamData.insert(eX, x);
+    addLabel(eX, f);
 
     //y
-    QLabel *y = new QLabel();
-    y->setFont(f);
-    y->setAutoFillBackground(true);
-    y->setAlignment(Qt::AlignVCenter);
-    y->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    y->setScaledContents(true);
-    QHBoxLayout *yLayout = new QHBoxLayout();
-    yLayout->addWidget(y, 1);
-    this->masterLayout->addLayout(yLayout, 1);
-    this->masterLayoutIndex[eY] = this->masterLayout->count()-1;
-    streamData.insert(eY, y);
+    addLabel(eY, f);
 
     //z
-    QLabel *z = new QLabel();
-    z->setFont(f);
-    z->setAutoFillBackground(true);
-    z->setAlignment(Qt::AlignVCenter);
-    z->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    z->setScaledContents(true);
-    QHBoxLayout *zLayout = new QHBoxLayout();
-    zLayout->addWidget(z, 1);
-    this->masterLayout->addLayout(zLayout, 1);
-    this->masterLayoutIndex[eZ] = this->masterLayout->count()-1;
-    streamData.insert(eZ, z);
+    addLabel(eZ, f);
 
     //d3D
-    QLabel *d3D = new QLabel();
-    d3D->setFont(f);
-    d3D->setAutoFillBackground(true);
-    d3D->setAlignment(Qt::AlignVCenter);
-    d3D->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    d3D->setScaledContents(true);
-    QHBoxLayout *d3DLayout = new QHBoxLayout();
-    d3DLayout->addWidget(d3D, 1);
-    masterLayout->addLayout(d3DLayout, 1);
-    this->masterLayoutIndex[eD3D] = this->masterLayout->count()-1;
-    streamData.insert(eD3D, d3D);
+    addLabel(eD3D, f);
 
     //assign master layout
     this->ui->pageWatchWindow->setLayout(this->masterLayout);
+}
+
+void WatchWindowDialog::addLabel(DisplayAttributes att,  QFont f) {
+    QLabel *label = new QLabel();
+    label->setFont(f);
+    label->setAutoFillBackground(true);
+    label->setAlignment(Qt::AlignVCenter);
+    label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    label->setScaledContents(true);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(label, 1);
+    masterLayout->addLayout(layout, 1);
+    this->masterLayoutIndex[att] = this->masterLayout->count()-1;
+    streamData.insert(att, label);
 }
 
 /*!

@@ -194,6 +194,8 @@ private:
     int oldWindowHeight;
     int oldWindowWidth;
 
+    void addLabel(DisplayAttributes att,  QFont f);
+
 };
 
 #endif // WATCHWINDOW_H
