@@ -45,8 +45,8 @@ OpenIndy_VERSION = $$replace(OpenIndy_VERSION, "-", ".") # remove remaining hyph
 OpenIndy_VERSION = $$replace(OpenIndy_VERSION, "\b[0-9a-f]{5,40}\b", ) # remove commit hash (only if no tag has been set yet)
 DEFINES += OPENINDY_VERSION=\\\"$$OpenIndy_VERSION\\\"
 
-OpenIndy_BRANCH = $$system(git rev-parse --abbrev-ref HEAD)
-DEFINES += OPENINDY_BRANCH=\\\"$$OpenIndy_BRANCH\\\"
+OpenIndy_COMMIT = $$system(git rev-parse --verify --short HEAD)
+DEFINES += OPENINDY_COMMIT=\\\"$$OpenIndy_COMMIT\\\"
 
 isEmpty(OpenIndy_VERSION){
     message("no OpenIndy version")
