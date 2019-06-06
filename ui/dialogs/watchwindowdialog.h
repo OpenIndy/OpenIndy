@@ -194,10 +194,6 @@ private:
     int oldWindowHeight;
     int oldWindowWidth;
 
-    //enums and functions for watchwindow settings
-    DisplayAttributes getAttributeValue(QString attributeName);
-    QString getAttributeName(DisplayAttributes attr);
-    DisplayAttributes getAttributesByInteger(int i);
 };
 
 #endif // WATCHWINDOW_H
