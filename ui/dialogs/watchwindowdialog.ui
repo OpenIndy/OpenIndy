@@ -329,6 +329,19 @@
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="checkBox_showLastMeasurement">
+             <property name="toolTip">
+              <string>show last measurement even if currently no measurement possible</string>
+             </property>
+             <property name="text">
+              <string>show last measurement</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="verticalSpacer_3">
              <property name="orientation">
               <enum>Qt::Vertical</enum>

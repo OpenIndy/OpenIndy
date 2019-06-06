@@ -794,7 +794,7 @@ void WatchWindowDialog::on_toolBox_currentChanged(int index)
 }
 
 void WatchWindowDialog::clearWatchWindow() {
-    if(!this->watchWindowUpdated) {
+    if(!this->ui->checkBox_showLastMeasurement->isChecked() &&  !this->watchWindowUpdated) {
         this->streamData[eX]->setVisible(false);
         this->streamData[eY]->setVisible(false);
         this->streamData[eZ]->setVisible(false);
