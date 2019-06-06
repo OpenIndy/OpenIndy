@@ -172,6 +172,7 @@ private:
     //watch window values
     QVBoxLayout* masterLayout;
     QMap<DisplayAttributes, QLabel*> streamData;
+    QMap<DisplayAttributes, int> layoutIndex;
 
     //################
     //display settings
@@ -197,7 +198,6 @@ private:
     DisplayAttributes getAttributeValue(QString attributeName);
     QString getAttributeName(DisplayAttributes attr);
     DisplayAttributes getAttributesByInteger(int i);
-    int getIndex(DisplayAttributes attr);
 };
 
 #endif // WATCHWINDOW_H
