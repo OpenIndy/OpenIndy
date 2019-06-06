@@ -1,6 +1,7 @@
 #ifndef WATCHWINDOW_H
 #define WATCHWINDOW_H
 
+#include <atomic>
 #include <QDialog>
 #include <QKeyEvent>
 #include <QMap>
@@ -127,6 +128,9 @@ private slots:
     //switch tab and update geometries
     void on_toolBox_currentChanged(int index);
 
+    //hides x, y ,z, d3D if no current reading available
+    void clearWatchWindow();
+
 private:
 
     //##################################
@@ -197,6 +201,9 @@ private:
     DisplayAttributes getAttributeValue(QString attributeName);
     QString getAttributeName(DisplayAttributes attr);
     DisplayAttributes getAttributesByInteger(int i);
+
+    //set to "true" if watch window was currently updateded
+    std::atomic<bool> watchWindowUpdated;
 };
 
 #endif // WATCHWINDOW_H
