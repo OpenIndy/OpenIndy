@@ -1177,6 +1177,8 @@ void MainWindow::on_actionWatch_window_triggered(){
  */
 void MainWindow::on_actionOpen_triggered(){
 
+    saveProjectIfDigestChanged();
+
     QString filename = QFileDialog::getOpenFileName(this, "Choose a file", ProjectConfig::getProjectPath(), "xml (*.xml)");
     if(filename.isEmpty()){
         return;
@@ -1217,13 +1219,13 @@ void MainWindow::on_actionClose_triggered(){
     this->close();
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+int MainWindow::saveProjectIfDigestChanged()
 {
     // direct call (no "emit" use), therefore is no need to handle the event in the controller
     if(!this->control.hasProjectDigestChanged()) {
 
         QMessageBox msgBox;
-        msgBox.setWindowTitle("close application");
+        msgBox.setWindowTitle("close project");
         msgBox.setText("Do you want to save changes?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Yes);
@@ -1232,15 +1234,20 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
         if(ret == QMessageBox::Yes){
             emit this->saveProject();
-            event->accept();
-        }else if(ret == QMessageBox::No){
-            event->accept();
-        }else if(ret == QMessageBox::Cancel){
-            event->ignore();
         }
+        return ret;
     } else {
-        event->accept();
+        return -1;
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+   if(saveProjectIfDigestChanged() == QMessageBox::Cancel) {
+       event->ignore();
+   } else {
+       event->accept();
+   }
 }
 
 /*!
