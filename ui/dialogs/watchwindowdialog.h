@@ -44,7 +44,7 @@ using namespace oi;
  */
 class WatchWindowSettings{
 public:
-    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal){}
+    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal), showLastMeasurement(true){}
 
     //decimal digits for watch window values
     int digits;
@@ -58,6 +58,7 @@ public:
     //display values and tolerance
     QMap<DisplayAttributes, double> displayValues;
 
+    bool showLastMeasurement;
 };
 
 
@@ -130,6 +131,8 @@ private slots:
 
     //hides x, y ,z, d3D if no current reading available
     void clearWatchWindow();
+
+    void on_checkBox_showLastMeasurement_clicked();
 
 private:
 

@@ -611,6 +611,8 @@ void WatchWindowDialog::getDefaultSettings(){
     }else{
         this->settings.displayValues.remove(eD3D);
     }
+
+    this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
 
 /*!
@@ -794,11 +796,16 @@ void WatchWindowDialog::on_toolBox_currentChanged(int index)
 }
 
 void WatchWindowDialog::clearWatchWindow() {
-    if(!this->ui->checkBox_showLastMeasurement->isChecked() &&  !this->watchWindowUpdated) {
+    if(!settings.showLastMeasurement &&  !this->watchWindowUpdated) {
         this->streamData[eX]->setVisible(false);
         this->streamData[eY]->setVisible(false);
         this->streamData[eZ]->setVisible(false);
         this->streamData[eD3D]->setVisible(false);
     }
     this->watchWindowUpdated = false;
+}
+
+void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
+{
+    this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
