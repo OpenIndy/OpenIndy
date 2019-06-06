@@ -158,6 +158,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
     }
 
     //connect exchange plugin
+    QObject::connect(exchange.data(), SIGNAL(sendMessage(const QString&, const MessageTypes&, const MessageDestinations&)), this, SIGNAL(sendMessage(const QString&, const MessageTypes&, const MessageDestinations&)));
     QObject::connect(&this->exchangeThread, SIGNAL(started()), this->exchange.data(), SLOT(importOiData()), Qt::AutoConnection);
     QObject::connect(this->exchange.data(), SIGNAL(importFinished(const bool&)), this, SLOT(importFeatures(const bool&)), Qt::AutoConnection);
     //QObject::connect(this->exchange.data(), SIGNAL(exportFinished(const bool&)), this, SIGNAL(exportFinished(const bool&)), Qt::AutoConnection);
@@ -261,6 +262,7 @@ bool DataExchanger::exportData(const ExchangeParams &params){
     this->exchange->setFeatures(params.exportFeatures);
 
     //connect exchange plugin
+    QObject::connect(exchange.data(), SIGNAL(sendMessage(const QString&, const MessageTypes&, const MessageDestinations&)), this, SIGNAL(sendMessage(const QString&, const MessageTypes&, const MessageDestinations&)));
     QObject::connect(&this->exchangeThread, SIGNAL(started()), this->exchange.data(), SLOT(exportOiData()), Qt::AutoConnection);
     QObject::connect(this->exchange.data(), SIGNAL(exportFinished(const bool&)), this, SLOT(exportFeatures(const bool&)), Qt::AutoConnection);
 
