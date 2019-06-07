@@ -327,6 +327,16 @@ void WatchWindowDialog::connectJob(){
 
 }
 
+QString WatchWindowDialog::getNameLabel() {
+    if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
+        return "";
+    }
+
+    return QString("%1&nbsp;&nbsp;%2")
+            .arg(this->currentJob->getActiveFeature()->getFeature()->getFeatureName())
+            .arg(settings.reference == eActualNominal ? "act" : "nom");
+}
+
 /*!
  * \brief WatchWindowDialog::setUpCartesianWatchWindow
  * \param reading
@@ -382,10 +392,8 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ = trafo * trackerXYZ;
 
     //set feature name
-    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1%2</p></td></tr> </table>")
-                                     .arg(this->currentJob->getActiveFeature()->getFeature()->getFeatureName())
-                                     .arg(settings.reference == eActualNominal ? "&nbsp;act" : "&nbsp;nom")
-                                     );
+    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1</p></td></tr> </table>")
+                                     .arg(getNameLabel()));
 
     //set x
     setDisplayValue(eX, "x", [&](){
@@ -558,9 +566,9 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         //calculate new fonts
         //name
         h = this->streamData[eName]->height();
+        double w = this->streamData[eName]->width();
         QFontMetrics fmName(fName);
-        scale = h/fmName.height();
-        fName.setPointSize(fName.pointSize()*scale);
+        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(getNameLabel()) ));
 
         //x
         h = this->streamData[eX]->height();
