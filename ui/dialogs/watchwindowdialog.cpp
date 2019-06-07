@@ -384,9 +384,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ.setAt(3, 1.0);
     trackerXYZ = trafo * trackerXYZ;
 
-    //number of visible elements
-    int numVisibleElements = 1; //1, because name is always displayed
-
     //set feature name
     name ="<p align=\"center\">" + this->currentJob->getActiveFeature()->getFeature()->getFeatureName() + "</p>";
     displayValue = "<table width=\"100%\"> <tr> <td>" + name + "</td>  </tr> </table>";
@@ -412,8 +409,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         value = "<p align=\"right\">" + QString::number(displayX, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eX)->setText(displayValue);
-
-        numVisibleElements++;
     }
 
     //set y
@@ -436,8 +431,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         value = "<p align=\"right\">" + QString::number(displayY, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eY)->setText(displayValue);
-
-        numVisibleElements++;
     }
 
     //set z
@@ -460,8 +453,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         value = "<p align=\"right\">" + QString::number(displayZ, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eZ)->setText(displayValue);
-
-        numVisibleElements++;
     }
 
     //set d3D
@@ -481,8 +472,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         value = "<p align=\"right\">" + QString::number(displayD3D, 'f', this->settings.digits) + "</p>";
         displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
         streamData.value(eD3D)->setText(displayValue);
-
-        numVisibleElements++;
     }
 
     //set visibility
