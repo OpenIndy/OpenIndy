@@ -333,9 +333,6 @@ void WatchWindowDialog::connectJob(){
  */
 void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
-    //init variables
-    QString name, value, displayValue;
-
     //check and get active coordinate system
     QPointer<CoordinateSystem> activeSystem = this->currentJob->getActiveCoordinateSystem();
     if(activeSystem.isNull()){
