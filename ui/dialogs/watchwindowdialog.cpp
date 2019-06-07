@@ -480,7 +480,10 @@ void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, st
         QString color = (qFabs(value) >= qFabs(this->settings.displayValues.value(attr)) ? "#FF0000" : "#00FF00");
 
         //format display value
-        streamData.value(attr)->setText(QString("<table width=\"100%\"> <tr> <td width=\"20%\"><p align=\"left\">%1</p></td> <td width=\"70%\"><p align=\"right\">%2</p></td><td width=\"10%\" bgcolor=\"%3\">&nbsp;</td> </tr></table>").arg(name).arg(QString::number(value, 'f', this->settings.digits)).arg(color));
+        streamData.value(attr)->setText(QString("<table width=\"100%\"> <tr> <td width=\"20%\"><p align=\"left\">%1</p></td> <td width=\"70%\"><p align=\"right\">%2</p></td><td width=\"10%\" bgcolor=\"%3\">&nbsp;</td> </tr></table>")
+                                        .arg(name)
+                                        .arg(QString::number(value, 'f', this->settings.digits))
+                                        .arg(color));
     }
 }
 
