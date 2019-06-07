@@ -385,9 +385,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ = trafo * trackerXYZ;
 
     //set feature name
-    name ="<p align=\"center\">" + this->currentJob->getActiveFeature()->getFeature()->getFeatureName() + "</p>";
-    displayValue = "<table width=\"100%\"> <tr> <td>" + name + "</td>  </tr> </table>";
-    this->streamData[eName]->setText(displayValue);
+    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1</p></td></tr> </table>").arg(this->currentJob->getActiveFeature()->getFeature()->getFeatureName()));
 
     //set x
     setDisplayValue(eX, "x", [&](){
@@ -482,7 +480,7 @@ void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, st
         QString color = (qFabs(value) >= qFabs(this->settings.displayValues.value(attr)) ? "#FF0000" : "#00FF00");
 
         //format display value
-        streamData.value(attr)->setText("<table width=\"100%\"> <tr> <td width=\"20%\"><p align=\"left\">" + name + "</p></td> <td width=\"70%\"><p align=\"right\">" + QString::number(value, 'f', this->settings.digits) + "</p></td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>");
+        streamData.value(attr)->setText(QString("<table width=\"100%\"> <tr> <td width=\"20%\"><p align=\"left\">%1</p></td> <td width=\"70%\"><p align=\"right\">%2</p></td><td width=\"10%\" bgcolor=\"%3\">&nbsp;</td> </tr></table>").arg(name).arg(QString::number(value, 'f', this->settings.digits)).arg(color));
     }
 }
 
