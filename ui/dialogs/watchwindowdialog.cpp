@@ -390,89 +390,41 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     this->streamData[eName]->setText(displayValue);
 
     //set x
-    if(this->settings.displayValues.contains(eX)){
-
+    setDisplayValue(eX, "x", [&](){
         //get display value
-        double displayX;
         if(this->settings.reference == eActualNominal){
-            displayX = trackerXYZ.getAt(0) - pos.getVector().getAt(0);
+            return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
         }else{
-            displayX = pos.getVector().getAt(0) - trackerXYZ.getAt(0);
+            return pos.getVector().getAt(0) - trackerXYZ.getAt(0);
         }
-        displayX = convertFromDefault(displayX, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
-
-        //set color depending on tolerance
-        QString color = (qFabs(displayX) >= qFabs(this->settings.displayValues.value(eX)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">x</p>";
-        value = "<p align=\"right\">" + QString::number(displayX, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eX)->setText(displayValue);
-    }
+    });
 
     //set y
-    if(this->settings.displayValues.contains(eY)){
-
+    setDisplayValue(eY, "y", [&](){
         //get display value
-        double displayY;
         if(this->settings.reference == eActualNominal){
-            displayY = trackerXYZ.getAt(1) - pos.getVector().getAt(1);
+            return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
         }else{
-            displayY = pos.getVector().getAt(1) - trackerXYZ.getAt(1);
+            return pos.getVector().getAt(1) - trackerXYZ.getAt(1);
         }
-        displayY = convertFromDefault(displayY, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
-
-        //set color depending on tolerance
-        QString color = (qFabs(displayY) >= qFabs(this->settings.displayValues.value(eY)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">y</p>";
-        value = "<p align=\"right\">" + QString::number(displayY, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eY)->setText(displayValue);
-    }
+    });
 
     //set z
-    if(this->settings.displayValues.contains(eZ)){
-
+    setDisplayValue(eZ, "z", [&](){
         //get display value
-        double displayZ;
         if(this->settings.reference == eActualNominal){
-            displayZ = trackerXYZ.getAt(2) - pos.getVector().getAt(2);
+            return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
         }else{
-            displayZ = pos.getVector().getAt(2) - trackerXYZ.getAt(2);
+            return pos.getVector().getAt(2) - trackerXYZ.getAt(2);
         }
-        displayZ = convertFromDefault(displayZ, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
+    });
 
-        //set color depending on tolerance
-        QString color = (qFabs(displayZ) >= qFabs(this->settings.displayValues.value(eZ)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">z</p>";
-        value = "<p align=\"right\">" + QString::number(displayZ, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eZ)->setText(displayValue);
-    }
-
-    //set d3D
-    if(this->settings.displayValues.contains(eD3D)){
-
+    //set d3D    
+    setDisplayValue(eD3D, "d3D", [&](){
         //get display value
         OiVec d = pos.getVectorH() - trackerXYZ;
-        double displayD3D = qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
-
-        displayD3D = convertFromDefault(displayD3D, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
-
-        //set color depending on tolerance
-        QString color = (qFabs(displayD3D) >= qFabs(this->settings.displayValues.value(eD3D)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">d3D</p>";
-        value = "<p align=\"right\">" + QString::number(displayD3D, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eD3D)->setText(displayValue);
-    }
+        return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
+    });
 
     //set visibility
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
@@ -522,6 +474,16 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
+}
+void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v) {
+    if(this->settings.displayValues.contains(attr)){
+        double value = convertFromDefault(v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
+        //set color depending on tolerance
+        QString color = (qFabs(value) >= qFabs(this->settings.displayValues.value(attr)) ? "#FF0000" : "#00FF00");
+
+        //format display value
+        streamData.value(attr)->setText("<table width=\"100%\"> <tr> <td width=\"20%\"><p align=\"left\">" + name + "</p></td> <td width=\"70%\"><p align=\"right\">" + QString::number(value, 'f', this->settings.digits) + "</p></td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>");
+    }
 }
 
 /*!

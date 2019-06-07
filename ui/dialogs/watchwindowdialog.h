@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QDesktopWidget>
+#include <functional>
 
 #include "types.h"
 #include "util.h"
@@ -195,6 +196,8 @@ private:
     int oldWindowWidth;
 
     void addLabel(DisplayAttributes att,  QFont f);
+    void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
+
 
 };
 
