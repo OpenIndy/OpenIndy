@@ -385,7 +385,10 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ = trafo * trackerXYZ;
 
     //set feature name
-    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1</p></td></tr> </table>").arg(this->currentJob->getActiveFeature()->getFeature()->getFeatureName()));
+    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1%2</p></td></tr> </table>")
+                                     .arg(this->currentJob->getActiveFeature()->getFeature()->getFeatureName())
+                                     .arg(settings.reference == eActualNominal ? "&nbsp;act" : "&nbsp;nom")
+                                     );
 
     //set x
     setDisplayValue(eX, "x", [&](){
