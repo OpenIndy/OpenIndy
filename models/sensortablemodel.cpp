@@ -349,7 +349,7 @@ QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
 
     //check index
     if(!index.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get rowIndex
@@ -359,7 +359,7 @@ QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
     QModelIndex pluginIndex = this->index(rowIndex, 1);
     QModelIndex sensorIndex = this->index(rowIndex, 0);
     if(!pluginIndex.isValid() || !sensorIndex.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get plugin and sensor name
@@ -429,7 +429,7 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
 
     //check index
     if(!index.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get rowIndex
@@ -439,7 +439,7 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
     QModelIndex pluginIndex = this->index(rowIndex, 1);
     QModelIndex sensorIndex = this->index(rowIndex, 0);
     if(!pluginIndex.isValid() || !sensorIndex.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get plugin and sensor name

@@ -312,10 +312,10 @@ bool DataExchanger::importObservations(const QString &filename){
 
 }
 
-void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features) {
+void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper> > features) {
     QDateTime curDateTime = QDateTime::currentDateTime();
     foreach (QPointer<FeatureWrapper> importedFeature, features) {
-        QList<QPointer<FeatureWrapper>> jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
+        QList<QPointer<FeatureWrapper> > jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
         if (jobFeatures.isEmpty()) {
             qDebug() << "features not found: " << importedFeature->getFeature()->getFeatureName();
             continue;
@@ -328,7 +328,7 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
             }
             OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
-            QList<QPointer<Reading>> importedReadings;
+            QList<QPointer<Reading> > importedReadings;
 
             ReadingCartesian rCartesian;
             rCartesian.xyz.setAt(0, p.getAt(0));
@@ -348,7 +348,7 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
     }
 }
 
-void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
+void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
 
     foreach (QPointer<FeatureWrapper> fw, features) {
         if(fw->getFeatureTypeEnum() == ePointFeature){
