@@ -1,7 +1,7 @@
 
 include($$PWD/../lib/OpenIndy-Core/include.pri)
 
-linux: LIBS = -lGLU
+#linux: LIBS = -lGLU
 
 #-----------------
 #copy dependencies
