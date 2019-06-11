@@ -1,0 +1,9 @@
+<projectSettingsConfig>
+    <projectDistanceUnit>0</projectDistanceUnit>
+    <projectAngularUnit>6</projectAngularUnit>
+    <projectTemperatureUnit>8</projectTemperatureUnit>
+    <projectDistanceDigits>2</projectDistanceDigits>
+    <projectAngularDigits>6</projectAngularDigits>
+    <projectTemperatureDigits>1</projectTemperatureDigits>
+    <projectSoundSettings>1</projectSoundSettings>
+</projectSettingsConfig>
