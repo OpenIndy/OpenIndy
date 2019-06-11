@@ -332,9 +332,10 @@ QString WatchWindowDialog::getNameLabel() {
         return "";
     }
 
-    return QString("%1&nbsp;&nbsp;%2")
-            .arg(this->currentJob->getActiveFeature()->getFeature()->getFeatureName())
-            .arg(settings.reference == eActualNominal ? "act" : "nom");
+    QPointer<Feature> feature = this->currentJob->getActiveFeature()->getFeature();
+    return QString("%1%2")
+            .arg(feature->getFeatureName())
+            .arg(feature->getFeatureWrapper()->getGeometry() ? feature->getFeatureWrapper()->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
 }
 
 /*!
