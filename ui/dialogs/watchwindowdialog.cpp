@@ -380,7 +380,6 @@ void WatchWindowDialog::connectJob(){
  * \param reading
  */
 void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
-    this->watchWindowUpdated = true;
 
     //init variables
     QString name, value, displayValue;
@@ -577,6 +576,9 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
             masterLayout->setStretch(i,1);
         }
     }
+
+    // valid reading available
+    this->watchWindowUpdated = true;
 
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
