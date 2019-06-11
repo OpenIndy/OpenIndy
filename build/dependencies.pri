@@ -1,7 +1,7 @@
 
 include($$PWD/../lib/OpenIndy-Core/include.pri)
 
-#linux: LIBS = -lGLU
+linux: LIBS = -lGLU
 
 #-----------------
 #copy dependencies
@@ -37,13 +37,25 @@ win32 {
 
 }
 
-unix {
+linux {
 
-    unix:CONFIG(release, debug|release): splash.path = $$PWD/../bin/release
-    unix:CONFIG(debug, debug|release): splash.path = $$PWD/../bin/debug
+    linux:CONFIG(release, debug|release): splash.path = $$PWD/../bin/release
+    linux:CONFIG(debug, debug|release): splash.path = $$PWD/../bin/debug
 
     splash.files += $$PWD/../res/icons/splash.png
 
     INSTALLS += splash
+
+}
+
+linux {
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug -lopenIndyMath
+        LIBS += -L$$PWD/../lib/OpenIndy-Core/bin/debug -lopenIndyCore
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L$$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release -lopenIndyMath
+        LIBS += -L$$PWD/../lib/OpenIndy-Core/bin/release -lopenIndyCore
+    }
 
 }
