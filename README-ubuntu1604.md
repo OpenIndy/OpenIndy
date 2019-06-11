@@ -35,4 +35,6 @@
 
     #git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy-DefaultPlugin.git
 
+## run
 
+Copy content of OpenIndy/res-rt to bin/debug and start openIndy from QT Creator. 
