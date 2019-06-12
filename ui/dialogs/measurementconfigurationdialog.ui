@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>459</height>
+    <height>505</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -312,6 +312,13 @@
              </layout>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_measureWithAim">
+            <property name="text">
+             <string>measure with aim</string>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="verticalSpacer_2">
