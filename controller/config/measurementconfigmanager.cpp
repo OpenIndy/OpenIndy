@@ -674,7 +674,9 @@ bool MeasurementConfigManager::equals(const MeasurementConfig &mConfigA, const M
             || mConfigA.getDistanceDependent() != mConfigB.getDistanceDependent()
             || mConfigA.getTimeInterval() != mConfigB.getTimeInterval()
             || !almostEqual(mConfigA.getDistanceInterval(), mConfigB.getDistanceInterval(), 8)
-            || mConfigA.getTypeOfReading() != mConfigB.getTypeOfReading()){
+            || mConfigA.getTypeOfReading() != mConfigB.getTypeOfReading()
+            || mConfigA.getMeasureWithAim() != mConfigB.getMeasureWithAim()
+            ){
         return false;
     }
 
