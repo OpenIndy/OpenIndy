@@ -88,6 +88,8 @@ private slots:
     //set measurement config filter
     void on_checkBox_showAll_stateChanged(int arg1);
 
+    void on_checkBox_measureWithAim_clicked();
+
 private:
     Ui::MeasurementConfigurationDialog *ui;
 

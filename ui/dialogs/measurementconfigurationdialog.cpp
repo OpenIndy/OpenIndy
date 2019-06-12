@@ -407,6 +407,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->checkBox_distanceDependent->setChecked(mConfig.getDistanceDependent());
     this->ui->checkBox_timeDependent->setChecked(mConfig.getTimeDependent());
     this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
+    this->ui->checkBox_measureWithAim->setChecked(mConfig.getMeasureWithAim());
 
     //update selected measurement config
     this->selectedMeasurementConfig = mConfig;
@@ -458,8 +459,9 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setDistanceDependent(this->ui->checkBox_distanceDependent->isChecked());
     mConfig.setTimeDependent(this->ui->checkBox_timeDependent->isChecked());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
-    mConfig.setIsSaved(true);
+    mConfig.setMeasureWithAim(this->ui->checkBox_measureWithAim->isChecked());
 
+    mConfig.setIsSaved(true);
     //replace the selected measurement config
     mConfigModel->replaceMeasurementConfig(name, mConfig);
     this->selectedMeasurementConfig = mConfig;
@@ -528,4 +530,9 @@ void MeasurementConfigurationDialog::initModels(){
     //init measurement config model
     this->ui->listView_measurementConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
 
+}
+
+void MeasurementConfigurationDialog::on_checkBox_measureWithAim_clicked()
+{
+     this->updateMeasurementConfigFromSelection();
 }
