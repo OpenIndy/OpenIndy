@@ -644,8 +644,6 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiDelimiters(const 
  */
 QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometries(const QString &pluginName, const QString &exchangeName){
 
-    QPointer<QStringListModel> model(NULL);
-
     QStringList supportedGeometries;
 
     //get plugin file path
@@ -665,9 +663,7 @@ QPointer<QStringListModel> ModelManager::getExchangeSimpleAsciiSupportedGeometri
         }
     }
 
-    model = new QStringListModel(supportedGeometries);
-
-    return model;
+    return new QStringListModel(supportedGeometries);
 
 }
 
