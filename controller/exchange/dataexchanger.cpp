@@ -116,23 +116,51 @@ bool DataExchanger::importData(const ExchangeParams &params){
         QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
         if(!simpleAscii.isNull()){
 
-            simpleAscii->setGeometryType(params.typeOfGeometry);
-            simpleAscii->setSkipFirstLine(params.skipFirstLine);
-            simpleAscii->setDelimiter(params.delimiter);
+            switch(params.typeOfGeometry) {
+            case ePointGeometry:
+            {
+                simpleAscii->setGeometryType(params.typeOfGeometry);
+                simpleAscii->setSkipFirstLine(params.skipFirstLine);
+                simpleAscii->setDelimiter(params.delimiter);
 
-            //set user defined columns here hard coded (later selectable in table view)
-            //TODO user defined columns
-            QList<ExchangeSimpleAscii::ColumnType> columns;
-            columns.append(ExchangeSimpleAscii::eColumnFeatureName);
-            columns.append(ExchangeSimpleAscii::eColumnX);
-            columns.append(ExchangeSimpleAscii::eColumnY);
-            columns.append(ExchangeSimpleAscii::eColumnZ);
-            if(params.readCommonColumn) {
-                columns.append(ExchangeSimpleAscii::eColumnCommonState);
+                //set user defined columns here hard coded (later selectable in table view)
+                //TODO user defined columns
+                QList<ExchangeSimpleAscii::ColumnType> columns;
+                columns.append(ExchangeSimpleAscii::eColumnFeatureName);
+                columns.append(ExchangeSimpleAscii::eColumnX);
+                columns.append(ExchangeSimpleAscii::eColumnY);
+                columns.append(ExchangeSimpleAscii::eColumnZ);
+                if(params.readCommonColumn) {
+                    columns.append(ExchangeSimpleAscii::eColumnCommonState);
+                }
+                simpleAscii->setUserDefinedColumns(columns);
+
+                //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
+                break;
             }
-            simpleAscii->setUserDefinedColumns(columns);
+            case ePlaneGeometry:
+            {
+                simpleAscii->setGeometryType(params.typeOfGeometry);
+                simpleAscii->setSkipFirstLine(params.skipFirstLine);
+                simpleAscii->setDelimiter(params.delimiter);
 
-            //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
+                QList<ExchangeSimpleAscii::ColumnType> columns;
+                columns.append(ExchangeSimpleAscii::eColumnFeatureName);
+                columns.append(ExchangeSimpleAscii::eColumnX);
+                columns.append(ExchangeSimpleAscii::eColumnY);
+                columns.append(ExchangeSimpleAscii::eColumnZ);
+                columns.append(ExchangeSimpleAscii::eColumnPrimaryI);
+                columns.append(ExchangeSimpleAscii::eColumnPrimaryJ);
+                columns.append(ExchangeSimpleAscii::eColumnPrimaryK);
+                simpleAscii->setUserDefinedColumns(columns);
+
+                /* not working, because of visability
+                 * simpleAscii->setUserDefinedColumns(simpleAscii->getDefaultColumnOrder(ePlaneGeometry));
+                 */
+
+                break;
+            }
+            }
 
         }
         exchange = simpleAscii;
