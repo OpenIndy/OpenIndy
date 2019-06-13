@@ -379,7 +379,11 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
 void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
 
     foreach (QPointer<FeatureWrapper> fw, features) {
-        if(fw->getFeatureTypeEnum() == ePointFeature){
+        switch(fw->getFeatureTypeEnum()) {
+        case ePlaneFeature:
+            // no break !
+        case ePointFeature:
+        {
             FeatureAttributes fAttr;
             fAttr.count = 1;
             fAttr.typeOfFeature = fw->getFeatureTypeEnum();
@@ -428,6 +432,9 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
 
             this->addFunctionsAndMConfigs(addedFeatures,mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
+
+            break;
+        }
         }
     }
 }
