@@ -350,28 +350,64 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
         }
 
         foreach(QPointer<FeatureWrapper> jobFeature, jobFeatures) {
-            if(jobFeature->getPoint()->getIsNominal()) {
-                qDebug() << "isNominal: " << jobFeature->getPoint()->getFeatureName();
+            if(jobFeature->getGeometry()->getIsNominal()) {
+                qDebug() << "isNominal: " << jobFeature->getGeometry()->getFeatureName();
                 continue;
             }
-            OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
             QList<QPointer<Reading>> importedReadings;
 
-            ReadingCartesian rCartesian;
-            rCartesian.xyz.setAt(0, p.getAt(0));
-            rCartesian.xyz.setAt(1, p.getAt(1));
-            rCartesian.xyz.setAt(2, p.getAt(2));
-            rCartesian.isValid = true;
-            QPointer<Reading> reading = new Reading(rCartesian);
-            reading->setSensorFace(eUndefinedSide);
-            reading->setMeasuredAt(curDateTime);
-            reading->setImported(true);
+            switch(jobFeature->getFeatureTypeEnum()) {
+            case ePointFeature:
+            {
+                OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
-            importedReadings.append(reading);
+                ReadingCartesian rCartesian;
+                rCartesian.xyz.setAt(0, p.getAt(0));
+                rCartesian.xyz.setAt(1, p.getAt(1));
+                rCartesian.xyz.setAt(2, p.getAt(2));
+                rCartesian.isValid = true;
+                QPointer<Reading> reading = new Reading(rCartesian);
+                reading->setSensorFace(eUndefinedSide);
+                reading->setMeasuredAt(curDateTime);
+                reading->setImported(true);
+
+                importedReadings.append(reading);
+
+                break;
+            }
+            case ePlaneFeature:
+            {
+                OiVec position = importedFeature->getPlane()->getPosition().getVector();
+                OiVec direction = importedFeature->getPlane()->getDirection().getVector();
+
+                const bool isLevel = true;
+                if(isLevel) {
+                    ReadingLevel rLevel;
+                    //rLevel.xyz.setAt(0, position.getAt(0));
+                    //rLevel.xyz.setAt(1, position.getAt(1));
+                    //rLevel.xyz.setAt(2, position.getAt(2));
+                    rLevel.i = direction.getAt(0);
+                    rLevel.j = direction.getAt(1);
+                    rLevel.k = direction.getAt(2);
+                    rLevel.isValid = true;
+                    QPointer<Reading> reading = new Reading(rLevel);
+                    reading->setMeasuredAt(curDateTime);
+                    reading->setImported(true);
+
+                    importedReadings.append(reading);
+
+                } else {
+                    // TODO
+                }
+
+                break;
+            }
+            }
 
             this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
-            emit this->sendMessage(QString("import reading to feature: \"%1\"").arg(jobFeature->getPoint()->getFeatureName()), eInformationMessage, eConsoleMessage);
+            emit this->sendMessage(QString("import reading to feature: \"%1\"").arg(jobFeature->getFeature()->getFeatureName()), eInformationMessage, eConsoleMessage);
+
         }
     }
 }
@@ -384,6 +420,8 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             // no break !
         case ePointFeature:
         {
+            const bool isLevel = true;
+
             FeatureAttributes fAttr;
             fAttr.count = 1;
             fAttr.typeOfFeature = fw->getFeatureTypeEnum();
@@ -423,15 +461,28 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             }
 
             //function
-            sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
-            QPair<QString, QString> functionPlugin;
-            functionPlugin.first = defaultFunction.name;
-            functionPlugin.second = defaultFunction.plugin.file_path;
-            fAttr.functionPlugin = functionPlugin;
+            if(isLevel) {
+                mConfig = mConfigManager->getSavedMeasurementConfig("level");
+                foreach(sdb::Function function, SystemDbManager::getFunctions()) {
+                    if(function.name.compare("FitLevel") == 0) {
+                        QPair<QString, QString> functionPlugin;
+                        functionPlugin.first = function.name;
+                        functionPlugin.second = function.plugin.file_path;
+                        fAttr.functionPlugin = functionPlugin;
+                        break;
+                    }
+                }
+            } else {
+                sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
+                QPair<QString, QString> functionPlugin;
+                functionPlugin.first = defaultFunction.name;
+                functionPlugin.second = defaultFunction.plugin.file_path;
+                fAttr.functionPlugin = functionPlugin;
+            }
 
             QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
 
-            this->addFunctionsAndMConfigs(addedFeatures,mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
+            this->addFunctionsAndMConfigs(addedFeatures,mConfig, fAttr.functionPlugin.second, fAttr.functionPlugin.first);
 
             break;
         }
