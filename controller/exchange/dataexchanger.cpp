@@ -356,10 +356,12 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
             }
 
             QList<QPointer<Reading>> importedReadings;
+            QPointer<Reading> reading = NULL;
 
             switch(jobFeature->getFeatureTypeEnum()) {
             case ePointFeature:
             {
+                // Points / Cartesian
                 OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
                 ReadingCartesian rCartesian;
@@ -367,36 +369,26 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
                 rCartesian.xyz.setAt(1, p.getAt(1));
                 rCartesian.xyz.setAt(2, p.getAt(2));
                 rCartesian.isValid = true;
-                QPointer<Reading> reading = new Reading(rCartesian);
-                reading->setSensorFace(eUndefinedSide);
-                reading->setMeasuredAt(curDateTime);
-                reading->setImported(true);
-
-                importedReadings.append(reading);
+                reading = new Reading(rCartesian);
 
                 break;
             }
-            case ePlaneFeature: // Level
+            case ePlaneFeature:
             {
+
                 if(importedFeature->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
-                    //OiVec position = importedFeature->getPlane()->getPosition().getVector();
+                    // Level
                     OiVec direction = importedFeature->getPlane()->getDirection().getVector();
 
                     ReadingLevel rLevel;
-                    //rLevel.xyz.setAt(0, position.getAt(0));
-                    //rLevel.xyz.setAt(1, position.getAt(1));
-                    //rLevel.xyz.setAt(2, position.getAt(2));
                     rLevel.i = direction.getAt(0);
                     rLevel.j = direction.getAt(1);
                     rLevel.k = direction.getAt(2);
                     rLevel.isValid = true;
-                    QPointer<Reading> reading = new Reading(rLevel);
-                    reading->setSensorFace(eUndefinedSide);
-                    reading->setMeasuredAt(curDateTime);
-                    reading->setImported(true);
+                    reading = new Reading(rLevel);
 
-                    importedReadings.append(reading);
                 } else {
+                    // Points / Cartesian
                     OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
                     ReadingCartesian rCartesian;
@@ -404,16 +396,18 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
                     rCartesian.xyz.setAt(1, p.getAt(1));
                     rCartesian.xyz.setAt(2, p.getAt(2));
                     rCartesian.isValid = true;
-                    QPointer<Reading> reading = new Reading(rCartesian);
-                    reading->setSensorFace(eUndefinedSide);
-                    reading->setMeasuredAt(curDateTime);
-                    reading->setImported(true);
+                    reading = new Reading(rCartesian);
 
-                    importedReadings.append(reading);
                 }
                 break;
             }
             }
+
+            reading->setSensorFace(eUndefinedSide);
+            reading->setMeasuredAt(curDateTime);
+            reading->setImported(true);
+
+            importedReadings.append(reading);
 
             this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
             emit this->sendMessage(QString("import reading to feature: \"%1\"").arg(jobFeature->getFeature()->getFeatureName()), eInformationMessage, eConsoleMessage);
