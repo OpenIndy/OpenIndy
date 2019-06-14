@@ -138,7 +138,7 @@ bool DataExchanger::importData(const ExchangeParams &params){
                 //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
                 break;
             }
-            case ePlaneGeometry: // no break!
+            case ePlaneGeometry:
             case ePlaneLevelGeometry:
             {
                 simpleAscii->setGeometryType(params.typeOfGeometry);
@@ -422,7 +422,6 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
     foreach (QPointer<FeatureWrapper> fw, features) {
         switch(fw->getFeatureTypeEnum()) {
         case ePlaneFeature:
-            // no break !
         case ePointFeature:
         {
             FeatureAttributes fAttr;
