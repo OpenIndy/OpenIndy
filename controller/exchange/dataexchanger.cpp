@@ -138,7 +138,8 @@ bool DataExchanger::importData(const ExchangeParams &params){
                 //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
                 break;
             }
-            case ePlaneGeometry:
+            case ePlaneGeometry: // no break!
+            case ePlaneLevelGeometry:
             {
                 simpleAscii->setGeometryType(params.typeOfGeometry);
                 simpleAscii->setSkipFirstLine(params.skipFirstLine);
