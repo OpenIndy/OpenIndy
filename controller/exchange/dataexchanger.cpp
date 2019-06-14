@@ -414,8 +414,6 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             // no break !
         case ePointFeature:
         {
-            const bool isLevel = true;
-
             FeatureAttributes fAttr;
             fAttr.count = 1;
             fAttr.typeOfFeature = fw->getFeatureTypeEnum();
@@ -426,47 +424,48 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             fAttr.isNominal = false;
             fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
 
-            //mconfig and function from default
-            MeasurementConfig mConfig;
-            if(!this->mConfigManager.isNull()){
-                //TODO fix that all measurement configs are saved in the database OI-373
-                //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
-                //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
-
-                QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
-
-                mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
-
-                /*//Workaround until bug is fixed
-                QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
-                if(mConfigs.size() > 0){
-                    bool fpExists = false;
-                    foreach (MeasurementConfig mC, mConfigs) {
-                        if(mC.getName().compare("FastPoint") == 0){
-                            mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
-                            fpExists = true;
-                        }
-                    }
-                    if(!fpExists){
-                        mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
-                    }
-                }
-                fAttr.mConfig = mConfig.getName();*/
-            }
-
             //function
-            if(isLevel) {
+            if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL")) {
                 mConfig = mConfigManager->getSavedMeasurementConfig("level");
+
                 foreach(sdb::Function function, SystemDbManager::getFunctions()) {
                     if(function.name.compare("FitLevel") == 0) {
                         QPair<QString, QString> functionPlugin;
                         functionPlugin.first = function.name;
                         functionPlugin.second = function.plugin.file_path;
                         fAttr.functionPlugin = functionPlugin;
-                        break;
+                        break; // TODO OI-478 Schleife verlasse? Fehlermeldung wenn kein
                     }
                 }
             } else {
+                //mconfig and function from default
+                MeasurementConfig mConfig;
+                if(!this->mConfigManager.isNull()){
+                    //TODO fix that all measurement configs are saved in the database OI-373
+                    //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+                    //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
+
+                    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
+
+                    mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
+
+                    /*//Workaround until bug is fixed
+                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
+                    if(mConfigs.size() > 0){
+                        bool fpExists = false;
+                        foreach (MeasurementConfig mC, mConfigs) {
+                            if(mC.getName().compare("FastPoint") == 0){
+                                mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                                fpExists = true;
+                            }
+                        }
+                        if(!fpExists){
+                            mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
+                        }
+                    }
+                    fAttr.mConfig = mConfig.getName();*/
+                }
+
                 sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
                 QPair<QString, QString> functionPlugin;
                 functionPlugin.first = defaultFunction.name;
@@ -479,8 +478,9 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             this->addFunctionsAndMConfigs(addedFeatures,mConfig, fAttr.functionPlugin.second, fAttr.functionPlugin.first);
 
             break;
-        }
-        }
+        } //case
+
+        } //switch
     }
 }
 
