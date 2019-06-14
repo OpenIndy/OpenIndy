@@ -376,30 +376,24 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
 
                 break;
             }
-            case ePlaneFeature:
+            case ePlaneFeature: // Level
             {
-                OiVec position = importedFeature->getPlane()->getPosition().getVector();
+                //OiVec position = importedFeature->getPlane()->getPosition().getVector();
                 OiVec direction = importedFeature->getPlane()->getDirection().getVector();
 
-                const bool isLevel = true;
-                if(isLevel) {
-                    ReadingLevel rLevel;
-                    //rLevel.xyz.setAt(0, position.getAt(0));
-                    //rLevel.xyz.setAt(1, position.getAt(1));
-                    //rLevel.xyz.setAt(2, position.getAt(2));
-                    rLevel.i = direction.getAt(0);
-                    rLevel.j = direction.getAt(1);
-                    rLevel.k = direction.getAt(2);
-                    rLevel.isValid = true;
-                    QPointer<Reading> reading = new Reading(rLevel);
-                    reading->setMeasuredAt(curDateTime);
-                    reading->setImported(true);
+                ReadingLevel rLevel;
+                //rLevel.xyz.setAt(0, position.getAt(0));
+                //rLevel.xyz.setAt(1, position.getAt(1));
+                //rLevel.xyz.setAt(2, position.getAt(2));
+                rLevel.i = direction.getAt(0);
+                rLevel.j = direction.getAt(1);
+                rLevel.k = direction.getAt(2);
+                rLevel.isValid = true;
+                QPointer<Reading> reading = new Reading(rLevel);
+                reading->setMeasuredAt(curDateTime);
+                reading->setImported(true);
 
-                    importedReadings.append(reading);
-
-                } else {
-                    // TODO
-                }
+                importedReadings.append(reading);
 
                 break;
             }
