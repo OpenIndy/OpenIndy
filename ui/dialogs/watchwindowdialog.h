@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QDesktopWidget>
+#include <functional>
 
 #include "types.h"
 #include "util.h"
@@ -30,11 +31,11 @@ enum DisplayActualNominal{
 
 enum DisplayAttributes{
     eName = 0,
-    eX = 1,
-    eY = 2,
-    eZ =3,
-    eD3D = 4,
-    eNotDeclared = 666
+    eX,
+    eY,
+    eZ,
+    eD3D,
+    eNotDeclared // should be the last element!
 };
 
 using namespace oi;
@@ -179,6 +180,7 @@ private:
     //watch window values
     QVBoxLayout* masterLayout;
     QMap<DisplayAttributes, QLabel*> streamData;
+    QMap<DisplayAttributes, int> masterLayoutIndex;
 
     //################
     //display settings
@@ -200,13 +202,13 @@ private:
     int oldWindowHeight;
     int oldWindowWidth;
 
-    //enums and functions for watchwindow settings
-    DisplayAttributes getAttributeValue(QString attributeName);
-    QString getAttributeName(DisplayAttributes attr);
-    DisplayAttributes getAttributesByInteger(int i);
-
     //set to "true" if watch window was currently updateded
     std::atomic<bool> watchWindowUpdated;
+
+    void addLabel(DisplayAttributes att,  QFont f);
+    void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
+    QString getNameLabel();
+
 };
 
 #endif // WATCHWINDOW_H
