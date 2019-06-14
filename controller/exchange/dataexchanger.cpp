@@ -440,16 +440,29 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             //function
             if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
                 mConfig = mConfigManager->getSavedMeasurementConfig("level");
+                if(!mConfig.getIsValid()) {
+                    emit this->sendMessage("No measurement config \"level\" found.", eErrorMessage, eConsoleMessage);
+                    continue;
+                }
 
-                foreach(sdb::Function function, SystemDbManager::getFunctions()) {
-                    if(function.name.compare("FitLevel") == 0) {
-                        QPair<QString, QString> functionPlugin;
-                        functionPlugin.first = function.name;
-                        functionPlugin.second = function.plugin.file_path;
-                        fAttr.functionPlugin = functionPlugin;
-                        break; // TODO OI-478 Schleife verlasse? Fehlermeldung wenn kein
+                sdb::Function function;
+                bool foundFunction = false;
+                foreach(sdb::Function f, SystemDbManager::getFunctions()) {
+                    if(f.name.compare("FitLevel") == 0) {
+                        function = f;
+                        foundFunction = true;
+                        break;
                     }
                 }
+                if(!foundFunction) {
+                    emit this->sendMessage("No function \"FitLevel\" found.", eErrorMessage, eConsoleMessage);
+                    continue;
+                }
+
+                QPair<QString, QString> functionPlugin;
+                functionPlugin.first = function.name;
+                functionPlugin.second = function.plugin.file_path;
+                fAttr.functionPlugin = functionPlugin;
             } else {
                 //mconfig and function from default
                 if(!this->mConfigManager.isNull()){
