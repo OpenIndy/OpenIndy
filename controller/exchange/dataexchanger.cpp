@@ -378,23 +378,39 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
             }
             case ePlaneFeature: // Level
             {
-                //OiVec position = importedFeature->getPlane()->getPosition().getVector();
-                OiVec direction = importedFeature->getPlane()->getDirection().getVector();
+                if(importedFeature->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
+                    //OiVec position = importedFeature->getPlane()->getPosition().getVector();
+                    OiVec direction = importedFeature->getPlane()->getDirection().getVector();
 
-                ReadingLevel rLevel;
-                //rLevel.xyz.setAt(0, position.getAt(0));
-                //rLevel.xyz.setAt(1, position.getAt(1));
-                //rLevel.xyz.setAt(2, position.getAt(2));
-                rLevel.i = direction.getAt(0);
-                rLevel.j = direction.getAt(1);
-                rLevel.k = direction.getAt(2);
-                rLevel.isValid = true;
-                QPointer<Reading> reading = new Reading(rLevel);
-                reading->setMeasuredAt(curDateTime);
-                reading->setImported(true);
+                    ReadingLevel rLevel;
+                    //rLevel.xyz.setAt(0, position.getAt(0));
+                    //rLevel.xyz.setAt(1, position.getAt(1));
+                    //rLevel.xyz.setAt(2, position.getAt(2));
+                    rLevel.i = direction.getAt(0);
+                    rLevel.j = direction.getAt(1);
+                    rLevel.k = direction.getAt(2);
+                    rLevel.isValid = true;
+                    QPointer<Reading> reading = new Reading(rLevel);
+                    reading->setSensorFace(eUndefinedSide);
+                    reading->setMeasuredAt(curDateTime);
+                    reading->setImported(true);
 
-                importedReadings.append(reading);
+                    importedReadings.append(reading);
+                } else {
+                    OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
+                    ReadingCartesian rCartesian;
+                    rCartesian.xyz.setAt(0, p.getAt(0));
+                    rCartesian.xyz.setAt(1, p.getAt(1));
+                    rCartesian.xyz.setAt(2, p.getAt(2));
+                    rCartesian.isValid = true;
+                    QPointer<Reading> reading = new Reading(rCartesian);
+                    reading->setSensorFace(eUndefinedSide);
+                    reading->setMeasuredAt(curDateTime);
+                    reading->setImported(true);
+
+                    importedReadings.append(reading);
+                }
                 break;
             }
             }
@@ -424,8 +440,10 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             fAttr.isNominal = false;
             fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
 
+            MeasurementConfig mConfig;
+
             //function
-            if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL")) {
+            if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
                 mConfig = mConfigManager->getSavedMeasurementConfig("level");
 
                 foreach(sdb::Function function, SystemDbManager::getFunctions()) {
@@ -439,7 +457,6 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
                 }
             } else {
                 //mconfig and function from default
-                MeasurementConfig mConfig;
                 if(!this->mConfigManager.isNull()){
                     //TODO fix that all measurement configs are saved in the database OI-373
                     //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
