@@ -27,6 +27,12 @@ WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
     oldWindowHeight = 0;
     oldWindowWidth = 0;
     this->lablesRescaled = false;
+
+    // time that monitors "watchWindowUpdated" state
+    this->watchWindowUpdated = false;
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(clearWatchWindow()));
+    timer->start(500);
 }
 
 /*!
@@ -571,6 +577,9 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         }
     }
 
+    // valid reading available
+    this->watchWindowUpdated = true;
+
     //resize labels (maximum font size that is possible)
     this->resizeWatchWindowValues();
 }
@@ -604,6 +613,8 @@ void WatchWindowDialog::getDefaultSettings(){
     }else{
         this->settings.displayValues.remove(eD3D);
     }
+
+    this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
 
 /*!
@@ -784,4 +795,19 @@ void WatchWindowDialog::on_toolBox_currentChanged(int index)
     Because the current tab is settings, labels of watchwindow tab have their old size.
     After switching to the watchwindow tab, they will get updated and it is necessary to update the size calculation.
     */
+}
+
+void WatchWindowDialog::clearWatchWindow() {
+    if(!settings.showLastMeasurement &&  !this->watchWindowUpdated) {
+        this->streamData[eX]->setVisible(false);
+        this->streamData[eY]->setVisible(false);
+        this->streamData[eZ]->setVisible(false);
+        this->streamData[eD3D]->setVisible(false);
+    }
+    this->watchWindowUpdated = false;
+}
+
+void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
+{
+    this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
