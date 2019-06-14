@@ -204,7 +204,7 @@
          <item>
           <widget class="QComboBox" name="comboBox_geometry_sa">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
          </item>

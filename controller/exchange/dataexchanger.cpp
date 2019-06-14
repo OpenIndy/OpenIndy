@@ -116,23 +116,52 @@ bool DataExchanger::importData(const ExchangeParams &params){
         QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
         if(!simpleAscii.isNull()){
 
-            simpleAscii->setGeometryType(params.typeOfGeometry);
-            simpleAscii->setSkipFirstLine(params.skipFirstLine);
-            simpleAscii->setDelimiter(params.delimiter);
+            switch(params.typeOfGeometry) {
+            case ePointGeometry:
+            {
+                simpleAscii->setGeometryType(params.typeOfGeometry);
+                simpleAscii->setSkipFirstLine(params.skipFirstLine);
+                simpleAscii->setDelimiter(params.delimiter);
 
-            //set user defined columns here hard coded (later selectable in table view)
-            //TODO user defined columns
-            QList<ExchangeSimpleAscii::ColumnType> columns;
-            columns.append(ExchangeSimpleAscii::eColumnFeatureName);
-            columns.append(ExchangeSimpleAscii::eColumnX);
-            columns.append(ExchangeSimpleAscii::eColumnY);
-            columns.append(ExchangeSimpleAscii::eColumnZ);
-            if(params.readCommonColumn) {
-                columns.append(ExchangeSimpleAscii::eColumnCommonState);
+                //set user defined columns here hard coded (later selectable in table view)
+                //TODO user defined columns
+                QList<ExchangeSimpleAscii::ColumnType> columns;
+                columns.append(ExchangeSimpleAscii::eColumnFeatureName);
+                columns.append(ExchangeSimpleAscii::eColumnX);
+                columns.append(ExchangeSimpleAscii::eColumnY);
+                columns.append(ExchangeSimpleAscii::eColumnZ);
+                if(params.readCommonColumn) {
+                    columns.append(ExchangeSimpleAscii::eColumnCommonState);
+                }
+                simpleAscii->setUserDefinedColumns(columns);
+
+                //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
+                break;
             }
-            simpleAscii->setUserDefinedColumns(columns);
+            case ePlaneGeometry:
+            case ePlaneLevelGeometry:
+            {
+                simpleAscii->setGeometryType(params.typeOfGeometry);
+                simpleAscii->setSkipFirstLine(params.skipFirstLine);
+                simpleAscii->setDelimiter(params.delimiter);
 
-            //simpleAscii->setUserDefinedColumns(params.userDefinedColumns);
+                QList<ExchangeSimpleAscii::ColumnType> columns;
+                columns.append(ExchangeSimpleAscii::eColumnFeatureName);
+                columns.append(ExchangeSimpleAscii::eColumnX);
+                columns.append(ExchangeSimpleAscii::eColumnY);
+                columns.append(ExchangeSimpleAscii::eColumnZ);
+                columns.append(ExchangeSimpleAscii::eColumnPrimaryI);
+                columns.append(ExchangeSimpleAscii::eColumnPrimaryJ);
+                columns.append(ExchangeSimpleAscii::eColumnPrimaryK);
+                simpleAscii->setUserDefinedColumns(columns);
+
+                /* not working, because of visability
+                 * simpleAscii->setUserDefinedColumns(simpleAscii->getDefaultColumnOrder(ePlaneGeometry));
+                 */
+
+                break;
+            }
+            }
 
         }
         exchange = simpleAscii;
@@ -322,20 +351,59 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
         }
 
         foreach(QPointer<FeatureWrapper> jobFeature, jobFeatures) {
-            if(jobFeature->getPoint()->getIsNominal()) {
-                qDebug() << "isNominal: " << jobFeature->getPoint()->getFeatureName();
+            if(jobFeature->getGeometry()->getIsNominal()) {
+                qDebug() << "isNominal: " << jobFeature->getGeometry()->getFeatureName();
                 continue;
             }
-            OiVec p = importedFeature->getPoint()->getPosition().getVector();
 
             QList<QPointer<Reading>> importedReadings;
+            QPointer<Reading> reading = NULL;
 
-            ReadingCartesian rCartesian;
-            rCartesian.xyz.setAt(0, p.getAt(0));
-            rCartesian.xyz.setAt(1, p.getAt(1));
-            rCartesian.xyz.setAt(2, p.getAt(2));
-            rCartesian.isValid = true;
-            QPointer<Reading> reading = new Reading(rCartesian);
+            switch(jobFeature->getFeatureTypeEnum()) {
+            case ePointFeature:
+            {
+                // Points / Cartesian
+                OiVec p = importedFeature->getPoint()->getPosition().getVector();
+
+                ReadingCartesian rCartesian;
+                rCartesian.xyz.setAt(0, p.getAt(0));
+                rCartesian.xyz.setAt(1, p.getAt(1));
+                rCartesian.xyz.setAt(2, p.getAt(2));
+                rCartesian.isValid = true;
+                reading = new Reading(rCartesian);
+
+                break;
+            }
+            case ePlaneFeature:
+            {
+
+                if(importedFeature->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
+                    // Level
+                    OiVec direction = importedFeature->getPlane()->getDirection().getVector();
+
+                    ReadingLevel rLevel;
+                    rLevel.i = direction.getAt(0);
+                    rLevel.j = direction.getAt(1);
+                    rLevel.k = direction.getAt(2);
+                    rLevel.isValid = true;
+                    reading = new Reading(rLevel);
+
+                } else {
+                    // Points / Cartesian
+                    OiVec p = importedFeature->getPoint()->getPosition().getVector();
+
+                    ReadingCartesian rCartesian;
+                    rCartesian.xyz.setAt(0, p.getAt(0));
+                    rCartesian.xyz.setAt(1, p.getAt(1));
+                    rCartesian.xyz.setAt(2, p.getAt(2));
+                    rCartesian.isValid = true;
+                    reading = new Reading(rCartesian);
+
+                }
+                break;
+            }
+            }
+
             reading->setSensorFace(eUndefinedSide);
             reading->setMeasuredAt(curDateTime);
             reading->setImported(true);
@@ -343,7 +411,8 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
             importedReadings.append(reading);
 
             this->currentJob->addMeasurementResults(jobFeature->getGeometry()->getId(),importedReadings);
-            emit this->sendMessage(QString("import reading to feature: \"%1\"").arg(jobFeature->getPoint()->getFeatureName()), eInformationMessage, eConsoleMessage);
+            emit this->sendMessage(QString("import reading to feature: \"%1\"").arg(jobFeature->getFeature()->getFeatureName()), eInformationMessage, eConsoleMessage);
+
         }
     }
 }
@@ -351,7 +420,10 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
 void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
 
     foreach (QPointer<FeatureWrapper> fw, features) {
-        if(fw->getFeatureTypeEnum() == ePointFeature){
+        switch(fw->getFeatureTypeEnum()) {
+        case ePlaneFeature:
+        case ePointFeature:
+        {
             FeatureAttributes fAttr;
             fAttr.count = 1;
             fAttr.typeOfFeature = fw->getFeatureTypeEnum();
@@ -362,45 +434,77 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
             fAttr.isNominal = false;
             fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
 
-            //mconfig and function from default
             MeasurementConfig mConfig;
-            if(!this->mConfigManager.isNull()){
-                //TODO fix that all measurement configs are saved in the database OI-373
-                //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
-                //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
-
-                QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
-
-                mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
-
-                /*//Workaround until bug is fixed
-                QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
-                if(mConfigs.size() > 0){
-                    bool fpExists = false;
-                    foreach (MeasurementConfig mC, mConfigs) {
-                        if(mC.getName().compare("FastPoint") == 0){
-                            mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
-                            fpExists = true;
-                        }
-                    }
-                    if(!fpExists){
-                        mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
-                    }
-                }
-                fAttr.mConfig = mConfig.getName();*/
-            }
 
             //function
-            sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
-            QPair<QString, QString> functionPlugin;
-            functionPlugin.first = defaultFunction.name;
-            functionPlugin.second = defaultFunction.plugin.file_path;
-            fAttr.functionPlugin = functionPlugin;
+            if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
+                mConfig = mConfigManager->getSavedMeasurementConfig("level");
+                if(!mConfig.getIsValid()) {
+                    emit this->sendMessage("No measurement config \"level\" found.", eErrorMessage, eConsoleMessage);
+                    continue;
+                }
+
+                sdb::Function function;
+                bool foundFunction = false;
+                foreach(sdb::Function f, SystemDbManager::getFunctions()) {
+                    if(f.name.compare("FitLevel") == 0) {
+                        function = f;
+                        foundFunction = true;
+                        break;
+                    }
+                }
+                if(!foundFunction) {
+                    emit this->sendMessage("No function \"FitLevel\" found.", eErrorMessage, eConsoleMessage);
+                    continue;
+                }
+
+                QPair<QString, QString> functionPlugin;
+                functionPlugin.first = function.name;
+                functionPlugin.second = function.plugin.file_path;
+                fAttr.functionPlugin = functionPlugin;
+            } else {
+                //mconfig and function from default
+                if(!this->mConfigManager.isNull()){
+                    //TODO fix that all measurement configs are saved in the database OI-373
+                    //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+                    //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
+
+                    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
+
+                    mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
+
+                    /*//Workaround until bug is fixed
+                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
+                    if(mConfigs.size() > 0){
+                        bool fpExists = false;
+                        foreach (MeasurementConfig mC, mConfigs) {
+                            if(mC.getName().compare("FastPoint") == 0){
+                                mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                                fpExists = true;
+                            }
+                        }
+                        if(!fpExists){
+                            mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
+                        }
+                    }
+                    fAttr.mConfig = mConfig.getName();*/
+                }
+
+                sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
+                QPair<QString, QString> functionPlugin;
+                functionPlugin.first = defaultFunction.name;
+                functionPlugin.second = defaultFunction.plugin.file_path;
+                fAttr.functionPlugin = functionPlugin;
+            }
 
             QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
 
-            this->addFunctionsAndMConfigs(addedFeatures,mConfig, defaultFunction.plugin.file_path, defaultFunction.name);
-        }
+            this->addFunctionsAndMConfigs(addedFeatures,mConfig, fAttr.functionPlugin.second, fAttr.functionPlugin.first);
+
+            break;
+        } //case
+
+        } //switch
     }
 }
 
