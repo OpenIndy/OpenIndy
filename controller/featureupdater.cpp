@@ -1692,7 +1692,7 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
         if(feature.isNull() || feature->getStation().isNull()){
             continue;
         }
-        QString name = feature->getStation()->getFeatureName();
+        QString stationName = feature->getStation()->getFeatureName();
 
         //set up name
         fAttr.name = bundleSystem->getFeatureName();
@@ -1703,7 +1703,7 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
         }
 
         //create trafo param feature
-        fAttr.destinationSystem = name;
+        fAttr.destinationSystem = stationName;
         features.append(this->currentJob->addFeatures(fAttr));
 
     }
