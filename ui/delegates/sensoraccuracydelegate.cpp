@@ -115,32 +115,3 @@ void SensorAccuracyDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
     }
 
 }
-
-/*!
- * \brief SensorAccuracyDelegate::sizeHint
- * \param option
- * \param index
- * \return
- */
-QSize SensorAccuracyDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
-
-    //check model index
-    if(!index.isValid()){
-        return QSize(5, 22);
-    }
-
-    //get and check models
-    const SensorAccuracyModel *model = static_cast<const SensorAccuracyModel*>(index.model());
-    if(model == NULL){
-        return QSize(5, 22);
-    }
-
-    QString input = model->data(index).toString();
-
-    QFontMetrics metrics(option.font);
-
-    int width = metrics.width(input) + option.decorationSize.width();
-
-    return QSize(width, 22);
-
-}

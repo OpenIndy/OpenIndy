@@ -45,32 +45,3 @@ void ReadingTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
 void ReadingTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
 
 }
-
-/*!
- * \brief ReadingTableDelegate::sizeHint
- * \param option
- * \param index
- * \return
- */
-QSize ReadingTableDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
-
-    //check model index
-    if(!index.isValid()){
-        return QSize(5, 22);
-    }
-
-    //get and check models
-    const ReadingProxyModel *readingProxyModel = static_cast<const ReadingProxyModel*>(index.model());
-    if(readingProxyModel == NULL){
-        return QSize(5, 22);
-    }
-
-    QString input = readingProxyModel->data(index).toString();
-
-    QFontMetrics metrics(option.font);
-
-    int width = metrics.width(input) + option.decorationSize.width();
-
-    return QSize(width, 22);
-
-}
