@@ -59,7 +59,7 @@ int ObservationModel::columnCount(const QModelIndex &parent) const{
 QVariant ObservationModel::data(const QModelIndex &index, int role) const{
 
     //check role
-    if(role != Qt::DisplayRole && role != Qt::CheckStateRole){
+    if(role != Qt::DisplayRole && role != Qt::CheckStateRole && role != Qt::TextAlignmentRole){
         return QVariant();
     }
 
@@ -212,6 +212,28 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
                 return Qt::Checked;
             }
             return Qt::Unchecked;
+        }
+
+    }else if(role == Qt::TextAlignmentRole){
+
+        switch((ObservationDisplayAttributes)columnIndex){
+        case eObservationDisplayX:
+        case eObservationDisplayY:
+        case eObservationDisplayZ:
+        case eObservationDisplayI:
+        case eObservationDisplayJ:
+        case eObservationDisplayK:
+        case eObservationDisplaySigmaX:
+        case eObservationDisplaySigmaY:
+        case eObservationDisplaySigmaZ:
+        case eObservationDisplaySigmaI:
+        case eObservationDisplaySigmaJ:
+        case eObservationDisplaySigmaK:
+        case eObservationDisplayVX:
+        case eObservationDisplayVY:
+        case eObservationDisplayVZ:
+        case eObservationDisplayV:
+            return Qt::AlignRight | Qt::AlignVCenter;
         }
 
     }

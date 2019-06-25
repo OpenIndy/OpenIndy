@@ -101,6 +101,14 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
                 return QVariant();
             }
         }
+    }else if(role == Qt::TextAlignmentRole){
+        if(index.column() > 0) { // 0 == name column
+            QMap<bool, double> result = this->getDifference(feature, index);
+
+            if(result.keys().at(0)){
+                return Qt::AlignRight | Qt::AlignVCenter;
+            }
+        }
     }
     return QVariant();
 }

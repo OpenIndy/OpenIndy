@@ -115,7 +115,57 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         default:
             break;
         }
+
+    }else if(role == Qt::TextAlignmentRole
+             && ( !feature->getGeometry().isNull()
+                  || !feature->getCoordinateSystem().isNull()
+                  || !feature->getStation().isNull()
+                 )) {
+
+        switch((FeatureDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex)){
+        case eFeatureDisplayStDev:
+        case eFeatureDisplayX:
+        case eFeatureDisplayY:
+        case eFeatureDisplayZ:
+        case eFeatureDisplayPrimaryI:
+        case eFeatureDisplayPrimaryJ:
+        case eFeatureDisplayPrimaryK:
+        case eFeatureDisplayRadiusA:
+        case eFeatureDisplayRadiusB:
+        case eFeatureDisplaySecondaryI:
+        case eFeatureDisplaySecondaryJ:
+        case eFeatureDisplaySecondaryK:
+        case eFeatureDisplayAperture:
+        case eFeatureDisplayA:
+        case eFeatureDisplayB:
+        case eFeatureDisplayC:
+        case eFeatureDisplayAngle:
+        case eFeatureDisplayDistance:
+        case eFeatureDisplayTemperature:
+        case eFeatureDisplayLength:
+        case eFeatureDisplayExpansionOriginX:
+        case eFeatureDisplayExpansionOriginY:
+        case eFeatureDisplayExpansionOriginZ:
+            return Qt::AlignRight | Qt::AlignVCenter;
+        }
+
+    }else if(role == Qt::TextAlignmentRole && !feature->getTrafoParam().isNull()) {
+
+        switch((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex)){
+        case eTrafoParamDisplayTranslationX:
+        case eTrafoParamDisplayTranslationY:
+        case eTrafoParamDisplayTranslationZ:
+        case eTrafoParamDisplayRotationX:
+        case eTrafoParamDisplayRotationY:
+        case eTrafoParamDisplayRotationZ:
+        case eTrafoParamDisplayScaleX:
+        case eTrafoParamDisplayScaleY:
+        case eTrafoParamDisplayScaleZ:
+        case eTrafoParamDisplayStDev:
+            return Qt::AlignRight | Qt::AlignVCenter;
+        }
     }
+
     return QVariant();
 }
 
