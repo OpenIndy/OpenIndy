@@ -1,11 +1,7 @@
 # OpenIndy on ubuntu
 
 ## ubuntu 16.04 
-
-    ssh hp
-    sudo -i 
-    cd /var/lib/libvirt/images
-    
+   
     wget http://releases.ubuntu.com/16.04/ubuntu-16.04.6-desktop-i386.iso
     # wget http://releases.ubuntu.com/16.04/ubuntu-16.04.6-desktop-amd64.iso
 
