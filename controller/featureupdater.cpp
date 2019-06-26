@@ -254,6 +254,15 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
         return false;
     }
 
+    if(true) {
+        foreach(BundleStation bs,  inputStations) {
+             qDebug() << "BundleStation.id=" << bs.id;
+             foreach(BundleGeometry bg, bs.geometries) {
+                 qDebug() << "\tgeometries.id=" << bg.id;
+             }
+        }
+    }
+
     //set up base station and job
     bundlePlugin->setInputStations(inputStations);
     bundlePlugin->setBaseStation(inputStations.at(0));
@@ -1686,6 +1695,7 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
     fAttr.startSystem = bundleSystem->getFeatureName();
     QList<QPointer<FeatureWrapper> > features;
     foreach(const BundleTransformation &transformation, transformations){
+        qDebug() << "transformation.id=" << transformation.id;
 
         //get station
         QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(transformation.id);
@@ -1693,6 +1703,8 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
             continue;
         }
         QString stationName = feature->getStation()->getFeatureName();
+
+        qDebug() << "feature->getStation()->getFeatureName() " << name;
 
         //set up name
         fAttr.name = bundleSystem->getFeatureName();
