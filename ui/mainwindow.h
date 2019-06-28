@@ -446,6 +446,8 @@ private:
 
     void showCentered(QDialog &dialog);
 
+    void openWatchWindow();
+
 };
 
 #endif // MAINWINDOW_H
