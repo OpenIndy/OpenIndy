@@ -6,8 +6,8 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
-    ui(new Ui::WatchWindowDialog)
+WatchWindowDialog::WatchWindowDialog(QPointer<OiJob> job, QPointer<FeatureWrapper> f, QWidget *parent) : QDialog(parent),
+    ui(new Ui::WatchWindowDialog), currentJob(job), feature(f)
 {
     ui->setupUi(this);
 
@@ -287,7 +287,7 @@ void WatchWindowDialog::connectSensor(){
     }
 
     //get and check the active station
-    QPointer<Station> station = this->currentJob->getActiveStation();
+    QPointer<Station> station = this->currentJob->getActiveStation(); // TODO OI-392: kann das so bleiben?
     if(station.isNull()){
         return;
     }
@@ -298,26 +298,19 @@ void WatchWindowDialog::connectSensor(){
     }
 
     //save and connect active station
-    this->activeStation = station;
+    this->activeStation = station; // TODO OI-392 check
     QObject::connect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
 }
 
-/*!
- * \brief WatchWindowDialog::connectJob
- */
-void WatchWindowDialog::connectJob(){
-
-}
 
 QString WatchWindowDialog::getNameLabel() {
-    if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
+    if(this->currentJob.isNull() /* OI-392 ??? || this->currentJob->getActiveFeature().isNull() */){
         return "";
     }
 
-    QPointer<Feature> feature = this->currentJob->getActiveFeature()->getFeature();
     return QString("%1%2")
-            .arg(feature->getFeatureName())
-            .arg(feature->getFeatureWrapper()->getGeometry() ? feature->getFeatureWrapper()->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
+            .arg(this->feature->getFeature()->getFeatureName())
+            .arg(this->feature->getGeometry() ? feature->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
 }
 
 /*!
@@ -335,23 +328,23 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     //check the active position (geometry, station, coordinate system)
     Position pos;
 
-    if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
+    if(this->currentJob.isNull() || this->feature.isNull()){
         return;
     //check if current feature is a solved geometry with position
-    }else if(!this->currentJob->getActiveFeature()->getGeometry().isNull() && this->currentJob->getActiveFeature()->getGeometry()->hasPosition()
-             && this->currentJob->getActiveFeature()->getGeometry()->getIsSolved()){
+    }else if(!this->feature->getGeometry().isNull() && this->feature->getGeometry()->hasPosition()
+             && this->feature->getGeometry()->getIsSolved()){
 
-        pos = this->currentJob->getActiveFeature()->getGeometry()->getPosition();
+        pos = this->feature->getGeometry()->getPosition();
 
     //check if active feature is a coordinate system
-    }else if(!this->currentJob->getActiveFeature()->getCoordinateSystem().isNull()){
+    }else if(!this->feature->getCoordinateSystem().isNull()){
 
-        pos = this->currentJob->getActiveFeature()->getCoordinateSystem()->getOrigin();
+        pos = this->feature->getCoordinateSystem()->getOrigin();
 
     //check if active feature is a station
-    }else if(!this->currentJob->getActiveFeature()->getStation().isNull()){
+    }else if(!this->feature->getStation().isNull()){
 
-        pos = this->currentJob->getActiveFeature()->getStation()->getPosition()->getPosition();
+        pos = this->feature->getStation()->getPosition()->getPosition();
 
     }else{
         return;

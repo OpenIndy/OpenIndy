@@ -23,6 +23,7 @@
 #include "trafocontroller.h"
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
+#include "feature.h"
 
 enum DisplayActualNominal{
     eActualNominal = 0,
@@ -77,7 +78,7 @@ class WatchWindowDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit WatchWindowDialog(QWidget *parent = 0);
+    explicit WatchWindowDialog(QPointer<OiJob> job, QPointer<FeatureWrapper> feature, QWidget *parent = 0);
     ~WatchWindowDialog();
 
 signals:
@@ -162,7 +163,7 @@ private:
     //#############################
 
     QPointer<OiJob> currentJob;
-
+    QPointer<FeatureWrapper> feature;
     //save active station here, to be able to disconnect it
     QPointer<Station> activeStation;
 
