@@ -3020,6 +3020,7 @@ void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
  */
 void MainWindow::showCentered(QDialog &dialog) {
     dialog.show();
+    dialog.activateWindow();
     QScreen *screen = this->windowHandle()->screen();
     dialog.move( screen->geometry().center() - dialog.rect().center() );
     dialog.windowHandle()->setScreen(screen);
