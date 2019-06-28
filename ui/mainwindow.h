@@ -312,6 +312,8 @@ private slots:
 
     void autoSaveProject();
 
+    void on_actionNew_watch_window_triggered();
+
 private:
     Ui::MainWindow *ui;
 

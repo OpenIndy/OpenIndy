@@ -3024,3 +3024,8 @@ void MainWindow::showCentered(QDialog &dialog) {
     dialog.move( screen->geometry().center() - dialog.rect().center() );
     dialog.windowHandle()->setScreen(screen);
 }
+
+void MainWindow::on_actionNew_watch_window_triggered()
+{
+    qDebug() << "openNewWatchWindow";
+}
