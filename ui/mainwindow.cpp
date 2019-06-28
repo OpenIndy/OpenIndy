@@ -3031,29 +3031,40 @@ void MainWindow::showCentered(QDialog &dialog) {
 
 void MainWindow::on_actionNew_watch_window_triggered()
 {
-    openWatchWindow();
+    openWatchWindow(true);
 }
 
-void MainWindow::openWatchWindow() {
+void MainWindow::openWatchWindow(bool currentFeature) {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        QPointer<FeatureWrapper> feature = job->getActiveFeature();
-        if(!feature.isNull()) {
 
-            const QString featureName = feature->getFeature()->getFeatureName();
-            if(!watchWindowDialogs.contains(featureName)) {
-                QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(job, feature);
-                watchWindowDialogs[featureName] = watchWindowDialog;
+        QPointer<FeatureWrapper> feature;
+        QVariant watchWindowKey;
 
-                //connect watch window dialog
-                QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
-                QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+        if(currentFeature) { // open new watch window for current selected feature
+
+            feature = job->getActiveFeature();
+            if(feature.isNull()) {
+                return;
             }
+            watchWindowKey = feature->getFeature()->getFeatureName();
 
-            watchWindowDialogs[featureName]->show();
-            watchWindowDialogs[featureName]->activateWindow();
+        } else { // show always the active feature
+            watchWindowKey = QVariant(-1); // key for active feature
         }
 
+
+        if(!watchWindowDialogs.contains(watchWindowKey)) {
+            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(job, feature);
+            watchWindowDialogs[watchWindowKey] = watchWindowDialog;
+
+            //connect watch window dialog
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+        }
+
+        watchWindowDialogs[watchWindowKey]->show();
+        watchWindowDialogs[watchWindowKey]->activateWindow();
     }
 
 }

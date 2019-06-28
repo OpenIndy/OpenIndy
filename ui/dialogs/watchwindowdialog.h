@@ -203,6 +203,8 @@ private:
     void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
     QString getNameLabel();
 
+    QPointer<FeatureWrapper> getFeature();
+
 };
 
 #endif // WATCHWINDOW_H
