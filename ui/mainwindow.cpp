@@ -3010,3 +3010,16 @@ void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
         }
     }
 }
+
+/**
+ * show dialog centered on the current screen / monitor
+ *
+ * @brief MainWindow::showCentered
+ * @param dialog
+ */
+void MainWindow::showCentered(QDialog &dialog) {
+    dialog.show();
+    QScreen *screen = this->windowHandle()->screen();
+    dialog.move( screen->geometry().center() - dialog.rect().center() );
+    dialog.windowHandle()->setScreen(screen);
+}
