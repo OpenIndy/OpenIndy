@@ -9,6 +9,9 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
+#include "QWindow"
+#include "QScreen"
+#include "QDialog"
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -438,6 +441,8 @@ private:
     QList<int> measureFeatures;
 
     void enableOrDisableObservationsOfActiveFeature(bool);
+
+    void showCentered(QDialog &dialog);
 
 };
 
