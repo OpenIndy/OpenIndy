@@ -388,7 +388,7 @@ private:
     MoveSensorDialog moveSensorDialog;
     SensorTaskInfoDialog sensorTaskInfoDialog;
     PluginManagerDialog pluginManagerDialog;
-    WatchWindowDialog watchWindowDialog;
+    QMap<QString, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
