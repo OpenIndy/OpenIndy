@@ -1246,6 +1246,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
    if(saveProjectIfDigestChanged() == QMessageBox::Cancel) {
        event->ignore();
    } else {
+       QApplication::closeAllWindows(); // close all windows on exit e.g. watch window
        event->accept();
    }
 }
