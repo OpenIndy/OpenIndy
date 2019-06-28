@@ -210,13 +210,8 @@ void WatchWindowDialog::realTimeReading(const QVariantMap &reading){
  * \param event
  */
 void WatchWindowDialog::showEvent(QShowEvent *event){
-
     //necessary to rescale all
     this->lablesRescaled = false;
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
 
     //connect sensor
     this->connectSensor();

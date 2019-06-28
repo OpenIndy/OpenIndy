@@ -449,18 +449,6 @@ void PluginManagerDialog::on_treeView_plugins_clicked(const QModelIndex &index){
 }
 
 /*!
- * \brief PluginManagerDialog::showEvent
- * \param event
- */
-void PluginManagerDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
-}
-
-/*!
  * \brief PluginManagerDialog::initGUI
  */
 void PluginManagerDialog::initGUI(){

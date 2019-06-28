@@ -22,17 +22,3 @@ AboutDialog::~AboutDialog()
 {
     delete ui;
 }
-
-/*!
- * \brief AboutDialog::showEvent
- * \param event
- */
-void AboutDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
-    event->accept();
-
-}
