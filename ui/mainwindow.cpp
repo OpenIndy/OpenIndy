@@ -69,7 +69,7 @@ MainWindow::~MainWindow(){
  * Triggered by Controller whenever an nominal import task has been started
  */
 void MainWindow::importNominalsStarted(){
-    this->loadingDialog.show();
+    showCentered(this->loadingDialog);
 }
 
 /*!
@@ -93,7 +93,7 @@ void MainWindow::importNominalsFinished(const bool &success){
  * \brief MainWindow::importObservationsStarted
  */
 void MainWindow::importObservationsStarted(){
-    this->loadingDialog.show();
+    showCentered(this->loadingDialog);
 }
 
 /*!
@@ -352,7 +352,7 @@ void MainWindow::currentJobChanged(){
  */
 void MainWindow::sensorActionStarted(const QString &name){
     this->sensorTaskInfoDialog.setDisplayMessage(name);
-    this->sensorTaskInfoDialog.show();
+    showCentered(this->sensorTaskInfoDialog);
 }
 
 /*!
@@ -547,7 +547,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
  */
 void MainWindow::on_actionCreate_point_triggered(){
     this->createFeatureDialog.setFeatureType(ePointFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -555,7 +555,7 @@ void MainWindow::on_actionCreate_point_triggered(){
  */
 void MainWindow::on_actionCreate_line_triggered(){
     this->createFeatureDialog.setFeatureType(eLineFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -563,7 +563,7 @@ void MainWindow::on_actionCreate_line_triggered(){
  */
 void MainWindow::on_actionCreate_plane_triggered(){
     this->createFeatureDialog.setFeatureType(ePlaneFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -571,7 +571,7 @@ void MainWindow::on_actionCreate_plane_triggered(){
  */
 void MainWindow::on_actionCreate_sphere_triggered(){
     this->createFeatureDialog.setFeatureType(eSphereFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -579,7 +579,7 @@ void MainWindow::on_actionCreate_sphere_triggered(){
  */
 void MainWindow::on_actionCreate_station_triggered(){
     this->createFeatureDialog.setFeatureType(eStationFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -587,7 +587,7 @@ void MainWindow::on_actionCreate_station_triggered(){
  */
 void MainWindow::on_actionCreate_coordinatesystem_triggered(){
     this->createFeatureDialog.setFeatureType(eCoordinateSystemFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -595,7 +595,7 @@ void MainWindow::on_actionCreate_coordinatesystem_triggered(){
  */
 void MainWindow::on_actionCreate_scalar_entity_triggered(){
     this->createFeatureDialog.setFeatureType(eScalarEntityAngleFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -603,7 +603,7 @@ void MainWindow::on_actionCreate_scalar_entity_triggered(){
  */
 void MainWindow::on_actionCreate_trafoParam_triggered(){
     this->createFeatureDialog.setFeatureType(eTrafoParamFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -611,7 +611,7 @@ void MainWindow::on_actionCreate_trafoParam_triggered(){
  */
 void MainWindow::on_actionCreate_cylinder_triggered(){
     this->createFeatureDialog.setFeatureType(eCylinderFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -619,7 +619,7 @@ void MainWindow::on_actionCreate_cylinder_triggered(){
  */
 /*void MainWindow::on_actionCreate_pointcloud_triggered(){
     this->createFeatureDialog.setFeatureType(ePointCloudFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }*/
 
 /*!
@@ -627,21 +627,21 @@ void MainWindow::on_actionCreate_cylinder_triggered(){
  */
 void MainWindow::on_actionCreate_circle_triggered(){
     this->createFeatureDialog.setFeatureType(eCircleFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
  * \brief MainWindow::on_actionLoad_plugins_triggered
  */
 void MainWindow::on_actionLoad_plugins_triggered(){
-    this->pluginLoaderDialog.show();
+    showCentered(this->pluginLoaderDialog);
 }
 
 /*!
  * \brief MainWindow::on_actionPlugin_manager_triggered
  */
 void MainWindow::on_actionPlugin_manager_triggered(){
-    this->pluginManagerDialog.show();
+    showCentered(this->pluginManagerDialog);
 }
 
 /*!
@@ -968,7 +968,7 @@ void MainWindow::on_actionSet_function_triggered(){
     }
 
     if(!sourceModel->getActiveFeature().isNull()){
-        this->featureFunctionsDialog.show();
+        showCentered(this->featureFunctionsDialog);
     }
 
 }
@@ -977,7 +977,7 @@ void MainWindow::on_actionSet_function_triggered(){
  * \brief MainWindow::on_actionSet_sensor_triggered
  */
 void MainWindow::on_actionSet_sensor_triggered(){
-    this->sensorConfigurationDialog.show();
+    showCentered(this->sensorConfigurationDialog);
 }
 
 /*!
@@ -1015,7 +1015,7 @@ void MainWindow::setSensorConfiguration(const SensorConfiguration &sConfig){
  * \brief MainWindow::showMoveSensorDialog
  */
 void MainWindow::showMoveSensorDialog(){
-    this->moveSensorDialog.show();
+    showCentered(this->moveSensorDialog);
 }
 
 /*!
@@ -1046,7 +1046,7 @@ void MainWindow::on_actionStationProperties_triggered(){
         this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
         this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
 
-        this->stationPropertiesDialog.show();
+        showCentered(this->stationPropertiesDialog);
 
     }
 
@@ -1169,7 +1169,7 @@ void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &ar
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
-    this->watchWindowDialog.show();
+    showCentered(this->watchWindowDialog);
 }
 
 /*!
@@ -1266,7 +1266,7 @@ void MainWindow::on_actionMeasurement_Configuration_triggered(){
         this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
     }
 
-    this->measurementConfigDialog.show();
+    showCentered(this->measurementConfigDialog);
 
 }
 
@@ -1321,7 +1321,7 @@ void MainWindow::on_actionActivate_station_triggered(){
  * \brief MainWindow::on_actionView_settings_triggered
  */
 void MainWindow::on_actionView_settings_triggered(){
-    this->settingsDialog.show();
+    showCentered(this->settingsDialog);
 }
 
 /*!
@@ -1434,7 +1434,7 @@ void MainWindow::removeObservationOfActiveFeature(){
  * \brief MainWindow::on_actionAbout_OpenIndy_triggered
  */
 void MainWindow::on_actionAbout_OpenIndy_triggered(){
-    this->aboutDialog.show();
+    showCentered(this->aboutDialog);
 }
 
 /*!
@@ -1552,7 +1552,7 @@ void MainWindow::showFeatureProperties(bool checked){
 
     //display properties dialog for actuals
     if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
-        this->actualPropertiesDialog.show();
+        showCentered(this->actualPropertiesDialog);
         return;
     }
 
@@ -1567,7 +1567,7 @@ void MainWindow::showFeatureProperties(bool checked){
         QMap<GeometryParameters, QString> parameters = feature->getGeometry()->getUnknownParameters(displayUnits, displayDigits);
         this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
 
-        this->nominalPropertiesDialog.show();
+        showCentered(this->nominalPropertiesDialog);
 
         return;
 
@@ -1587,7 +1587,7 @@ void MainWindow::showFeatureProperties(bool checked){
         QMap<TrafoParamParameters, QString> parameters = feature->getTrafoParam()->getUnknownParameters(displayUnits, displayDigits);
         this->trafoParamPropertiesDialog.setUnknownTrafoParamParameters(parameters);
 
-        this->trafoParamPropertiesDialog.show();
+        showCentered(this->trafoParamPropertiesDialog);
 
         return;
 
@@ -1600,7 +1600,7 @@ void MainWindow::showFeatureProperties(bool checked){
         this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
         this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
 
-        this->stationPropertiesDialog.show();
+        showCentered(this->stationPropertiesDialog);
 
     }
 

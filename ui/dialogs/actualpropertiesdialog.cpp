@@ -192,10 +192,6 @@ void ActualPropertiesDialog::copyToClipboard(){
  */
 void ActualPropertiesDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     this->resizeTableView();
 
     event->accept();

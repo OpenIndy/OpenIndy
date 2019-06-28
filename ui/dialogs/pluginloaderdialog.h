@@ -27,8 +27,6 @@ public:
     explicit PluginLoaderDialog(QWidget *parent = 0);
     ~PluginLoaderDialog();
 
-    void showEvent(QShowEvent *event);
-
 signals:
 
     //#############

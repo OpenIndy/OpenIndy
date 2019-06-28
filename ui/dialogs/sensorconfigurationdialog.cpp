@@ -548,10 +548,6 @@ void SensorConfigurationDialog::setChangesMade(bool changesMade){
  */
 void SensorConfigurationDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     //update models and GUI based on the selected config
     if(!this->sensorConfigModel.isNull()){
 
