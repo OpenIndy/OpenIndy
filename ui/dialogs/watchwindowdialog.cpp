@@ -304,13 +304,13 @@ void WatchWindowDialog::connectSensor(){
 
 
 QString WatchWindowDialog::getNameLabel() {
-    if(this->currentJob.isNull() /* OI-392 ??? || this->currentJob->getActiveFeature().isNull() */){
+    if(this->currentJob.isNull() || this->getFeature().isNull()){
         return "";
     }
 
     return QString("%1%2")
-            .arg(this->feature->getFeature()->getFeatureName())
-            .arg(this->feature->getGeometry() ? feature->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
+            .arg(getFeature()->getFeature()->getFeatureName())
+            .arg(getFeature()->getGeometry() ? getFeature()->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
 }
 
 /*!
@@ -328,23 +328,23 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     //check the active position (geometry, station, coordinate system)
     Position pos;
 
-    if(this->currentJob.isNull() || this->feature.isNull()){
+    if(this->currentJob.isNull() || getFeature().isNull()){
         return;
     //check if current feature is a solved geometry with position
-    }else if(!this->feature->getGeometry().isNull() && this->feature->getGeometry()->hasPosition()
-             && this->feature->getGeometry()->getIsSolved()){
+    }else if(!getFeature()->getGeometry().isNull() && getFeature()->getGeometry()->hasPosition()
+             && getFeature()->getGeometry()->getIsSolved()){
 
-        pos = this->feature->getGeometry()->getPosition();
+        pos = getFeature()->getGeometry()->getPosition();
 
     //check if active feature is a coordinate system
-    }else if(!this->feature->getCoordinateSystem().isNull()){
+    }else if(!getFeature()->getCoordinateSystem().isNull()){
 
-        pos = this->feature->getCoordinateSystem()->getOrigin();
+        pos = getFeature()->getCoordinateSystem()->getOrigin();
 
     //check if active feature is a station
-    }else if(!this->feature->getStation().isNull()){
+    }else if(!getFeature()->getStation().isNull()){
 
-        pos = this->feature->getStation()->getPosition()->getPosition();
+        pos = getFeature()->getStation()->getPosition()->getPosition();
 
     }else{
         return;
@@ -618,4 +618,12 @@ void WatchWindowDialog::clearWatchWindow() {
 void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
 {
     this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
+}
+
+QPointer<FeatureWrapper> WatchWindowDialog::getFeature(){
+    if(!this->feature.isNull()) {
+        return this->feature;
+    } else {
+        return this->currentJob.isNull() ? QPointer<FeatureWrapper>() : this->currentJob->getActiveFeature();
+    }
 }

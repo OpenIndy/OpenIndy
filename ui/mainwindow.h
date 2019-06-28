@@ -388,7 +388,7 @@ private:
     MoveSensorDialog moveSensorDialog;
     SensorTaskInfoDialog sensorTaskInfoDialog;
     PluginManagerDialog pluginManagerDialog;
-    QMap<QString, QPointer<WatchWindowDialog> > watchWindowDialogs;
+    QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
@@ -446,7 +446,7 @@ private:
 
     void showCentered(QDialog &dialog);
 
-    void openWatchWindow();
+    void openWatchWindow(bool currentFeature);
 
 };
 
