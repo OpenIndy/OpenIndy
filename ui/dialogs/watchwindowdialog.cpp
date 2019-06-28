@@ -30,7 +30,7 @@ WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
 
     // time that monitors "watchWindowUpdated" state
     this->watchWindowUpdated = false;
-    QTimer *timer = new QTimer(this);
+    static QTimer *timer = new QTimer(parent);
     connect(timer, SIGNAL(timeout()), this, SLOT(clearWatchWindow()));
     timer->start(500);
 }
