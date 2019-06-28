@@ -80,13 +80,6 @@ public:
     explicit WatchWindowDialog(QWidget *parent = 0);
     ~WatchWindowDialog();
 
-    //###########################
-    //get or set the feature type
-    //###########################
-
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
-
 signals:
 
     //######################################
