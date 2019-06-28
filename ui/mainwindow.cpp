@@ -327,7 +327,13 @@ void MainWindow::currentJobChanged(){
 
     //get current job and pass it to watch window
     QPointer<OiJob> job = ModelManager::getCurrentJob();
-    this->watchWindowDialog.setCurrentJob(job);
+
+    for (auto it = watchWindowDialogs.begin(); it != watchWindowDialogs.end();) {
+        if(it.value().isNull()) {
+            delete it.value().data(); // TODO OI-392: notwendig?
+        }
+        it = watchWindowDialogs.erase(it);
+    }
 
     //set window title
     if(!job.isNull()){
@@ -1169,7 +1175,7 @@ void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &ar
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
-    showCentered(this->watchWindowDialog);
+    openWatchWindow(false);
 }
 
 /*!
@@ -2266,9 +2272,6 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
 
-    //connect watch window dialog
-    QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
-    QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
 }
 
 /*!
@@ -3028,5 +3031,29 @@ void MainWindow::showCentered(QDialog &dialog) {
 
 void MainWindow::on_actionNew_watch_window_triggered()
 {
-    qDebug() << "openNewWatchWindow";
+    openWatchWindow();
+}
+
+void MainWindow::openWatchWindow() {
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull()) {
+        QPointer<FeatureWrapper> feature = job->getActiveFeature();
+        if(!feature.isNull()) {
+
+            const QString featureName = feature->getFeature()->getFeatureName();
+            if(!watchWindowDialogs.contains(featureName)) {
+                QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(job, feature);
+                watchWindowDialogs[featureName] = watchWindowDialog;
+
+                //connect watch window dialog
+                QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
+                QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+            }
+
+            watchWindowDialogs[featureName]->show();
+            watchWindowDialogs[featureName]->activateWindow();
+        }
+
+    }
+
 }
