@@ -43,25 +43,6 @@ WatchWindowDialog::~WatchWindowDialog(){
 }
 
 /*!
- * \brief WatchWindowDialog::getCurrentJob
- * \return
- */
-const QPointer<OiJob> &WatchWindowDialog::getCurrentJob() const{
-    return this->currentJob;
-}
-
-/*!
- * \brief WatchWindowDialog::setCurrentJob
- * \param job
- */
-void WatchWindowDialog::setCurrentJob(const QPointer<OiJob> &job){
-    if(!job.isNull()){
-        this->currentJob = job;
-        this->connectJob();
-    }
-}
-
-/*!
  * \brief WatchWindowDialog::on_spinBox_decimalDigits_valueChanged
  * \param arg1
  */
