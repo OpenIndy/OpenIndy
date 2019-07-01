@@ -3055,7 +3055,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
 
 
         if(!watchWindowDialogs.contains(watchWindowKey)) {
-            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(job, feature);
+            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, feature);
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 
             //connect watch window dialog
