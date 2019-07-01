@@ -84,7 +84,7 @@ class WatchWindowDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit WatchWindowDialog(QPointer<OiJob> job, QPointer<FeatureWrapper> feature, QWidget *parent = 0);
+    explicit WatchWindowDialog(WatchWindowBehavior behavior, QPointer<OiJob> job, QPointer<FeatureWrapper> feature, QWidget *parent = 0);
     ~WatchWindowDialog();
 
 signals:
@@ -167,7 +167,7 @@ private:
     //#############################
     //current job and active sensor
     //#############################
-
+    WatchWindowBehavior behavior;
     QPointer<OiJob> currentJob;
     QPointer<FeatureWrapper> feature;
     //save active station here, to be able to disconnect it
