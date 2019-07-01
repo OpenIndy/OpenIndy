@@ -265,7 +265,7 @@ void WatchWindowDialog::addLabel(DisplayAttributes att,  QFont f) {
     QLabel *label = new QLabel();
     label->setFont(f);
     label->setAutoFillBackground(true);
-    label->setAlignment(Qt::AlignVCenter);
+    label->setAlignment(Qt::AlignCenter);
     label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     label->setScaledContents(true);
     QHBoxLayout *layout = new QHBoxLayout();
@@ -303,14 +303,14 @@ void WatchWindowDialog::connectSensor(){
 }
 
 
-QString WatchWindowDialog::getNameLabel() {
-    if(this->currentJob.isNull() || this->getFeature().isNull()){
+QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
+    if(feature.isNull()){
         return "";
     }
 
     return QString("%1%2")
-            .arg(getFeature()->getFeature()->getFeatureName())
-            .arg(getFeature()->getGeometry() ? getFeature()->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
+            .arg(feature->getFeature()->getFeatureName())
+            .arg(feature->getGeometry() ? feature->getGeometry()->getIsNominal() ? "  nom" : "  act" : "");
 }
 
 /*!
@@ -368,8 +368,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ = trafo * trackerXYZ;
 
     //set feature name
-    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1</p></td></tr> </table>")
-                                     .arg(getNameLabel()));
+    this->streamData[eName]->setText(getNameLabel(feature));
 
     //set x
     setDisplayValue(eX, "x", [&](){
@@ -549,7 +548,7 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         h = this->streamData[eName]->height();
         double w = this->streamData[eName]->width();
         QFontMetrics fmName(fName);
-        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(getNameLabel()) ));
+        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(streamData[eName]->text()) ));
 
         //x
         h = this->streamData[eX]->height();
