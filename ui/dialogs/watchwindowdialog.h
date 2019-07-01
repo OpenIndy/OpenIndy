@@ -201,7 +201,7 @@ private:
 
     void addLabel(DisplayAttributes att,  QFont f);
     void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
-    QString getNameLabel();
+    QString getNameLabel(QPointer<FeatureWrapper> feature);
 
     QPointer<FeatureWrapper> getFeature();
 
