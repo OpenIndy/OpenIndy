@@ -210,6 +210,8 @@ private:
     QString getNameLabel(QPointer<FeatureWrapper> feature);
 
     QPointer<FeatureWrapper> getFeature();
+    Position getPosition(QPointer<FeatureWrapper> feature);
+
 
 };
 

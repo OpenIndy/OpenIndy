@@ -313,6 +313,30 @@ QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
             .arg(feature->getGeometry() ? feature->getGeometry()->getIsNominal() ? "  nom" : "  act" : "");
 }
 
+Position WatchWindowDialog::getPosition(QPointer<FeatureWrapper> feature) {
+    if(feature.isNull()){
+        return Position::NullObject;
+    //check if current feature is a solved geometry with position
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
+             && feature->getGeometry()->getIsSolved()){
+
+        return feature->getGeometry()->getPosition();
+
+    //check if active feature is a coordinate system
+    }else if(!feature->getCoordinateSystem().isNull()){
+
+        return feature->getCoordinateSystem()->getOrigin();
+
+    //check if active feature is a station
+    }else if(!feature->getStation().isNull()){
+
+        return feature->getStation()->getPosition()->getPosition();
+
+    }else{
+        return Position::NullObject;
+    }
+}
+
 /*!
  * \brief WatchWindowDialog::setUpCartesianWatchWindow
  * \param reading
@@ -325,28 +349,10 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return;
     }
 
-    //check the active position (geometry, station, coordinate system)
-    Position pos;
     QPointer<FeatureWrapper> feature = getFeature();
-    if(feature.isNull()){
-        return;
-    //check if current feature is a solved geometry with position
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
-             && feature->getGeometry()->getIsSolved()){
-
-        pos = feature->getGeometry()->getPosition();
-
-    //check if active feature is a coordinate system
-    }else if(!feature->getCoordinateSystem().isNull()){
-
-        pos = feature->getCoordinateSystem()->getOrigin();
-
-    //check if active feature is a station
-    }else if(!feature->getStation().isNull()){
-
-        pos = feature->getStation()->getPosition()->getPosition();
-
-    }else{
+    //check the active position (geometry, station, coordinate system)
+    Position pos = getPosition(feature);
+    if(pos.isNull()) {
         return;
     }
 
