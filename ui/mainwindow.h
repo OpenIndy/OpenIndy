@@ -314,6 +314,8 @@ private slots:
 
     void on_actionNew_watch_window_triggered();
 
+    void on_actionWatch_window_nearest_nominal_triggered();
+
 private:
     Ui::MainWindow *ui;
 
