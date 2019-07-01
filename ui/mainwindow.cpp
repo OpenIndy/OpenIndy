@@ -1175,7 +1175,7 @@ void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &ar
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
-    openWatchWindow(false);
+    openWatchWindow(WatchWindowBehavior::eShowAlwaysActiveFeature);
 }
 
 /*!
@@ -3031,17 +3031,17 @@ void MainWindow::showCentered(QDialog &dialog) {
 
 void MainWindow::on_actionNew_watch_window_triggered()
 {
-    openWatchWindow(true);
+    openWatchWindow(WatchWindowBehavior::eShowCurrentSelectedFeature);
 }
 
-void MainWindow::openWatchWindow(bool currentFeature) {
+void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
 
         QPointer<FeatureWrapper> feature;
         QVariant watchWindowKey;
 
-        if(currentFeature) { // open new watch window for current selected feature
+        if(WatchWindowBehavior::eShowCurrentSelectedFeature == behavior) { // open new watch window for current selected feature
 
             feature = job->getActiveFeature();
             if(feature.isNull()) {

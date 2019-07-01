@@ -446,7 +446,7 @@ private:
 
     void showCentered(QDialog &dialog);
 
-    void openWatchWindow(bool currentFeature);
+    void openWatchWindow(WatchWindowBehavior);
 
 };
 
