@@ -466,6 +466,7 @@ background-position: center center;</string>
     <addaction name="actionControl_pad"/>
     <addaction name="actionWatch_window"/>
     <addaction name="actionNew_watch_window"/>
+    <addaction name="actionWatch_window_nearest_nominal"/>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
@@ -1388,6 +1389,17 @@ color: rgb(255, 255, 255);
    </property>
    <property name="shortcut">
     <string>Ctrl+F4</string>
+   </property>
+  </action>
+  <action name="actionWatch_window_nearest_nominal">
+   <property name="text">
+    <string>watch window nearest nominal</string>
+   </property>
+   <property name="toolTip">
+    <string>show nearest nominal</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F4</string>
    </property>
   </action>
  </widget>
