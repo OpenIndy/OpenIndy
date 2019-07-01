@@ -3038,31 +3038,55 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
 
-        QPointer<FeatureWrapper> feature;
+        QList<QPointer<FeatureWrapper> > features;
         QVariant watchWindowKey;
         QString windowTitleSuffix;
 
         switch(behavior) {
         case eShowCurrentSelectedFeature: // open new watch window for current selected feature
-            feature = job->getActiveFeature();
+        {
+            QPointer<FeatureWrapper> feature = job->getActiveFeature();
             if(feature.isNull()) {
                 return;
             }
+            features.append(feature);
             watchWindowKey = feature->getFeature()->getFeatureName();
             windowTitleSuffix = " [" + feature->getFeature()->getFeatureName() + "]";
             break;
+        }
         case eShowNearestNominal:   // find nearest nominal feature
+        {
+            QSortFilterProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+            if(model == NULL){
+                return;
+            }
+            FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+            if(sourceModel == NULL){
+                return;
+            }
+            QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
+            foreach(const QModelIndex &index, selection){
+                int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
+                QPointer<FeatureWrapper> feature = job->getFeatureById(id);
+                if(!feature.isNull()) {
+                    features.append(feature);
+                }
+            }
+
             watchWindowKey = QVariant(-2); // key for nearest nominal feature
             windowTitleSuffix = " [nearest nominal]";
             break;
+        }
         case eShowAlwaysActiveFeature: // show always the active feature
+        {
             watchWindowKey = QVariant(-1); // key for active feature
             windowTitleSuffix = "";
             break;
         }
+        } // switch
 
         if(!watchWindowDialogs.contains(watchWindowKey)) {
-            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, feature);
+            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, features);
             watchWindowDialog->setWindowTitle(watchWindowDialog->windowTitle() + windowTitleSuffix);
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 
