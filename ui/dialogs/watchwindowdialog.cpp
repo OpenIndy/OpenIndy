@@ -413,6 +413,16 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
     });
 
+    setVisibility();
+
+    // valid reading available
+    this->watchWindowUpdated = true;
+
+    //resize labels (maximum font size that is possible)
+    this->resizeWatchWindowValues();
+}
+
+void WatchWindowDialog::setVisibility() {
     //set visibility
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
     QList<DisplayAttributes>  visibleLayouts;
@@ -458,13 +468,8 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
             this->masterLayout->setStretch(masterLayoutIndex[attr], 1);
         }
     }
-
-    // valid reading available
-    this->watchWindowUpdated = true;
-
-    //resize labels (maximum font size that is possible)
-    this->resizeWatchWindowValues();
 }
+
 void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v) {
     if(this->settings.displayValues.contains(attr)){
         double value = convertFromDefault(v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
