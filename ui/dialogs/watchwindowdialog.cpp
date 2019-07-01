@@ -6,8 +6,8 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(QPointer<OiJob> job, QPointer<FeatureWrapper> f, QWidget *parent) : QDialog(parent),
-    ui(new Ui::WatchWindowDialog), currentJob(job), feature(f)
+WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job, QPointer<FeatureWrapper> f, QWidget *parent) : QDialog(parent),
+    ui(new Ui::WatchWindowDialog), behavior(b), currentJob(job), feature(f)
 {
     ui->setupUi(this);
 
