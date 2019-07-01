@@ -342,6 +342,10 @@ Position WatchWindowDialog::getPosition(QPointer<FeatureWrapper> feature) {
  * \param reading
  */
 void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
+    //get and transform tracker position
+    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
+        return;
+    }
 
     //check and get active coordinate system
     QPointer<CoordinateSystem> activeSystem = this->currentJob->getActiveCoordinateSystem();
@@ -362,10 +366,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return;
     }
 
-    //get and transform tracker position
-    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
-        return;
-    }
     OiVec trackerXYZ(4);
     trackerXYZ.setAt(0, reading.value("x").toDouble());
     trackerXYZ.setAt(1, reading.value("y").toDouble());
