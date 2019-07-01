@@ -6,8 +6,8 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job, QPointer<FeatureWrapper> f, QWidget *parent) : QDialog(parent),
-    ui(new Ui::WatchWindowDialog), behavior(b), currentJob(job), feature(f)
+WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job, QList<QPointer<FeatureWrapper> > f, QWidget *parent) : QDialog(parent),
+    ui(new Ui::WatchWindowDialog), behavior(b), currentJob(job), features(f)
 {
     ui->setupUi(this);
 
@@ -639,15 +639,15 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
         }
         break;
     case eShowCurrentSelectedFeature:
-        if(!this->feature.isNull()) {
-            return this->feature;
+        if(!this->features.isEmpty()) {
+            return this->features[0];
         }
         break;
     case eShowNearestNominal:
         if(!this->currentJob.isNull()) {
             double dd = -1.0;
             QPointer<FeatureWrapper> nearestFeature;
-            for(QPointer<FeatureWrapper> feature : this->currentJob->getFeaturesList()) {
+            for(QPointer<FeatureWrapper> feature : (true ? this->features : this->currentJob->getFeaturesList())) {
 
                 Position pos = getPosition(feature);
                 if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
