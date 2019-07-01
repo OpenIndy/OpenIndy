@@ -209,7 +209,7 @@ private:
     void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
     QString getNameLabel(QPointer<FeatureWrapper> feature);
 
-    QPointer<FeatureWrapper> getFeature();
+    QPointer<FeatureWrapper> getFeature(OiVec trackerXYZ);
     Position getPosition(QPointer<FeatureWrapper> feature);
     void setVisibility();
 
