@@ -327,24 +327,24 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     //check the active position (geometry, station, coordinate system)
     Position pos;
-
-    if(this->currentJob.isNull() || getFeature().isNull()){
+    QPointer<FeatureWrapper> feature = getFeature();
+    if(feature.isNull()){
         return;
     //check if current feature is a solved geometry with position
-    }else if(!getFeature()->getGeometry().isNull() && getFeature()->getGeometry()->hasPosition()
-             && getFeature()->getGeometry()->getIsSolved()){
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
+             && feature->getGeometry()->getIsSolved()){
 
-        pos = getFeature()->getGeometry()->getPosition();
+        pos = feature->getGeometry()->getPosition();
 
     //check if active feature is a coordinate system
-    }else if(!getFeature()->getCoordinateSystem().isNull()){
+    }else if(!feature->getCoordinateSystem().isNull()){
 
-        pos = getFeature()->getCoordinateSystem()->getOrigin();
+        pos = feature->getCoordinateSystem()->getOrigin();
 
     //check if active feature is a station
-    }else if(!getFeature()->getStation().isNull()){
+    }else if(!feature->getStation().isNull()){
 
-        pos = getFeature()->getStation()->getPosition()->getPosition();
+        pos = feature->getStation()->getPosition()->getPosition();
 
     }else{
         return;
