@@ -211,7 +211,7 @@ private:
 
     QPointer<FeatureWrapper> getFeature();
     Position getPosition(QPointer<FeatureWrapper> feature);
-
+    void setVisibility();
 
 };
 
