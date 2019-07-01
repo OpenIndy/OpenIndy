@@ -620,9 +620,20 @@ void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
 }
 
 QPointer<FeatureWrapper> WatchWindowDialog::getFeature(){
-    if(!this->feature.isNull()) {
-        return this->feature;
-    } else {
-        return this->currentJob.isNull() ? QPointer<FeatureWrapper>() : this->currentJob->getActiveFeature();
+    switch(this->behavior) {
+    case eShowAlwaysActiveFeature:
+        if(!this->currentJob.isNull()) {
+            return this->currentJob->getActiveFeature();
+        }
+        break;
+    case eShowCurrentSelectedFeature:
+        if(!this->feature.isNull()) {
+            return this->feature;
+        }
+        break;
+    case eShowNearestNominal:
+        break;
     }
+
+    return QPointer<FeatureWrapper>();
 }
