@@ -3040,6 +3040,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
 
         QPointer<FeatureWrapper> feature;
         QVariant watchWindowKey;
+        QString windowTitleSuffix;
 
         switch(behavior) {
         case eShowCurrentSelectedFeature: // open new watch window for current selected feature
@@ -3048,15 +3049,21 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
                 return;
             }
             watchWindowKey = feature->getFeature()->getFeatureName();
+            windowTitleSuffix = " [" + feature->getFeature()->getFeatureName() + "]";
             break;
         case eShowNearestNominal:   // find nearest nominal feature
+            watchWindowKey = QVariant(-2); // key for nearest nominal feature
+            windowTitleSuffix = " [nearest nominal]";
+            break;
         case eShowAlwaysActiveFeature: // show always the active feature
             watchWindowKey = QVariant(-1); // key for active feature
+            windowTitleSuffix = "";
             break;
         }
 
         if(!watchWindowDialogs.contains(watchWindowKey)) {
             QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, feature);
+            watchWindowDialog->setWindowTitle(watchWindowDialog->windowTitle() + windowTitleSuffix);
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 
             //connect watch window dialog
