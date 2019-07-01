@@ -39,6 +39,12 @@ enum DisplayAttributes{
     eNotDeclared // should be the last element!
 };
 
+enum WatchWindowBehavior{
+    eShowAlwaysActiveFeature = 0, // show always the active feature
+    eShowCurrentSelectedFeature,  // open new watch window for current selected feature
+    eShowNearestNominal
+};
+
 using namespace oi;
 
 /*!
