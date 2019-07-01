@@ -353,13 +353,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return;
     }
 
-    QPointer<FeatureWrapper> feature = getFeature();
-    //check the active position (geometry, station, coordinate system)
-    Position pos = getPosition(feature);
-    if(pos.isNull()) {
-        return;
-    }
-
     //get transformation parameters to transform readings
     OiMat trafo(4,4);
     if(!this->trafoController.getTransformationMatrix(trafo, this->activeStation->getCoordinateSystem(), activeSystem)){
@@ -372,6 +365,14 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ.setAt(2, reading.value("z").toDouble());
     trackerXYZ.setAt(3, 1.0);
     trackerXYZ = trafo * trackerXYZ;
+
+    QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
+    //check the active position (geometry, station, coordinate system)
+    Position pos = getPosition(feature);
+    if(pos.isNull()) {
+        return;
+    }
+
 
     //set feature name
     this->streamData[eName]->setText(getNameLabel(feature));
@@ -630,7 +631,7 @@ void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
     this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
 
-QPointer<FeatureWrapper> WatchWindowDialog::getFeature(){
+QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
     switch(this->behavior) {
     case eShowAlwaysActiveFeature:
         if(!this->currentJob.isNull()) {
@@ -643,6 +644,26 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(){
         }
         break;
     case eShowNearestNominal:
+        if(!this->currentJob.isNull()) {
+            double dd = -1.0;
+            QPointer<FeatureWrapper> nearestFeature;
+            for(QPointer<FeatureWrapper> feature : this->currentJob->getFeaturesList()) {
+
+                Position pos = getPosition(feature);
+                if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
+
+                    OiVec d = pos.getVectorH() - trackerXYZ;
+                    double fdd =  d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2); // no need for sqrt
+                    if(fdd < dd || dd < 0.0 /* first element */) {
+                        dd = fdd;
+                        nearestFeature = feature;
+                    }
+
+                }
+
+            }
+            return nearestFeature;
+        }
         break;
     }
 
