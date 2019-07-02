@@ -803,7 +803,7 @@ bool Controller::hasProjectDigestChanged() {
     }
     QString preDigest = this->job->getDigest();
     ProjectExchanger::saveProject(this->job);
-    return preDigest == job->getDigest();
+    return preDigest != job->getDigest(); // not equal, that means project data changed
 }
 
 /*!

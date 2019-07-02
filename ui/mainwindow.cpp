@@ -1228,7 +1228,7 @@ void MainWindow::on_actionClose_triggered(){
 int MainWindow::saveProjectIfDigestChanged()
 {
     // direct call (no "emit" use), therefore is no need to handle the event in the controller
-    if(!this->control.hasProjectDigestChanged()) {
+    if(this->control.hasProjectDigestChanged()) {
 
         QMessageBox msgBox;
         msgBox.setWindowTitle("close project");
