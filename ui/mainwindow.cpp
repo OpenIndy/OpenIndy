@@ -330,7 +330,7 @@ void MainWindow::currentJobChanged(){
 
     for (auto it = watchWindowDialogs.begin(); it != watchWindowDialogs.end();) {
         if(it.value().isNull()) {
-            delete it.value().data(); // TODO OI-392: notwendig?
+            delete it.value().data();
         }
         it = watchWindowDialogs.erase(it);
     }

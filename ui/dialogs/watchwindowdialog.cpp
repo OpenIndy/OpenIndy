@@ -287,7 +287,7 @@ void WatchWindowDialog::connectSensor(){
     }
 
     //get and check the active station
-    QPointer<Station> station = this->currentJob->getActiveStation(); // TODO OI-392: kann das so bleiben?
+    QPointer<Station> station = this->currentJob->getActiveStation();
     if(station.isNull()){
         return;
     }
@@ -298,7 +298,7 @@ void WatchWindowDialog::connectSensor(){
     }
 
     //save and connect active station
-    this->activeStation = station; // TODO OI-392 check
+    this->activeStation = station;
     QObject::connect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
 }
 
