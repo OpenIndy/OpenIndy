@@ -116,7 +116,7 @@ signals:
     //save or load projects
     void saveProject();
     void saveProject(const QString &fileName);
-    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+    void loadProject(const QString &projectName, const QPointer<QFileDevice> &device);
 
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);

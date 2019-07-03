@@ -1190,7 +1190,7 @@ void MainWindow::on_actionOpen_triggered(){
         return;
     }
 
-    QPointer<QIODevice> device = new QFile(filename);
+    QPointer<QFileDevice> device = new QFile(filename);
     QFileInfo info(filename);
     QString projectName = info.fileName();
 
