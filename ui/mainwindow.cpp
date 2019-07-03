@@ -3074,8 +3074,12 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
                 }
             }
 
-            watchWindowKey = QVariant(-2); // key for nearest nominal feature
-            windowTitleSuffix = " [nearest nominal]";
+            watchWindowKey = QVariant(-2); // key for nearest nominal or actual feature
+            windowTitleSuffix = " [nearest]";
+            if(watchWindowDialogs.contains(watchWindowKey)){ // remove watchwindow because of new selection
+                delete watchWindowDialogs[watchWindowKey].data();
+                watchWindowDialogs.remove(watchWindowKey);
+            }
             break;
         }
         case eShowAlwaysActiveFeature: // show always the active feature
