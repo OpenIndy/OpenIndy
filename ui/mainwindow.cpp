@@ -3050,8 +3050,9 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
                 return;
             }
             features.append(feature);
-            watchWindowKey = feature->getFeature()->getFeatureName();
-            windowTitleSuffix = " [" + feature->getFeature()->getFeatureName() + "]";
+
+            watchWindowKey = QString("%1%2").arg(feature->getFeature()->getFeatureName()).arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal());
+            windowTitleSuffix =  QString("[%1%2]").arg(feature->getFeature()->getFeatureName()).arg(feature->getGeometry().isNull() ? ""  : (feature->getGeometry()->getIsNominal() ? "  nom" : "  act"));
             break;
         }
         case eShowNearestNominal:   // find nearest nominal feature
@@ -3080,7 +3081,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
         case eShowAlwaysActiveFeature: // show always the active feature
         {
             watchWindowKey = QVariant(-1); // key for active feature
-            windowTitleSuffix = "";
+            windowTitleSuffix = " [active]";
             break;
         }
         } // switch
