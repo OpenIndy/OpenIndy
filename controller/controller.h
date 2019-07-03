@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QString>
-#include <QIODevice>
+#include <QFileDevice>
 #include <QSaveFile>
 #include <QFile>
 #include <QFileInfo>
@@ -119,7 +119,7 @@ public slots:
     //save or load a job
     void saveProject();
     void saveProject(const QString &fileName);
-    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+    void loadProject(const QString &projectName, const QPointer<QFileDevice> &device);
     const QPointer<OiJob> &createDefaultJob();
 
     //sensor actions

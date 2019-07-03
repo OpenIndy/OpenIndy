@@ -819,8 +819,8 @@ void Controller::saveProject(){
 
     //get and check name and file path
     QString name = this->job->getJobName();
-    QPointer<QIODevice> device = this->job->getJobDevice();
-    if(name.compare("") == 0 || device.isNull()){
+    QPointer<QFileDevice> fileDevice = this->job->getJobDevice();
+    if(name.compare("") == 0 || fileDevice.isNull()){
         emit this->saveAsTriggered();
         return;
     }
@@ -836,16 +836,15 @@ void Controller::saveProject(){
     }
 
     //save project xml
-    QFileDevice *fileDevice = qobject_cast<QFileDevice *>(device.data());
     QSaveFile saveFile(fileDevice->fileName());
     if(saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
         QTextStream stream(&saveFile);
         project.save(stream, 4);
         saveFile.commit();
 
-        this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
+        this->log(QString("OpenIndy project \"%1\" successfully stored.").arg(fileDevice->fileName()), eInformationMessage, eStatusBarMessage);
     }else{
-        this->log(QString("Cannot open file %1").arg(name), eInformationMessage, eStatusBarMessage);
+        this->log(QString("Cannot open file  \"%1\"").arg(fileDevice->fileName()), eInformationMessage, eStatusBarMessage);
         QMessageBox msgBox;
         msgBox.setText("data source could not be found.");
         msgBox.setInformativeText("Please check your saved data, before you continue.");
@@ -890,7 +889,7 @@ void Controller::saveProject(const QString &fileName){
  * \param projectName
  * \param device
  */
-void Controller::loadProject(const QString &projectName, const QPointer<QIODevice> &device){
+void Controller::loadProject(const QString &projectName, const QPointer<QFileDevice> &device){
 
     //check device
     if(device.isNull()){
@@ -939,7 +938,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
     //connect active station
     this->activeStationChangedCallback();
 
-    this->log("OpenIndy project successfully loaded.", eInformationMessage, eConsoleMessage);
+    this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
 
 }
 
