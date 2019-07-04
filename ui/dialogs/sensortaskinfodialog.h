@@ -37,14 +37,6 @@ private slots:
     void on_pushButton_cancel_clicked();
 
 private:
-
-    //##################################
-    //methods to initialize GUI elements
-    //##################################
-
-    void showEvent(QShowEvent *event);
-
-private:
     Ui::SensorTaskInfoDialog *ui;
 
 };

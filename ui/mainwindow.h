@@ -9,6 +9,9 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
+#include "QWindow"
+#include "QScreen"
+#include "QDialog"
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -309,6 +312,8 @@ private slots:
 
     void autoSaveProject();
 
+    void on_actionNew_watch_window_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -383,7 +388,7 @@ private:
     MoveSensorDialog moveSensorDialog;
     SensorTaskInfoDialog sensorTaskInfoDialog;
     PluginManagerDialog pluginManagerDialog;
-    WatchWindowDialog watchWindowDialog;
+    QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
@@ -438,6 +443,10 @@ private:
     QList<int> measureFeatures;
 
     void enableOrDisableObservationsOfActiveFeature(bool);
+
+    void showCentered(QDialog &dialog);
+
+    void openWatchWindow(bool currentFeature);
 
 };
 

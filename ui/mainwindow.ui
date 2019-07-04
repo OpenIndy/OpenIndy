@@ -465,6 +465,7 @@ background-position: center center;</string>
     </property>
     <addaction name="actionControl_pad"/>
     <addaction name="actionWatch_window"/>
+    <addaction name="actionNew_watch_window"/>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
@@ -1376,6 +1377,17 @@ color: rgb(255, 255, 255);
   <action name="actiondifferences">
    <property name="text">
     <string>differences</string>
+   </property>
+  </action>
+  <action name="actionNew_watch_window">
+   <property name="text">
+    <string>new watch window</string>
+   </property>
+   <property name="toolTip">
+    <string>new watch window for current feature</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F4</string>
    </property>
   </action>
  </widget>
