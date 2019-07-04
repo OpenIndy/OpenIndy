@@ -51,20 +51,6 @@ void WatchWindowDialog::on_spinBox_decimalDigits_valueChanged(int arg1){
 }
 
 /*!
- * \brief WatchWindowDialog::on_radioButton_actnom_clicked
- */
-void WatchWindowDialog::on_radioButton_actnom_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_nomact_clicked
- */
-void WatchWindowDialog::on_radioButton_nomact_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
-}
-
-/*!
  * \brief WatchWindowDialog::on_checkBox_x_clicked
  */
 void WatchWindowDialog::on_checkBox_x_clicked(){
@@ -380,31 +366,19 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     //set x
     setDisplayValue(eX, "x", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
-        }else{
-            return pos.getVector().getAt(0) - trackerXYZ.getAt(0);
-        }
+        return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
     });
 
     //set y
     setDisplayValue(eY, "y", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
-        }else{
-            return pos.getVector().getAt(1) - trackerXYZ.getAt(1);
-        }
+        return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
     });
 
     //set z
     setDisplayValue(eZ, "z", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
-        }else{
-            return pos.getVector().getAt(2) - trackerXYZ.getAt(2);
-        }
+        return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
     });
 
     //set d3D    

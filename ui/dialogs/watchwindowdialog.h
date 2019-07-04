@@ -25,11 +25,6 @@
 #include "modelmanager.h"
 #include "feature.h"
 
-enum DisplayActualNominal{
-    eActualNominal = 0,
-    eNominalActual
-};
-
 enum DisplayAttributes{
     eName = 0,
     eX,
@@ -52,16 +47,13 @@ using namespace oi;
  */
 class WatchWindowSettings{
 public:
-    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal), showLastMeasurement(true){}
+    WatchWindowSettings() : digits(2), readingType(eCartesianReading), showLastMeasurement(true){}
 
     //decimal digits for watch window values
     int digits;
 
     //reading type for the watch window values
     ReadingTypes readingType;
-
-    //reference (0 = actual-nominal, 1 = nominal-actual)
-    DisplayActualNominal reference;
 
     //display values and tolerance
     QMap<DisplayAttributes, double> displayValues;
@@ -110,8 +102,6 @@ private slots:
 
     //update settings
     void on_spinBox_decimalDigits_valueChanged(int arg1);
-    void on_radioButton_actnom_clicked();
-    void on_radioButton_nomact_clicked();
     void on_checkBox_x_clicked();
     void on_checkBox_y_clicked();
     void on_checkBox_z_clicked();
