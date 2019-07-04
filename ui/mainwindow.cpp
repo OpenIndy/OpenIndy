@@ -1190,7 +1190,7 @@ void MainWindow::on_actionOpen_triggered(){
         return;
     }
 
-    QPointer<QIODevice> device = new QFile(filename);
+    QPointer<QFileDevice> device = new QFile(filename);
     QFileInfo info(filename);
     QString projectName = info.fileName();
 
@@ -1228,7 +1228,7 @@ void MainWindow::on_actionClose_triggered(){
 int MainWindow::saveProjectIfDigestChanged()
 {
     // direct call (no "emit" use), therefore is no need to handle the event in the controller
-    if(!this->control.hasProjectDigestChanged()) {
+    if(this->control.hasProjectDigestChanged()) {
 
         QMessageBox msgBox;
         msgBox.setWindowTitle("close project");
