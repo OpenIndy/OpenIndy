@@ -6,8 +6,8 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(QPointer<OiJob> job, QPointer<FeatureWrapper> f, QWidget *parent) : QDialog(parent),
-    ui(new Ui::WatchWindowDialog), currentJob(job), feature(f)
+WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job, QList<QPointer<FeatureWrapper> > f, QWidget *parent) : QDialog(parent),
+    ui(new Ui::WatchWindowDialog), behavior(b), currentJob(job), features(f)
 {
     ui->setupUi(this);
 
@@ -48,20 +48,6 @@ WatchWindowDialog::~WatchWindowDialog(){
  */
 void WatchWindowDialog::on_spinBox_decimalDigits_valueChanged(int arg1){
     this->settings.digits = this->ui->spinBox_decimalDigits->value();
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_actnom_clicked
- */
-void WatchWindowDialog::on_radioButton_actnom_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_nomact_clicked
- */
-void WatchWindowDialog::on_radioButton_nomact_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
 }
 
 /*!
@@ -287,7 +273,7 @@ void WatchWindowDialog::connectSensor(){
     }
 
     //get and check the active station
-    QPointer<Station> station = this->currentJob->getActiveStation(); // TODO OI-392: kann das so bleiben?
+    QPointer<Station> station = this->currentJob->getActiveStation();
     if(station.isNull()){
         return;
     }
@@ -298,7 +284,7 @@ void WatchWindowDialog::connectSensor(){
     }
 
     //save and connect active station
-    this->activeStation = station; // TODO OI-392 check
+    this->activeStation = station;
     QObject::connect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
 }
 
@@ -310,7 +296,31 @@ QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
 
     return QString("%1%2")
             .arg(feature->getFeature()->getFeatureName())
-            .arg(feature->getGeometry() ? feature->getGeometry()->getIsNominal() ? "  nom" : "  act" : "");
+            .arg(feature->getGeometry().isNull() ? "" : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+}
+
+Position WatchWindowDialog::getPosition(QPointer<FeatureWrapper> feature) {
+    if(feature.isNull()){
+        return Position::NullObject;
+    //check if current feature is a solved geometry with position
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
+             && feature->getGeometry()->getIsSolved()){
+
+        return feature->getGeometry()->getPosition();
+
+    //check if active feature is a coordinate system
+    }else if(!feature->getCoordinateSystem().isNull()){
+
+        return feature->getCoordinateSystem()->getOrigin();
+
+    //check if active feature is a station
+    }else if(!feature->getStation().isNull()){
+
+        return feature->getStation()->getPosition()->getPosition();
+
+    }else{
+        return Position::NullObject;
+    }
 }
 
 /*!
@@ -318,35 +328,14 @@ QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
  * \param reading
  */
 void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
+    //get and transform tracker position
+    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
+        return;
+    }
 
     //check and get active coordinate system
     QPointer<CoordinateSystem> activeSystem = this->currentJob->getActiveCoordinateSystem();
     if(activeSystem.isNull()){
-        return;
-    }
-
-    //check the active position (geometry, station, coordinate system)
-    Position pos;
-    QPointer<FeatureWrapper> feature = getFeature();
-    if(feature.isNull()){
-        return;
-    //check if current feature is a solved geometry with position
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
-             && feature->getGeometry()->getIsSolved()){
-
-        pos = feature->getGeometry()->getPosition();
-
-    //check if active feature is a coordinate system
-    }else if(!feature->getCoordinateSystem().isNull()){
-
-        pos = feature->getCoordinateSystem()->getOrigin();
-
-    //check if active feature is a station
-    }else if(!feature->getStation().isNull()){
-
-        pos = feature->getStation()->getPosition()->getPosition();
-
-    }else{
         return;
     }
 
@@ -356,10 +345,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return;
     }
 
-    //get and transform tracker position
-    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
-        return;
-    }
     OiVec trackerXYZ(4);
     trackerXYZ.setAt(0, reading.value("x").toDouble());
     trackerXYZ.setAt(1, reading.value("y").toDouble());
@@ -367,37 +352,33 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ.setAt(3, 1.0);
     trackerXYZ = trafo * trackerXYZ;
 
+    QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
+    //check the active position (geometry, station, coordinate system)
+    Position pos = getPosition(feature);
+    if(pos.isNull()) {
+        return;
+    }
+
+
     //set feature name
     this->streamData[eName]->setText(getNameLabel(feature));
 
     //set x
     setDisplayValue(eX, "x", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
-        }else{
-            return pos.getVector().getAt(0) - trackerXYZ.getAt(0);
-        }
+        return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
     });
 
     //set y
     setDisplayValue(eY, "y", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
-        }else{
-            return pos.getVector().getAt(1) - trackerXYZ.getAt(1);
-        }
+        return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
     });
 
     //set z
     setDisplayValue(eZ, "z", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
-        }else{
-            return pos.getVector().getAt(2) - trackerXYZ.getAt(2);
-        }
+        return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
     });
 
     //set d3D    
@@ -407,6 +388,16 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
     });
 
+    setVisibility();
+
+    // valid reading available
+    this->watchWindowUpdated = true;
+
+    //resize labels (maximum font size that is possible)
+    this->resizeWatchWindowValues();
+}
+
+void WatchWindowDialog::setVisibility() {
     //set visibility
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
     QList<DisplayAttributes>  visibleLayouts;
@@ -452,13 +443,8 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
             this->masterLayout->setStretch(masterLayoutIndex[attr], 1);
         }
     }
-
-    // valid reading available
-    this->watchWindowUpdated = true;
-
-    //resize labels (maximum font size that is possible)
-    this->resizeWatchWindowValues();
 }
+
 void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v) {
     if(this->settings.displayValues.contains(attr)){
         double value = convertFromDefault(v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
@@ -619,10 +605,41 @@ void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
     this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
 
-QPointer<FeatureWrapper> WatchWindowDialog::getFeature(){
-    if(!this->feature.isNull()) {
-        return this->feature;
-    } else {
-        return this->currentJob.isNull() ? QPointer<FeatureWrapper>() : this->currentJob->getActiveFeature();
+QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
+    switch(this->behavior) {
+    case eShowAlwaysActiveFeature:
+        if(!this->currentJob.isNull()) {
+            return this->currentJob->getActiveFeature();
+        }
+        break;
+    case eShowCurrentSelectedFeature:
+        if(!this->features.isEmpty()) {
+            return this->features[0];
+        }
+        break;
+    case eShowNearestNominal:
+        if(!this->currentJob.isNull()) {
+            double dd = -1.0;
+            QPointer<FeatureWrapper> nearestFeature;
+            for(QPointer<FeatureWrapper> feature : (true ? this->features : this->currentJob->getFeaturesList())) {
+
+                Position pos = getPosition(feature);
+                if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
+
+                    OiVec d = pos.getVectorH() - trackerXYZ;
+                    double fdd =  d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2); // no need for sqrt
+                    if(fdd < dd || dd < 0.0 /* first element */) {
+                        dd = fdd;
+                        nearestFeature = feature;
+                    }
+
+                }
+
+            }
+            return nearestFeature;
+        }
+        break;
     }
+
+    return QPointer<FeatureWrapper>();
 }
