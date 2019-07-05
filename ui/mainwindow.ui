@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,14">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0,14">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
@@ -110,6 +110,16 @@
           </property>
           <property name="modelColumn">
            <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_searchFeatureName">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -275,7 +285,7 @@ background-position: center center;</string>
               </sizepolicy>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_bundleGeneralSettings">
               <attribute name="title">
