@@ -12,6 +12,8 @@
 #include "QWindow"
 #include "QScreen"
 #include "QDialog"
+#include <QCompleter>
+#include <QList>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -315,6 +317,10 @@ private slots:
     void on_actionNew_watch_window_triggered();
 
     void on_actionWatch_window_nearest_nominal_triggered();
+
+    void updateCompleter();
+
+    void on_lineEdit_searchFeatureName_returnPressed();
 
 private:
     Ui::MainWindow *ui;
