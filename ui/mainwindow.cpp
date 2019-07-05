@@ -3167,7 +3167,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
                 for( QPointer<FeatureWrapper> f: job->getFeaturesList()){
                     if(!f.isNull()) {
                         if(feature->getFeature()->getId() == f->getFeature()->getId()) {
-                            this->ui->tableView_features->scrollTo(model->index(row, 0));
+                            this->ui->tableView_features->scrollTo(model->mapFromSource(sourceModel->index(row, 0)));
                             return;
                         }
 
