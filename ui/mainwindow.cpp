@@ -55,6 +55,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
 
     this->startAutoSave();
+
+    this->updateCompleter();
+
 }
 
 /*!
@@ -2216,6 +2219,11 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::featureCreated, Qt::AutoConnection);
 
     QObject::connect(&this->control, &Controller::requestMessageBoxTrafoParam, this, &MainWindow::createMessageBoxTrafoParamWarning, Qt::AutoConnection);
+
+    // TODO CRUD: remove ?
+    QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::updateCompleter, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);
 }
 
 /*!
@@ -3117,4 +3125,58 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
 void MainWindow::on_actionWatch_window_nearest_nominal_triggered()
 {
     openWatchWindow(WatchWindowBehavior::eShowNearestNominal);
+}
+
+void MainWindow::updateCompleter() {
+    qDebug() << "updateCompleter";
+
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull()) {
+        QCompleter *completer = new QCompleter(job->getFeatureNameList(), this);
+        completer->setCaseSensitivity(Qt::CaseInsensitive);
+        this->ui->lineEdit_searchFeatureName->setCompleter(completer);
+    }
+}
+
+void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
+{
+    qDebug() << "on_lineEdit_searchFeatureName_returnPressed";
+
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull()) {
+        QList<QPointer<FeatureWrapper> > features = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
+        if(!features.isEmpty()) {
+            QPointer<FeatureWrapper> feature = features.first();
+            if(!feature.isNull()) {
+
+                FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+                if(model == NULL){
+                    return;
+                }
+
+                //get and check source model
+                FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+                if(sourceModel == NULL){
+                    return;
+                }
+                sourceModel->setActiveFeature(feature->getFeature()->getId());
+
+
+                // get index of feature
+                int row=0;
+                for( QPointer<FeatureWrapper> f: job->getFeaturesList()){
+                    if(!f.isNull()) {
+                        if(feature->getFeature()->getId() == f->getFeature()->getId()) {
+                            this->ui->tableView_features->scrollTo(model->index(row, 0));
+                            return;
+                        }
+
+                    }
+                    row++;
+                }
+
+            }
+        }
+
+    }
 }
