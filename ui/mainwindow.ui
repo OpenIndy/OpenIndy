@@ -1374,6 +1374,9 @@ color: rgb(255, 255, 255);
    <property name="statusTip">
     <string>measurement</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="actiondifferences">
    <property name="text">
