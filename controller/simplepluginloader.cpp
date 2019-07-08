@@ -13,6 +13,7 @@ void SimplePluginLoader::importFinished(bool success) {
         this->log("step 1/2: plugin successfully copied");
         if(this->pluginCopier.savePlugin(this->path)) {
             this->log("step 2/2: plugin successfully saved in the database");
+            return;
         }
     }
 
@@ -20,14 +21,15 @@ void SimplePluginLoader::importFinished(bool success) {
 }
 
 void SimplePluginLoader::log(const QString &msg) {
-    qDebug() << msg;
-    std::cout << msg.toUtf8().data() << "\n";
-    std::cout.flush();
+    QTextStream ts( stdout );
+    ts << msg << "\n";
 }
+
 
 void SimplePluginLoader::importPlugin() {
     if(QFile::exists(this->path)){
         this->pluginCopier.importPlugin(this->path);
+    } else {
+        this->log(QString("file do not exists: %1").arg(this->path));
     }
-    this->log(QString("file do not exists: %1").arg(this->path));
 }
