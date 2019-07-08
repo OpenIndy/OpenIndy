@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
     if (argc>=2)
     {
-       int i=2;
+       int i=1;
 
        while (i<argc && strncmp(argv[i],"-s",2)) i++;
        if (i!=argc) isSilent = true;
