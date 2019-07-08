@@ -2220,10 +2220,9 @@ void MainWindow::connectController(){
 
     QObject::connect(&this->control, &Controller::requestMessageBoxTrafoParam, this, &MainWindow::createMessageBoxTrafoParamWarning, Qt::AutoConnection);
 
-    // TODO CRUD: remove ?
-    QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::updateCompleter, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::featureSetChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection); // create / remove feature
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection); // load job
 }
 
 /*!
@@ -3128,8 +3127,6 @@ void MainWindow::on_actionWatch_window_nearest_nominal_triggered()
 }
 
 void MainWindow::updateCompleter() {
-    qDebug() << "updateCompleter";
-
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
         QCompleter *completer = new QCompleter(job->getFeatureNameList(), this);
@@ -3140,8 +3137,6 @@ void MainWindow::updateCompleter() {
 
 void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
 {
-    qDebug() << "on_lineEdit_searchFeatureName_returnPressed";
-
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
         QList<QPointer<FeatureWrapper> > features = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
