@@ -2220,9 +2220,9 @@ void MainWindow::connectController(){
 
     QObject::connect(&this->control, &Controller::requestMessageBoxTrafoParam, this, &MainWindow::createMessageBoxTrafoParamWarning, Qt::AutoConnection);
 
-    QObject::connect(&this->control, &Controller::featureSetChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection); // create / remove feature
-    QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection); // load job
+    QObject::connect(&this->control, &Controller::featureSetChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);   // create / remove feature
+    QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);  // update
+    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);   // load job
 }
 
 /*!
@@ -3149,7 +3149,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
                     return;
                 }
 
-                //get and check source model
+                // get and check source model
                 FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
                 if(sourceModel == NULL){
                     return;
