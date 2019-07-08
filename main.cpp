@@ -14,7 +14,7 @@
 #include "oivec.h"
 
 #include <ctime>
-#include <string.h>
+#include <simplepluginloader.h>
 
 inline void mySleep(clock_t sec) // clock_t is a like typedef unsigned int clock_t. Use clock_t instead of integer in this context
 {
@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     QCommandLineOption silentOption("s", "silent / no splash screen");
     parser.addOption(silentOption);
+    QCommandLineOption importPluginOption({ "i", "importplugin" }, "import plugin from direcotry <dir>", "dir");
+    parser.addOption(importPluginOption);
     parser.process(a);
 
     qt_qhash_seed.store(0); // ensures that xml is written the same way
@@ -65,6 +67,10 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(AppVersion);
     a.setApplicationDisplayName(AppName);
 
+    if(parser.isSet(importPluginOption)) {
+        SimplePluginLoader loader(parser.value(importPluginOption));
+        return loader.importPlugin();
+    }
 
     QSplashScreen *splash;
     if (!parser.isSet(silentOption))
