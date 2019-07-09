@@ -1119,6 +1119,7 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
         sourceModel->setActiveGroupName(arg1);
     }
 
+    updateCompleter();
 }
 
 /*!
@@ -1172,6 +1173,7 @@ void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &ar
     //update actual nominal filter
     sourceModel->setActualNominalFilter(getActualNominalFilterEnum(arg1));
 
+    updateCompleter();
 }
 
 /*!
