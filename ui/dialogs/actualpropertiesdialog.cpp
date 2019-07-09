@@ -310,8 +310,12 @@ void ActualPropertiesDialog::unUseObservations()
     //get selected indexes
     selection = this->getSelection();
     if(selection.size() > 0){
+        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+        if(model == NULL){
+            return;
+        }
         foreach (QModelIndex idx, selection) {
-            emit this->useObservation(false, idx);
+            emit this->useObservation(false, model->mapToSource(idx));
         }
     }
 }
@@ -327,8 +331,12 @@ void ActualPropertiesDialog::useObservations()
     //get selected indexes
     selection = this->getSelection();
     if(selection.size() > 0){
+        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+        if(model == NULL){
+            return;
+        }
         foreach (QModelIndex idx, selection) {
-            emit this->useObservation(true, idx);
+            emit this->useObservation(true, model->mapToSource(idx));
         }
     }
 }
@@ -345,8 +353,12 @@ void ActualPropertiesDialog::deleteObservations()
     selection = this->getSelection();
     if(selection.size() > 0){
         QList<int> selectedIds;
+        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+        if(model == NULL){
+            return;
+        }
         foreach (QModelIndex idx, selection) {
-            int i = ModelManager::getObservationModel().getObservationIdByIndex(idx);
+            int i = ModelManager::getObservationModel().getObservationIdByIndex(model->mapToSource(idx));
             if (i >= 0) {
                 selectedIds.append(i);
             }
