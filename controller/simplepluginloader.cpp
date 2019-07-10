@@ -28,6 +28,7 @@ void SimplePluginLoader::log(const QString &msg) {
 
 void SimplePluginLoader::importPlugin() {
     if(QFile::exists(this->path)){
+        this->log(QString("step 0/2: try to import %1").arg(this->path));
         this->pluginCopier.importPlugin(this->path);
     } else {
         this->log(QString("file do not exists: %1").arg(this->path));
