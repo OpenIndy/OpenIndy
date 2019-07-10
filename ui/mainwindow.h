@@ -322,6 +322,8 @@ private slots:
 
     void on_lineEdit_searchFeatureName_returnPressed();
 
+    void on_pushButton_showNextFoundFeature_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -455,6 +457,10 @@ private:
     void showCentered(QDialog &dialog);
 
     void openWatchWindow(WatchWindowBehavior);
+
+    void showFoundFeature(int index);
+    QList<QPointer<FeatureWrapper> > foundFeatures;
+    int showFoundFeatureIndex;
 
 };
 
