@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0,14">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0,0,14">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
@@ -123,6 +123,25 @@
           </property>
           <property name="placeholderText">
            <string>search feature by name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_showNextFoundFeature">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>28</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>show next result</string>
+          </property>
+          <property name="text">
+           <string>&gt;</string>
           </property>
          </widget>
         </item>
