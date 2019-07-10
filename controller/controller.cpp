@@ -1618,13 +1618,15 @@ void Controller::activeStationChangedCallback(){
         //disconnect all slots from signals
         QObject::disconnect(station, &Station::commandFinished, 0, 0);
         QObject::disconnect(station, &Station::measurementFinished, 0, 0);
-
+        QObject::disconnect(station, &Station::measurementDone, 0, 0);
+        QObject::disconnect(station, &Station::sensorMessage, 0, 0);
     }
 
     //connect sensor action results of active station
     QObject::connect(activeStation, &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::measurementFinished, this, &Controller::measurementFinished, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::measurementDone, this, &Controller::measurementDone, Qt::AutoConnection);
+    QObject::connect(activeStation, &Station::sensorMessage, this, &Controller::log, Qt::AutoConnection);
 
 }
 
