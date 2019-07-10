@@ -2672,6 +2672,14 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
 
     //add new self defined actions
     foreach(const QString &action, selfDefinedActions){
+        QRegExp rx("([\\w]+)([\\w\(\\)\\+]*)"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
+        rx.setPatternSyntax(QRegExp::RegExp);
+        rx.indexIn(action);
+
+        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(2).replace("(", "").replace(")",""));
+        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(2).isEmpty() ? "" : QString(" %1").arg(rx.cap(2)));
+        QString actionCommand = rx.cap(1);
+
         QPointer<QAction> customAction = new QAction(0);
         customAction->setText(action);
         this->selfDefinedActions.append(customAction);
