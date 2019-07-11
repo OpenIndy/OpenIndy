@@ -1119,6 +1119,7 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
         sourceModel->setActiveGroupName(arg1);
     }
 
+    updateCompleter();
 }
 
 /*!
@@ -1172,6 +1173,7 @@ void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &ar
     //update actual nominal filter
     sourceModel->setActualNominalFilter(getActualNominalFilterEnum(arg1));
 
+    updateCompleter();
 }
 
 /*!
@@ -3138,7 +3140,21 @@ void MainWindow::on_actionWatch_window_nearest_nominal_triggered()
 void MainWindow::updateCompleter() {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        QCompleter *completer = new QCompleter(job->getFeatureNameList(), this);
+        FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+        if(model == NULL){
+            return;
+        }
+
+        int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        QStringList featureNames;
+        for(int row=0; row < model->rowCount(); row++) {
+            QString name = model->data(model->index(row,column), Qt::DisplayRole).toString();
+            if(!featureNames.contains(name)) {
+                featureNames.append(name);
+            }
+        }
+        QCompleter *completer = new QCompleter(featureNames, this);
+        completer->setFilterMode(Qt::MatchContains);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         this->ui->lineEdit_searchFeatureName->setCompleter(completer);
     }
@@ -3148,39 +3164,55 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
 {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        QList<QPointer<FeatureWrapper> > features = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
-        if(!features.isEmpty()) {
-            QPointer<FeatureWrapper> feature = features.first();
-            if(!feature.isNull()) {
+        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
 
-                FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-                if(model == NULL){
-                    return;
-                }
+        this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size()>1);
 
-                // get and check source model
-                FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-                if(sourceModel == NULL){
-                    return;
-                }
-                sourceModel->setActiveFeature(feature->getFeature()->getId());
-
-
-                // get index of feature
-                int row=0;
-                for( QPointer<FeatureWrapper> f: job->getFeaturesList()){
-                    if(!f.isNull()) {
-                        if(feature->getFeature()->getId() == f->getFeature()->getId()) {
-                            this->ui->tableView_features->scrollTo(model->mapFromSource(sourceModel->index(row, 0)));
-                            return;
-                        }
-
-                    }
-                    row++;
-                }
-
-            }
+        showFoundFeatureIndex = 0;
+        if(!foundFeatures.isEmpty()) {
+            showFoundFeature(showFoundFeatureIndex);
         }
-
     }
+}
+
+void MainWindow::showFoundFeature(int index) {
+    if(!foundFeatures.isEmpty() && foundFeatures.size() > index) {
+        QPointer<FeatureWrapper> feature = foundFeatures.at(index);
+
+        if(!feature.isNull()) {
+
+            FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+            if(model == NULL){
+                return;
+            }
+
+            // get and check source model
+            FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+            if(sourceModel == NULL){
+                return;
+            }
+
+            int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+            for(int row=0; row < model->rowCount(); row++) {
+                QModelIndex index = model->index(row,column);
+                QString name = model->data(index, Qt::DisplayRole).toString();
+                if(name == feature->getFeature()->getFeatureName()) {
+                    this->ui->tableView_features->scrollTo(index);
+                }
+            }
+
+            sourceModel->setActiveFeature(feature->getFeature()->getId());
+
+        }
+    }
+
+}
+
+void MainWindow::on_pushButton_showNextFoundFeature_clicked()
+{
+    showFoundFeatureIndex++;
+    if(foundFeatures.isEmpty() || showFoundFeatureIndex > (foundFeatures.size() -1)) {
+        showFoundFeatureIndex = 0; // wrap around
+    }
+    showFoundFeature(showFoundFeatureIndex);
 }
