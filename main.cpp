@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QList>
 #include <QSplashScreen>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 
 #include "mainwindow.h"
 #include "controller.h"
@@ -12,7 +14,7 @@
 #include "oivec.h"
 
 #include <ctime>
-#include <string.h>
+#include <simplepluginloader.h>
 
 inline void mySleep(clock_t sec) // clock_t is a like typedef unsigned int clock_t. Use clock_t instead of integer in this context
 {
@@ -48,15 +50,12 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    bool isSilent=false;
-
-    if (argc>=2)
-    {
-       int i=2;
-
-       while (i<argc && strncmp(argv[i],"-s",2)) i++;
-       if (i!=argc) isSilent = true;
-    }
+    QCommandLineParser parser;
+    QCommandLineOption silentOption({ "s", "silent" }, "silent / no splash screen");
+    parser.addOption(silentOption);
+    QCommandLineOption importPluginOption({ "i", "importplugin" }, "import plugin from direcotry <dir>", "dir");
+    parser.addOption(importPluginOption);
+    parser.process(a);
 
     qt_qhash_seed.store(0); // ensures that xml is written the same way
 
@@ -68,9 +67,13 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(AppVersion);
     a.setApplicationDisplayName(AppName);
 
+    if(parser.isSet(importPluginOption)) {
+        SimplePluginLoader loader(parser.value(importPluginOption));
+        return loader.importPlugin();
+    }
 
     QSplashScreen *splash;
-    if (!isSilent)
+    if (!parser.isSet(silentOption))
     {
       QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");  // splash.png has to be placed next to the *.exe
       QString tmp;
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
 
     w.showMaximized();
 
-    if (!isSilent)
+    if (!parser.isSet(silentOption))
     {
       splash->finish(&w);
       delete splash;

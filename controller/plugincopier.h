@@ -23,6 +23,7 @@ class PluginLoader;
 class PluginCopier : public QObject
 {
     friend class PluginLoader;
+    friend class SimplePluginLoader;
     Q_OBJECT
 
 public:
