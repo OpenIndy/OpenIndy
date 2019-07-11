@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QCommandLineParser parser;
-    QCommandLineOption silentOption({ "s", "silent" }, "silent / no splash screen");
+    QCommandLineOption silentOption("s", "silent / no splash screen");
     parser.addOption(silentOption);
-    QCommandLineOption importPluginOption({ "i", "importplugin" }, "import plugin from direcotry <dir>", "dir");
+    QCommandLineOption importPluginOption("i", "import plugin from direcotry <dir>", "dir");
     parser.addOption(importPluginOption);
     parser.process(a);
 
