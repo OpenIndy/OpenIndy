@@ -9,6 +9,11 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
+#include "QWindow"
+#include "QScreen"
+#include "QDialog"
+#include <QCompleter>
+#include <QList>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -113,7 +118,7 @@ signals:
     //save or load projects
     void saveProject();
     void saveProject(const QString &fileName);
-    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+    void loadProject(const QString &projectName, const QPointer<QFileDevice> &device);
 
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
@@ -309,6 +314,16 @@ private slots:
 
     void autoSaveProject();
 
+    void on_actionNew_watch_window_triggered();
+
+    void on_actionWatch_window_nearest_nominal_triggered();
+
+    void updateCompleter();
+
+    void on_lineEdit_searchFeatureName_returnPressed();
+
+    void on_pushButton_showNextFoundFeature_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -383,7 +398,7 @@ private:
     MoveSensorDialog moveSensorDialog;
     SensorTaskInfoDialog sensorTaskInfoDialog;
     PluginManagerDialog pluginManagerDialog;
-    WatchWindowDialog watchWindowDialog;
+    QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
     SettingsDialog settingsDialog;
     ActualPropertiesDialog actualPropertiesDialog;
@@ -438,6 +453,14 @@ private:
     QList<int> measureFeatures;
 
     void enableOrDisableObservationsOfActiveFeature(bool);
+
+    void showCentered(QDialog &dialog);
+
+    void openWatchWindow(WatchWindowBehavior);
+
+    void showFoundFeature(int index);
+    QList<QPointer<FeatureWrapper> > foundFeatures;
+    int showFoundFeatureIndex;
 
 };
 

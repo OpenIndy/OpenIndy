@@ -3,7 +3,7 @@
 # Project created by QtCreator 2013-10-12T15:43:14
 #
 #-------------------------------------------------
-
+CONFIG += c++11
 QT       += core gui sql svg serialport network opengl xml websockets multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4):
@@ -42,6 +42,7 @@ INCLUDEPATH += \
 # source files
 SOURCES += \
     $$PWD/../main.cpp \
+    $$PWD/../controller/simplepluginloader.cpp \
     $$PWD/../ui/mainwindow.cpp \
     $$PWD/../ui/dialogs/createfeaturedialog.cpp \
     $$PWD/../controller/console.cpp \
@@ -143,6 +144,7 @@ SOURCES += \
 
 # header files
 HEADERS  += \
+    $$PWD/../controller/simplepluginloader.h \
     $$PWD/../ui/mainwindow.h \
     $$PWD/../ui/dialogs/createfeaturedialog.h \
     $$PWD/../controller/console.h \

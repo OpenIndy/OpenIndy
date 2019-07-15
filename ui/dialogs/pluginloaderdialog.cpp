@@ -27,19 +27,6 @@ PluginLoaderDialog::~PluginLoaderDialog(){
 }
 
 /*!
- * \brief PluginLoaderDialog::showEvent
- * \param event
- */
-void PluginLoaderDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-    event->accept();
-
-}
-
-/*!
  * \brief PluginLoaderDialog::on_toolButton_Path_clicked
  */
 void PluginLoaderDialog::on_toolButton_Path_clicked(){

@@ -803,7 +803,7 @@ bool Controller::hasProjectDigestChanged() {
     }
     QString preDigest = this->job->getDigest();
     ProjectExchanger::saveProject(this->job);
-    return preDigest == job->getDigest();
+    return preDigest != job->getDigest(); // not equal, that means project data changed
 }
 
 /*!
@@ -819,8 +819,8 @@ void Controller::saveProject(){
 
     //get and check name and file path
     QString name = this->job->getJobName();
-    QPointer<QIODevice> device = this->job->getJobDevice();
-    if(name.compare("") == 0 || device.isNull()){
+    QPointer<QFileDevice> fileDevice = this->job->getJobDevice();
+    if(name.compare("") == 0 || fileDevice.isNull()){
         emit this->saveAsTriggered();
         return;
     }
@@ -836,16 +836,15 @@ void Controller::saveProject(){
     }
 
     //save project xml
-    QFileDevice *fileDevice = qobject_cast<QFileDevice *>(device.data());
     QSaveFile saveFile(fileDevice->fileName());
     if(saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
         QTextStream stream(&saveFile);
         project.save(stream, 4);
         saveFile.commit();
 
-        this->log("OpenIndy project successfully stored.", eInformationMessage, eStatusBarMessage);
+        this->log(QString("OpenIndy project \"%1\" successfully stored.").arg(fileDevice->fileName()), eInformationMessage, eStatusBarMessage);
     }else{
-        this->log(QString("Cannot open file %1").arg(name), eInformationMessage, eStatusBarMessage);
+        this->log(QString("Cannot open file  \"%1\"").arg(fileDevice->fileName()), eInformationMessage, eStatusBarMessage);
         QMessageBox msgBox;
         msgBox.setText("data source could not be found.");
         msgBox.setInformativeText("Please check your saved data, before you continue.");
@@ -890,7 +889,7 @@ void Controller::saveProject(const QString &fileName){
  * \param projectName
  * \param device
  */
-void Controller::loadProject(const QString &projectName, const QPointer<QIODevice> &device){
+void Controller::loadProject(const QString &projectName, const QPointer<QFileDevice> &device){
 
     //check device
     if(device.isNull()){
@@ -939,7 +938,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QIODevic
     //connect active station
     this->activeStationChangedCallback();
 
-    this->log("OpenIndy project successfully loaded.", eInformationMessage, eConsoleMessage);
+    this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
 
 }
 
@@ -1619,13 +1618,15 @@ void Controller::activeStationChangedCallback(){
         //disconnect all slots from signals
         QObject::disconnect(station, &Station::commandFinished, 0, 0);
         QObject::disconnect(station, &Station::measurementFinished, 0, 0);
-
+        QObject::disconnect(station, &Station::measurementDone, 0, 0);
+        QObject::disconnect(station, &Station::sensorMessage, 0, 0);
     }
 
     //connect sensor action results of active station
     QObject::connect(activeStation, &Station::commandFinished, this, &Controller::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::measurementFinished, this, &Controller::measurementFinished, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::measurementDone, this, &Controller::measurementDone, Qt::AutoConnection);
+    QObject::connect(activeStation, &Station::sensorMessage, this, &Controller::log, Qt::AutoConnection);
 
 }
 

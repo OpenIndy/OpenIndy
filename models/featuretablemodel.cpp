@@ -626,7 +626,27 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         switch ((TrafoParamDisplayAttributes)attr) {
         case eTrafoParamDisplayIsUsed:{
             bool isUsed = value.toBool();
-            feature->getTrafoParam()->setIsUsed(isUsed);
+            QPointer<TrafoParam> curTrafoParam = feature->getTrafoParam();
+            curTrafoParam->setIsUsed(isUsed);
+
+            if(isUsed) { // uncheck other
+                for(QPointer<FeatureWrapper> f : this->currentJob->getFeaturesByType(eTrafoParamFeature)) {
+                    QPointer<TrafoParam> trafoParam = f->getTrafoParam();
+                    if( trafoParam.isNull()
+                            || !trafoParam->getIsUsed() // is already false
+                            || curTrafoParam->getId() == trafoParam->getId() // it's me
+                            || curTrafoParam->getStartSystem() != trafoParam->getStartSystem() // no match
+                            || curTrafoParam->getDestinationSystem() != trafoParam->getDestinationSystem() // no match
+                            ) {
+                        continue;
+                    }
+
+                    bool oldState = trafoParam->blockSignals(true);
+                    trafoParam->setIsUsed(false);
+                    trafoParam->blockSignals(oldState);
+
+                }
+            }
             break;
         }/*case eTrafoParamDisplayIsDatumTransformation:{
             bool isDatum = value.toBool();

@@ -49,7 +49,7 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,14">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0,0,14">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
@@ -110,6 +110,38 @@
           </property>
           <property name="modelColumn">
            <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_searchFeatureName">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="placeholderText">
+           <string>search feature by name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_showNextFoundFeature">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>28</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>show next result</string>
+          </property>
+          <property name="text">
+           <string>&gt;</string>
           </property>
          </widget>
         </item>
@@ -275,7 +307,7 @@ background-position: center center;</string>
               </sizepolicy>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_bundleGeneralSettings">
               <attribute name="title">
@@ -465,6 +497,8 @@ background-position: center center;</string>
     </property>
     <addaction name="actionControl_pad"/>
     <addaction name="actionWatch_window"/>
+    <addaction name="actionNew_watch_window"/>
+    <addaction name="actionWatch_window_nearest_nominal"/>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
@@ -1376,6 +1410,28 @@ color: rgb(255, 255, 255);
   <action name="actiondifferences">
    <property name="text">
     <string>differences</string>
+   </property>
+  </action>
+  <action name="actionNew_watch_window">
+   <property name="text">
+    <string>new watch window</string>
+   </property>
+   <property name="toolTip">
+    <string>new watch window for current feature</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F4</string>
+   </property>
+  </action>
+  <action name="actionWatch_window_nearest_nominal">
+   <property name="text">
+    <string>watch window nearest nominal</string>
+   </property>
+   <property name="toolTip">
+    <string>show nearest nominal</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F4</string>
    </property>
   </action>
  </widget>
