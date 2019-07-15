@@ -459,25 +459,10 @@ void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType)
  */
 void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgType){
 
-    QString status;
-
-    switch(msgType){
-    case eInformationMessage:
-        break;
-    case eWarningMessage:
-        status.append("WARNING: ");
-        break;
-    case eErrorMessage:
-        status.append("ERROR: ");
-        break;
-    case eCriticalMessage:
-        status.append("CRITICAL: ");
-        break;
-    }
-
-    status.append(msg);
-
-    this->ui->statusBar->showMessage(status);
+    this->ui->statusBar->showMessage(QString("[%1] {%2} : %3")
+                                     .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+                                     .arg(getMessageTypeName(msgType))
+                                     .arg(msg));
 
 }
 
