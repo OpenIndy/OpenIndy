@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         return loader.importPlugin();
     }
 
-    QSplashScreen *splash;
+    QPointer<QSplashScreen> splash;
     if (!parser.isSet(silentOption))
     {
       QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");  // splash.png has to be placed next to the *.exe
@@ -92,15 +92,17 @@ int main(int argc, char *argv[])
     MainWindow w;
 
     if(argc == 2) {
+        if(!splash.isNull()) {
+            splash->showMessage(QString("loading: %1").arg(argv[1]),Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+        }
         w.loadProjectFile(argv[1]);
     }
 
     w.showMaximized();
 
-    if (!parser.isSet(silentOption))
-    {
-      splash->finish(&w);
-      delete splash;
+    if(!splash.isNull()) {
+        splash->finish(&w);
+        delete splash;
     }
 
     return a.exec();
