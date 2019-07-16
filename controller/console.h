@@ -21,9 +21,10 @@ class Console : public QObject
 
 private:
     explicit Console(QObject *parent = 0);
-    ~Console();
 
 public:
+    ~Console();
+
     static const QPointer<Console> &getInstance();
 
     //##############################
