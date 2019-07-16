@@ -100,9 +100,10 @@ int main(int argc, char *argv[])
 
     w.showMaximized();
 
-    if(!splash.isNull()) {
-        splash->finish(&w);
-        delete splash;
+    if (!parser.isSet(silentOption))
+    {
+      splash->finish(&w);
+      delete splash;
     }
 
     return a.exec();
