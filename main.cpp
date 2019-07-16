@@ -91,6 +91,10 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
 
+    if(argc == 2) {
+        w.loadProjectFile(argv[1]);
+    }
+
     w.showMaximized();
 
     if (!parser.isSet(silentOption))
