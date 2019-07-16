@@ -9,6 +9,14 @@ QPointer<Console> Console::myInstance;
  */
 Console::Console(QObject *parent) : QObject(parent){
     this->output.setStringList(this->log);
+
+    //create and open file
+    outFile.setFileName("oiLogFile.log");
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+}
+
+Console::~Console() {
+    outFile.close();
 }
 
 /*!
@@ -36,20 +44,25 @@ QStringListModel &Console::getConsoleModel(){
  * \param msgType
  */
 void Console::addLine(const QString &msg, const MessageTypes &msgType){
+   this->add(msg, msgType);
+
+}
+void Console::add(const QString &msg, const MessageTypes &msgType, const QString &value){
 
     //update entries list and model
-    this->log.append(QString("[%1] {%2} : %3")
-                     .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
-                     .arg(getMessageTypeName(msgType))
-                     .arg(msg));
+    QString text = QString("[%1] {%2} : %3 %4")
+            .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+            .arg(getMessageTypeName(msgType))
+            .arg(msg)
+            .arg(value);
+    this->log.append(text);
     this->output.setStringList(this->log);
 
     //inform about the new line
-    emit this->lineAdded();
+    // emit this->lineAdded(); // too expensive
 
     //write the new entry to the log file
-    this->writeToLogFile(this->log.last());
-
+    this->writeToLogFile(text);
 }
 
 /*!
@@ -59,21 +72,7 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType){
  * \param value
  */
 void Console::addLine(const QString &msg, const MessageTypes &msgType, const bool &value){
-
-    //update entries list and model
-    this->log.append(QString("[%1] {%2} : %3 %4")
-                     .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
-                     .arg(getMessageTypeName(msgType))
-                     .arg(msg)
-                     .arg(value?"true":"false"));
-    this->output.setStringList(this->log);
-
-    //inform about the new line
-    emit this->lineAdded();
-
-    //write the new entry to the log file
-    this->writeToLogFile(this->log.last());
-
+    this->add(msg, msgType, value?"true":"false");
 }
 
 /*!
@@ -83,21 +82,7 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType, const boo
  * \param value
  */
 void Console::addLine(const QString &msg, const MessageTypes &msgType, const double &value){
-
-    //update entries list and model
-    this->log.append(QString("[%1] {%2} : %3 %4")
-                     .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
-                     .arg(getMessageTypeName(msgType))
-                     .arg(msg)
-                     .arg(QString::number(value, 'f', 6)));
-    this->output.setStringList(this->log);
-
-    //inform about the new line
-    emit this->lineAdded();
-
-    //write the new entry to the log file
-    this->writeToLogFile(this->log.last());
-
+    this->add(msg, msgType, QString::number(value, 'f', 6));
 }
 
 /*!
@@ -107,21 +92,7 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType, const dou
  * \param value
  */
 void Console::addLine(const QString &msg, const MessageTypes &msgType, const int &value){
-
-    //update entries list and model
-    this->log.append(QString("[%1] {%2} : %3 %4")
-                     .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
-                     .arg(getMessageTypeName(msgType))
-                     .arg(msg)
-                     .arg(QString::number(value)));
-    this->output.setStringList(this->log);
-
-    //inform about the new line
-    emit this->lineAdded();
-
-    //write the new entry to the log file
-    this->writeToLogFile(this->log.last());
-
+    this->add(msg, msgType, QString::number(value));
 }
 
 /*!
@@ -129,13 +100,6 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType, const int
  * \param msg
  */
 void Console::writeToLogFile(const QString &msg){
-
-    //create and open file
-    QFile outFile("oiLogFile.log");
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-
     QTextStream textStream(&outFile);
     textStream << msg << endl;
-    outFile.close();
-
 }
