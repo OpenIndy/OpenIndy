@@ -27,6 +27,7 @@ const QPointer<Console> &Console::getInstance(){
     if(Console::myInstance.isNull()){
         Console::myInstance = new Console();
     }
+
     return Console::myInstance;
 }
 

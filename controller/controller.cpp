@@ -49,6 +49,12 @@ Controller::~Controller(){
         this->serverThread.wait();
     }
 
+    QPointer<Console> console = Console::getInstance();
+    if(!console.isNull()) {
+        delete Console::getInstance().data();
+    }
+
+
 }
 
 /*!
