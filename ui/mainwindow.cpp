@@ -64,6 +64,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
  * \brief MainWindow::~MainWindow
  */
 MainWindow::~MainWindow(){
+    QByteArray state = this->ui->tableView_features->horizontalHeader()->saveState();
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "openindy-settings");
+    settings.setValue("features.column_width", state);
+    // TODO save other stuff
+
     delete ui;
 }
 
@@ -1366,6 +1371,9 @@ void MainWindow::showToolWidget(const QString &pluginName, const QString &toolNa
  * Triggered whenever the user double clicks a header item of a table view
  */
 void MainWindow::resizeTableView(){
+    if(true) {
+        return;
+    }
     this->ui->tableView_features->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_trafoParams->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
@@ -2341,6 +2349,10 @@ void MainWindow::assignModels(){
 
     QObject::connect(&ModelManager::getFeatureTableModel(),&FeatureTableModel::recalcActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
 
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "openindy-settings");
+    QByteArray state = settings.value("features.column_width", "").toByteArray();
+    this->ui->tableView_features->horizontalHeader()->restoreState(state);
+    // TODO load / restore other stuff
 }
 
 /*!
