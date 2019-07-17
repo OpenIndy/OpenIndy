@@ -1704,7 +1704,7 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
         }
         QString stationName = feature->getStation()->getFeatureName();
 
-        qDebug() << "feature->getStation()->getFeatureName() " << name;
+        qDebug() << "feature->getStation()->getFeatureName() " << stationName;
 
         //set up name
         fAttr.name = bundleSystem->getFeatureName();
