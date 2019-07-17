@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
     parser.addOption(silentOption);
     QCommandLineOption importPluginOption("i", "import plugin from direcotry <dir>", "dir");
     parser.addOption(importPluginOption);
+    QCommandLineOption versionOption("v", "print version info");
+    parser.addOption(versionOption);
     parser.process(a);
 
     qt_qhash_seed.store(0); // ensures that xml is written the same way
@@ -70,6 +72,12 @@ int main(int argc, char *argv[])
     if(parser.isSet(importPluginOption)) {
         SimplePluginLoader loader(parser.value(importPluginOption));
         return loader.importPlugin();
+    }
+
+    if(parser.isSet(versionOption)) {
+        // always first line
+        qInfo() << QString(OPENINDY_VERSION).toLatin1().data();
+        return 0;
     }
 
     QSplashScreen *splash;
