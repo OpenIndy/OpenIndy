@@ -218,7 +218,7 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
         if(station.isNull() || station->getStation().isNull() || station->getStation()->getCoordinateSystem().isNull()){
             continue;
         }
-
+        qDebug() << "FeatureUpdater::recalcBundle station:" <<  station->getStation()->getFeatureName();
         //switch to station system
         this->switchCoordinateSystemWithoutTransformation(station->getStation()->getCoordinateSystem());
 
@@ -233,6 +233,7 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
                 inputGeometry.parameters[eUnknownY] = geom->getPosition().getVector().getAt(1);
                 inputGeometry.parameters[eUnknownZ] = geom->getPosition().getVector().getAt(2);
                 inputStation.geometries.append(inputGeometry);
+                qDebug() << "FeatureUpdater::recalcBundle inputGeometry:" <<  geom->getId();
             }
         }
         inputStations.append(inputStation);
@@ -1353,7 +1354,7 @@ void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &d
     //################################################
     //transform all observations to destination system
     //################################################
-
+    qDebug() << "transformObsAndNominals: destinationSystem=" << destinationSystem->getFeatureName();
     //run through all station systems
     foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
 
@@ -1584,7 +1585,7 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
     QList< QPointer<TrafoParam> > transformations = bundleSystem->getTransformationParameters();
     foreach(const QPointer<TrafoParam> &trafo, transformations){
         if(!trafo.isNull() && trafo->getIsBundle()){
-
+            qDebug() << "FeatureUpdater::clearBundleResults transformation " << trafo->getId();
             //check if trafo is between a "bundle-station" and "bundle" or "bundle" and "PART" system
             if(trafo->getStartSystem() == bundleSystem){
 
