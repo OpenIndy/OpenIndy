@@ -409,7 +409,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach(const InputElement &element, startElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -419,7 +419,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach(const InputElement &element, destElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -598,7 +598,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach(const InputElement &element, startElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -608,7 +608,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach(const InputElement &element, destElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -837,7 +837,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach(const InputElement &element, startElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -847,7 +847,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach(const InputElement &element, destElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -944,7 +944,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach (const InputElement &element, startElements) {
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -955,7 +955,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach (const InputElement &element, destElements) {
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -1576,8 +1576,8 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
     QList< QPointer<FeatureWrapper> > nominals = bundleSystem->getNominals();
     foreach(const QPointer<FeatureWrapper> nominal, nominals){
         if(!nominal.isNull() && !nominal->getGeometry().isNull()){
-            delete nominal->getGeometry();
-            delete nominal;
+            delete nominal->getGeometry().data();
+            delete nominal.data();
         }
     }
 
@@ -1593,7 +1593,7 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
                 if(!trafo->getDestinationSystem()->getStation().isNull()){
                     foreach (BundleStation bStation, bundleSystem->getBundlePlugin()->getInputStations()) {
                         if(bStation.id == trafo->getDestinationSystem()->getStation()->getId()){
-                            delete trafo;
+                            delete trafo.data();
                             break;
                         }
                     }
@@ -1604,7 +1604,7 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
                     //if second coordinate system is a bundlestation => delete trafoParam
                     foreach (BundleStation bStation, bundleSystem->getBundlePlugin()->getInputStations()) {
                         if(bStation.id == trafo->getStartSystem()->getStation()->getId()){
-                            delete trafo;
+                            delete trafo.data();
                             break;
                         }
                     }
