@@ -255,7 +255,7 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
         return false;
     }
 
-    if(true) {
+    if(QLoggingCategory::defaultCategory()->isDebugEnabled()) {
         foreach(BundleStation bs,  inputStations) {
              qDebug() << "BundleStation.id=" << bs.id;
              foreach(BundleGeometry bg, bs.geometries) {
