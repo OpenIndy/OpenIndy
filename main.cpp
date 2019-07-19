@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     if (!parser.isSet(silentOption))
     {
       splash->finish(&w);
-      delete splash;
+      delete splash.data();
     }
 
     return a.exec();
