@@ -20,4 +20,5 @@ Download and install:
 
 ## run
 
+Add ./lib/OpenIndy-Core/lib/OpenIndy-Math/lib/armadillo-3.910.0/examples/lib_win32 to the PATH.
 Copy content of OpenIndy/res-rt to bin/debug and start openIndy from QT Creator. 
