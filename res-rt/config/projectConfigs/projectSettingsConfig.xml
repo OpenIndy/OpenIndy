@@ -6,4 +6,31 @@
     <projectAngularDigits>6</projectAngularDigits>
     <projectTemperatureDigits>1</projectTemperatureDigits>
     <projectSoundSettings>1</projectSoundSettings>
+    <projectAutoSaveInterval>10</projectAutoSaveInterval>
+
+    <!-- configuration of feature tabel view: columns, position, order / sort -->
+    <projectFeatureViewSettings>
+        <columns>
+            <column name="Type" />
+            <column name="IsActual" />
+            <column name="Group" />
+            <column name="Name" />
+            <column name="X" />
+            <column name="Y" />
+            <column name="Z" />
+            <column name="StDev" />
+            <column name="Observations" />
+            <column name="MeasurementConfig" />
+            <column name="Functions" />
+            <column name="IsCommon" />
+            <column name="PrimaryI" />
+            <column name="PrimaryJ" />
+            <column name="PrimaryK" />
+            <column name="RadiusA" />
+            <column name="IsSolved" />
+            <column name="Comment" />
+            <column name="Angle" />
+            <column name="Distance" />
+        </columns>
+    </projectFeatureViewSettings>
 </projectSettingsConfig>
