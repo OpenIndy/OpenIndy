@@ -3,7 +3,6 @@
 ## ubuntu 16.04 
    
     wget http://releases.ubuntu.com/16.04/ubuntu-16.04.6-desktop-i386.iso
-    # wget http://releases.ubuntu.com/16.04/ubuntu-16.04.6-desktop-amd64.iso
 
 ## ubunut 16.04 prepare
 
@@ -23,13 +22,17 @@
     chmod +x qt-opensource-linux-x86-5.5.1.run 
     ./qt-opensource-linux-x86-5.5.1.run
 
+## clone OpenIndy
 
-    # git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy.git
     git clone --single-branch --branch feature/OI-482 --recurse-submodule https://github.com/OpenIndy/OpenIndy.git
     cd OpenIndy
-    git submodule foreach --recursive git checkout feature/OI-482 
+    git submodule foreach --recursive git checkout feature/OI-482
 
-    #git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy-DefaultPlugin.git
+## clone OpenIndy-DefaultPlugin
+
+    git clone --single-branch --branch feature/OI-482 --recurse-submodule https://github.com/OpenIndy/OpenIndy-DefaultPlugin.git
+    cd OpenIndy-DefaultPlugin
+    git submodule foreach --recursive git checkout feature/OI-482
 
 ## run
 
