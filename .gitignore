@@ -26,3 +26,5 @@ Makefile
 *-build-*
 *.Debug
 *.Release
+
+dist
