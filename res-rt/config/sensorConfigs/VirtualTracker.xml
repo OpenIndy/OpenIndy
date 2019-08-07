@@ -1,0 +1,37 @@
+<!DOCTYPE sensorConfig>
+<sensorConfig name="VirtualTracker" isSaved="1">
+    <plugin name="OpenIndy Default Plugin" sensor="PseudoTracker" sensorType="laser tracker"/>
+    <connection ip="" parity="1713165367" dataBits="0" comPort="" stopBits="2" baudRate="0" typeOfConnection="0" flowControl="4" port=""/>
+    <accuracy sigmaZenith="1.57e-006" sigmaDistance="2.5e-005" sigmaX="2.5e-005" sigmaJ="0" sigmaY="2.5e-005" sigmaAzimuth="1.57e-006" sigmaI="0" sigmaTemp="0.5" sigmaZ="2.5e-005" sigmaK="0">
+        <sigmaUndefined/>
+    </accuracy>
+    <doubleParameters>
+        <parameter name="Aa1 [arc sec]" value="0.064"/>
+        <parameter name="Aa2 [arc sec]" value="0.073"/>
+        <parameter name="Ae0 [arc sec]" value="0.223"/>
+        <parameter name="Ae1 [arc sec]" value="0.152"/>
+        <parameter name="Ae2 [arc sec]" value="0.214"/>
+        <parameter name="Ba1 [arc sec]" value="0.08"/>
+        <parameter name="Ba2 [arc sec]" value="0.09"/>
+        <parameter name="Be1 [arc sec]" value="0.183"/>
+        <parameter name="Be2 [arc sec]" value="0.179"/>
+        <parameter name="alpha [arc sec]" value="0.128"/>
+        <parameter name="by [mm]" value="6.54e-005"/>
+        <parameter name="bz [mm]" value="9.74e-005"/>
+        <parameter name="ex [mm]" value="1.22e-005"/>
+        <parameter name="gamma [arc sec]" value="0.079"/>
+        <parameter name="lambda [mm]" value="0.000403"/>
+        <parameter name="mu" value="5e-006"/>
+        <parameter name="echo value" value="-123.45"/>
+    </doubleParameters>
+    <stringParameters>
+        <parameter name="active probe" value="1.5''"/>
+    </stringParameters>
+    <availableStringParameters>
+        <parameter name="active probe">
+            <option value="0.5''"/>
+            <option value="1.0''"/>
+            <option value="1.5''"/>
+        </parameter>
+    </availableStringParameters>
+</sensorConfig>
