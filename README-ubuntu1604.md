@@ -37,3 +37,15 @@
 ## run
 
 Copy content of OpenIndy/res-rt to bin/debug and start openIndy from QT Creator. 
+
+## install
+
+    cd OpenIndy
+    mkdir -p dist/lib
+    cp bin/debug/openIndy dist/
+    cp -R res-rt/* dist/
+    find lib -name "libopenIndy*.so.*" -exec cp -v {} dist/lib/ \;
+
+    # run
+    ./dist/openIndy.sh
+
