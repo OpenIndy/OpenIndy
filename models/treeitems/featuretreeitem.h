@@ -19,7 +19,6 @@ using namespace oi;
  */
 class FeatureTreeItem : public QObject
 {
-    friend class FeatureTreeItem;
     Q_OBJECT
 
 public:
