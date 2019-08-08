@@ -190,7 +190,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
  * \param project
  * \return
  */
-const QPointer<OiJob> &ProjectExchanger::loadProject(const QDomDocument &project){
+const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project){
 
     QPointer<OiJob> job(NULL);
     job = new OiJob();
