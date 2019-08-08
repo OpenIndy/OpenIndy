@@ -1,4 +1,4 @@
-#include "bundleparametertableproxymodel.h".h"
+#include "bundleparametertableproxymodel.h"
 
 /*!
  * \brief BundleParameterTableProxyModel::TrafoParamTableProxyModel
