@@ -306,14 +306,14 @@ void CreateFeatureDialog::initModels(){
     this->ui->comboBox_destinationSystem->setModel(&ModelManager::getCoordinateSystemsModel());
 
     //set combobox size
-    //int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), 20);
-    //this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
-    //this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
+    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
+    this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
+    this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
 
     //set model for possible nominal systems of a nominal geometry
     this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
-    //int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), 20);
-    //this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
+    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
+    this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
     //set model for available functions
     this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
