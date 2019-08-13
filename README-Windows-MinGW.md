@@ -37,4 +37,5 @@ Copy content of OpenIndy/res-rt to bin/debug and start openIndy from QT Creator.
     copy lib\OpenIndy-Core\lib\OpenIndy-Math\lib\armadillo-3.910.0\examples\lib_win32\lapack_win32_MT.dll dist\
 
     rem run
-    ./dist/openIndy.bat
+    cd dist
+    openIndy.bat
