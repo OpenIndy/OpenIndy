@@ -36,7 +36,9 @@ const QString AppVersion = QString(OPENINDY_VERSION);
 const QString AppVersion = QString("%1 %2").arg(OPENINDY_VERSION).arg(" [RELEASE]");
 #endif
 
-extern Q_CORE_EXPORT QBasicAtomicInt qt_qhash_seed;
+#if QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
+    extern Q_CORE_EXPORT QBasicAtomicInt qt_qhash_seed;
+#endif
 
 /*!
  * \brief main
@@ -58,7 +60,11 @@ int main(int argc, char *argv[])
        if (i!=argc) isSilent = true;
     }
 
-    qt_qhash_seed.store(0); // ensures that xml is written the same way
+    #if QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
+        qt_qhash_seed.store(0); // ensures that xml is written the same way
+    #else
+        qSetGlobalQHashSeed(0); // ensures that xml is written the same way
+    #endif
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
