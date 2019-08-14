@@ -205,7 +205,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
         ProjectExchanger::clearHelperMaps(true);
-        return false;
+        return NULL;
 
     }
 
@@ -218,7 +218,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
         ProjectExchanger::clearHelperMaps(true);
-        return false;
+        return NULL;
 
     }
 
@@ -268,7 +268,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
 
         //clear all created elements if no active station or active coordinate system is available
         //OiProjectExchanger::clearHelperMaps(true);
-        //return false;
+        //return NULL;
 
     }
     QPointer<FeatureWrapper> myActiveStation = ProjectExchanger::myStations.value(activeStation.attribute("ref").toInt());
