@@ -4,7 +4,7 @@
    
     wget http://releases.ubuntu.com/16.04/ubuntu-16.04.6-desktop-i386.iso
 
-## ubunut 16.04 prepare
+## ubuntu 16.04 prepare
 
     sudo apt install wget 
     sudo apt install git
