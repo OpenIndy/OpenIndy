@@ -50,13 +50,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QCommandLineParser parser;
-    QCommandLineOption silentOption("s", "silent / no splash screen");
-    parser.addOption(silentOption);
-    QCommandLineOption importPluginOption("i", "import plugin from direcotry <dir>", "dir");
-    parser.addOption(importPluginOption);
-    parser.process(a);
-
     qt_qhash_seed.store(0); // ensures that xml is written the same way
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
@@ -67,9 +60,24 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(AppVersion);
     a.setApplicationDisplayName(AppName);
 
+    QCommandLineParser parser;
+    QCommandLineOption silentOption("s", "silent / no splash screen");
+    parser.addOption(silentOption);
+    QCommandLineOption importPluginOption("i", "import plugin from direcotry <dir>", "dir");
+    parser.addOption(importPluginOption);
+    QCommandLineOption versionOption("v", "print version info");
+    parser.addOption(versionOption);
+    parser.process(a);
+
     if(parser.isSet(importPluginOption)) {
         SimplePluginLoader loader(parser.value(importPluginOption));
         return loader.importPlugin();
+    }
+
+    if(parser.isSet(versionOption)) {
+        // always first line
+        qInfo() << QString(OPENINDY_VERSION).toLatin1().data();
+        return 0;
     }
 
     QSplashScreen *splash;
