@@ -1176,12 +1176,25 @@ void MainWindow::on_actionOpen_triggered(){
     saveProjectIfDigestChanged();
 
     QString filename = QFileDialog::getOpenFileName(this, "Choose a file", ProjectConfig::getProjectPath(), "xml (*.xml)");
-    if(filename.isEmpty()){
+
+    this->loadProjectFile(filename);
+}
+
+void MainWindow::loadProjectFile(QString file) {
+    if(file.isEmpty()){
         return;
     }
 
-    QPointer<QFileDevice> device = new QFile(filename);
-    QFileInfo info(filename);
+    if(!file.toLower().endsWith(".xml")) {
+        return;
+    }
+
+    QFileInfo info(file);
+    if(!info.exists()) {
+        return;
+    }
+
+    QPointer<QFileDevice> device = new QFile(file);
     QString projectName = info.fileName();
 
     ProjectConfig::setProjectPath(info.absolutePath());
@@ -1191,7 +1204,6 @@ void MainWindow::on_actionOpen_triggered(){
     this->ui->tableView_trafoParams->clearSelection();
 
     emit this->loadProject(projectName, device);
-
 }
 
 /*!
@@ -2222,7 +2234,7 @@ void MainWindow::connectDialogs(){
     QObject::connect(this, &MainWindow::featureCreated, &this->createFeatureDialog, &CreateFeatureDialog::featureCreated, Qt::AutoConnection);
 
     //connect console
-    QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
+    QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::QueuedConnection);
 
     //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
