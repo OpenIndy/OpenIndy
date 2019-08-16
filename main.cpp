@@ -4,6 +4,7 @@
 #include <QSplashScreen>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <iostream>
 
 #include "mainwindow.h"
 #include "controller.h"
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
 
     if(parser.isSet(versionOption)) {
         // always first line
-        qInfo() << QString(OPENINDY_VERSION).toLatin1().data();
+        std::cout << OPENINDY_VERSION << std::endl;
         return 0;
     }
 
