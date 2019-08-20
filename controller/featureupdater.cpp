@@ -1188,26 +1188,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     this->switchCoordinateSystem();
 }
 
-/*!
- * \brief FeatureUpdater::switchCoordinateSystemWithoutTransformation
- * \param destinationSystem
- */
-void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem){
-
-    //check current job
-    if(this->currentJob.isNull()){
-        return;
-    }
-
-    //check destination system
-    if(destinationSystem.isNull()){
-        return;
-    }
-
-    //################################################
-    //transform all observations to destination system
-    //################################################
-
+void FeatureUpdater::transformAllObsToDestSystem(const QPointer<CoordinateSystem> &destinationSystem) {
     //run through all station systems
     foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
 
@@ -1231,6 +1212,30 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
         }
 
     }
+}
+
+/*!
+ * \brief FeatureUpdater::switchCoordinateSystemWithoutTransformation
+ * \param destinationSystem
+ */
+void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem){
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check destination system
+    if(destinationSystem.isNull()){
+        return;
+    }
+
+    //################################################
+    //transform all observations to destination system
+    //################################################
+
+    this->transformAllObsToDestSystem(destinationSystem);
+
 
     //###################
     //recalc all features
