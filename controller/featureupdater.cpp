@@ -1198,10 +1198,10 @@ void FeatureUpdater::transformAllObsToDestSystem(const QPointer<CoordinateSystem
             continue;
         }
 
+
+        const bool isSolved = (station->getCoordinateSystem() == destinationSystem);
         //run through all observations of the station system
         foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
-
-            bool isSolved = (station->getCoordinateSystem() == destinationSystem);
 
             //set observation to solved only if it has been measured in the active coordinate system
             if(!obs.isNull()){
