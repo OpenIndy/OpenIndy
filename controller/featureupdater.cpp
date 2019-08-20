@@ -220,7 +220,8 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
         }
         qDebug() << "FeatureUpdater::recalcBundle station:" <<  station->getStation()->getFeatureName();
         //switch to station system
-        this->switchCoordinateSystemWithoutTransformation(station->getStation()->getCoordinateSystem());
+        this->transformAllObsToDestSystem(station->getStation()->getCoordinateSystem());
+        this->recalcFeatureSetWithoutTransformation();
 
         //add station geometries
         inputStation.geometries.clear();
