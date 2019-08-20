@@ -1574,8 +1574,7 @@ void FeatureUpdater::copyGeometry(InputElement &newElement, const QPointer<Featu
 void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem){
 
     //get and delete nominals in bundle system
-    QList< QPointer<FeatureWrapper> > nominals = bundleSystem->getNominals();
-    foreach(const QPointer<FeatureWrapper> nominal, nominals){
+    foreach(const QPointer<FeatureWrapper> nominal, bundleSystem->getNominals()){
         if(!nominal.isNull() && !nominal->getGeometry().isNull()){
             delete nominal->getGeometry().data();
             delete nominal.data();
