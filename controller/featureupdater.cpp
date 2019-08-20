@@ -1190,6 +1190,17 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
 }
 
 void FeatureUpdater::transformAllObsToDestSystem(const QPointer<CoordinateSystem> &destinationSystem) {
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check destination system
+    if(destinationSystem.isNull()){
+        return;
+    }
+
     //run through all station systems
     foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
 
@@ -1289,8 +1300,6 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         if(feature.isNull() || feature->getFeature().isNull()){
             continue;
         }
-
-        //feature->getFeature()->setIsUpdated(false); // also eTrafoParam ???
 
         //recalc the feature if it was not recalced yet and is no trafo param
         if(feature->getFeatureTypeEnum() != eTrafoParamFeature){
