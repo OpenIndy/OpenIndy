@@ -1293,6 +1293,13 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         return;
     }
 
+    //set all features to not have been updated
+    foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
+        if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->setIsUpdated(false);
+        }
+    }
+
     //recalc recursively
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
 
@@ -1302,7 +1309,7 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         }
 
         //recalc the feature if it was not recalced yet and is no trafo param
-        if(feature->getFeatureTypeEnum() != eTrafoParamFeature){
+        if(!feature->getFeature()->getIsUpdated() && feature->getFeatureTypeEnum() != eTrafoParamFeature){
             this->recalcFeatureWithoutTransformation(feature->getFeature());
         }
 
