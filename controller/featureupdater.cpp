@@ -1293,10 +1293,12 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         return;
     }
 
-    //set all features to not have been updated
+    //set all features to not have been updated before recalcFeatureWithoutTransformation()
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
+            feature->getFeature()->blockSignals(false);
         }
     }
 
