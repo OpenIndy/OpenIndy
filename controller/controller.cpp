@@ -2137,14 +2137,14 @@ void Controller::connectRequestHandler(){
     QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopWatchWindow, Qt::AutoConnection);
 
     //connect streaming
-    QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::AutoConnection);
-    QObject::connect(this, &Controller::sensorActionFinished, &this->requestHandler, &OiRequestHandler::sensorActionFinished, Qt::AutoConnection);
-    QObject::connect(this, &Controller::showClientMessage, &this->requestHandler, &OiRequestHandler::log, Qt::AutoConnection);
-    QObject::connect(this, &Controller::activeFeatureChanged, &this->requestHandler, &OiRequestHandler::activeFeatureChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::activeStationChanged, &this->requestHandler, &OiRequestHandler::activeStationChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::AutoConnection);
+    QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::sensorActionFinished, &this->requestHandler, &OiRequestHandler::sensorActionFinished, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::showClientMessage, &this->requestHandler, &OiRequestHandler::log, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::activeFeatureChanged, &this->requestHandler, &OiRequestHandler::activeFeatureChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::activeStationChanged, &this->requestHandler, &OiRequestHandler::activeStationChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::QueuedConnection);
 
 }
 
