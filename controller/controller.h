@@ -144,6 +144,8 @@ public slots:
     //init configs from mainwindowSlot
     void initConfigs();
 
+    void logConsole(const QString &msg, const MessageTypes &msgType);
+
 signals:
 
     //#################################################
@@ -266,6 +268,8 @@ signals:
 
     //error create trafo Param
     void requestMessageBoxTrafoParam();
+
+    void logAsyncConsole(const QString &msg, const MessageTypes &msgType);
 
 private slots:
 

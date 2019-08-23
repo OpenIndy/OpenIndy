@@ -9,6 +9,8 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
+    QObject::connect(this, &Controller::logAsyncConsole, this, &Controller::logConsole, Qt::QueuedConnection);
+
     //load config from file
     ProjectConfig::loadProjectSettingsConfigFile();
 
@@ -1576,18 +1578,22 @@ void Controller::log(const QString &msg, const MessageTypes &msgType, const Mess
 
     switch(msgDest){
     case eConsoleMessage:
-        Console::getInstance()->addLine(msg, msgType);
+        emit this->logAsyncConsole(msg, msgType);
         break;
     case eMessageBoxMessage:
-        Console::getInstance()->addLine(msg, msgType);
+        emit this->logAsyncConsole(msg, msgType);
         emit this->showMessageBox(msg, msgType);
         break;
     case eStatusBarMessage:
-        Console::getInstance()->addLine(msg, msgType);
+        emit this->logAsyncConsole(msg, msgType);
         emit this->showStatusMessage(msg, msgType);
         break;
     }
 
+}
+
+void Controller::logConsole(const QString &msg, const MessageTypes &msgType) {
+    Console::getInstance()->addLine(msg, msgType);
 }
 
 /*!
