@@ -203,13 +203,14 @@ bool FeatureTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex
     //get and check row index for each model index
     int leftIndex = left.row();
     int rightIndex = right.row();
-    if(source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex || source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex){
+    QList<QPointer<FeatureWrapper> > features = source_model->getCurrentJob()->getFeaturesList();
+    if(features.size() <= leftIndex || features.size() <= rightIndex){
         return false;
     }
 
     //get features
-    QPointer<FeatureWrapper> leftFeature = source_model->getCurrentJob()->getFeaturesList().at(leftIndex);
-    QPointer<FeatureWrapper> rightFeature = source_model->getCurrentJob()->getFeaturesList().at(rightIndex);
+    QPointer<FeatureWrapper> leftFeature = features.at(leftIndex);
+    QPointer<FeatureWrapper> rightFeature = features.at(rightIndex);
 
     return this->sorter.lessThan(leftFeature, rightFeature);
 

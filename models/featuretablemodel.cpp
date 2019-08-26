@@ -5,9 +5,9 @@
  * \param job
  * \param parent
  */
-FeatureTableModel::FeatureTableModel(const QPointer<OiJob> &job, QObject *parent) : QAbstractTableModel(parent){
-    this->setCurrentJob(job);
-}
+//FeatureTableModel::FeatureTableModel(const QPointer<OiJob> &job, QObject *parent) : QAbstractTableModel(parent){
+//    this->setCurrentJob(job);
+//}
 
 /*!
  * \brief FeatureTableModel::FeatureTableModel
