@@ -28,7 +28,6 @@ class FeatureTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    //explicit FeatureTableModel(const QPointer<OiJob> &job, QObject *parent = 0);
     explicit FeatureTableModel(QObject *parent = 0);
 
     //########################################
