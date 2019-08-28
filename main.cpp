@@ -17,13 +17,6 @@
 #include <ctime>
 #include <simplepluginloader.h>
 
-inline void mySleep(clock_t sec) // clock_t is a like typedef unsigned int clock_t. Use clock_t instead of integer in this context
-{
-  clock_t start_time = clock();
-  clock_t end_time = sec * 1000 + start_time;
-  while(clock() < end_time);
-}
-
 const QString _date = __DATE__;
 const QString _time = __TIME__;
 const QString Company = "sigma3D GmbH & Hochschule Mainz";
@@ -84,32 +77,27 @@ int main(int argc, char *argv[])
     QPointer<QSplashScreen> splash;
     if (!parser.isSet(silentOption))
     {
-      QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");  // splash.png has to be placed next to the *.exe
-      QString tmp;
+      QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");
 
       splash = new QSplashScreen(pixmap);
 
       splash->show();
-      tmp = AppUrl + "\n"
-              + AppAuthorMail + "\n"
-              + AppAuthor;
+      QString msg = argc == 2
+            ? QString("loading: %1").arg(argv[1])
+            : QString("%1\n%2\n%3").arg(AppUrl).arg(AppAuthorMail).arg(AppAuthor);
 
-      splash->showMessage(tmp,Qt::AlignBottom | Qt::AlignHCenter,Qt::white);
-
-      mySleep(1.0); // nur so, damit der SplashScreen etwas länger angezeigt wird
+      splash->showMessage(msg,Qt::AlignBottom | Qt::AlignHCenter,Qt::white);
     }
+
     MainWindow w;
 
     if(argc == 2) {
-        if(!splash.isNull()) {
-            splash->showMessage(QString("loading: %1").arg(argv[1]),Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
-        }
         w.loadProjectFile(argv[1]);
     }
 
     w.showMaximized();
 
-    if (!parser.isSet(silentOption))
+    if (!splash.isNull())
     {
       splash->finish(&w);
       delete splash.data();
