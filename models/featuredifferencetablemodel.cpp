@@ -1,5 +1,9 @@
 #include "featuredifferencetablemodel.h"
 
+inline double rnd(double value, int digits) {
+    return ((floor(((value)*pow(10,digits))+.5))/pow(10,digits));
+}
+
 /*!
  * \brief FeatureDifferenceTableModel::FeatureDifferenceTableModel
  * \param job
@@ -271,9 +275,12 @@ QPair<bool, double> FeatureDifferenceTableModel::getDifference(QPointer<FeatureW
     if(!feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getNominals().isEmpty() && feature->getGeometry()->hasPosition()){
 
         foreach (QPointer<Geometry> geom, feature->getGeometry()->getNominals()) {
-            if(geom->getIsSolved() && feature->getGeometry()->getIsSolved()){
+            if(geom->getIsSolved() && feature->getGeometry()->getIsSolved()){ // accept first solved nominal!
                 if(index.column()>=1 && index.column() <=3) { // x, y, z
-                    return qMakePair(true, feature->getGeometry()->getPosition().getVector().getAt(index.column()-1) - geom->getPosition().getVector().getAt(index.column()-1));
+                    return qMakePair(true,
+                                     rnd(convertFromDefault(feature->getGeometry()->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
+                                     - rnd(convertFromDefault(geom->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
+                                     );
                 }
             }else{
                 return qMakePair(false, 0.0);
