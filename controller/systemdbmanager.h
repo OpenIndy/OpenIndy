@@ -262,6 +262,9 @@ private:
     static int getLastId(const QString &table);
     static QList<int> getElementIds(const QStringList &elements);
 
+    static QThreadStorage<QMap<FeatureTypes, QList<sdb::Function> > > functionCache;
+    static QList<sdb::Function> getCreateFunctionsFromDB(const FeatureTypes &type);
+
 };
 
 #endif // DATABASE_H

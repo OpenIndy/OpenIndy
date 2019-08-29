@@ -4,6 +4,8 @@
 QSqlDatabase SystemDbManager::db;
 bool SystemDbManager::isInit = false;
 
+QThreadStorage<QMap<FeatureTypes, QList<sdb::Function> > > SystemDbManager::functionCache;
+
 /*!
  * \brief SystemDbManager::addPlugin
  * Saves an OpenIndy plugin in the system database
@@ -632,6 +634,15 @@ QList<sdb::Function> SystemDbManager::getFunctions(){
  * \return
  */
 QList<sdb::Function> SystemDbManager::getCreateFunctions(const FeatureTypes &type){
+    if(functionCache.localData().contains(type)) {
+        return functionCache.localData().value(type);
+    } else {
+        QList<sdb::Function> functions = SystemDbManager::getCreateFunctionsFromDB(type);
+        functionCache.localData().insert(type, functions);
+        return functions;
+    }
+}
+QList<sdb::Function> SystemDbManager::getCreateFunctionsFromDB(const FeatureTypes &type){
 
     QList<sdb::Function> functions;
 
