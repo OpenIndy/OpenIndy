@@ -80,7 +80,7 @@ private:
     void connectJob();
     void disconnectJob();
 
-    QPair<bool, double> getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const;
+    QPair<bool, double> getDifferenceAsDisplayUnit(QPointer<FeatureWrapper> feature, const QModelIndex index) const;
 
     QPointer<OiJob> currentJob;
 

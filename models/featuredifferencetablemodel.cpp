@@ -77,28 +77,25 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
         return QVariant();
     }
 
-    double value = 0.0;
     if(role == Qt::DisplayRole){
 
         if(index.column() == 0){
             return feature->getFeature()->getFeatureName();
         }else{
-            QPair<bool, double> result = this->getDifference(feature, index);
+            QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
 
             if(result.first){
-                value = convertFromDefault(result.second, this->parameterDisplayConfig.getDisplayUnit(eMetric));
-                return QString::number(value, 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+                return QString::number(result.second, 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
             }else{
                 return "-/-";
             }
         }
     }else if(role == Qt::TextColorRole){
 
-        QPair<bool, double> result = this->getDifference(feature, index);
+        QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
 
         if(result.first){
-            value = convertFromDefault(result.second, this->parameterDisplayConfig.getDisplayUnit(eMetric));
-            if(abs(value) > abs(this->tolerance)){
+            if(abs(result.second) > abs(this->tolerance)){
                 return QColor(Qt::red);
             }else{
                 return QVariant();
@@ -106,7 +103,7 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
         }
     }else if(role == Qt::TextAlignmentRole){
         if(index.column() > 0) { // 0 == name column
-            QPair<bool, double> result = this->getDifference(feature, index);
+            QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
 
             if(result.first){
                 return Qt::AlignRight | Qt::AlignVCenter;
@@ -261,12 +258,12 @@ void FeatureDifferenceTableModel::disconnectJob()
 }
 
 /*!
- * \brief FeatureDifferenceTableModel::getDifference
+ * \brief FeatureDifferenceTableModel::getDifferenceAsDisplayUnit
  * \param feature
- * calculate the difference between actual and nominal, if there is no actual, or no nominal return -/-
+ * calculate the difference between rounded actual and nominal
  * \return
  */
-QPair<bool, double> FeatureDifferenceTableModel::getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const
+QPair<bool, double> FeatureDifferenceTableModel::getDifferenceAsDisplayUnit(QPointer<FeatureWrapper> feature, const QModelIndex index) const
 {
     if(feature.isNull() || feature->getGeometry().isNull()){
         return qMakePair(false, 0.0);
