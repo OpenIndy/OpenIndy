@@ -71,7 +71,8 @@ int main(int argc, char *argv[])
 
     if(parser.isSet(importPluginOption)) {
         SimplePluginLoader loader(parser.value(importPluginOption));
-        return loader.importPlugin();
+        loader.importPlugin();
+        return 0;
     }
 
     if(parser.isSet(versionOption)) {

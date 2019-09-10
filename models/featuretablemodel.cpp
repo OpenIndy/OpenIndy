@@ -146,7 +146,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eFeatureDisplayExpansionOriginX:
         case eFeatureDisplayExpansionOriginY:
         case eFeatureDisplayExpansionOriginZ:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
 
     }else if(role == Qt::TextAlignmentRole && !feature->getTrafoParam().isNull()) {
@@ -162,7 +162,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eTrafoParamDisplayScaleY:
         case eTrafoParamDisplayScaleZ:
         case eTrafoParamDisplayStDev:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
     }
 
@@ -426,6 +426,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(feature->getFeatureTypeEnum()));
                 return true;
             }
+            break;
         }
         case eFeatureDisplayFunctions:{
 
@@ -524,6 +525,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 }
                 return false;
             }
+            break;
         }
         case eFeatureDisplayX:
             if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){

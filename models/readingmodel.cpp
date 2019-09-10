@@ -193,7 +193,7 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
         case eReadingDisplaySigmaJ:
         case eReadingDisplaySigmaK:
         case eReadingDisplaySigmaTemperature:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
 
     }

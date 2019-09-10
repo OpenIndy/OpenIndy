@@ -106,7 +106,7 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
             QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
 
             if(result.first){
-                return Qt::AlignRight | Qt::AlignVCenter;
+                return QVariant(Qt::AlignRight | Qt::AlignVCenter);
             }
         }
     }
