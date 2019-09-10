@@ -34,20 +34,6 @@ void LoadingDialog::updateProgress(const int &progress, const QString &msg) cons
 }
 
 /*!
- * \brief LoadingDialog::showEvent
- * \param event
- */
-void LoadingDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
-    event->accept();
-
-}
-
-/*!
  * \brief LoadingDialog::closeEvent
  * \param event
  */

@@ -89,52 +89,6 @@
             </layout>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_reference">
-             <property name="title">
-              <string>reference</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="0" column="0">
-               <layout class="QVBoxLayout" name="verticalLayout_2">
-                <item>
-                 <widget class="QRadioButton" name="radioButton_actnom">
-                  <property name="text">
-                   <string>actual - nominal</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="radioButton_nomact">
-                  <property name="text">
-                   <string>nominal - actual</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Minimum</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -326,6 +280,19 @@
                </layout>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_showLastMeasurement">
+             <property name="toolTip">
+              <string>show last measurement even if currently no measurement possible</string>
+             </property>
+             <property name="text">
+              <string>show last measurement</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>

@@ -172,32 +172,3 @@ void SensorParametersDelegate::setModelData(QWidget *editor, QAbstractItemModel 
     }
 
 }
-
-/*!
- * \brief SensorParametersDelegate::sizeHint
- * \param option
- * \param index
- * \return
- */
-QSize SensorParametersDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
-
-    //check model index
-    if(!index.isValid()){
-        return QSize(5, 22);
-    }
-
-    //get and check models
-    const SensorParametersModel *model = static_cast<const SensorParametersModel*>(index.model());
-    if(model == NULL){
-        return QSize(5, 22);
-    }
-
-    QString input = model->data(index).toString();
-
-    QFontMetrics metrics(option.font);
-
-    int width = metrics.width(input) + option.decorationSize.width();
-
-    return QSize(width, 22);
-
-}

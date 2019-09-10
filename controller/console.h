@@ -23,6 +23,8 @@ private:
     explicit Console(QObject *parent = 0);
 
 public:
+    ~Console();
+
     static const QPointer<Console> &getInstance();
 
     //##############################
@@ -56,6 +58,8 @@ private:
     //helper methods
     //##############
 
+
+    void add(const QString &msg, const MessageTypes &msgType, const QString &value = "");
     void writeToLogFile(const QString &msg);
 
 private:
@@ -68,6 +72,7 @@ private:
 
     QStringList log;
     QStringListModel output;
+    QFile outFile;
 
 };
 

@@ -6,8 +6,8 @@
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
-    ui(new Ui::WatchWindowDialog)
+WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job, QList<QPointer<FeatureWrapper> > f, QWidget *parent) : QDialog(parent),
+    ui(new Ui::WatchWindowDialog), behavior(b), currentJob(job), features(f)
 {
     ui->setupUi(this);
 
@@ -27,6 +27,12 @@ WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
     oldWindowHeight = 0;
     oldWindowWidth = 0;
     this->lablesRescaled = false;
+
+    // time that monitors "watchWindowUpdated" state
+    this->watchWindowUpdated = false;
+    static QTimer *timer = new QTimer(parent);
+    connect(timer, SIGNAL(timeout()), this, SLOT(clearWatchWindow()));
+    timer->start(500);
 }
 
 /*!
@@ -37,44 +43,11 @@ WatchWindowDialog::~WatchWindowDialog(){
 }
 
 /*!
- * \brief WatchWindowDialog::getCurrentJob
- * \return
- */
-const QPointer<OiJob> &WatchWindowDialog::getCurrentJob() const{
-    return this->currentJob;
-}
-
-/*!
- * \brief WatchWindowDialog::setCurrentJob
- * \param job
- */
-void WatchWindowDialog::setCurrentJob(const QPointer<OiJob> &job){
-    if(!job.isNull()){
-        this->currentJob = job;
-        this->connectJob();
-    }
-}
-
-/*!
  * \brief WatchWindowDialog::on_spinBox_decimalDigits_valueChanged
  * \param arg1
  */
 void WatchWindowDialog::on_spinBox_decimalDigits_valueChanged(int arg1){
     this->settings.digits = this->ui->spinBox_decimalDigits->value();
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_actnom_clicked
- */
-void WatchWindowDialog::on_radioButton_actnom_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_nomact_clicked
- */
-void WatchWindowDialog::on_radioButton_nomact_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
 }
 
 /*!
@@ -204,13 +177,8 @@ void WatchWindowDialog::realTimeReading(const QVariantMap &reading){
  * \param event
  */
 void WatchWindowDialog::showEvent(QShowEvent *event){
-
     //necessary to rescale all
     this->lablesRescaled = false;
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
 
     //connect sensor
     this->connectSensor();
@@ -261,78 +229,36 @@ void WatchWindowDialog::initGUI(){
     f.setFamily("Arial");
 
     //feature name
-    QLabel *featureName = new QLabel();
-    featureName->setAlignment(Qt::AlignVCenter);
-    featureName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    featureName->setScaledContents(true);
-    QHBoxLayout *featureNameLayout = new QHBoxLayout();
-    featureNameLayout->addWidget(featureName);
-    featureNameLayout->setStretch(0,1);
-    this->masterLayout->addLayout(featureNameLayout);
-    this->masterLayout->setStretch(0, 1);
-    streamData.insert(eName, featureName);
+    addLabel(eName, f);
 
     //x
-    QLabel *x = new QLabel();
-    x->setFont(f);
-    x->setAutoFillBackground(true);
-    x->setAlignment(Qt::AlignVCenter);
-    x->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    x->setScaledContents(true);
-    QHBoxLayout *xLayout = new QHBoxLayout();
-    xLayout->addWidget(x);
-    xLayout->setStretch(0,1);
-    this->masterLayout->addLayout(xLayout);
-    this->masterLayout->setStretch(1,1);
-    streamData.insert(eX, x);
+    addLabel(eX, f);
 
     //y
-    QLabel *y = new QLabel();
-    y->setFont(f);
-    y->setAutoFillBackground(true);
-    y->setAlignment(Qt::AlignVCenter);
-    y->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    y->setScaledContents(true);
-    QHBoxLayout *yLayout = new QHBoxLayout();
-    yLayout->addWidget(y);
-    yLayout->setStretch(0,1);
-    this->masterLayout->addLayout(yLayout);
-    //this->masterLayout->addWidget(y);
-    this->masterLayout->setStretch(2,1);
-    streamData.insert(eY, y);
+    addLabel(eY, f);
 
     //z
-    QLabel *z = new QLabel();
-    z->setFont(f);
-    z->setAutoFillBackground(true);
-    z->setAlignment(Qt::AlignVCenter);
-    z->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    z->setScaledContents(true);
-    QHBoxLayout *zLayout = new QHBoxLayout();
-    zLayout->addWidget(z);
-    zLayout->setStretch(0,1);
-    this->masterLayout->addLayout(zLayout);
-    //this->masterLayout->addWidget(z);
-    this->masterLayout->setStretch(3, 1);
-    streamData.insert(eZ, z);
+    addLabel(eZ, f);
 
     //d3D
-    QLabel *d3D = new QLabel();
-    d3D->setFont(f);
-    d3D->setAutoFillBackground(true);
-    d3D->setAlignment(Qt::AlignVCenter);
-    d3D->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    d3D->setScaledContents(true);
-    QHBoxLayout *d3DLayout = new QHBoxLayout();
-    d3DLayout->addWidget(d3D);
-    d3DLayout->setStretch(0,1);
-    masterLayout->addLayout(d3DLayout);
-    //this->masterLayout->addWidget(d3D);
-    this->masterLayout->setStretch(4, 1);
-    streamData.insert(eD3D, d3D);
+    addLabel(eD3D, f);
 
     //assign master layout
     this->ui->pageWatchWindow->setLayout(this->masterLayout);
+}
+
+void WatchWindowDialog::addLabel(DisplayAttributes att,  QFont f) {
+    QLabel *label = new QLabel();
+    label->setFont(f);
+    label->setAutoFillBackground(true);
+    label->setAlignment(Qt::AlignCenter);
+    label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    label->setScaledContents(true);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(label, 1);
+    masterLayout->addLayout(layout, 1);
+    this->masterLayoutIndex[att] = this->masterLayout->count()-1;
+    streamData.insert(att, label);
 }
 
 /*!
@@ -362,11 +288,39 @@ void WatchWindowDialog::connectSensor(){
     QObject::connect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
 }
 
-/*!
- * \brief WatchWindowDialog::connectJob
- */
-void WatchWindowDialog::connectJob(){
 
+QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
+    if(feature.isNull()){
+        return "";
+    }
+
+    return QString("%1%2")
+            .arg(feature->getFeature()->getFeatureName())
+            .arg(feature->getGeometry().isNull() ? "" : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+}
+
+Position WatchWindowDialog::getPosition(QPointer<FeatureWrapper> feature) {
+    if(feature.isNull()){
+        return Position::NullObject;
+    //check if current feature is a solved geometry with position
+    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
+             && feature->getGeometry()->getIsSolved()){
+
+        return feature->getGeometry()->getPosition();
+
+    //check if active feature is a coordinate system
+    }else if(!feature->getCoordinateSystem().isNull()){
+
+        return feature->getCoordinateSystem()->getOrigin();
+
+    //check if active feature is a station
+    }else if(!feature->getStation().isNull()){
+
+        return feature->getStation()->getPosition()->getPosition();
+
+    }else{
+        return Position::NullObject;
+    }
 }
 
 /*!
@@ -374,38 +328,14 @@ void WatchWindowDialog::connectJob(){
  * \param reading
  */
 void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
-
-    //init variables
-    QString name, value, displayValue;
+    //get and transform tracker position
+    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
+        return;
+    }
 
     //check and get active coordinate system
     QPointer<CoordinateSystem> activeSystem = this->currentJob->getActiveCoordinateSystem();
     if(activeSystem.isNull()){
-        return;
-    }
-
-    //check the active position (geometry, station, coordinate system)
-    Position pos;
-
-    if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
-        return;
-    //check if current feature is a solved geometry with position
-    }else if(!this->currentJob->getActiveFeature()->getGeometry().isNull() && this->currentJob->getActiveFeature()->getGeometry()->hasPosition()
-             && this->currentJob->getActiveFeature()->getGeometry()->getIsSolved()){
-
-        pos = this->currentJob->getActiveFeature()->getGeometry()->getPosition();
-
-    //check if active feature is a coordinate system
-    }else if(!this->currentJob->getActiveFeature()->getCoordinateSystem().isNull()){
-
-        pos = this->currentJob->getActiveFeature()->getCoordinateSystem()->getOrigin();
-
-    //check if active feature is a station
-    }else if(!this->currentJob->getActiveFeature()->getStation().isNull()){
-
-        pos = this->currentJob->getActiveFeature()->getStation()->getPosition()->getPosition();
-
-    }else{
         return;
     }
 
@@ -415,10 +345,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return;
     }
 
-    //get and transform tracker position
-    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
-        return;
-    }
     OiVec trackerXYZ(4);
     trackerXYZ.setAt(0, reading.value("x").toDouble());
     trackerXYZ.setAt(1, reading.value("y").toDouble());
@@ -426,107 +352,52 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ.setAt(3, 1.0);
     trackerXYZ = trafo * trackerXYZ;
 
-    //number of visible elements
-    int numVisibleElements = 1; //1, because name is always displayed
+    QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
+    //check the active position (geometry, station, coordinate system)
+    Position pos = getPosition(feature);
+    if(pos.isNull()) {
+        return;
+    }
+
 
     //set feature name
-    name ="<p align=\"center\">" + this->currentJob->getActiveFeature()->getFeature()->getFeatureName() + "</p>";
-    displayValue = "<table width=\"100%\"> <tr> <td>" + name + "</td>  </tr> </table>";
-    this->streamData[eName]->setText(displayValue);
+    this->streamData[eName]->setText(getNameLabel(feature));
 
     //set x
-    if(this->settings.displayValues.contains(eX)){
-
+    setDisplayValue(eX, "x", [&](){
         //get display value
-        double displayX;
-        if(this->settings.reference == eActualNominal){
-            displayX = trackerXYZ.getAt(0) - pos.getVector().getAt(0);
-        }else{
-            displayX = pos.getVector().getAt(0) - trackerXYZ.getAt(0);
-        }
-        displayX = convertFromDefault(displayX, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
-
-        //set color depending on tolerance
-        QString color = (qFabs(displayX) >= qFabs(this->settings.displayValues.value(eX)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">x</p>";
-        value = "<p align=\"right\">" + QString::number(displayX, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eX)->setText(displayValue);
-
-        numVisibleElements++;
-    }
+        return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
+    });
 
     //set y
-    if(this->settings.displayValues.contains(eY)){
-
+    setDisplayValue(eY, "y", [&](){
         //get display value
-        double displayY;
-        if(this->settings.reference == eActualNominal){
-            displayY = trackerXYZ.getAt(1) - pos.getVector().getAt(1);
-        }else{
-            displayY = pos.getVector().getAt(1) - trackerXYZ.getAt(1);
-        }
-        displayY = convertFromDefault(displayY, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
-
-        //set color depending on tolerance
-        QString color = (qFabs(displayY) >= qFabs(this->settings.displayValues.value(eY)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">y</p>";
-        value = "<p align=\"right\">" + QString::number(displayY, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eY)->setText(displayValue);
-
-        numVisibleElements++;
-    }
+        return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
+    });
 
     //set z
-    if(this->settings.displayValues.contains(eZ)){
-
+    setDisplayValue(eZ, "z", [&](){
         //get display value
-        double displayZ;
-        if(this->settings.reference == eActualNominal){
-            displayZ = trackerXYZ.getAt(2) - pos.getVector().getAt(2);
-        }else{
-            displayZ = pos.getVector().getAt(2) - trackerXYZ.getAt(2);
-        }
-        displayZ = convertFromDefault(displayZ, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
+        return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
+    });
 
-        //set color depending on tolerance
-        QString color = (qFabs(displayZ) >= qFabs(this->settings.displayValues.value(eZ)) ? "#FF0000" : "#00FF00");
-
-        //format display value
-        name = "<p align=\"left\">z</p>";
-        value = "<p align=\"right\">" + QString::number(displayZ, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eZ)->setText(displayValue);
-
-        numVisibleElements++;
-    }
-
-    //set d3D
-    if(this->settings.displayValues.contains(eD3D)){
-
+    //set d3D    
+    setDisplayValue(eD3D, "d3D", [&](){
         //get display value
         OiVec d = pos.getVectorH() - trackerXYZ;
-        double displayD3D = qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
+        return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
+    });
 
-        displayD3D = convertFromDefault(displayD3D, ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
+    setVisibility();
 
-        //set color depending on tolerance
-        QString color = (qFabs(displayD3D) >= qFabs(this->settings.displayValues.value(eD3D)) ? "#FF0000" : "#00FF00");
+    // valid reading available
+    this->watchWindowUpdated = true;
 
-        //format display value
-        name = "<p align=\"left\">d3D</p>";
-        value = "<p align=\"right\">" + QString::number(displayD3D, 'f', this->settings.digits) + "</p>";
-        displayValue = "<table width=\"100%\"> <tr> <td width=\"20%\">" + name + "</td> <td width=\"70%\">" + value + "</td><td width=\"10%\" bgcolor=\"" + color + "\">&nbsp;</td> </tr></table>";
-        streamData.value(eD3D)->setText(displayValue);
+    //resize labels (maximum font size that is possible)
+    this->resizeWatchWindowValues();
+}
 
-        numVisibleElements++;
-    }
-
+void WatchWindowDialog::setVisibility() {
     //set visibility
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
     QList<DisplayAttributes>  visibleLayouts;
@@ -558,21 +429,34 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     //set all streching to 0
     //except feature name label
-    for(int all=1; all < 5; all++){
-        if(!visibleLayouts.contains(getAttributesByInteger(all))){
-            this->masterLayout->setStretch(all, 0);
+    for ( int i = eX; i != eNotDeclared; i++ ) {
+        DisplayAttributes attr = static_cast<DisplayAttributes>(i);
+        if(!visibleLayouts.contains(attr)){
+            this->masterLayout->setStretch(masterLayoutIndex[attr], 0);
         }
     }
 
     //set all active attributes to same stretch value
-    for(int i=0; i < 5; i++){
-        if(visibleLayouts.contains(getAttributesByInteger(i))){
-            masterLayout->setStretch(i,1);
+    for ( int i = eName; i != eNotDeclared; i++ ) {
+        DisplayAttributes attr = static_cast<DisplayAttributes>(i);
+        if(visibleLayouts.contains(attr)){
+            this->masterLayout->setStretch(masterLayoutIndex[attr], 1);
         }
     }
+}
 
-    //resize labels (maximum font size that is possible)
-    this->resizeWatchWindowValues();
+void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v) {
+    if(this->settings.displayValues.contains(attr)){
+        double value = convertFromDefault(v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
+        //set color depending on tolerance
+        QString color = (qFabs(value) >= qFabs(this->settings.displayValues.value(attr)) ? "#FF0000" : "#00FF00");
+
+        //format display value
+        streamData.value(attr)->setText(QString("<table width=\"100%\"> <tr> <td width=\"20%\"><p align=\"left\">%1</p></td> <td width=\"70%\"><p align=\"right\">%2</p></td><td width=\"10%\" bgcolor=\"%3\">&nbsp;</td> </tr></table>")
+                                        .arg(name)
+                                        .arg(QString::number(value, 'f', this->settings.digits))
+                                        .arg(color));
+    }
 }
 
 /*!
@@ -604,6 +488,8 @@ void WatchWindowDialog::getDefaultSettings(){
     }else{
         this->settings.displayValues.remove(eD3D);
     }
+
+    this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
 }
 
 /*!
@@ -646,9 +532,9 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         //calculate new fonts
         //name
         h = this->streamData[eName]->height();
+        double w = this->streamData[eName]->width();
         QFontMetrics fmName(fName);
-        scale = h/fmName.height();
-        fName.setPointSize(fName.pointSize()*scale);
+        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(streamData[eName]->text()) ));
 
         //x
         h = this->streamData[eX]->height();
@@ -687,88 +573,6 @@ void WatchWindowDialog::resizeWatchWindowValues(){
 }
 
 /*!
- * \brief WatchWindowDialog::getAttributeValue
- * \param attributeName
- * \return
- */
-DisplayAttributes WatchWindowDialog::getAttributeValue(QString attributeName)
-{
-    if(attributeName.compare("name") == 0){
-        return eName;
-    }
-    if(attributeName.compare("x") == 0){
-        return eX;
-    }
-    if(attributeName.compare("y") == 0){
-        return eY;
-    }
-    if(attributeName.compare("z") == 0){
-        return eZ;
-    }
-    if(attributeName.compare("d3D") == 0){
-        return eD3D;
-    }
-   return eNotDeclared;
-}
-
-/*!
- * \brief WatchWindowDialog::getAttributeName
- * \param attr
- * \return
- */
-QString WatchWindowDialog::getAttributeName(DisplayAttributes attr)
-{
-    switch (attr) {
-    case eName:
-        return "name";
-        break;
-    case eX:
-        return "x";
-        break;
-    case eY:
-        return "y";
-        break;
-    case eZ:
-        return "z";
-        break;
-    case eD3D:
-        return "d3D";
-        break;
-    default:
-        break;
-    }
-}
-
-/*!
- * \brief WatchWindowDialog::getAttributesByInteger
- * \param i
- * \return
- */
-DisplayAttributes WatchWindowDialog::getAttributesByInteger(int i)
-{
-    switch (i) {
-    case 0:
-        return eName;
-        break;
-    case 1:
-        return eX;
-        break;
-    case 2:
-        return eY;
-        break;
-    case 3:
-        return eZ;
-        break;
-    case 4:
-        return eD3D;
-        break;
-    default:
-        return eNotDeclared;
-        break;
-    }
-}
-
-/*!
  * \brief WatchWindowDialog::on_toolBox_currentChanged
  * \param index
  * if you switch from settings tab to watchwindow tab you have to recalc label sizes
@@ -784,4 +588,58 @@ void WatchWindowDialog::on_toolBox_currentChanged(int index)
     Because the current tab is settings, labels of watchwindow tab have their old size.
     After switching to the watchwindow tab, they will get updated and it is necessary to update the size calculation.
     */
+}
+
+void WatchWindowDialog::clearWatchWindow() {
+    if(!settings.showLastMeasurement &&  !this->watchWindowUpdated) {
+        this->streamData[eX]->setVisible(false);
+        this->streamData[eY]->setVisible(false);
+        this->streamData[eZ]->setVisible(false);
+        this->streamData[eD3D]->setVisible(false);
+    }
+    this->watchWindowUpdated = false;
+}
+
+void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
+{
+    this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
+}
+
+QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
+    switch(this->behavior) {
+    case eShowAlwaysActiveFeature:
+        if(!this->currentJob.isNull()) {
+            return this->currentJob->getActiveFeature();
+        }
+        break;
+    case eShowCurrentSelectedFeature:
+        if(!this->features.isEmpty()) {
+            return this->features[0];
+        }
+        break;
+    case eShowNearestNominal:
+        if(!this->currentJob.isNull()) {
+            double dd = -1.0;
+            QPointer<FeatureWrapper> nearestFeature;
+            for(QPointer<FeatureWrapper> feature : (true ? this->features : this->currentJob->getFeaturesList())) {
+
+                Position pos = getPosition(feature);
+                if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
+
+                    OiVec d = pos.getVectorH() - trackerXYZ;
+                    double fdd =  d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2); // no need for sqrt
+                    if(fdd < dd || dd < 0.0 /* first element */) {
+                        dd = fdd;
+                        nearestFeature = feature;
+                    }
+
+                }
+
+            }
+            return nearestFeature;
+        }
+        break;
+    }
+
+    return QPointer<FeatureWrapper>();
 }

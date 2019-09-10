@@ -55,6 +55,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
 
     this->startAutoSave();
+
+    this->updateCompleter();
+
 }
 
 /*!
@@ -69,7 +72,7 @@ MainWindow::~MainWindow(){
  * Triggered by Controller whenever an nominal import task has been started
  */
 void MainWindow::importNominalsStarted(){
-    this->loadingDialog.show();
+    showCentered(this->loadingDialog);
 }
 
 /*!
@@ -93,7 +96,7 @@ void MainWindow::importNominalsFinished(const bool &success){
  * \brief MainWindow::importObservationsStarted
  */
 void MainWindow::importObservationsStarted(){
-    this->loadingDialog.show();
+    showCentered(this->loadingDialog);
 }
 
 /*!
@@ -327,7 +330,13 @@ void MainWindow::currentJobChanged(){
 
     //get current job and pass it to watch window
     QPointer<OiJob> job = ModelManager::getCurrentJob();
-    this->watchWindowDialog.setCurrentJob(job);
+
+    for (auto it = watchWindowDialogs.begin(); it != watchWindowDialogs.end();) {
+        if(it.value().isNull()) {
+            delete it.value().data();
+        }
+        it = watchWindowDialogs.erase(it);
+    }
 
     //set window title
     if(!job.isNull()){
@@ -352,7 +361,7 @@ void MainWindow::currentJobChanged(){
  */
 void MainWindow::sensorActionStarted(const QString &name){
     this->sensorTaskInfoDialog.setDisplayMessage(name);
-    this->sensorTaskInfoDialog.show();
+    showCentered(this->sensorTaskInfoDialog);
 }
 
 /*!
@@ -450,25 +459,10 @@ void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType)
  */
 void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgType){
 
-    QString status;
-
-    switch(msgType){
-    case eInformationMessage:
-        break;
-    case eWarningMessage:
-        status.append("WARNING: ");
-        break;
-    case eErrorMessage:
-        status.append("ERROR: ");
-        break;
-    case eCriticalMessage:
-        status.append("CRITICAL: ");
-        break;
-    }
-
-    status.append(msg);
-
-    this->ui->statusBar->showMessage(status);
+    this->ui->statusBar->showMessage(QString("[%1] {%2} : %3")
+                                     .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
+                                     .arg(getMessageTypeName(msgType))
+                                     .arg(msg));
 
 }
 
@@ -547,7 +541,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
  */
 void MainWindow::on_actionCreate_point_triggered(){
     this->createFeatureDialog.setFeatureType(ePointFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -555,7 +549,7 @@ void MainWindow::on_actionCreate_point_triggered(){
  */
 void MainWindow::on_actionCreate_line_triggered(){
     this->createFeatureDialog.setFeatureType(eLineFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -563,7 +557,7 @@ void MainWindow::on_actionCreate_line_triggered(){
  */
 void MainWindow::on_actionCreate_plane_triggered(){
     this->createFeatureDialog.setFeatureType(ePlaneFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -571,7 +565,7 @@ void MainWindow::on_actionCreate_plane_triggered(){
  */
 void MainWindow::on_actionCreate_sphere_triggered(){
     this->createFeatureDialog.setFeatureType(eSphereFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -579,7 +573,7 @@ void MainWindow::on_actionCreate_sphere_triggered(){
  */
 void MainWindow::on_actionCreate_station_triggered(){
     this->createFeatureDialog.setFeatureType(eStationFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -587,7 +581,7 @@ void MainWindow::on_actionCreate_station_triggered(){
  */
 void MainWindow::on_actionCreate_coordinatesystem_triggered(){
     this->createFeatureDialog.setFeatureType(eCoordinateSystemFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -595,7 +589,7 @@ void MainWindow::on_actionCreate_coordinatesystem_triggered(){
  */
 void MainWindow::on_actionCreate_scalar_entity_triggered(){
     this->createFeatureDialog.setFeatureType(eScalarEntityAngleFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -603,7 +597,7 @@ void MainWindow::on_actionCreate_scalar_entity_triggered(){
  */
 void MainWindow::on_actionCreate_trafoParam_triggered(){
     this->createFeatureDialog.setFeatureType(eTrafoParamFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -611,7 +605,7 @@ void MainWindow::on_actionCreate_trafoParam_triggered(){
  */
 void MainWindow::on_actionCreate_cylinder_triggered(){
     this->createFeatureDialog.setFeatureType(eCylinderFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
@@ -619,7 +613,7 @@ void MainWindow::on_actionCreate_cylinder_triggered(){
  */
 /*void MainWindow::on_actionCreate_pointcloud_triggered(){
     this->createFeatureDialog.setFeatureType(ePointCloudFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }*/
 
 /*!
@@ -627,21 +621,21 @@ void MainWindow::on_actionCreate_cylinder_triggered(){
  */
 void MainWindow::on_actionCreate_circle_triggered(){
     this->createFeatureDialog.setFeatureType(eCircleFeature);
-    this->createFeatureDialog.show();
+    showCentered(this->createFeatureDialog);
 }
 
 /*!
  * \brief MainWindow::on_actionLoad_plugins_triggered
  */
 void MainWindow::on_actionLoad_plugins_triggered(){
-    this->pluginLoaderDialog.show();
+    showCentered(this->pluginLoaderDialog);
 }
 
 /*!
  * \brief MainWindow::on_actionPlugin_manager_triggered
  */
 void MainWindow::on_actionPlugin_manager_triggered(){
-    this->pluginManagerDialog.show();
+    showCentered(this->pluginManagerDialog);
 }
 
 /*!
@@ -968,7 +962,7 @@ void MainWindow::on_actionSet_function_triggered(){
     }
 
     if(!sourceModel->getActiveFeature().isNull()){
-        this->featureFunctionsDialog.show();
+        showCentered(this->featureFunctionsDialog);
     }
 
 }
@@ -977,7 +971,7 @@ void MainWindow::on_actionSet_function_triggered(){
  * \brief MainWindow::on_actionSet_sensor_triggered
  */
 void MainWindow::on_actionSet_sensor_triggered(){
-    this->sensorConfigurationDialog.show();
+    showCentered(this->sensorConfigurationDialog);
 }
 
 /*!
@@ -1015,7 +1009,7 @@ void MainWindow::setSensorConfiguration(const SensorConfiguration &sConfig){
  * \brief MainWindow::showMoveSensorDialog
  */
 void MainWindow::showMoveSensorDialog(){
-    this->moveSensorDialog.show();
+    showCentered(this->moveSensorDialog);
 }
 
 /*!
@@ -1046,7 +1040,7 @@ void MainWindow::on_actionStationProperties_triggered(){
         this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
         this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
 
-        this->stationPropertiesDialog.show();
+        showCentered(this->stationPropertiesDialog);
 
     }
 
@@ -1110,6 +1104,7 @@ void MainWindow::on_comboBox_groups_currentIndexChanged(const QString &arg1){
         sourceModel->setActiveGroupName(arg1);
     }
 
+    updateCompleter();
 }
 
 /*!
@@ -1163,13 +1158,14 @@ void MainWindow::on_comboBox_actualNominal_currentIndexChanged(const QString &ar
     //update actual nominal filter
     sourceModel->setActualNominalFilter(getActualNominalFilterEnum(arg1));
 
+    updateCompleter();
 }
 
 /*!
  * \brief MainWindow::on_actionWatch_window_triggered
  */
 void MainWindow::on_actionWatch_window_triggered(){
-    this->watchWindowDialog.show();
+    openWatchWindow(WatchWindowBehavior::eShowAlwaysActiveFeature);
 }
 
 /*!
@@ -1180,12 +1176,25 @@ void MainWindow::on_actionOpen_triggered(){
     saveProjectIfDigestChanged();
 
     QString filename = QFileDialog::getOpenFileName(this, "Choose a file", ProjectConfig::getProjectPath(), "xml (*.xml)");
-    if(filename.isEmpty()){
+
+    this->loadProjectFile(filename);
+}
+
+void MainWindow::loadProjectFile(QString file) {
+    if(file.isEmpty()){
         return;
     }
 
-    QPointer<QIODevice> device = new QFile(filename);
-    QFileInfo info(filename);
+    if(!file.toLower().endsWith(".xml")) {
+        return;
+    }
+
+    QFileInfo info(file);
+    if(!info.exists()) {
+        return;
+    }
+
+    QPointer<QFileDevice> device = new QFile(file);
     QString projectName = info.fileName();
 
     ProjectConfig::setProjectPath(info.absolutePath());
@@ -1195,7 +1204,6 @@ void MainWindow::on_actionOpen_triggered(){
     this->ui->tableView_trafoParams->clearSelection();
 
     emit this->loadProject(projectName, device);
-
 }
 
 /*!
@@ -1222,7 +1230,7 @@ void MainWindow::on_actionClose_triggered(){
 int MainWindow::saveProjectIfDigestChanged()
 {
     // direct call (no "emit" use), therefore is no need to handle the event in the controller
-    if(!this->control.hasProjectDigestChanged()) {
+    if(this->control.hasProjectDigestChanged()) {
 
         QMessageBox msgBox;
         msgBox.setWindowTitle("close project");
@@ -1246,6 +1254,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
    if(saveProjectIfDigestChanged() == QMessageBox::Cancel) {
        event->ignore();
    } else {
+       QApplication::closeAllWindows(); // close all windows on exit e.g. watch window
        event->accept();
    }
 }
@@ -1266,7 +1275,7 @@ void MainWindow::on_actionMeasurement_Configuration_triggered(){
         this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
     }
 
-    this->measurementConfigDialog.show();
+    showCentered(this->measurementConfigDialog);
 
 }
 
@@ -1321,7 +1330,7 @@ void MainWindow::on_actionActivate_station_triggered(){
  * \brief MainWindow::on_actionView_settings_triggered
  */
 void MainWindow::on_actionView_settings_triggered(){
-    this->settingsDialog.show();
+    showCentered(this->settingsDialog);
 }
 
 /*!
@@ -1434,7 +1443,7 @@ void MainWindow::removeObservationOfActiveFeature(){
  * \brief MainWindow::on_actionAbout_OpenIndy_triggered
  */
 void MainWindow::on_actionAbout_OpenIndy_triggered(){
-    this->aboutDialog.show();
+    showCentered(this->aboutDialog);
 }
 
 /*!
@@ -1552,7 +1561,7 @@ void MainWindow::showFeatureProperties(bool checked){
 
     //display properties dialog for actuals
     if(!feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
-        this->actualPropertiesDialog.show();
+        showCentered(this->actualPropertiesDialog);
         return;
     }
 
@@ -1567,7 +1576,7 @@ void MainWindow::showFeatureProperties(bool checked){
         QMap<GeometryParameters, QString> parameters = feature->getGeometry()->getUnknownParameters(displayUnits, displayDigits);
         this->nominalPropertiesDialog.setUnknownNominalParameters(parameters);
 
-        this->nominalPropertiesDialog.show();
+        showCentered(this->nominalPropertiesDialog);
 
         return;
 
@@ -1587,7 +1596,7 @@ void MainWindow::showFeatureProperties(bool checked){
         QMap<TrafoParamParameters, QString> parameters = feature->getTrafoParam()->getUnknownParameters(displayUnits, displayDigits);
         this->trafoParamPropertiesDialog.setUnknownTrafoParamParameters(parameters);
 
-        this->trafoParamPropertiesDialog.show();
+        showCentered(this->trafoParamPropertiesDialog);
 
         return;
 
@@ -1600,7 +1609,7 @@ void MainWindow::showFeatureProperties(bool checked){
         this->stationPropertiesDialog.setIsActiveStation(feature->getStation()->getIsActiveStation());
         this->stationPropertiesDialog.setSensorConfiguration(feature->getStation()->getSensorConfiguration());
 
-        this->stationPropertiesDialog.show();
+        showCentered(this->stationPropertiesDialog);
 
     }
 
@@ -2209,6 +2218,10 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::featureCreated, this, &MainWindow::featureCreated, Qt::AutoConnection);
 
     QObject::connect(&this->control, &Controller::requestMessageBoxTrafoParam, this, &MainWindow::createMessageBoxTrafoParamWarning, Qt::AutoConnection);
+
+    QObject::connect(&this->control, &Controller::featureSetChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);   // create / remove feature
+    QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);  // update
+    QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::updateCompleter, Qt::AutoConnection);   // load job
 }
 
 /*!
@@ -2221,7 +2234,7 @@ void MainWindow::connectDialogs(){
     QObject::connect(this, &MainWindow::featureCreated, &this->createFeatureDialog, &CreateFeatureDialog::featureCreated, Qt::AutoConnection);
 
     //connect console
-    QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
+    QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::QueuedConnection);
 
     //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
@@ -2265,9 +2278,6 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
 
-    //connect watch window dialog
-    QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
-    QObject::connect(&this->watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
 }
 
 /*!
@@ -2661,12 +2671,21 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
 
     //add new self defined actions
     foreach(const QString &action, selfDefinedActions){
+        QRegExp rx("([\\w]+)([\\w\(\\)\\+]*)"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
+        rx.setPatternSyntax(QRegExp::RegExp);
+        rx.indexIn(action);
+
+        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(2).replace("(", "").replace(")",""));
+        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(2).isEmpty() ? "" : QString(" %1").arg(rx.cap(2)));
+        QString actionCommand = rx.cap(1);
+
         QPointer<QAction> customAction = new QAction(0);
-        customAction->setText(action);
+        customAction->setShortcut(actionShortCut);
+        customAction->setText(actionLabel);
         this->selfDefinedActions.append(customAction);
         this->ui->toolBar_controlPad->addAction(customAction.data());
         QObject::connect(customAction.data(), SIGNAL(triggered()), this->customActionMapper.data(), SLOT(map()), Qt::AutoConnection);
-        this->customActionMapper->setMapping(customAction.data(), action);
+        this->customActionMapper->setMapping(customAction.data(), actionCommand);
     }
     QObject::connect(this->customActionMapper.data(), SIGNAL(mapped(const QString&)), &this->control, SLOT(startCustomAction(const QString&)), Qt::AutoConnection);
 
@@ -3009,4 +3028,188 @@ void MainWindow::enableOrDisableObservationsOfActiveFeature(bool enable) {
             emit this->disableObservations(feature->getFeature()->getId());
         }
     }
+}
+
+/**
+ * show dialog centered on the current screen / monitor
+ *
+ * @brief MainWindow::showCentered
+ * @param dialog
+ */
+void MainWindow::showCentered(QDialog &dialog) {
+    dialog.show();
+    dialog.activateWindow();
+    QScreen *screen = this->windowHandle()->screen();
+    dialog.move( screen->geometry().center() - dialog.rect().center() );
+    dialog.windowHandle()->setScreen(screen);
+}
+
+void MainWindow::on_actionNew_watch_window_triggered()
+{
+    openWatchWindow(WatchWindowBehavior::eShowCurrentSelectedFeature);
+}
+
+void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull()) {
+
+        QList<QPointer<FeatureWrapper> > features;
+        QVariant watchWindowKey;
+        QString windowTitleSuffix;
+
+        switch(behavior) {
+        case eShowCurrentSelectedFeature: // open new watch window for current selected feature
+        {
+            QPointer<FeatureWrapper> feature = job->getActiveFeature();
+            if(feature.isNull()) {
+                return;
+            }
+            features.append(feature);
+
+            watchWindowKey = QString("%1%2")
+                                .arg(feature->getFeature()->getFeatureName())
+                                .arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal());
+            windowTitleSuffix =  QString("[%1%2]")
+                                    .arg(feature->getFeature()->getFeatureName())
+                                    .arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+            break;
+        }
+        case eShowNearestNominal:   // find nearest nominal feature
+        {
+            QSortFilterProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+            if(model == NULL){
+                return;
+            }
+            FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+            if(sourceModel == NULL){
+                return;
+            }
+            QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
+            foreach(const QModelIndex &index, selection){
+                int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
+                QPointer<FeatureWrapper> feature = job->getFeatureById(id);
+                if(!feature.isNull()) {
+                    features.append(feature);
+                }
+            }
+
+            watchWindowKey = QVariant(-2); // key for nearest nominal or actual feature
+            windowTitleSuffix = " [nearest]";
+            if(watchWindowDialogs.contains(watchWindowKey)){ // remove watchwindow because of new selection
+                delete watchWindowDialogs[watchWindowKey].data();
+                watchWindowDialogs.remove(watchWindowKey);
+            }
+            break;
+        }
+        case eShowAlwaysActiveFeature: // show always the active feature
+        {
+            watchWindowKey = QVariant(-1); // key for active feature
+            windowTitleSuffix = " [active]";
+            break;
+        }
+        } // switch
+
+        if(!watchWindowDialogs.contains(watchWindowKey)) {
+            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, features);
+            watchWindowDialog->setWindowTitle(watchWindowDialog->windowTitle() + windowTitleSuffix);
+            watchWindowDialogs[watchWindowKey] = watchWindowDialog;
+
+            //connect watch window dialog
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+        }
+
+        qDebug() << "openWatchWindow"
+                    << ", key=" << watchWindowKey
+                    << ", behavior=" << behavior;
+
+        watchWindowDialogs[watchWindowKey]->show();
+        watchWindowDialogs[watchWindowKey]->activateWindow();
+    }
+
+}
+
+void MainWindow::on_actionWatch_window_nearest_nominal_triggered()
+{
+    openWatchWindow(WatchWindowBehavior::eShowNearestNominal);
+}
+
+void MainWindow::updateCompleter() {
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull()) {
+        FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+        if(model == NULL){
+            return;
+        }
+
+        int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        QStringList featureNames;
+        for(int row=0; row < model->rowCount(); row++) {
+            QString name = model->data(model->index(row,column), Qt::DisplayRole).toString();
+            if(!featureNames.contains(name)) {
+                featureNames.append(name);
+            }
+        }
+        QCompleter *completer = new QCompleter(featureNames, this);
+        completer->setFilterMode(Qt::MatchContains);
+        completer->setCaseSensitivity(Qt::CaseInsensitive);
+        this->ui->lineEdit_searchFeatureName->setCompleter(completer);
+    }
+}
+
+void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
+{
+    QPointer<OiJob> job = ModelManager::getCurrentJob();
+    if(!job.isNull()) {
+        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
+
+        this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size()>1);
+
+        showFoundFeatureIndex = 0;
+        if(!foundFeatures.isEmpty()) {
+            showFoundFeature(showFoundFeatureIndex);
+        }
+    }
+}
+
+void MainWindow::showFoundFeature(int index) {
+    if(!foundFeatures.isEmpty() && foundFeatures.size() > index) {
+        QPointer<FeatureWrapper> feature = foundFeatures.at(index);
+
+        if(!feature.isNull()) {
+
+            FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+            if(model == NULL){
+                return;
+            }
+
+            // get and check source model
+            FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
+            if(sourceModel == NULL){
+                return;
+            }
+
+            int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+            for(int row=0; row < model->rowCount(); row++) {
+                QModelIndex index = model->index(row,column);
+                QString name = model->data(index, Qt::DisplayRole).toString();
+                if(name == feature->getFeature()->getFeatureName()) {
+                    this->ui->tableView_features->scrollTo(index);
+                }
+            }
+
+            sourceModel->setActiveFeature(feature->getFeature()->getId());
+
+        }
+    }
+
+}
+
+void MainWindow::on_pushButton_showNextFoundFeature_clicked()
+{
+    showFoundFeatureIndex++;
+    if(foundFeatures.isEmpty() || showFoundFeatureIndex > (foundFeatures.size() -1)) {
+        showFoundFeatureIndex = 0; // wrap around
+    }
+    showFoundFeature(showFoundFeatureIndex);
 }

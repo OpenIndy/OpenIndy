@@ -1,5 +1,9 @@
 #include "featuredifferencetablemodel.h"
 
+inline double rnd(double value, int digits) {
+    return ((floor(((value)*pow(10,digits))+.5))/pow(10,digits));
+}
+
 /*!
  * \brief FeatureDifferenceTableModel::FeatureDifferenceTableModel
  * \param job
@@ -73,32 +77,36 @@ QVariant FeatureDifferenceTableModel::data(const QModelIndex &index, int role) c
         return QVariant();
     }
 
-    double value = 0.0;
     if(role == Qt::DisplayRole){
 
         if(index.column() == 0){
             return feature->getFeature()->getFeatureName();
         }else{
-            QMap<bool, double> result = this->getDifference(feature, index);
+            QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
 
-            if(result.keys().at(0)){
-                value = result.value(true);
-                value = convertFromDefault(value, this->parameterDisplayConfig.getDisplayUnit(eMetric));
-                return QString::number(value, 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            if(result.first){
+                return QString::number(result.second, 'f', this->parameterDisplayConfig.getDisplayDigits(eMetric));
             }else{
                 return "-/-";
             }
         }
     }else if(role == Qt::TextColorRole){
 
-        QMap<bool, double> result = this->getDifference(feature, index);
-        value = result.value(true);
-        value = convertFromDefault(value, this->parameterDisplayConfig.getDisplayUnit(eMetric));
-        if(result.keys().at(0)){
-            if(abs(value) > abs(this->tolerance)){
+        QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
+
+        if(result.first){
+            if(abs(result.second) > abs(this->tolerance)){
                 return QColor(Qt::red);
             }else{
                 return QVariant();
+            }
+        }
+    }else if(role == Qt::TextAlignmentRole){
+        if(index.column() > 0) { // 0 == name column
+            QPair<bool, double> result = this->getDifferenceAsDisplayUnit(feature, index);
+
+            if(result.first){
+                return Qt::AlignRight | Qt::AlignVCenter;
             }
         }
     }
@@ -250,49 +258,32 @@ void FeatureDifferenceTableModel::disconnectJob()
 }
 
 /*!
- * \brief FeatureDifferenceTableModel::getDifference
+ * \brief FeatureDifferenceTableModel::getDifferenceAsDisplayUnit
  * \param feature
- * calculate the difference between actual and nominal, if there is no actual, or no nominal return -/-
+ * calculate the difference between rounded actual and nominal
  * \return
  */
-QMap<bool, double> FeatureDifferenceTableModel::getDifference(QPointer<FeatureWrapper> feature, const QModelIndex index) const
+QPair<bool, double> FeatureDifferenceTableModel::getDifferenceAsDisplayUnit(QPointer<FeatureWrapper> feature, const QModelIndex index) const
 {
-    double value = 0.0;
-    QMap<bool, double> result;
-
     if(feature.isNull() || feature->getGeometry().isNull()){
-        result.insert(false, value);
-        return result;
+        return qMakePair(false, 0.0);
     }
 
     if(!feature->getGeometry()->getIsNominal() && !feature->getGeometry()->getNominals().isEmpty() && feature->getGeometry()->hasPosition()){
 
         foreach (QPointer<Geometry> geom, feature->getGeometry()->getNominals()) {
-            if(geom->getIsSolved() && feature->getGeometry()->getIsSolved()){
-
-                switch (index.column()) {
-                case 1: //x
-                    value = feature->getGeometry()->getPosition().getVector().getAt(0) - geom->getPosition().getVector().getAt(0);
-                    result.insert(true, value);
-                    return result;
-                case 2: //y
-                    value = feature->getGeometry()->getPosition().getVector().getAt(1) - geom->getPosition().getVector().getAt(1);
-                    result.insert(true, value);
-                    return result;
-                case 3: //z
-                    value = feature->getGeometry()->getPosition().getVector().getAt(2) - geom->getPosition().getVector().getAt(2);
-                    result.insert(true, value);
-                    return result;
-                default:
-                    break;
+            if(geom->getIsSolved() && feature->getGeometry()->getIsSolved()){ // accept first solved nominal!
+                if(index.column()>=1 && index.column() <=3) { // x, y, z
+                    return qMakePair(true,
+                                     rnd(convertFromDefault(feature->getGeometry()->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
+                                     - rnd(convertFromDefault(geom->getPosition().getVector().getAt(index.column()-1), this->parameterDisplayConfig.getDisplayUnit(eMetric)), this->parameterDisplayConfig.getDisplayDigits(eMetric))
+                                     );
                 }
             }else{
-                result.insert(false, value);
-                return result;
+                return qMakePair(false, 0.0);
             }
         }
     }
 
-    result.insert(false, value);
-    return result;
+    return qMakePair(false, 0.0);
 }

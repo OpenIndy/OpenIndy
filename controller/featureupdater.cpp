@@ -218,9 +218,10 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
         if(station.isNull() || station->getStation().isNull() || station->getStation()->getCoordinateSystem().isNull()){
             continue;
         }
-
+        qDebug() << "FeatureUpdater::recalcBundle station:" <<  station->getStation()->getFeatureName();
         //switch to station system
-        this->switchCoordinateSystemWithoutTransformation(station->getStation()->getCoordinateSystem());
+        this->transformAllObsToDestSystem(station->getStation()->getCoordinateSystem());
+        this->recalcFeatureSetWithoutTransformation();
 
         //add station geometries
         inputStation.geometries.clear();
@@ -233,6 +234,7 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
                 inputGeometry.parameters[eUnknownY] = geom->getPosition().getVector().getAt(1);
                 inputGeometry.parameters[eUnknownZ] = geom->getPosition().getVector().getAt(2);
                 inputStation.geometries.append(inputGeometry);
+                qDebug() << "FeatureUpdater::recalcBundle inputGeometry:" <<  geom->getId();
             }
         }
         inputStations.append(inputStation);
@@ -252,6 +254,15 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
 
     if(!hasCommonPoints){
         return false;
+    }
+
+    if(QLoggingCategory::defaultCategory()->isDebugEnabled()) {
+        foreach(BundleStation bs,  inputStations) {
+             qDebug() << "BundleStation.id=" << bs.id;
+             foreach(BundleGeometry bg, bs.geometries) {
+                 qDebug() << "\tgeometries.id=" << bg.id;
+             }
+        }
     }
 
     //set up base station and job
@@ -399,7 +410,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach(const InputElement &element, startElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -409,7 +420,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach(const InputElement &element, destElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -588,7 +599,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach(const InputElement &element, startElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -598,7 +609,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach(const InputElement &element, destElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -827,7 +838,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach(const InputElement &element, startElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -837,7 +848,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach(const InputElement &element, destElements){
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -934,7 +945,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
         foreach (const InputElement &element, startElements) {
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -945,7 +956,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
         QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
         foreach (const InputElement &element, destElements) {
             if(!element.geometry.isNull()){
-                delete element.geometry;
+                delete element.geometry.data();
             }
         }
     }
@@ -1178,6 +1189,43 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     this->switchCoordinateSystem();
 }
 
+void FeatureUpdater::transformAllObsToDestSystem(const QPointer<CoordinateSystem> &destinationSystem) {
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check destination system
+    if(destinationSystem.isNull()){
+        return;
+    }
+
+    //run through all station systems
+    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+
+        //check station system
+        if(station.isNull() || station->getCoordinateSystem().isNull()){
+            continue;
+        }
+
+
+        const bool isSolved = (station->getCoordinateSystem() == destinationSystem);
+        //run through all observations of the station system
+        foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
+
+            //set observation to solved only if it has been measured in the active coordinate system
+            if(!obs.isNull()){
+                obs->setXYZ(obs->getOriginalXYZ());
+                obs->setIJK(obs->getOriginalIJK());
+                obs->setIsSolved(isSolved);
+            }
+
+        }
+
+    }
+}
+
 /*!
  * \brief FeatureUpdater::switchCoordinateSystemWithoutTransformation
  * \param destinationSystem
@@ -1198,29 +1246,8 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
     //transform all observations to destination system
     //################################################
 
-    //run through all station systems
-    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+    this->transformAllObsToDestSystem(destinationSystem);
 
-        //check station system
-        if(station.isNull() || station->getCoordinateSystem().isNull()){
-            continue;
-        }
-
-        //run through all observations of the station system
-        foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
-
-            bool isSolved = (station->getCoordinateSystem() == destinationSystem);
-
-            //set observation to solved only if it has been measured in the active coordinate system
-            if(!obs.isNull()){
-                obs->setXYZ(obs->getOriginalXYZ());
-                obs->setIJK(obs->getOriginalIJK());
-                obs->setIsSolved(isSolved);
-            }
-
-        }
-
-    }
 
     //###################
     //recalc all features
@@ -1266,10 +1293,12 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         return;
     }
 
-    //set all features to not have been updated
+    //set all features to not have been updated before recalcFeatureWithoutTransformation()
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
+            feature->getFeature()->blockSignals(false);
         }
     }
 
@@ -1344,7 +1373,7 @@ void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &d
     //################################################
     //transform all observations to destination system
     //################################################
-
+    qDebug() << "transformObsAndNominals: destinationSystem=" << destinationSystem->getFeatureName();
     //run through all station systems
     foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
 
@@ -1563,11 +1592,10 @@ void FeatureUpdater::copyGeometry(InputElement &newElement, const QPointer<Featu
 void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem){
 
     //get and delete nominals in bundle system
-    QList< QPointer<FeatureWrapper> > nominals = bundleSystem->getNominals();
-    foreach(const QPointer<FeatureWrapper> nominal, nominals){
+    foreach(const QPointer<FeatureWrapper> nominal, bundleSystem->getNominals()){
         if(!nominal.isNull() && !nominal->getGeometry().isNull()){
-            delete nominal->getGeometry();
-            delete nominal;
+            delete nominal->getGeometry().data();
+            delete nominal.data();
         }
     }
 
@@ -1575,7 +1603,7 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
     QList< QPointer<TrafoParam> > transformations = bundleSystem->getTransformationParameters();
     foreach(const QPointer<TrafoParam> &trafo, transformations){
         if(!trafo.isNull() && trafo->getIsBundle()){
-
+            qDebug() << "FeatureUpdater::clearBundleResults transformation " << trafo->getId();
             //check if trafo is between a "bundle-station" and "bundle" or "bundle" and "PART" system
             if(trafo->getStartSystem() == bundleSystem){
 
@@ -1583,7 +1611,7 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
                 if(!trafo->getDestinationSystem()->getStation().isNull()){
                     foreach (BundleStation bStation, bundleSystem->getBundlePlugin()->getInputStations()) {
                         if(bStation.id == trafo->getDestinationSystem()->getStation()->getId()){
-                            delete trafo;
+                            delete trafo.data();
                             break;
                         }
                     }
@@ -1594,7 +1622,7 @@ void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundle
                     //if second coordinate system is a bundlestation => delete trafoParam
                     foreach (BundleStation bStation, bundleSystem->getBundlePlugin()->getInputStations()) {
                         if(bStation.id == trafo->getStartSystem()->getStation()->getId()){
-                            delete trafo;
+                            delete trafo.data();
                             break;
                         }
                     }
@@ -1686,13 +1714,16 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
     fAttr.startSystem = bundleSystem->getFeatureName();
     QList<QPointer<FeatureWrapper> > features;
     foreach(const BundleTransformation &transformation, transformations){
+        qDebug() << "transformation.id=" << transformation.id;
 
         //get station
         QPointer<FeatureWrapper> feature = this->currentJob->getFeatureById(transformation.id);
         if(feature.isNull() || feature->getStation().isNull()){
             continue;
         }
-        QString name = feature->getStation()->getFeatureName();
+        QString stationName = feature->getStation()->getFeatureName();
+
+        qDebug() << "feature->getStation()->getFeatureName() " << stationName;
 
         //set up name
         fAttr.name = bundleSystem->getFeatureName();
@@ -1703,7 +1734,7 @@ void FeatureUpdater::createBundleTransformations(QList<BundleTransformation> &tr
         }
 
         //create trafo param feature
-        fAttr.destinationSystem = name;
+        fAttr.destinationSystem = stationName;
         features.append(this->currentJob->addFeatures(fAttr));
 
     }

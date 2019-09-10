@@ -84,6 +84,7 @@ private:
 
     //change the active coordinate system (does not transform observations)
     void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
+    void transformAllObsToDestSystem(const QPointer<CoordinateSystem> &destinationSystem);
     void recalcFeatureSetWithoutTransformation();
     void recalcFeatureWithoutTransformation(const QPointer<Feature> &feature);
     //change with transformation for bundle

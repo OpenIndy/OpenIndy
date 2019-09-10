@@ -1,6 +1,7 @@
 #ifndef WATCHWINDOW_H
 #define WATCHWINDOW_H
 
+#include <atomic>
 #include <QDialog>
 #include <QKeyEvent>
 #include <QMap>
@@ -12,6 +13,7 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QDesktopWidget>
+#include <functional>
 
 #include "types.h"
 #include "util.h"
@@ -21,19 +23,21 @@
 #include "trafocontroller.h"
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
-
-enum DisplayActualNominal{
-    eActualNominal = 0,
-    eNominalActual
-};
+#include "feature.h"
 
 enum DisplayAttributes{
     eName = 0,
-    eX = 1,
-    eY = 2,
-    eZ =3,
-    eD3D = 4,
-    eNotDeclared = 666
+    eX,
+    eY,
+    eZ,
+    eD3D,
+    eNotDeclared // should be the last element!
+};
+
+enum WatchWindowBehavior{
+    eShowAlwaysActiveFeature = 0, // show always the active feature
+    eShowCurrentSelectedFeature,  // open new watch window for current selected feature
+    eShowNearestNominal
 };
 
 using namespace oi;
@@ -43,7 +47,7 @@ using namespace oi;
  */
 class WatchWindowSettings{
 public:
-    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal){}
+    WatchWindowSettings() : digits(2), readingType(eCartesianReading), showLastMeasurement(true){}
 
     //decimal digits for watch window values
     int digits;
@@ -51,12 +55,10 @@ public:
     //reading type for the watch window values
     ReadingTypes readingType;
 
-    //reference (0 = actual-nominal, 1 = nominal-actual)
-    DisplayActualNominal reference;
-
     //display values and tolerance
     QMap<DisplayAttributes, double> displayValues;
 
+    bool showLastMeasurement;
 };
 
 
@@ -74,15 +76,8 @@ class WatchWindowDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit WatchWindowDialog(QWidget *parent = 0);
+    explicit WatchWindowDialog(WatchWindowBehavior behavior, QPointer<OiJob> job, QList<QPointer<FeatureWrapper> > features, QWidget *parent = 0);
     ~WatchWindowDialog();
-
-    //###########################
-    //get or set the feature type
-    //###########################
-
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
 
 signals:
 
@@ -107,8 +102,6 @@ private slots:
 
     //update settings
     void on_spinBox_decimalDigits_valueChanged(int arg1);
-    void on_radioButton_actnom_clicked();
-    void on_radioButton_nomact_clicked();
     void on_checkBox_x_clicked();
     void on_checkBox_y_clicked();
     void on_checkBox_z_clicked();
@@ -126,6 +119,11 @@ private slots:
 
     //switch tab and update geometries
     void on_toolBox_currentChanged(int index);
+
+    //hides x, y ,z, d3D if no current reading available
+    void clearWatchWindow();
+
+    void on_checkBox_showLastMeasurement_clicked();
 
 private:
 
@@ -159,9 +157,9 @@ private:
     //#############################
     //current job and active sensor
     //#############################
-
+    WatchWindowBehavior behavior;
     QPointer<OiJob> currentJob;
-
+    QList<QPointer<FeatureWrapper> > features;
     //save active station here, to be able to disconnect it
     QPointer<Station> activeStation;
 
@@ -172,6 +170,7 @@ private:
     //watch window values
     QVBoxLayout* masterLayout;
     QMap<DisplayAttributes, QLabel*> streamData;
+    QMap<DisplayAttributes, int> masterLayoutIndex;
 
     //################
     //display settings
@@ -193,10 +192,17 @@ private:
     int oldWindowHeight;
     int oldWindowWidth;
 
-    //enums and functions for watchwindow settings
-    DisplayAttributes getAttributeValue(QString attributeName);
-    QString getAttributeName(DisplayAttributes attr);
-    DisplayAttributes getAttributesByInteger(int i);
+    //set to "true" if watch window was currently updateded
+    std::atomic<bool> watchWindowUpdated;
+
+    void addLabel(DisplayAttributes att,  QFont f);
+    void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
+    QString getNameLabel(QPointer<FeatureWrapper> feature);
+
+    QPointer<FeatureWrapper> getFeature(OiVec trackerXYZ);
+    Position getPosition(QPointer<FeatureWrapper> feature);
+    void setVisibility();
+
 };
 
 #endif // WATCHWINDOW_H

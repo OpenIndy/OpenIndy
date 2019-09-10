@@ -377,10 +377,6 @@ void FeatureFunctionsDialog::on_cmd_ok_clicked(){
  */
 void FeatureFunctionsDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     //set initial visibility of widgets to false
     this->ui->widget_element->setVisible(false);
     this->ui->widget_customParameter->setVisible(false);

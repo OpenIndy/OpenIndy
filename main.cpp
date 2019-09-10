@@ -2,6 +2,9 @@
 #include <QDebug>
 #include <QList>
 #include <QSplashScreen>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
+#include <iostream>
 
 #include "mainwindow.h"
 #include "controller.h"
@@ -12,14 +15,7 @@
 #include "oivec.h"
 
 #include <ctime>
-#include <string.h>
-
-inline void mySleep(clock_t sec) // clock_t is a like typedef unsigned int clock_t. Use clock_t instead of integer in this context
-{
-  clock_t start_time = clock();
-  clock_t end_time = sec * 1000 + start_time;
-  while(clock() < end_time);
-}
+#include <simplepluginloader.h>
 
 const QString _date = __DATE__;
 const QString _time = __TIME__;
@@ -50,16 +46,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    bool isSilent=false;
-
-    if (argc>=2)
-    {
-       int i=2;
-
-       while (i<argc && strncmp(argv[i],"-s",2)) i++;
-       if (i!=argc) isSilent = true;
-    }
-
     #if QT_VERSION < QT_VERSION_CHECK(5, 9, 0)
         qt_qhash_seed.store(0); // ensures that xml is written the same way
     #else
@@ -74,32 +60,53 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(AppVersion);
     a.setApplicationDisplayName(AppName);
 
+    QCommandLineParser parser;
+    QCommandLineOption silentOption("s", "silent / no splash screen");
+    parser.addOption(silentOption);
+    QCommandLineOption importPluginOption("i", "import plugin from direcotry <dir>", "dir");
+    parser.addOption(importPluginOption);
+    QCommandLineOption versionOption("v", "print version info");
+    parser.addOption(versionOption);
+    parser.process(a);
 
-    QSplashScreen *splash;
-    if (!isSilent)
+    if(parser.isSet(importPluginOption)) {
+        SimplePluginLoader loader(parser.value(importPluginOption));
+        return loader.importPlugin();
+    }
+
+    if(parser.isSet(versionOption)) {
+        // always first line
+        std::cout << OPENINDY_VERSION << std::endl;
+        return 0;
+    }
+
+    QPointer<QSplashScreen> splash;
+    if (!parser.isSet(silentOption))
     {
-      QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");  // splash.png has to be placed next to the *.exe
-      QString tmp;
+      QPixmap pixmap(":/Images/icons/OpenIndy_splash.png");
 
       splash = new QSplashScreen(pixmap);
 
       splash->show();
-      tmp = AppUrl + "\n"
-              + AppAuthorMail + "\n"
-              + AppAuthor;
+      QString msg = argc == 2
+            ? QString("loading: %1").arg(argv[1])
+            : QString("%1\n%2\n%3").arg(AppUrl).arg(AppAuthorMail).arg(AppAuthor);
 
-      splash->showMessage(tmp,Qt::AlignBottom | Qt::AlignHCenter,Qt::white);
-
-      mySleep(1.0); // nur so, damit der SplashScreen etwas länger angezeigt wird
+      splash->showMessage(msg,Qt::AlignBottom | Qt::AlignHCenter,Qt::white);
     }
+
     MainWindow w;
+
+    if(argc == 2) {
+        w.loadProjectFile(argv[1]);
+    }
 
     w.showMaximized();
 
-    if (!isSilent)
+    if (!splash.isNull())
     {
       splash->finish(&w);
-      delete splash;
+      delete splash.data();
     }
 
     return a.exec();

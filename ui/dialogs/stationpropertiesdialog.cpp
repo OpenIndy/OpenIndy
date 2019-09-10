@@ -172,10 +172,6 @@ void StationPropertiesDialog::updateSensorParameters(const SensorConfiguration &
  */
 void StationPropertiesDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     //update sensor config information
     this->initGUI();
 
