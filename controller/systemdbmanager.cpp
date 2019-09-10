@@ -4,6 +4,8 @@
 QSqlDatabase SystemDbManager::db;
 bool SystemDbManager::isInit = false;
 
+QThreadStorage<QMap<QString, sdb::Plugin> > SystemDbManager::caches;
+
 /*!
  * \brief SystemDbManager::addPlugin
  * Saves an OpenIndy plugin in the system database
@@ -226,11 +228,29 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
 
 /*!
  * \brief SystemDbManager::getPlugin
- * Get the plugin with the specified name
+ * Get the plugin with the specified name from cache or database
  * \param name
  * \return
  */
-sdb::Plugin SystemDbManager::getPlugin(const QString &name){
+sdb::Plugin SystemDbManager::getPlugin(const QString &name) {
+    if(caches.localData().contains(name)) {
+        return caches.localData().value(name);
+    } else {
+        sdb::Plugin plugin = SystemDbManager::getPluginFromDB(name);
+        if(plugin.id > -1) {
+            caches.localData().insert(name, plugin);
+        }
+        return plugin;
+    }
+}
+
+ /*!
+  * \brief SystemDbManager::getPluginFromDB
+  * Get the plugin with the specified name
+  * \param name
+  * \return
+  */
+sdb::Plugin SystemDbManager::getPluginFromDB(const QString &name){
 
     sdb::Plugin plugin;
 
