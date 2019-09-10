@@ -426,6 +426,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(feature->getFeatureTypeEnum()));
                 return true;
             }
+            break;
         }
         case eFeatureDisplayFunctions:{
 
@@ -524,6 +525,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 }
                 return false;
             }
+            break;
         }
         case eFeatureDisplayX:
             if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
