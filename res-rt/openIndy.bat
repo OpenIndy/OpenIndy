@@ -1,5 +1,6 @@
 @echo on
 
+rem set `QT_DIR` to your Qt install path
 set QT_DIR=c:\Qt\Qt5.5.1
 
 @rem release
