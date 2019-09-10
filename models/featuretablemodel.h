@@ -1,6 +1,7 @@
 #ifndef FEATURETABLEMODEL_H
 #define FEATURETABLEMODEL_H
 
+#include <atomic>
 #include <QAbstractTableModel>
 #include <QObject>
 #include <QPointer>
@@ -27,7 +28,6 @@ class FeatureTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit FeatureTableModel(const QPointer<OiJob> &job, QObject *parent = 0);
     explicit FeatureTableModel(QObject *parent = 0);
 
     //########################################
@@ -116,7 +116,8 @@ private slots:
     //##############################################################
     //update the model when job state or display config have changed
     //##############################################################
-
+    void requestUpdateModel();
+    void updateModelIfRequested();
     void updateModel();
 
 private:
@@ -157,6 +158,7 @@ private:
 
     ActualNominalFilter actualNominalFilter;
     
+    std::atomic<bool> updateRequested;
 };
 
 #endif // FEATURETABLEMODEL_H

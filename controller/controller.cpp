@@ -9,6 +9,8 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
+    QObject::connect(this, &Controller::logAsyncConsole, this, &Controller::logConsole, Qt::QueuedConnection);
+
     //load config from file
     ProjectConfig::loadProjectSettingsConfigFile();
 
@@ -16,6 +18,11 @@ Controller::Controller(QObject *parent) : QObject(parent){
     ModelManager::init();
     if(!ModelManager::myInstance.isNull()){
         QObject::connect(ModelManager::myInstance.data(), &ModelManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+
+        // "compress" updateModel signals
+        QTimer *timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), &ModelManager::myInstance->getFeatureTableModel(), SLOT(updateModelIfRequested()));
+        timer->start(250);
     }
 
     //initialize display configs
@@ -1576,18 +1583,22 @@ void Controller::log(const QString &msg, const MessageTypes &msgType, const Mess
 
     switch(msgDest){
     case eConsoleMessage:
-        Console::getInstance()->addLine(msg, msgType);
+        emit this->logAsyncConsole(msg, msgType);
         break;
     case eMessageBoxMessage:
-        Console::getInstance()->addLine(msg, msgType);
+        emit this->logAsyncConsole(msg, msgType);
         emit this->showMessageBox(msg, msgType);
         break;
     case eStatusBarMessage:
-        Console::getInstance()->addLine(msg, msgType);
+        emit this->logAsyncConsole(msg, msgType);
         emit this->showStatusMessage(msg, msgType);
         break;
     }
 
+}
+
+void Controller::logConsole(const QString &msg, const MessageTypes &msgType) {
+    Console::getInstance()->addLine(msg, msgType);
 }
 
 /*!
@@ -2131,14 +2142,14 @@ void Controller::connectRequestHandler(){
     QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopWatchWindow, Qt::AutoConnection);
 
     //connect streaming
-    QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::AutoConnection);
-    QObject::connect(this, &Controller::sensorActionFinished, &this->requestHandler, &OiRequestHandler::sensorActionFinished, Qt::AutoConnection);
-    QObject::connect(this, &Controller::showClientMessage, &this->requestHandler, &OiRequestHandler::log, Qt::AutoConnection);
-    QObject::connect(this, &Controller::activeFeatureChanged, &this->requestHandler, &OiRequestHandler::activeFeatureChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::activeStationChanged, &this->requestHandler, &OiRequestHandler::activeStationChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::AutoConnection);
-    QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::AutoConnection);
+    QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::sensorActionFinished, &this->requestHandler, &OiRequestHandler::sensorActionFinished, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::showClientMessage, &this->requestHandler, &OiRequestHandler::log, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::activeFeatureChanged, &this->requestHandler, &OiRequestHandler::activeFeatureChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::activeStationChanged, &this->requestHandler, &OiRequestHandler::activeStationChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::QueuedConnection);
+    QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::QueuedConnection);
 
 }
 

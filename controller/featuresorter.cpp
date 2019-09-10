@@ -133,13 +133,13 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
     QString rightName = right->getFeature()->getFeatureName();
     int leftId = left->getFeature()->getId();
     int rightId = right->getFeature()->getId();
-    bool leftNominal = (!left->getGeometry().isNull()
-                        && left->getGeometry()->getIsNominal()) ? true : false;
-    bool rightNominal = (!right->getGeometry().isNull()
-                        && right->getGeometry()->getIsNominal()) ? true : false;
 
     //compare the properties of left and right feature
     if(leftName.compare(rightName) == 0){ //if feature names are equal
+        bool leftNominal = !left->getGeometry().isNull()
+                            && left->getGeometry()->getIsNominal();
+        bool rightNominal = !right->getGeometry().isNull()
+                            && right->getGeometry()->getIsNominal();
 
         //if one is actual and the other one is nominal
         if(leftNominal != rightNominal){

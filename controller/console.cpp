@@ -56,14 +56,17 @@ void Console::add(const QString &msg, const MessageTypes &msgType, const QString
             .arg(getMessageTypeName(msgType))
             .arg(msg)
             .arg(value);
-    this->log.append(text);
-    this->output.setStringList(this->log);
 
-    //inform about the new line
-    // emit this->lineAdded(); // too expensive
+    if(output.insertRow(output.rowCount())) {
+        QModelIndex index = output.index(output.rowCount() - 1, 0);
+        output.setData(index, text);
+    }
 
     //write the new entry to the log file
     this->writeToLogFile(text);
+
+    //inform about the new line
+    emit this->lineAdded();
 }
 
 /*!
