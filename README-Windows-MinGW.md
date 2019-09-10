@@ -1,3 +1,5 @@
+outdated see README-build.md
+
 # OpenIndy on Windows with MinGW
 
 ## Qt 5.5.1

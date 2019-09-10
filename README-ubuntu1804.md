@@ -1,3 +1,5 @@
+outdated see README-build.md
+
 # OpenIndy on ubuntu
 
 ## ubuntu 18.04 
