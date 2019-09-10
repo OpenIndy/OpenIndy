@@ -220,7 +220,8 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
         }
         qDebug() << "FeatureUpdater::recalcBundle station:" <<  station->getStation()->getFeatureName();
         //switch to station system
-        this->switchCoordinateSystemWithoutTransformation(station->getStation()->getCoordinateSystem());
+        this->transformAllObsToDestSystem(station->getStation()->getCoordinateSystem());
+        this->recalcFeatureSetWithoutTransformation();
 
         //add station geometries
         inputStation.geometries.clear();
@@ -1188,6 +1189,43 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     this->switchCoordinateSystem();
 }
 
+void FeatureUpdater::transformAllObsToDestSystem(const QPointer<CoordinateSystem> &destinationSystem) {
+
+    //check current job
+    if(this->currentJob.isNull()){
+        return;
+    }
+
+    //check destination system
+    if(destinationSystem.isNull()){
+        return;
+    }
+
+    //run through all station systems
+    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+
+        //check station system
+        if(station.isNull() || station->getCoordinateSystem().isNull()){
+            continue;
+        }
+
+
+        const bool isSolved = (station->getCoordinateSystem() == destinationSystem);
+        //run through all observations of the station system
+        foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
+
+            //set observation to solved only if it has been measured in the active coordinate system
+            if(!obs.isNull()){
+                obs->setXYZ(obs->getOriginalXYZ());
+                obs->setIJK(obs->getOriginalIJK());
+                obs->setIsSolved(isSolved);
+            }
+
+        }
+
+    }
+}
+
 /*!
  * \brief FeatureUpdater::switchCoordinateSystemWithoutTransformation
  * \param destinationSystem
@@ -1208,29 +1246,8 @@ void FeatureUpdater::switchCoordinateSystemWithoutTransformation(const QPointer<
     //transform all observations to destination system
     //################################################
 
-    //run through all station systems
-    foreach(const QPointer<Station> &station, this->currentJob->getStationsList()){
+    this->transformAllObsToDestSystem(destinationSystem);
 
-        //check station system
-        if(station.isNull() || station->getCoordinateSystem().isNull()){
-            continue;
-        }
-
-        //run through all observations of the station system
-        foreach(const QPointer<Observation> &obs, station->getCoordinateSystem()->getObservations()){
-
-            bool isSolved = (station->getCoordinateSystem() == destinationSystem);
-
-            //set observation to solved only if it has been measured in the active coordinate system
-            if(!obs.isNull()){
-                obs->setXYZ(obs->getOriginalXYZ());
-                obs->setIJK(obs->getOriginalIJK());
-                obs->setIsSolved(isSolved);
-            }
-
-        }
-
-    }
 
     //###################
     //recalc all features
@@ -1276,10 +1293,12 @@ void FeatureUpdater::recalcFeatureSetWithoutTransformation(){
         return;
     }
 
-    //set all features to not have been updated
+    //set all features to not have been updated before recalcFeatureWithoutTransformation()
     foreach(const QPointer<FeatureWrapper> &feature, this->currentJob->getFeaturesList()){
         if(!feature.isNull() && !feature->getFeature().isNull()){
+            feature->getFeature()->blockSignals(true);
             feature->getFeature()->setIsUpdated(false);
+            feature->getFeature()->blockSignals(false);
         }
     }
 
@@ -1573,8 +1592,7 @@ void FeatureUpdater::copyGeometry(InputElement &newElement, const QPointer<Featu
 void FeatureUpdater::clearBundleResults(const QPointer<CoordinateSystem> &bundleSystem){
 
     //get and delete nominals in bundle system
-    QList< QPointer<FeatureWrapper> > nominals = bundleSystem->getNominals();
-    foreach(const QPointer<FeatureWrapper> nominal, nominals){
+    foreach(const QPointer<FeatureWrapper> nominal, bundleSystem->getNominals()){
         if(!nominal.isNull() && !nominal->getGeometry().isNull()){
             delete nominal->getGeometry().data();
             delete nominal.data();

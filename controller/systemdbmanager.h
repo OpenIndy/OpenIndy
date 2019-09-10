@@ -265,6 +265,8 @@ private:
     static QThreadStorage<QMap<FeatureTypes, QList<sdb::Function> > > functionCache;
     static QList<sdb::Function> getCreateFunctionsFromDB(const FeatureTypes &type);
 
+    static QThreadStorage<QMap<QString, sdb::Plugin> > caches;
+    static sdb::Plugin getPluginFromDB(const QString &name);
 };
 
 #endif // DATABASE_H

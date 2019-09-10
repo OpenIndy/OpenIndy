@@ -11,7 +11,10 @@ SimplePluginLoader::SimplePluginLoader(QString path)
 void SimplePluginLoader::importFinished(bool success) {
     if(success) {
         this->log("step 1/2: plugin successfully copied");
-        if(this->pluginCopier.savePlugin(this->path)) {
+
+        QFileInfo fileInfo(this->path);
+        QString relPath(QString("plugins/%1").arg(fileInfo.fileName())); // save relative path
+        if(this->pluginCopier.savePlugin(relPath)) {
             this->log("step 2/2: plugin successfully saved in the database");
             return;
         }

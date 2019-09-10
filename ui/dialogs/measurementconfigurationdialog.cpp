@@ -451,7 +451,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     MeasurementConfig mConfig;
     mConfig.setName(name);
     mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
-    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble());
+    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
     mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
     mConfig.setCount(this->ui->lineEdit_numMeas->text().toInt());
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
