@@ -889,7 +889,7 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString &name){
  * \brief FeatureTableModel::getActiveGroupName
  * \return
  */
-const QString &FeatureTableModel::getActiveGroupName() const{
+const QString FeatureTableModel::getActiveGroupName() const{
 
     //check current job
     if(this->currentJob.isNull()){

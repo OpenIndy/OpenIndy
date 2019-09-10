@@ -27,4 +27,5 @@ Makefile
 *.Debug
 *.Release
 
+dist
 build/*_resource.rc

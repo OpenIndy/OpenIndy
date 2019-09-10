@@ -13,7 +13,6 @@ using namespace oi;
 
 class PluginTreeItem : public QObject
 {
-    friend class PluginTreeItem;
     Q_OBJECT
 
 public:

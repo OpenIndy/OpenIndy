@@ -272,4 +272,4 @@ RESOURCES += \
 
 # app icon
 win32:RC_FILE = $$PWD/../res/openIndy.rc
-unix:ICON = $$PWD/../res/openIndy.icns
+linux:ICON = $$PWD/../res/openIndy.icns
