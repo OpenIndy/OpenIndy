@@ -146,7 +146,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eFeatureDisplayExpansionOriginX:
         case eFeatureDisplayExpansionOriginY:
         case eFeatureDisplayExpansionOriginZ:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
 
     }else if(role == Qt::TextAlignmentRole && !feature->getTrafoParam().isNull()) {
@@ -162,7 +162,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eTrafoParamDisplayScaleY:
         case eTrafoParamDisplayScaleZ:
         case eTrafoParamDisplayStDev:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
     }
 
