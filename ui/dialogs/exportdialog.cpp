@@ -96,7 +96,7 @@ void ExportDialog::on_pushButton_export_clicked()
  */
 void ExportDialog::on_pushButton_Path_clicked()
 {
-    QString path = QFileDialog::getOpenFileName(this, tr("Open File"),
+    QString path = QFileDialog::getSaveFileName(this, tr("Choose a filename"),
                                                      "",
                                                      tr("Files (*.*)"));
     this->ui->lineEdit_choosePath->setText(path);
