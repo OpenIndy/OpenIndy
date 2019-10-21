@@ -335,7 +335,7 @@ QPointer<FeatureTreeItem> FeatureTreeItem::getChild(const int &index){
         QPointer<FeatureTreeItem> itemToRemove = this->children.at(index);
         if(!itemToRemove.isNull()){
             itemToRemove->deleteChildren();
-            delete itemToRemove;
+            delete itemToRemove.data();
         }
         this->children.removeAt(index);
         this->childCount--;

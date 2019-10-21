@@ -3068,10 +3068,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
 
             watchWindowKey = QString("%1%2")
                                 .arg(feature->getFeature()->getFeatureName())
-                                .arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal());
-            windowTitleSuffix =  QString("[%1%2]")
-                                    .arg(feature->getFeature()->getFeatureName())
-                                    .arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+                                .arg(feature->getGeometry().isNull() ? ""  : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
+            windowTitleSuffix =  QString("[%1]").arg(watchWindowKey.toString());
             break;
         }
         case eShowNearestNominal:   // find nearest nominal feature

@@ -36,7 +36,7 @@ public:
     //##############################
 
     static QDomDocument saveProject(const QPointer<OiJob> &job);
-    static const QPointer<OiJob> &loadProject(const QDomDocument &project);
+    static const QPointer<OiJob> loadProject(const QDomDocument &project);
 
     //#####################################
     //get or set measurement config manager

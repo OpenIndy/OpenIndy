@@ -233,7 +233,7 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplayVY:
         case eObservationDisplayVZ:
         case eObservationDisplayV:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
 
     }

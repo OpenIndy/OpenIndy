@@ -146,7 +146,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eFeatureDisplayExpansionOriginX:
         case eFeatureDisplayExpansionOriginY:
         case eFeatureDisplayExpansionOriginZ:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
 
     }else if(role == Qt::TextAlignmentRole && !feature->getTrafoParam().isNull()) {
@@ -162,7 +162,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eTrafoParamDisplayScaleY:
         case eTrafoParamDisplayScaleZ:
         case eTrafoParamDisplayStDev:
-            return Qt::AlignRight | Qt::AlignVCenter;
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
     }
 
@@ -426,6 +426,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(feature->getFeatureTypeEnum()));
                 return true;
             }
+            break;
         }
         case eFeatureDisplayFunctions:{
 
@@ -524,6 +525,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 }
                 return false;
             }
+            break;
         }
         case eFeatureDisplayX:
             if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
@@ -627,9 +629,8 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         case eTrafoParamDisplayIsUsed:{
             bool isUsed = value.toBool();
             QPointer<TrafoParam> curTrafoParam = feature->getTrafoParam();
-            curTrafoParam->setIsUsed(isUsed);
 
-            if(isUsed) { // uncheck other
+            if(isUsed) { // first uncheck other
                 for(QPointer<FeatureWrapper> f : this->currentJob->getFeaturesByType(eTrafoParamFeature)) {
                     QPointer<TrafoParam> trafoParam = f->getTrafoParam();
                     if( trafoParam.isNull()
@@ -647,6 +648,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
                 }
             }
+
+            // than set "isUsed" and emit signal
+            curTrafoParam->setIsUsed(isUsed);
+
             break;
         }/*case eTrafoParamDisplayIsDatumTransformation:{
             bool isDatum = value.toBool();
@@ -886,7 +891,7 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString &name){
  * \brief FeatureTableModel::getActiveGroupName
  * \return
  */
-const QString &FeatureTableModel::getActiveGroupName() const{
+const QString FeatureTableModel::getActiveGroupName() const{
 
     //check current job
     if(this->currentJob.isNull()){

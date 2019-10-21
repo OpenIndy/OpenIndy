@@ -70,7 +70,7 @@ public:
     //get or set active group
     //#######################
 
-    const QString &getActiveGroupName() const;
+    const QString getActiveGroupName() const;
     void setActiveGroupName(const QString &group);
 
     //################################

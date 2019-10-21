@@ -24,9 +24,11 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize config manager
     this->initConfigManager();
 
+    #ifdef OI_WEBSOCKETSERVER
     //init and start OpenIndy server
     this->initServer();
     this->startServer();
+    #endif
 
     //initialize tool plugins
     this->initToolPlugins();
