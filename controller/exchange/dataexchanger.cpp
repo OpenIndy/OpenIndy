@@ -574,6 +574,12 @@ void DataExchanger::exportFeatures(const bool &success)
         this->exchangeThread.quit();
         this->exchangeThread.wait();
     }
+
+    if(success){
+        emit this->sendMessage("Features successfully exported", eInformationMessage, eMessageBoxMessage);
+    }else{
+        emit this->sendMessage("Features not exported successfully", eErrorMessage, eMessageBoxMessage);
+    }
 }
 
 /*!

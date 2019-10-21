@@ -19,14 +19,14 @@
      <item>
       <widget class="QPushButton" name="pushButton_Path">
        <property name="text">
-        <string>choose path</string>
+        <string>choose filename</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit_choosePath">
        <property name="text">
-        <string>choose path</string>
+        <string>choose filename</string>
        </property>
       </widget>
      </item>
