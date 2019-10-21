@@ -60,7 +60,7 @@ void Console::add(const QString &msg, const MessageTypes &msgType, const QString
     this->output.setStringList(this->log);
 
     //inform about the new line
-    // emit this->lineAdded(); // too expensive
+    emit this->lineAdded();
 
     //write the new entry to the log file
     this->writeToLogFile(text);
