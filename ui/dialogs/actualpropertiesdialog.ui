@@ -28,7 +28,11 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
-        <widget class="QTableView" name="tableView_observation"/>
+        <widget class="QTableView" name="tableView_observation">
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -65,7 +69,11 @@
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="tableView_readings"/>
+        <widget class="QTableView" name="tableView_readings">
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
