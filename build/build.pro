@@ -140,7 +140,8 @@ SOURCES += \
     $$PWD/../models/bundleparametertableproxymodel.cpp \
     $$PWD/../models/featuredifferencetablemodel.cpp \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
-    $$PWD/../controller/config/projectconfig.cpp
+    $$PWD/../controller/config/projectconfig.cpp \
+    $$PWD/../models/xyzformatdelegate.cpp
 
 # header files
 HEADERS  += \
@@ -242,7 +243,8 @@ HEADERS  += \
     $$PWD/../models/bundleparametertableproxymodel.h \
     $$PWD/../models/featuredifferencetablemodel.h \
     $$PWD/../models/featuredifferenceproxymodel.h \
-    $$PWD/../controller/config/projectconfig.h
+    $$PWD/../controller/config/projectconfig.h \
+    $$PWD/../models/xyzformatdelegate.h
 
 # ui files
 FORMS    += \
