@@ -102,20 +102,35 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
 
         switch((ObservationDisplayAttributes)columnIndex){
         case eObservationDisplayId:
-            return observation->getDisplayId();
+            return observation->getId();
         case eObservationDisplayStation:
             return observation->getDisplayStation();
         case eObservationDisplayTargetGeometries:
             return observation->getDisplayTargetGeometries();
         case eObservationDisplayX:
-            return observation->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            if(observation->getIsValid() && observation->getIsSolved()) {
+                return observation->getXYZ().getAt(0);
+            } else {
+                return QVariant();
+            }
+           // return observation->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+           //                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
         case eObservationDisplayY:
-            return observation->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            if(observation->getIsValid() && observation->getIsSolved()) {
+                return observation->getXYZ().getAt(1);
+            } else {
+                return QVariant();
+            }
+           // return observation->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+           //                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
         case eObservationDisplayZ:
-            return observation->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                            this->parameterDisplayConfig.getDisplayDigits(eMetric));
+            if(observation->getIsValid() && observation->getIsSolved()) {
+                return observation->getXYZ().getAt(2);
+            } else {
+                return QVariant();
+            }
+          //  return observation->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+           //                                 this->parameterDisplayConfig.getDisplayDigits(eMetric));
         case eObservationDisplayI:
             return observation->getDisplayI(6);
         case eObservationDisplayJ:
@@ -217,6 +232,7 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
     }else if(role == Qt::TextAlignmentRole){
 
         switch((ObservationDisplayAttributes)columnIndex){
+        case eObservationDisplayId:
         case eObservationDisplayX:
         case eObservationDisplayY:
         case eObservationDisplayZ:
