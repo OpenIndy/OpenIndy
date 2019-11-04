@@ -591,6 +591,10 @@ void FeatureTreeItem::setUpReading(){
     }
 }
 
+/*!
+ * \brief FeatureTreeItem::getId
+ * \return feature / observation / reading id or -1
+ */
 int FeatureTreeItem::getId() {
 
     if(getIsFeature() && !getFeature().isNull() && !getFeature()->getFeature().isNull()){
