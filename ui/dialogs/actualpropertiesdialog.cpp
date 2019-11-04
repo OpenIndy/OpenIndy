@@ -1,5 +1,6 @@
 #include "actualpropertiesdialog.h"
 #include "ui_actualpropertiesdialog.h"
+#include "xyzformatdelegate.h"
 
 /*!
  * \brief ActualPropertiesDialog::ActualPropertiesDialog
@@ -218,6 +219,9 @@ void ActualPropertiesDialog::initGUI(){
     ReadingTableDelegate *readingTableDelegate = new ReadingTableDelegate();
     this->ui->tableView_readings->setItemDelegate(readingTableDelegate);
 
+    this->ui->tableView_observation->setItemDelegateForColumn(3,new XYZFormatDelegate());
+    this->ui->tableView_observation->setItemDelegateForColumn(4,new XYZFormatDelegate());
+    this->ui->tableView_observation->setItemDelegateForColumn(5,new XYZFormatDelegate());
 }
 
 /*!
