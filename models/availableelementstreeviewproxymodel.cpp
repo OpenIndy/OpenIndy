@@ -460,7 +460,7 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
 
         //check if function already contains the element
         QMap<int, QList<InputElement> > functionInputElements = this->currentJob->getActiveFeature()->getFeature()->getFunctions().at(this->functionPosition)->getInputElements();
-        foreach(const InputElement &element, functionInputElements[0]) {
+        foreach(const InputElement &element, functionInputElements[this->neededElementIndex]) {
             if(element.id == item->getId()) {
                 return;
             }
