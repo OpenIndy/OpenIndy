@@ -1370,6 +1370,9 @@ void FeatureUpdater::switchCoordinateSystemWithTransformation(const QPointer<Coo
  */
 void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem)
 {
+    if(destinationSystem.isNull()) {
+        return; // nothing to do
+    }
     //################################################
     //transform all observations to destination system
     //################################################
