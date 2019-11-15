@@ -590,3 +590,20 @@ void FeatureTreeItem::setUpReading(){
         this->displayValue = "id:" + QString::number(this->reading->getId()) + this->reading->getObservation()->getStation()->getFeatureName();
     }
 }
+
+/*!
+ * \brief FeatureTreeItem::getId
+ * \return feature / observation / reading id or -1
+ */
+int FeatureTreeItem::getId() {
+
+    if(getIsFeature() && !getFeature().isNull() && !getFeature()->getFeature().isNull()){
+        return getFeature()->getFeature()->getId();
+    }else if(getIsObservation() && !getObservation().isNull()){
+        return getObservation()->getId();
+    }else if(getIsReading() && !getReading().isNull()){
+        return getReading()->getId();
+    }
+
+    return  -1;
+}

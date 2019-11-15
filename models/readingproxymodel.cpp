@@ -99,16 +99,19 @@ bool ReadingProxyModel::lessThan(const QModelIndex &source_left, const QModelInd
         QList<InputElement> inputElem = function->getInputElements().value(0);
 
 
-        if(!source_right.isValid() || !source_left.isValid()
-                || source_right.row() <= inputElem.size() || source_left.row() <= inputElem.size()
-                || inputElem.at(source_right.row()).observation.isNull() || inputElem.at(source_left.row()).observation.isNull()){
-            return false;
+        if( source_right.isValid()
+            && source_left.isValid()
+            && source_right.row() < inputElem.size()
+            && source_left.row() < inputElem.size()
+            && !inputElem.at(source_right.row()).observation.isNull()
+            && !inputElem.at(source_left.row()).observation.isNull()){
+
+            int fwRight = inputElem.at(source_right.row()).observation->getId();
+            int fwLeft =  inputElem.at(source_left.row()).observation->getId();
+
+            return fwLeft < fwRight;
         }
 
-        int fwRight = inputElem.at(source_right.row()).observation->getId();
-        int fwLeft =  inputElem.at(source_left.row()).observation->getId();
-
-        return fwLeft < fwRight;
     }
     return false;
 }

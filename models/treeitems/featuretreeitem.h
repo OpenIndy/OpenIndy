@@ -43,6 +43,8 @@ public:
     const QPointer<Observation> &getObservation() const;
     const QPointer<Reading> &getReading() const;
 
+    int getId();
+
     //get the type of the corresponding element
     ElementTypes getElementType() const;
 
