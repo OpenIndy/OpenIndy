@@ -18,7 +18,7 @@ Console::Console(QObject *parent) : QObject(parent){
     // "compress" lineAdded signals
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(lineAddedIfRequested()));
-    timer->start(250);
+    timer->start(500);
 }
 
 Console::~Console() {
@@ -27,8 +27,20 @@ Console::~Console() {
 
 void Console::lineAddedIfRequested() {
     if(this->lineAddedRequested) {
-        emit this->lineAdded();
+        QMutexLocker locker(&addMutex);
+
         this->lineAddedRequested = false;
+
+        foreach(QString text, buffer) {
+            if(output.insertRow(output.rowCount())) {
+                QModelIndex index = output.index(output.rowCount() - 1, 0);
+                output.setData(index, text);
+            }
+        }
+        buffer.clear();
+
+        emit this->lineAdded();
+
     }
 }
 
@@ -63,6 +75,8 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType){
 }
 void Console::add(const QString &msg, const MessageTypes &msgType, const QString &value){
 
+    QMutexLocker locker(&addMutex);
+
     //update entries list and model
     QString text = QString("[%1] {%2} : %3 %4")
             .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
@@ -70,11 +84,7 @@ void Console::add(const QString &msg, const MessageTypes &msgType, const QString
             .arg(msg)
             .arg(value);
 
-    if(output.insertRow(output.rowCount())) {
-        QModelIndex index = output.index(output.rowCount() - 1, 0);
-        output.setData(index, text);
-    }
-
+    this->buffer.append(text);
     //write the new entry to the log file
     this->writeToLogFile(text);
 

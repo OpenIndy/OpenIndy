@@ -10,6 +10,8 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QFile>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QTimer>
 
 #include "types.h"
@@ -80,7 +82,9 @@ private:
     QFile outFile;
 
     std::atomic<bool> lineAddedRequested;
-
+    // synchronize add call & buffer access
+    QMutex addMutex;
+    QStringList buffer;
 };
 
 #endif // CONSOLE_H
