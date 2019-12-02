@@ -1,6 +1,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include <atomic>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -9,6 +10,7 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QFile>
+#include <QTimer>
 
 #include "types.h"
 #include "util.h"
@@ -52,6 +54,9 @@ public slots:
     void addLine(const QString &msg, const MessageTypes &msgType, const double &value);
     void addLine(const QString &msg, const MessageTypes &msgType, const int &value);
 
+private slots:
+    void lineAddedIfRequested();
+
 private:
 
     //##############
@@ -73,6 +78,8 @@ private:
     QStringList log;
     QStringListModel output;
     QFile outFile;
+
+    std::atomic<bool> lineAddedRequested;
 
 };
 

@@ -13,10 +13,23 @@ Console::Console(QObject *parent) : QObject(parent){
     //create and open file
     outFile.setFileName("oiLogFile.log");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+
+    // "compress" lineAdded signals
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(lineAddedIfRequested()));
+    timer->start(250);
 }
 
 Console::~Console() {
     outFile.close();
+}
+
+void Console::lineAddedIfRequested() {
+    if(this->lineAddedRequested) {
+        emit this->lineAdded();
+        this->lineAddedRequested = false;
+    }
 }
 
 /*!
@@ -62,11 +75,11 @@ void Console::add(const QString &msg, const MessageTypes &msgType, const QString
         output.setData(index, text);
     }
 
-    //inform about the new line
-    emit this->lineAdded();
-
     //write the new entry to the log file
     this->writeToLogFile(text);
+
+    //inform about the new line
+    lineAddedRequested = true;
 }
 
 /*!
