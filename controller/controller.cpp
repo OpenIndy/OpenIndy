@@ -15,7 +15,7 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize and connect model manager
     ModelManager::init();
     if(!ModelManager::myInstance.isNull()){
-        QObject::connect(ModelManager::myInstance.data(), &ModelManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+        QObject::connect(ModelManager::myInstance.data(), &ModelManager::sendMessage, this, &Controller::log, Qt::QueuedConnection);
 
         // "compress" updateModel signals
         QTimer *timer = new QTimer(this);
