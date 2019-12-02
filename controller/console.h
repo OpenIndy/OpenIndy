@@ -31,19 +31,9 @@ public:
 
     static const QPointer<Console> &getInstance();
 
-    //##############################
-    //get model with console entries
-    //##############################
-
-    QStringListModel &getConsoleModel();
-
 signals:
 
-    //##################################
-    //signal to inform about new entries
-    //##################################
-
-    void lineAdded();
+    void appendPlainText(QString text);
 
 public slots:
 
@@ -77,8 +67,6 @@ private:
     //console contents
     //################
 
-    QStringList log;
-    QStringListModel output;
     QFile outFile;
 
     std::atomic<bool> lineAddedRequested;
