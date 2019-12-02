@@ -2234,7 +2234,7 @@ void MainWindow::connectDialogs(){
     QObject::connect(this, &MainWindow::featureCreated, &this->createFeatureDialog, &CreateFeatureDialog::featureCreated, Qt::AutoConnection);
 
     //connect console
-    QObject::connect(Console::getInstance().data(), &Console::lineAdded, this->ui->listView_console, &QListView::scrollToBottom, Qt::AutoConnection);
+    QObject::connect(Console::getInstance().data(), &Console::appendPlainText, this->ui->plainTextEdit, &QPlainTextEdit::appendPlainText, Qt::QueuedConnection);
 
     //connect import / export dialogs
     QObject::connect(&this->importNominalDialog, &ImportNominalDialog::startImport, this, &MainWindow::importNominals, Qt::AutoConnection);
@@ -2328,9 +2328,6 @@ void MainWindow::assignModels(){
     TrafoParamDelegate *bundleParamTableDelegate = new TrafoParamDelegate();
     this->ui->tableView_bundleParameter->setItemDelegate(bundleParamTableDelegate);
     this->ui->tableView_FeatureDifferences->setModel(&ModelManager::getFeatureDifferenceProxyModel());
-
-    //assign console model
-    this->ui->listView_console->setModel(&Console::getInstance()->getConsoleModel());
 
     //assign groups model
     this->ui->comboBox_groups->setModel(&ModelManager::getGroupNamesModel());
