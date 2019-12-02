@@ -13,9 +13,9 @@ Console::Console(QObject *parent) : QObject(parent){
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
 
 
-    // "compress" lineAdded signals
+    // "compress" addLine signals
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(lineAddedIfRequested()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(flushToConsoleView()));
     timer->start(250);
 }
 
@@ -23,15 +23,15 @@ Console::~Console() {
     outFile.close();
 }
 
-void Console::lineAddedIfRequested() {
-    if(this->lineAddedRequested) {
+void Console::flushToConsoleView() {
+    if(this->flushToConsoleViewRequested) {
 
-        QMutexLocker locker(&addMutex);
+        QMutexLocker locker(&addMessageBufferMutex);
 
-        this->lineAddedRequested = false;
-        emit this->appendPlainText(buffer.join("\n"));
+        this->flushToConsoleViewRequested = false;
+        emit this->appendMessageToConsole(messageBuffer.join("\n"));
 
-        buffer.clear();
+        messageBuffer.clear();
     }
 }
 
@@ -58,7 +58,7 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType){
 }
 void Console::add(const QString &msg, const MessageTypes &msgType, const QString &value){
 
-    QMutexLocker locker(&addMutex);
+    QMutexLocker locker(&addMessageBufferMutex);
 
     //update entries list and model
     QString text = QString("[%1] {%2} : %3 %4")
@@ -67,13 +67,11 @@ void Console::add(const QString &msg, const MessageTypes &msgType, const QString
             .arg(msg)
             .arg(value);
 
-    // append message buffer
-    this->buffer.append(text);
+    this->messageBuffer.append(text);
     //write the new entry to the log file
     this->writeToLogFile(text);
 
-    //inform about the new line
-    lineAddedRequested = true;
+    flushToConsoleViewRequested = true;
 }
 
 /*!

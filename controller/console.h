@@ -33,7 +33,7 @@ public:
 
 signals:
 
-    void appendPlainText(QString text);
+    void appendMessageToConsole(QString text);
 
 public slots:
 
@@ -47,7 +47,7 @@ public slots:
     void addLine(const QString &msg, const MessageTypes &msgType, const int &value);
 
 private slots:
-    void lineAddedIfRequested();
+    void flushToConsoleView();
 
 private:
 
@@ -69,10 +69,10 @@ private:
 
     QFile outFile;
 
-    std::atomic<bool> lineAddedRequested;
+    std::atomic<bool> flushToConsoleViewRequested;
     // synchronize add call & buffer access
-    QMutex addMutex;
-    QStringList buffer;
+    QMutex addMessageBufferMutex;
+    QStringList messageBuffer;
 };
 
 #endif // CONSOLE_H
