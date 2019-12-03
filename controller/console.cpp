@@ -8,15 +8,31 @@ QPointer<Console> Console::myInstance;
  * \param parent
  */
 Console::Console(QObject *parent) : QObject(parent){
-    this->output.setStringList(this->log);
-
     //create and open file
     outFile.setFileName("oiLogFile.log");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+
+    // "compress" addLine signals
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(flushToConsoleView()));
+    timer->start(250);
 }
 
 Console::~Console() {
     outFile.close();
+}
+
+void Console::flushToConsoleView() {
+    if(this->flushToConsoleViewRequested) {
+
+        QMutexLocker locker(&addMessageBufferMutex);
+
+        this->flushToConsoleViewRequested = false;
+        emit this->appendMessageToConsole(messageBuffer.join("\n"));
+
+        messageBuffer.clear();
+    }
 }
 
 /*!
@@ -32,14 +48,6 @@ const QPointer<Console> &Console::getInstance(){
 }
 
 /*!
- * \brief Console::getConsoleModel
- * \return
- */
-QStringListModel &Console::getConsoleModel(){
-    return this->output;
-}
-
-/*!
  * \brief Console::addLine
  * \param msg
  * \param msgType
@@ -50,20 +58,20 @@ void Console::addLine(const QString &msg, const MessageTypes &msgType){
 }
 void Console::add(const QString &msg, const MessageTypes &msgType, const QString &value){
 
+    QMutexLocker locker(&addMessageBufferMutex);
+
     //update entries list and model
     QString text = QString("[%1] {%2} : %3 %4")
             .arg(QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss"))
             .arg(getMessageTypeName(msgType))
             .arg(msg)
             .arg(value);
-    this->log.append(text);
-    this->output.setStringList(this->log);
 
-    //inform about the new line
-    emit this->lineAdded();
-
+    this->messageBuffer.append(text);
     //write the new entry to the log file
     this->writeToLogFile(text);
+
+    flushToConsoleViewRequested = true;
 }
 
 /*!

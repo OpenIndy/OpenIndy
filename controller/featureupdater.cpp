@@ -249,6 +249,7 @@ bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem
     foreach (BundleStation bStation, inputStations) {
         if(bStation.geometries.size() > 2){
             hasCommonPoints = true;
+            break;
         }
     }
 
