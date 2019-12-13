@@ -43,9 +43,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     this->ui->dockWidget_differences->setMaximumWidth(600);
 
-    this->ui->tabWidget_bundle->setTabEnabled(2,false);
-    this->ui->tabWidget_bundle->setTabEnabled(3,false);
-
     this->resizeTableView();
 
     //load default bundle plugin

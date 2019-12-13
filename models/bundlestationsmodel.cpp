@@ -122,7 +122,15 @@ Qt::ItemFlags BundleStationsModel::flags(const QModelIndex &index) const{
     //check column index
     if(index.column() == 1){
         //return (myFlags | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-        return (myFlags | Qt::ItemIsUserCheckable);
+
+        BundleStationItem *item = static_cast<BundleStationItem*>(index.internalPointer());
+        if(!item)
+            return myFlags;
+
+        if( QString("m").compare(item->data(0).toString()) == 0) {
+                return (myFlags | Qt::ItemIsUserCheckable );
+        }
+        return (myFlags  & ~Qt::ItemIsEnabled);
     }
 
     return myFlags;
