@@ -360,31 +360,31 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     }
 
 
+    OiVec d = pos.getVectorH() - trackerXYZ;
     //set feature name
     this->streamData[eName]->setText(getNameLabel(feature));
 
     //set x
     setDisplayValue(eX, "x", [&](){
         //get display value
-        return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
+        return - d.getAt(0);
     });
 
     //set y
     setDisplayValue(eY, "y", [&](){
         //get display value
-        return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
+        return - d.getAt(1);
     });
 
     //set z
     setDisplayValue(eZ, "z", [&](){
         //get display value
-        return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
+        return - d.getAt(2);
     });
 
     //set d3D    
     setDisplayValue(eD3D, "d3D", [&](){
         //get display value
-        OiVec d = pos.getVectorH() - trackerXYZ;
         return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
     });
 
