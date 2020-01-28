@@ -94,6 +94,7 @@ SOURCES += \
     $$PWD/../models/plugintreeviewmodel.cpp \
     $$PWD/../ui/dialogs/pluginmanagerdialog.cpp \
     $$PWD/../ui/dialogs/watchwindowdialog.cpp \
+    $$PWD/../ui/dialogs/watchwindowutil.cpp \
     $$PWD/../controller/exchange/projectexchanger.cpp \
     $$PWD/../ui/dialogs/measurementconfigurationdialog.cpp \
     $$PWD/../models/measurementconfigurationmodel.cpp \
@@ -196,6 +197,7 @@ HEADERS  += \
     $$PWD/../models/plugintreeviewmodel.h \
     $$PWD/../ui/dialogs/pluginmanagerdialog.h \
     $$PWD/../ui/dialogs/watchwindowdialog.h \
+    $$PWD/../ui/dialogs/watchwindowutil.h \
     $$PWD/../controller/exchange/projectexchanger.h \
     $$PWD/../ui/dialogs/measurementconfigurationdialog.h \
     $$PWD/../models/measurementconfigurationmodel.h \
