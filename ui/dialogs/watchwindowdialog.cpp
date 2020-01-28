@@ -1,5 +1,4 @@
 #include "watchwindowdialog.h"
-
 #include "ui_watchwindowdialog.h"
 
 /*!
@@ -299,69 +298,6 @@ QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
             .arg(feature->getGeometry().isNull() ? "" : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
 }
 
-QPair<Position, Radius> WatchWindowDialog::getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ) {
-    Position position = Position::NullObject;
-    Radius radius;
-    if(feature.isNull()){
-        return qMakePair(Position::NullObject, Radius());
-    //check if current feature is a solved geometry with position
-    }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
-             && feature->getGeometry()->getIsSolved()){
-
-        // get radius
-        switch(feature->getFeatureTypeEnum()){
-        case eCircleFeature:
-            radius = feature->getCircle()->getRadius();
-            break;
-        case eCylinderFeature:
-            radius = feature->getCylinder()->getRadius();
-            break;
-        default:
-            radius = Radius();
-        }
-
-        // get position
-        QPointer<Geometry> geometry = feature->getGeometry();
-        switch(feature->getFeatureTypeEnum()){
-        case eCircleFeature:
-        case ePlaneFeature: {
-            double dot;
-            OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
-            OiVec point = trackerXYZ - dot * geometry->getDirection().getVectorH();
-            position = Position();
-            position.setVector(point);
-            break;
-        }
-        case eCylinderFeature:
-        case eSphereFeature:
-        case eLineFeature: {
-            double dot;
-            OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
-            OiVec point =  geometry->getPosition().getVectorH() + dot * geometry->getDirection().getVectorH();
-            position = Position();
-            position.setVector(point);
-            break;
-        }
-        default:
-            position = geometry->getPosition();
-        }
-
-    //check if active feature is a coordinate system
-    }else if(!feature->getCoordinateSystem().isNull()){
-
-        position = feature->getCoordinateSystem()->getOrigin();
-
-    //check if active feature is a station
-    }else if(!feature->getStation().isNull()){
-
-         position = feature->getStation()->getPosition()->getPosition();
-
-    }
-
-    return qMakePair(position, radius);
-
-}
-
 /*!
  * \brief WatchWindowDialog::setUpCartesianWatchWindow
  * \param reading
@@ -393,7 +329,7 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
     //check the active position (geometry, station, coordinate system)
-    QPair<Position, Radius> result = getPosition(feature, trackerXYZ);
+    QPair<Position, Radius> result = util.getPosition(feature, trackerXYZ);
     Position pos = result.first;
     Radius radius = result.second;
 
@@ -665,7 +601,7 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
             QPointer<FeatureWrapper> nearestFeature;
             for(QPointer<FeatureWrapper> feature : (true ? this->features : this->currentJob->getFeaturesList())) {
 
-                Position pos = getPosition(feature, trackerXYZ).first;
+                Position pos = util.getPosition(feature, trackerXYZ).first;
                 if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
 
                     OiVec d = pos.getVectorH() - trackerXYZ;
