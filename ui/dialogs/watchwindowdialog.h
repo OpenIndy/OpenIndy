@@ -200,7 +200,7 @@ private:
     QString getNameLabel(QPointer<FeatureWrapper> feature);
 
     QPointer<FeatureWrapper> getFeature(OiVec trackerXYZ);
-    Position getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ);
+    QPair<Position, Radius> getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ);
     void setVisibility();
 
 };
