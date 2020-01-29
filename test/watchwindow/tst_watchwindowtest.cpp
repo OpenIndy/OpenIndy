@@ -1,11 +1,14 @@
 #include <QString>
 #include <QtTest>
 
-#include <position.h>
-#include <radius.h>
-#include <featurewrapper.h>
-#include <oivec.h>
-#include <watchwindowutil.h>
+#include "position.h"
+#include "radius.h"
+#include "featurewrapper.h"
+#include "oivec.h"
+#include "watchwindowutil.h"
+#include "chooselalib.h"
+
+#define COMPARE_DOUBLE(actual, expected, threshold) QVERIFY(std::abs(actual-expected)< threshold);
 
 using namespace oi;
 using namespace oi::math;
@@ -29,12 +32,15 @@ WatchwindowTest::WatchwindowTest()
 void WatchwindowTest::testPoint1()
 {
 
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
     WatchWindowUtil util;
 
-    OiVec trackerXYZ = OiVec(3);
+    OiVec trackerXYZ = OiVec(4);
     trackerXYZ.setAt(0, 1.001);
     trackerXYZ.setAt(1, 1.002);
     trackerXYZ.setAt(2, 1.003);
+    trackerXYZ.setAt(3, 1.0);
 
     OiVec pos = OiVec(3);
     pos.setAt(0, 1.003);
@@ -47,15 +53,21 @@ void WatchwindowTest::testPoint1()
     QPointer<FeatureWrapper> featurewrapper = new FeatureWrapper();
     featurewrapper->setPoint(point);
 
-    QPair<Position, Radius> result = util.getPosition(featurewrapper, trackerXYZ);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
 
-    OiVec resultPosition = result.first.getVector();
-    double resultRadius = result.second.getRadius();
+    OiVec resultPosition = result.position.getVector();
+    double resultRadius = result.radius.getRadius();
     QVERIFY2(resultPosition.getAt(0) == 1.003, "");
     QVERIFY2(resultPosition.getAt(1) == 1.004, "");
     QVERIFY2(resultPosition.getAt(2) == 1.005, "");
+    QVERIFY2(resultRadius == 0, "radius");
 
-    QVERIFY2(resultRadius == 0, "raius");
+    COMPARE_DOUBLE(result.d3D, 0.0035, 0.0001);
+    COMPARE_DOUBLE(result.delta.getAt(0), 0.002, 0.0001);
+    COMPARE_DOUBLE(result.delta.getAt(1), 0.002, 0.0001);
+    COMPARE_DOUBLE(result.delta.getAt(2), 0.002, 0.0001);
+
+
 }
 
 QTEST_APPLESS_MAIN(WatchwindowTest)
