@@ -329,41 +329,38 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
 
     QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
     //check the active position (geometry, station, coordinate system)
-    QPair<Position, Radius> result = util.getPosition(feature, trackerXYZ);
-    Position pos = result.first;
-    Radius radius = result.second;
+    Result result = util.getPosition(feature, trackerXYZ);
 
-    if(pos.isNull()) {
+    if(result.position.isNull()) {
         return;
     }
 
-
-    OiVec d = pos.getVectorH() - trackerXYZ;
+    OiVec delta = result.delta;
     //set feature name
     this->streamData[eName]->setText(getNameLabel(feature));
 
     //set x
     setDisplayValue(eX, "x", [&](){
         //get display value
-        return - d.getAt(0);
+        return - delta.getAt(0);
     });
 
     //set y
     setDisplayValue(eY, "y", [&](){
         //get display value
-        return - d.getAt(1);
+        return - delta.getAt(1);
     });
 
     //set z
     setDisplayValue(eZ, "z", [&](){
         //get display value
-        return - d.getAt(2);
+        return - delta.getAt(2);
     });
 
     //set d3D    
     setDisplayValue(eD3D, "d3D", [&](){
         //get display value
-        return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2)) - radius.getRadius();
+        return result.d3D;
     });
 
     setVisibility();
@@ -601,7 +598,7 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
             QPointer<FeatureWrapper> nearestFeature;
             for(QPointer<FeatureWrapper> feature : (true ? this->features : this->currentJob->getFeaturesList())) {
 
-                Position pos = util.getPosition(feature, trackerXYZ).first;
+                Position pos = util.getPosition(feature, trackerXYZ).position;
                 if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
 
                     OiVec d = pos.getVectorH() - trackerXYZ;

@@ -8,13 +8,21 @@
 #include "radius.h"
 #include "geometry.h"
 namespace oi {
+
+struct Result {
+  Position position;
+  Radius radius;
+  OiVec delta;
+  double d3D;
+};
+
 class WatchWindowUtil
 {
 
 public:
     WatchWindowUtil();
 
-    QPair<Position, Radius> getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ);
+    Result getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ);
 };
 }
 #endif // WATCHWINDOWUTIL_H

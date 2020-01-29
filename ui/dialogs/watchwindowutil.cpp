@@ -2,16 +2,21 @@
 
 using namespace oi;
 
+
 WatchWindowUtil::WatchWindowUtil()
 {
 
 }
 
-QPair<Position, Radius> WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ) {
-    Position position = Position::NullObject;
-    Radius radius;
+Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trackerXYZ) {
+    Result result;
+    result.position = Position::NullObject;
+    result.radius = Radius();
+    result.delta = OiVec(trackerXYZ.getSize());
+    result.d3D = -1.0;
+
     if(feature.isNull()){
-        return qMakePair(Position::NullObject, Radius());
+        return result;
     //check if current feature is a solved geometry with position
     }else if(!feature->getGeometry().isNull() && feature->getGeometry()->hasPosition()
              && feature->getGeometry()->getIsSolved()){
@@ -19,13 +24,13 @@ QPair<Position, Radius> WatchWindowUtil::getPosition(QPointer<FeatureWrapper> fe
         // get radius
         switch(feature->getFeatureTypeEnum()){
         case eCircleFeature:
-            radius = feature->getCircle()->getRadius();
+            result.radius = feature->getCircle()->getRadius();
             break;
         case eCylinderFeature:
-            radius = feature->getCylinder()->getRadius();
+            result.radius = feature->getCylinder()->getRadius();
             break;
         default:
-            radius = Radius();
+            result.radius = Radius();
         }
 
         // get position
@@ -36,8 +41,8 @@ QPair<Position, Radius> WatchWindowUtil::getPosition(QPointer<FeatureWrapper> fe
             double dot;
             OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
             OiVec point = trackerXYZ - dot * geometry->getDirection().getVectorH();
-            position = Position();
-            position.setVector(point);
+            result.position = Position();
+            result.position.setVector(point);
             break;
         }
         case eCylinderFeature:
@@ -46,26 +51,30 @@ QPair<Position, Radius> WatchWindowUtil::getPosition(QPointer<FeatureWrapper> fe
             double dot;
             OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
             OiVec point =  geometry->getPosition().getVectorH() + dot * geometry->getDirection().getVectorH();
-            position = Position();
-            position.setVector(point);
+            result.position = Position();
+            result.position.setVector(point);
             break;
         }
         default:
-            position = geometry->getPosition();
+            result.position = geometry->getPosition();
         }
 
     //check if active feature is a coordinate system
     }else if(!feature->getCoordinateSystem().isNull()){
 
-        position = feature->getCoordinateSystem()->getOrigin();
+        result.position = feature->getCoordinateSystem()->getOrigin();
 
     //check if active feature is a station
     }else if(!feature->getStation().isNull()){
 
-         position = feature->getStation()->getPosition()->getPosition();
+         result.position = feature->getStation()->getPosition()->getPosition();
 
     }
 
-    return qMakePair(position, radius);
+    if(!result.position.isNull()) {
+        result.delta = result.position.getVectorH() - trackerXYZ;
+        result.d3D = qSqrt(result.delta.getAt(0)*result.delta.getAt(0)+result.delta.getAt(1)*result.delta.getAt(1)+result.delta.getAt(2)*result.delta.getAt(2)) - result.radius.getRadius();
+    }
+    return result;
 
 }
