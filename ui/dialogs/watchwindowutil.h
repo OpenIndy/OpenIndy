@@ -4,7 +4,6 @@
 #include "featurewrapper.h"
 #include "feature.h"
 #include "oivec.h"
-#include "util.h"
 #include "position.h"
 #include "radius.h"
 #include "geometry.h"
