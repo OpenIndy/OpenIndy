@@ -28,7 +28,7 @@ private Q_SLOTS:
 
 private:
     QPointer<FeatureWrapper> createFeature(FeatureTypes type, double x, double y, double z, double i, double j, double k);
-    OiVec createTrackeXZY(double x, double y, double z);
+    OiVec createTrackerXYZ(double x, double y, double z);
     void verifyResult(Result result,  double x, double y, double z, double dx, double dy, double dz, double d3D, double radius);
 };
 
@@ -72,7 +72,7 @@ QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type, doubl
     return featurewrapper;
 }
 
-OiVec WatchwindowTest::createTrackeXZY(double x, double y, double z) {
+OiVec WatchwindowTest::createTrackerXYZ(double x, double y, double z) {
     OiVec trackerXYZ = OiVec(4);
     trackerXYZ.setAt(0, x);
     trackerXYZ.setAt(1, y);
@@ -105,7 +105,7 @@ void WatchwindowTest::testPoint1()
     WatchWindowUtil util;
 
 
-    OiVec trackerXYZ = createTrackeXZY(1.001, 1.002, 1.003);
+    OiVec trackerXYZ = createTrackerXYZ(1.001, 1.002, 1.003);
     QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 1.003, 1.005, 1.007, 0, 0, 0);
     Result result = util.getPosition(featurewrapper, trackerXYZ);
 
@@ -121,7 +121,7 @@ void WatchwindowTest::testPoint2()
     WatchWindowUtil util;
 
 
-    OiVec trackerXYZ = createTrackeXZY(1000, 2000, 3000);
+    OiVec trackerXYZ = createTrackerXYZ(1000, 2000, 3000);
     QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0);
     Result result = util.getPosition(featurewrapper, trackerXYZ);
 
