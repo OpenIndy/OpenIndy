@@ -36,7 +36,6 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trac
         // get position
         QPointer<Geometry> geometry = feature->getGeometry();
         switch(feature->getFeatureTypeEnum()){
-        case eCircleFeature:
         case ePlaneFeature: {
             double dot;
             OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
@@ -45,9 +44,10 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trac
             result.position.setVector(point);
             break;
         }
+        case eCircleFeature:
         case eCylinderFeature:
-        case eSphereFeature:
         case eLineFeature: {
+            // projection on axis
             double dot;
             OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
             OiVec point =  geometry->getPosition().getVectorH() + dot * geometry->getDirection().getVectorH();
