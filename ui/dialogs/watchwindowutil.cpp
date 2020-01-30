@@ -72,6 +72,15 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trac
     if(!result.position.isNull()) {
         result.delta = trackerXYZ - result.position.getVectorH();
         result.d3D = qSqrt(result.delta.getAt(0)*result.delta.getAt(0)+result.delta.getAt(1)*result.delta.getAt(1)+result.delta.getAt(2)*result.delta.getAt(2)) - result.radius.getRadius();
+
+        if(feature->getFeatureTypeEnum() == ePlaneElement) {
+            double dot;
+            OiVec d = OiVec(result.delta.getSize());
+            d = result.delta;
+            d.removeLast(); // xyz
+            OiVec::dot(dot, d, feature->getGeometry()->getDirection().getVector());
+            result.d3D *= (dot > 0. ? 1.0 : -1.0);
+        }
     }
     return result;
 
