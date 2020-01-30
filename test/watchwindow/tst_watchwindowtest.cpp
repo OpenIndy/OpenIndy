@@ -28,8 +28,15 @@ private Q_SLOTS:
     void testPoint1();
     void testPoint2();
 
+    void testLine1();
+    void testPlane1();
+    void testPlane2();
+    void testPlane3();
+    void testCircle1();
+    void testCylinder1();
+
 private:
-    QPointer<FeatureWrapper> createFeature(FeatureTypes type, double x, double y, double z, double i, double j, double k);
+    QPointer<FeatureWrapper> createFeature(FeatureTypes type, double x, double y, double z, double i, double j, double k, double radius);
     OiVec createTrackerXYZ(double x, double y, double z);
     void verifyResult(Result result,  double x, double y, double z, double dx, double dy, double dz, double d3D, double radius);
 };
@@ -38,15 +45,7 @@ WatchwindowTest::WatchwindowTest()
 {
 }
 
-/*
-point	actual		Punkt	999.99	1999.99	2999.98	0.01	2/3	FastPoint	BestFitPoint		-/-	-/-	-/-	-/-
-plane	actual		Ebene	1375.00	1625.00	1024.75	0.39	4/5	FastPoint	BestFitPlane		0.100818	-0.097854	0.990081	-/-
-circle	actual		Kreis	600.01	500.00	1000.00	0.00	4/5	FastPoint	BestFitCircleInPlane		0.000010	0.000007	-1.000000	781.03
-line	actual		Gerade	2979.99	3019.99	999.99	68.31	5/5	FastPoint	BestFitLine		0.699995	0.714147	0.000000	-/-
-cylinder	actual		Zylinder	-25.00	-25.00	1142.85	0.01	7/8	FastPoint	BestFitCylinder		0.000006	-0.000009	1.000000	1025.30
-*/
-
-QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type, double x, double y, double z, double i, double j, double k) {
+QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type, double x, double y, double z, double i, double j, double k, double radius) {
     QPointer<FeatureWrapper> featurewrapper = new FeatureWrapper();
 
     OiVec xyz = OiVec(3);
@@ -56,18 +55,47 @@ QPointer<FeatureWrapper> WatchwindowTest::createFeature(FeatureTypes type, doubl
 
     OiVec ijk = OiVec(3);
     switch(type) {
-        case eCylinderFeature:
-            ijk.setAt(0, i);
-            ijk.setAt(1, j);
-            ijk.setAt(2, k);
+    case eLineFeature:
+    case ePlaneFeature:
+    case eCircleFeature:
+    case eCylinderFeature:
+        ijk.setAt(0, i);
+        ijk.setAt(1, j);
+        ijk.setAt(2, k);
+        break;
     }
 
     switch(type) {
-        case ePointFeature:
+    case ePointFeature: {
             QPointer<Point> point = new Point(false, Position(xyz));
             point->setIsSolved(true);
             featurewrapper->setPoint(point);
+            break;
+        }
+    case eLineFeature: {
+            QPointer<Line> line = new Line(false, Position(xyz), Direction(ijk));
+            line->setIsSolved(true);
+            featurewrapper->setLine(line);
         break;
+    }
+    case ePlaneFeature: {
+            QPointer<Plane> plane = new Plane(false, Position(xyz), Direction(ijk));
+            plane->setIsSolved(true);
+            featurewrapper->setPlane(plane);
+        break;
+    }
+    case eCircleFeature:{
+            QPointer<Circle> circle = new Circle(false, Position(xyz), Direction(ijk), Radius(radius));
+            circle->setIsSolved(true);
+            featurewrapper->setCircle(circle);
+        break;
+    }
+    case eCylinderFeature: {
+            QPointer<Cylinder> cylinder = new Cylinder(false, Position(xyz), Direction(ijk), Radius(radius));
+            cylinder->setIsSolved(true);
+            featurewrapper->setCylinder(cylinder);
+        break;
+    }
     }
 
 
@@ -86,17 +114,17 @@ OiVec WatchwindowTest::createTrackerXYZ(double x, double y, double z) {
 void WatchwindowTest::verifyResult(Result result,  double x, double y, double z, double dx, double dy, double dz, double d3D, double radius) {
     OiVec resultPosition = result.position.getVector();
     double resultRadius = result.radius.getRadius();
-    COMPARE_DOUBLE(resultPosition.getAt(0), x, 0.0001);
-    COMPARE_DOUBLE(resultPosition.getAt(1), y, 0.0001);
-    COMPARE_DOUBLE(resultPosition.getAt(2), z, 0.0001);
+    COMPARE_DOUBLE(resultPosition.getAt(0), x, 0.001);
+    COMPARE_DOUBLE(resultPosition.getAt(1), y, 0.001);
+    COMPARE_DOUBLE(resultPosition.getAt(2), z, 0.001);
     if(resultRadius > 0) {
-        COMPARE_DOUBLE(resultRadius, radius, 0.0001);
+        COMPARE_DOUBLE(resultRadius, radius, 0.001);
     }
 
-    COMPARE_DOUBLE(result.d3D, d3D, 0.0001);
-    COMPARE_DOUBLE(result.delta.getAt(0), dx, 0.0001);
-    COMPARE_DOUBLE(result.delta.getAt(1), dy, 0.0001);
-    COMPARE_DOUBLE(result.delta.getAt(2), dz, 0.0001);
+    COMPARE_DOUBLE(result.d3D, d3D, 0.001);
+    COMPARE_DOUBLE(result.delta.getAt(0), dx, 0.001);
+    COMPARE_DOUBLE(result.delta.getAt(1), dy, 0.001);
+    COMPARE_DOUBLE(result.delta.getAt(2), dz, 0.001);
 }
 
 void WatchwindowTest::testPoint1()
@@ -108,10 +136,12 @@ void WatchwindowTest::testPoint1()
 
 
     OiVec trackerXYZ = createTrackerXYZ(1.001, 1.002, 1.003);
-    QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 1.003, 1.005, 1.007, 0, 0, 0);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 1.003, 1.005, 1.007, 0, 0, 0, 0);
     Result result = util.getPosition(featurewrapper, trackerXYZ);
 
-    verifyResult(result, 1.003, 1.005, 1.007, 0.002, 0.003, 0.004, 0.0054, 0.0);
+    DEBUG_RESULT(result);
+
+    verifyResult(result, 1.003, 1.005, 1.007, -0.002, -0.003, -0.004, 0.0054, 0.0);
 
 }
 
@@ -124,12 +154,117 @@ void WatchwindowTest::testPoint2()
 
 
     OiVec trackerXYZ = createTrackerXYZ(1000, 2000, 3000);
-    QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0, 0);
     Result result = util.getPosition(featurewrapper, trackerXYZ);
 
-    verifyResult(result, 999.99, 1999.99, 2999.98, -0.01, -0.01, -0.20, 0.0245, 0.0);
+    DEBUG_RESULT(result);
+
+    verifyResult(result, 999.99 , 1999.99 , 2999.98 , 0.01 , 0.01 , 0.02 , 0.0244, 0);
 
 }
+
+void WatchwindowTest::testLine1()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+    OiVec trackerXYZ = createTrackerXYZ(2000.1, 2000.1, 1000.1);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(eLineFeature, 2979.99, 3019.99, 999.99, 0.699995, 0.714147, 0.000000, 0);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    DEBUG_RESULT(result);
+
+    verifyResult(result, 1990.008432 , 2009.993691 , 999.99 , 10.09156772 , -9.893690538 , 0.11 , 14.13283239 , 0);
+
+}
+
+void WatchwindowTest::testPlane1()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+    OiVec trackerXYZ = createTrackerXYZ(1500.0, 1500.0, 1002.00);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(ePlaneFeature, 1375.00, 1625.00, 1024.75, 0.100818, -0.097854, 0.990081, 0);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    DEBUG_RESULT(result);
+
+    verifyResult(result,1499.767145 , 1500.226009 , 999.7132522 , 0.2328550246 , -0.2260092005 , 2.28674776 , 2.30965732 , 0);
+
+}
+
+void WatchwindowTest::testPlane2()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+    OiVec trackerXYZ = createTrackerXYZ(1.0, 1.0, -1.00);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    DEBUG_RESULT(result);
+
+    verifyResult(result, 1 , 1 , 0 , 0 , 0 , -1 , -1 , 0);
+
+}
+
+void WatchwindowTest::testPlane3()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+    OiVec trackerXYZ = createTrackerXYZ(1.0, 1.0, 1.00);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(ePlaneFeature, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    DEBUG_RESULT(result);
+
+    verifyResult(result, 1 , 1 , 0 , 0 , 0 , 1 , 1 , 0);
+
+}
+
+void WatchwindowTest::testCircle1()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+    OiVec trackerXYZ = createTrackerXYZ(0., 1001., 1000.0);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(eCircleFeature, 600.01, 500.00, 1000.00, 0.000010, 0.000007, -1.000000, 781.03);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    DEBUG_RESULT(result);
+
+    verifyResult(result, 600.01 , 500 , 1000.002493 , -600.01 , 501 , -0.0024931 , 0.6432054342 , 781.03);
+
+}
+
+void WatchwindowTest::testCylinder1()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+    OiVec trackerXYZ = createTrackerXYZ(2, 1002, 1003);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(eCylinderFeature, -25.00, -25.00, 1142.85, 0.000006, -0.000009, 1.000000, 1025.30 );
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    DEBUG_RESULT(result);
+
+    verifyResult(result, -25.00083915 , -24.99874127 , 1002.990919 , 27.00083915 , 1026.998741 , 0.009081 , 2.053619726 , 1025.3);
+
+}
+
 
 QTEST_APPLESS_MAIN(WatchwindowTest)
 
