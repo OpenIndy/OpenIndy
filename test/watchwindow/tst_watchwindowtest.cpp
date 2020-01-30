@@ -84,10 +84,12 @@ OiVec WatchwindowTest::createTrackeXZY(double x, double y, double z) {
 void WatchwindowTest::verifyResult(Result result,  double x, double y, double z, double dx, double dy, double dz, double d3D, double radius) {
     OiVec resultPosition = result.position.getVector();
     double resultRadius = result.radius.getRadius();
-    QVERIFY2(resultPosition.getAt(0) == x, "");
-    QVERIFY2(resultPosition.getAt(1) == y, "");
-    QVERIFY2(resultPosition.getAt(2) == z, "");
-    QVERIFY2(resultRadius == radius, "radius");
+    COMPARE_DOUBLE(resultPosition.getAt(0), x, 0.0001);
+    COMPARE_DOUBLE(resultPosition.getAt(1), y, 0.0001);
+    COMPARE_DOUBLE(resultPosition.getAt(2), z, 0.0001);
+    if(resultRadius > 0) {
+        COMPARE_DOUBLE(resultRadius, radius, 0.0001);
+    }
 
     COMPARE_DOUBLE(result.d3D, d3D, 0.0001);
     COMPARE_DOUBLE(result.delta.getAt(0), dx, 0.0001);
