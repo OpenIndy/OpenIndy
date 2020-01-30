@@ -40,8 +40,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trac
             double dot;
             OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
             OiVec point = trackerXYZ - dot * geometry->getDirection().getVectorH();
-            result.position = Position();
-            result.position.setVector(point);
+            result.position = Position(point.getAt(0), point.getAt(1), point.getAt(2));
             break;
         }
         case eCircleFeature:
@@ -51,8 +50,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trac
             double dot;
             OiVec::dot(dot, trackerXYZ - geometry->getPosition().getVectorH(), geometry->getDirection().getVectorH());
             OiVec point =  geometry->getPosition().getVectorH() + dot * geometry->getDirection().getVectorH();
-            result.position = Position();
-            result.position.setVector(point);
+            result.position = Position(point.getAt(0), point.getAt(1), point.getAt(2));
             break;
         }
         default:
