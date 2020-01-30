@@ -24,6 +24,7 @@ public:
 
 private Q_SLOTS:
     void testPoint1();
+    void testPoint2();
 
 private:
     QPointer<FeatureWrapper> createFeature(FeatureTypes type, double x, double y, double z, double i, double j, double k);
@@ -107,6 +108,22 @@ void WatchwindowTest::testPoint1()
     Result result = util.getPosition(featurewrapper, trackerXYZ);
 
     verifyResult(result, 1.003, 1.005, 1.007, 0.002, 0.003, 0.004, 0.0054, 0.0);
+
+}
+
+void WatchwindowTest::testPoint2()
+{
+
+    ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
+
+    WatchWindowUtil util;
+
+
+    OiVec trackerXYZ = createTrackeXZY(1000, 2000, 3000);
+    QPointer<FeatureWrapper> featurewrapper = createFeature(ePointFeature, 999.99, 1999.99, 2999.98, 0, 0, 0);
+    Result result = util.getPosition(featurewrapper, trackerXYZ);
+
+    verifyResult(result, 999.99, 1999.99, 2999.98, -0.01, -0.01, -0.20, 0.0245, 0.0);
 
 }
 
