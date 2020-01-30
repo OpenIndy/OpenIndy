@@ -72,7 +72,7 @@ Result WatchWindowUtil::getPosition(QPointer<FeatureWrapper> feature, OiVec trac
     }
 
     if(!result.position.isNull()) {
-        result.delta = result.position.getVectorH() - trackerXYZ;
+        result.delta = trackerXYZ - result.position.getVectorH();
         result.d3D = qSqrt(result.delta.getAt(0)*result.delta.getAt(0)+result.delta.getAt(1)*result.delta.getAt(1)+result.delta.getAt(2)*result.delta.getAt(2)) - result.radius.getRadius();
     }
     return result;

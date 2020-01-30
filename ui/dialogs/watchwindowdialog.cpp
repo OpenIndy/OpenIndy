@@ -342,19 +342,19 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     //set x
     setDisplayValue(eX, "x", [&](){
         //get display value
-        return - delta.getAt(0);
+        return delta.getAt(0);
     });
 
     //set y
     setDisplayValue(eY, "y", [&](){
         //get display value
-        return - delta.getAt(1);
+        return delta.getAt(1);
     });
 
     //set z
     setDisplayValue(eZ, "z", [&](){
         //get display value
-        return - delta.getAt(2);
+        return delta.getAt(2);
     });
 
     //set d3D    
