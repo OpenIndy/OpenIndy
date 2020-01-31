@@ -96,4 +96,5 @@ void FeatureTableColumnConfig::init(){
     this->displayColumns.append(eFeatureDisplayComment);
     this->displayColumns.append(eFeatureDisplayAngle);
     this->displayColumns.append(eFeatureDisplayDistance);
+    this->displayColumns.append(eFeatureDisplayFormError);
 }

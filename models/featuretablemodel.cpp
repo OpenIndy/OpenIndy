@@ -146,6 +146,7 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         case eFeatureDisplayExpansionOriginX:
         case eFeatureDisplayExpansionOriginY:
         case eFeatureDisplayExpansionOriginZ:
+        case eFeatureDisplayFormError:
             return QVariant(Qt::AlignRight | Qt::AlignVCenter);
         }
 
@@ -239,6 +240,9 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
                 header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
                 break;
             case eFeatureDisplayExpansionOriginZ:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayFormError:
                 header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
                 break;
             }
@@ -1124,6 +1128,9 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
         case eFeatureDisplayExpansionOriginZ:
             return feature->getFeature()->getDisplayExpansionOriginZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                      this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eFeatureDisplayFormError:
+            return feature->getFeature()->getDisplayFormError(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
         }
 
     }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
@@ -1250,6 +1257,8 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
         case eFeatureDisplayExpansionOriginY:
             return QColor(Qt::yellow);
         case eFeatureDisplayExpansionOriginZ:
+            return QColor(Qt::yellow);
+        case eFeatureDisplayFormError:
             return QColor(Qt::yellow);
         }
 

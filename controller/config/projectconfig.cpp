@@ -441,6 +441,8 @@ bool ProjectConfig::loadProjectSettingsConfigFile()
                          displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginY);
                     } else if(QString::compare(name, "ExpansionOriginZ", Qt::CaseInsensitive) == 0) {
                          displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginZ);
+                    } else if(QString::compare(name, "FormError", Qt::CaseInsensitive) == 0) {
+                        displayColumns.append(oi::FeatureDisplayAttributes::eFeatureDisplayFormError);
                     }
                 }
             }
@@ -617,6 +619,9 @@ bool ProjectConfig::saveprojectSettingsConfigFile()
             break;
         case (oi::FeatureDisplayAttributes::eFeatureDisplayExpansionOriginZ):
             column.setAttribute("name", "ExpansionOriginZ");
+            break;
+        case (oi::FeatureDisplayAttributes::eFeatureDisplayFormError):
+            column.setAttribute("name", "FormError");
             break;
         }
         columnsElem.appendChild(column);
