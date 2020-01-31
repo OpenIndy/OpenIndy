@@ -94,6 +94,7 @@ SOURCES += \
     $$PWD/../models/plugintreeviewmodel.cpp \
     $$PWD/../ui/dialogs/pluginmanagerdialog.cpp \
     $$PWD/../ui/dialogs/watchwindowdialog.cpp \
+    $$PWD/../ui/dialogs/watchwindowutil.cpp \
     $$PWD/../controller/exchange/projectexchanger.cpp \
     $$PWD/../ui/dialogs/measurementconfigurationdialog.cpp \
     $$PWD/../models/measurementconfigurationmodel.cpp \
@@ -140,7 +141,8 @@ SOURCES += \
     $$PWD/../models/bundleparametertableproxymodel.cpp \
     $$PWD/../models/featuredifferencetablemodel.cpp \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
-    $$PWD/../controller/config/projectconfig.cpp
+    $$PWD/../controller/config/projectconfig.cpp \
+    $$PWD/../ui/dialogs/uiutil.cpp
 
 # header files
 HEADERS  += \
@@ -196,6 +198,7 @@ HEADERS  += \
     $$PWD/../models/plugintreeviewmodel.h \
     $$PWD/../ui/dialogs/pluginmanagerdialog.h \
     $$PWD/../ui/dialogs/watchwindowdialog.h \
+    $$PWD/../ui/dialogs/watchwindowutil.h \
     $$PWD/../controller/exchange/projectexchanger.h \
     $$PWD/../ui/dialogs/measurementconfigurationdialog.h \
     $$PWD/../models/measurementconfigurationmodel.h \
@@ -242,7 +245,8 @@ HEADERS  += \
     $$PWD/../models/bundleparametertableproxymodel.h \
     $$PWD/../models/featuredifferencetablemodel.h \
     $$PWD/../models/featuredifferenceproxymodel.h \
-    $$PWD/../controller/config/projectconfig.h
+    $$PWD/../controller/config/projectconfig.h \
+    $$PWD/../ui/dialogs/uiutil.h
 
 # ui files
 FORMS    += \

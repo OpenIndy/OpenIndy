@@ -24,6 +24,7 @@
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
 #include "feature.h"
+#include "watchwindowutil.h"
 
 enum DisplayAttributes{
     eName = 0,
@@ -200,8 +201,9 @@ private:
     QString getNameLabel(QPointer<FeatureWrapper> feature);
 
     QPointer<FeatureWrapper> getFeature(OiVec trackerXYZ);
-    Position getPosition(QPointer<FeatureWrapper> feature);
     void setVisibility();
+
+    WatchWindowUtil util;
 
 };
 

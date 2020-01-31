@@ -10,6 +10,7 @@
 #include "modelmanager.h"
 #include "systemdbmanager.h"
 #include "util.h"
+#include "uiutil.h"
 
 using namespace oi;
 
