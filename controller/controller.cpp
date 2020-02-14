@@ -1089,6 +1089,7 @@ void Controller::_startMeasurement(bool dummyPoint){
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
     MeasurementConfig mConfig = activeFeature->getGeometry()->getMeasurementConfig();
+    mConfig.setTransientData("isDummyPoint", dummyPoint); // use MeasurementConfig for "transportation"
     activeStation->measure(id, mConfig);
 
 }
