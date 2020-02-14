@@ -1037,10 +1037,14 @@ void Controller::startDisconnect(){
 
 }
 
+void Controller::startMeasurement(){
+    this->_startMeasurement(false);
+}
+
 /*!
  * \brief Controller::startMeasurement
  */
-void Controller::startMeasurement(){
+void Controller::_startMeasurement(bool dummyPoint){
 
     //check current job
     if(this->job.isNull()){
