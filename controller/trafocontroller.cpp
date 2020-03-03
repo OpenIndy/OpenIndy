@@ -178,6 +178,25 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
             newOrigin.setVector(result);
             startSystem->setOrigin(newOrigin);
 
+            OiVec n;
+            n.add(0.0);
+            n.add(0.0);
+            n.add(1.0);
+            n.add(1.0);
+            //create homogeneous rotation matrix
+            OiMat rotMat = trafoMat;
+            rotMat.setAt(0, 3, 0.0);
+            rotMat.setAt(1, 3, 0.0);
+            rotMat.setAt(2, 3, 0.0);
+            OiVec ijk = rotMat * n;
+            ijk.removeLast();
+            ijk.normalize();
+            ijk.add(1.0);
+
+            Direction direction;
+            direction.setVector(ijk);
+            startSystem->setDirection(direction);
+
             if(isStation){
                 startSystem->getStation()->getPosition()->setIsSolved(true);
             }
