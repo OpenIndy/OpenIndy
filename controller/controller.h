@@ -53,6 +53,8 @@ public:
 
     bool hasProjectDigestChanged();
 
+    void _startMeasurement(bool dummyPoint);
+
 public slots:
 
     //#######################

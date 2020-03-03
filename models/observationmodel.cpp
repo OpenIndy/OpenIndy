@@ -181,6 +181,11 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
                 return Qt::Checked;
             }
             return Qt::Unchecked;
+        case eObservationDisplayIsDummyPoint:
+            if(observation->getIsDummyPoint()){
+                return Qt::Checked;
+            }
+            return Qt::Unchecked;
         }
 
     }else if(role == Qt::TextAlignmentRole){
