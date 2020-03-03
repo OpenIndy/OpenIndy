@@ -1037,10 +1037,14 @@ void Controller::startDisconnect(){
 
 }
 
+void Controller::startMeasurement(){
+    this->_startMeasurement(false);
+}
+
 /*!
  * \brief Controller::startMeasurement
  */
-void Controller::startMeasurement(){
+void Controller::_startMeasurement(bool dummyPoint){
 
     //check current job
     if(this->job.isNull()){
@@ -1085,6 +1089,7 @@ void Controller::startMeasurement(){
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
     MeasurementConfig mConfig = activeFeature->getGeometry()->getMeasurementConfig();
+    mConfig.setTransientData("isDummyPoint", dummyPoint); // use MeasurementConfig for "transportation"
     activeStation->measure(id, mConfig);
 
 }

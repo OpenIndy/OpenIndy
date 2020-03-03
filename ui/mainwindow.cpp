@@ -489,7 +489,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
         }else{ //normal measurement
-            this->control.startMeasurement();
+            this->control._startMeasurement(e->modifiers() == Qt::ShiftModifier);
         }
         break;
 
