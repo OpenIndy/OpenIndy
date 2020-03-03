@@ -143,17 +143,8 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
     }
 
     if(startSystem == destinationSystem){
-        OiVec v;
-        v.add(0.0);
-        v.add(0.0);
-        v.add(0.0);
-        Position origin;
-        origin.setVector(v);
-        startSystem->setOrigin(origin);
 
-        if(isStation){
-            startSystem->getStation()->getPosition()->setIsSolved(true);
-        }
+        setDefaultOriginAndNormal(startSystem, isStation);
 
         return;
 
@@ -173,9 +164,9 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
             v.add(0.0);
             v.add(1.0);
 
-            OiVec result = trafoMat * v;
+            OiVec xyz = trafoMat * v;
             Position newOrigin;
-            newOrigin.setVector(result);
+            newOrigin.setVector(xyz);
             startSystem->setOrigin(newOrigin);
 
             OiVec n;
@@ -204,16 +195,35 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
             return;
         }
     }
+
+    setDefaultOriginAndNormal(startSystem, isStation);
+
+}
+
+/*!
+ * \brief TrafoController::setDefaultOriginAndNormal set default origin / position (0,0,0) and default direction / normal (0,0,1)
+ */
+void TrafoController::setDefaultOriginAndNormal(const QPointer<CoordinateSystem> &startSystem,  bool isStation) {
+    OiVec v;
+    v.add(0.0);
+    v.add(0.0);
+    v.add(0.0);
+    Position origin;
+    origin.setVector(v);
+    startSystem->setOrigin(origin);
+
+    OiVec n;
+    n.add(0.0);
+    n.add(0.0);
+    n.add(1.0);
+    n.add(1.0);
+    Direction direction;
+    direction.setVector(n);
+    startSystem->setDirection(direction);
+
     if(isStation){
-        startSystem->getStation()->getPosition()->setIsSolved(false);
+        startSystem->getStation()->getPosition()->setIsSolved(true);
     }
-    OiVec tmp;
-    tmp.add(0.0);
-    tmp.add(0.0);
-    tmp.add(0.0);
-    Position tmpOrigin;
-    tmpOrigin.setVector(tmp);
-    startSystem->setOrigin(tmpOrigin);
 }
 
 /*!
