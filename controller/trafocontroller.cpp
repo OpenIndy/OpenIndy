@@ -158,35 +158,7 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
         //if trafo matrix is valid
         //check if matrix is 4x4 = homogeneous matrix
         if(hasTransformation && trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
-            OiVec v;
-            v.add(0.0);
-            v.add(0.0);
-            v.add(0.0);
-            v.add(1.0);
-
-            OiVec xyz = trafoMat * v;
-            Position newOrigin;
-            newOrigin.setVector(xyz);
-            startSystem->setOrigin(newOrigin);
-
-            OiVec n;
-            n.add(0.0);
-            n.add(0.0);
-            n.add(1.0);
-            n.add(1.0);
-            //create homogeneous rotation matrix
-            OiMat rotMat = trafoMat;
-            rotMat.setAt(0, 3, 0.0);
-            rotMat.setAt(1, 3, 0.0);
-            rotMat.setAt(2, 3, 0.0);
-            OiVec ijk = rotMat * n;
-            ijk.removeLast();
-            ijk.normalize();
-            ijk.add(1.0);
-
-            Direction direction;
-            direction.setVector(ijk);
-            startSystem->setDirection(direction);
+            startSystem->transformOriginAndAxis(trafoMat);
 
             if(isStation){
                 startSystem->getStation()->getPosition()->setIsSolved(true);
@@ -204,22 +176,7 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
  * \brief TrafoController::setDefaultOriginAndNormal set default origin / position (0,0,0) and default direction / normal (0,0,1)
  */
 void TrafoController::setDefaultOriginAndNormal(const QPointer<CoordinateSystem> &startSystem,  bool isStation) {
-    OiVec v;
-    v.add(0.0);
-    v.add(0.0);
-    v.add(0.0);
-    Position origin;
-    origin.setVector(v);
-    startSystem->setOrigin(origin);
-
-    OiVec n;
-    n.add(0.0);
-    n.add(0.0);
-    n.add(1.0);
-    n.add(1.0);
-    Direction direction;
-    direction.setVector(n);
-    startSystem->setDirection(direction);
+    startSystem->resetOriginAndAxis();
 
     if(isStation){
         startSystem->getStation()->getPosition()->setIsSolved(true);
