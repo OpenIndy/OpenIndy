@@ -41,7 +41,7 @@ private:
     //##############
 
     QPointer<TrafoParam> findTransformation(const QPointer<CoordinateSystem> &startSystem, const QPointer<CoordinateSystem> &destinationSystem);
-
+    void setDefaultOriginAndNormal(const QPointer<CoordinateSystem> &startSystem, bool isStation);
 };
 
 #endif // TRAFOCONTROLLER_H
