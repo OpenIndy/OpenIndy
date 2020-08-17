@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>554</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -367,14 +367,32 @@
               <item>
                <widget class="QLabel" name="label_2">
                 <property name="text">
-                 <string>threshold [mm]:</string>
+                 <string>threshold range [mm]:</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_stablePoint_threshold">
+               <widget class="QLineEdit" name="lineEdit_stablePoint_thresholdRange">
                 <property name="text">
                  <string>0.1</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="8,7">
+              <item>
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>threshold time [second]:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_stablePoint_thresholdTime">
+                <property name="text">
+                 <string>2</string>
                 </property>
                </widget>
               </item>
