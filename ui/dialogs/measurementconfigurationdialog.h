@@ -88,6 +88,12 @@ private slots:
     //set measurement config filter
     void on_checkBox_showAll_stateChanged(int arg1);
 
+    void on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1);
+
+    void on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1);
+
+    void on_checkBox_isStablePoint_clicked();
+
 private:
     Ui::MeasurementConfigurationDialog *ui;
 
