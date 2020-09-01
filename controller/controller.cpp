@@ -2177,3 +2177,23 @@ void Controller::connectToolPlugin(const QPointer<Tool> &tool){
     QObject::connect(tool.data(), &Tool::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
 }
+
+void Controller::stopStablePointMeasurement() {
+    if(!this->stablePointLogic.isNull()) {
+        this->stablePointLogic->stopStablePointMeasurement();
+        QObject::disconnect(stablePointLogic.data(), &StablePointLogic::measure, this, &Controller::startMeasurement);
+    }
+    this->stablePointLogic.clear();
+}
+
+void Controller::startStablePointMeasurement() {
+    // clean up / stop
+    if(!this->stablePointLogic.isNull()) {
+        this->stopStablePointMeasurement();
+    }
+
+    // start
+    this->stablePointLogic = new StablePointLogic(this->job, this);
+    QObject::connect(stablePointLogic.data(), &StablePointLogic::measure, this, &Controller::startMeasurement, Qt::AutoConnection);
+    this->stablePointLogic->startStablePointMeasurement();
+}

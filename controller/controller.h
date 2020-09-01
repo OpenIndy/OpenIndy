@@ -29,6 +29,7 @@
 #include "pluginloader.h"
 #include "oiwebsocketserver.h"
 #include "projectconfig.h"
+#include "stablepointlogic.h"
 
 using namespace oi;
 
@@ -54,6 +55,9 @@ public:
     bool hasProjectDigestChanged();
 
     void _startMeasurement(bool dummyPoint);
+
+    void stopStablePointMeasurement(); // TODO OI-496: signal / slot?
+    void startStablePointMeasurement();// TODO OI-496: signal / slot?
 
 public slots:
 
@@ -353,6 +357,8 @@ private:
 
     // synchronize saveProject calls
     QMutex saveProjectMutex;
+
+    QPointer<StablePointLogic> stablePointLogic;
 
 };
 
