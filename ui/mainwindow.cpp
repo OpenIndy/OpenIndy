@@ -498,9 +498,15 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
 
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
+        }else if(isStablePointMeasurement()) {
+            this->control.startStablePointMeasurement();
         }else{ //normal measurement
             this->control._startMeasurement(e->modifiers() == Qt::ShiftModifier);
         }
+        break;
+
+    case Qt::Key_Escape: // stop or terminate all running actions
+        this->control.stopStablePointMeasurement();
         break;
 
     case Qt::Key_A: //aim
