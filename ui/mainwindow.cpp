@@ -463,6 +463,16 @@ void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgTy
 
 }
 
+bool MainWindow::isStablePointMeasurement() {
+    QPointer<FeatureWrapper> activeFeature = this->control.getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    return activeFeature->getGeometry()->getMeasurementConfig().getIsStablePoint();
+}
+
 /*!
  * \brief MainWindow::keyPressEvent
  * Triggered whenever the user has pressed a key
