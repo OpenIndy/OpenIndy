@@ -69,49 +69,15 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
 }
 
 void StablePointLogic::stopStablePointMeasurement(){
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    emit this->stopStreaming();
 
-    //stop reading stream
-    if(!activeStation.isNull() && activeStation->getIsSensorConnected()){
-        emit this->stopStreaming();
-    }
 }
 
 void StablePointLogic::startStablePointMeasurement(){
+    qDebug() << "start timer";
+    QPointer<QTimer> timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
+    timer->start(250);
 
-    //connect sensor
-    this->connectSensor();
-
-    //start reading stream
-    emit this->startStreaming(eCartesianReading);
+    emit this->startStreaming(ReadingTypes::eCartesianReading);
 }
-
-/*!
- * \brief WatchWindowDialog::connectSensor
- * Connects the active sensor so that real time readings are recognized by the watch window
- */
-void StablePointLogic::connectSensor(){
-
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check the active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
-    if(activeStation.isNull()){
-        return;
-    }
-
-    //check and disconnect the old station
-    if(!activeStation.isNull()){
-        QObject::disconnect(activeStation, &Station::realTimeReading, this, &StablePointLogic::realTimeReading);
-    }
-
-    //save and connect active station
-    //this->activeStation = activeStation;
-    QObject::connect(activeStation, &Station::realTimeReading, this, &StablePointLogic::realTimeReading);
-}
-
-
-
