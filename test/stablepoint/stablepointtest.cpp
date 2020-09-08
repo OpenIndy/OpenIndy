@@ -28,22 +28,10 @@ public:
 private Q_SLOTS:
     void testStablePoint1();
 
-
-private:
-    OiVec createTrackerXYZ(double x, double y, double z);
 };
 
 StablePointTest::StablePointTest()
 {
-}
-
-OiVec StablePointTest::createTrackerXYZ(double x, double y, double z) {
-    OiVec trackerXYZ = OiVec(4);
-    trackerXYZ.setAt(0, x);
-    trackerXYZ.setAt(1, y);
-    trackerXYZ.setAt(2, z);
-    trackerXYZ.setAt(3, 1.0);
-    return trackerXYZ;
 }
 
 // basic test
