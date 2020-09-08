@@ -40,7 +40,6 @@ void StablePointTest::testStablePoint1()
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
-    //StablePointLogic *logic = new StablePointLogic(job, this);
     MeasurementConfig config;
     config.setIsStablePoint(true);
     config.setStablePointThresholdTime(1.); // [second]
@@ -51,6 +50,7 @@ void StablePointTest::testStablePoint1()
 
     // send readings from sensor
     QPointer<TestSensor> sensor = new TestSensor();
+    // connect sensor to logic
     connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
     QThread* sensorThread = new QThread();
     sensor->moveToThread(sensorThread);
@@ -59,20 +59,13 @@ void StablePointTest::testStablePoint1()
 
 
     QThread::msleep(1000);
-    QSignalSpy spy_startMeasurement(logic, SIGNAL(startStreaming()));
+    QSignalSpy spy_startMeasurement(logic, SIGNAL(startMeasurement()));
 
-    // check all 250ms first run is false
-    QCOMPARE(spy_startMeasurement.wait(300), false);
-    QCOMPARE(spy_startMeasurement.count(), 0);
-
-    // start   
-    QCOMPARE(spy_startMeasurement.wait(300), true);
+    QCOMPARE(spy_startMeasurement.wait(2000), true);
     QCOMPARE(spy_startMeasurement.count(), 1);
 
 
     logic->stopStablePointMeasurement();
-
-    QTEST_ASSERT(false);
 
 }
 
