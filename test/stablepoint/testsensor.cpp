@@ -14,7 +14,7 @@ void TestSensor::process() {
 
     QStringList readingL = readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
     for ( const QString& r : readingL ) {
-        if(r.contains("#")) {
+        if(r.startsWith("#")) {
             continue;
         }
 
