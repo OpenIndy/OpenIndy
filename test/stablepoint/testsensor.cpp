@@ -1,6 +1,6 @@
 #include "testsensor.h"
 
-TestSensor::TestSensor(QObject *parent) : QObject(parent)
+TestSensor::TestSensor(int sleep, QString readings, QObject *parent) : QObject(parent), sleep(sleep), readings(readings)
 {
 
 }
@@ -9,82 +9,26 @@ TestSensor::~TestSensor()
 
 }
 
-QVariantMap TestSensor::cartesianReading(double x, double y, double z) {
-    QVariantMap reading;
-    reading.insert("x", QString::number(x));
-    reading.insert("y", QString::number(y));
-    reading.insert("z", QString::number(z));
-    return reading;
-}
-
 void TestSensor::process() {
     qDebug() << "process";
 
-    int sleep = 200;
+    QStringList readingL = readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
+    for ( const QString& r : readingL ) {
+        if(r.contains("#")) {
+            continue;
+        }
 
-    // move phase, step 2 mm
-    emit realTimeReading(cartesianReading(110.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(108.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(106.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(104.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(102.21, 200.01, 300.01));
+        QStringList xzy = r.split(QRegExp("[ ]"), QString::SkipEmptyParts);
+        QVariantMap readingMap;
+        readingMap.insert("x", xzy.at(0));
+        readingMap.insert("y", xzy.at(1));
+        readingMap.insert("z", xzy.at(0));
 
-    // stable phase
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.12, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.13, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.03, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.04, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.05, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.03, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(100.04, 200.01, 300.01));
+        emit realTimeReading(readingMap);
 
-    /*
-    // move phase, step 2 mm
-    emit realTimeReading(cartesianReading(98.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(96.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(94.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(92.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(90.21, 200.01, 300.01));
+        QThread::msleep(sleep);
 
+    }
 
-    // stable phase
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.12, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.13, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.03, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.04, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.05, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.01, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.03, 200.01, 300.01));
-    QThread::msleep(sleep);
-    emit realTimeReading(cartesianReading(88.04, 200.01, 300.01));
-*/
     emit finished();
 }
