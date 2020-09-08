@@ -9,11 +9,11 @@ StablePointLogic::StablePointLogic(MeasurementConfig config, QObject *parent) : 
 
 }
 
-StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(copy.pointIsStable), config(copy.config){
+StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(false), config(config) {
 }
 
 StablePointLogic &StablePointLogic::operator=(const StablePointLogic &copy) {
-    this->pointIsStable = copy.pointIsStable;
+    this->pointIsStable = false;
     this->config = copy.config;
     return *this;
 }

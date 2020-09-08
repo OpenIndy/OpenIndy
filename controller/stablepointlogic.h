@@ -47,7 +47,8 @@ private:
     oi::math::OiVec lastXyz;
     oi::math::OiVec lastStableXyz;
     MeasurementConfig config;
-    bool pointIsStable;
+
+    std::atomic<bool> pointIsStable;
 
 };
 
