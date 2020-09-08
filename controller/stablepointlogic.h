@@ -1,10 +1,17 @@
 #ifndef STABLEPOINTLOGIC_H
 #define STABLEPOINTLOGIC_H
 
+#include <QDebug>
 #include <QObject>
+#include <QPointer>
+#include <QTimer>
 #include <QVariant>
-#include "station.h"
-#include "oijob.h"
+#include <QtMath>
+#include <QElapsedTimer>
+
+#include "oivec.h"
+#include "types.h"
+#include "measurementconfig.h"
 
 namespace oi{
 

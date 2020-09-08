@@ -6,9 +6,6 @@ StablePointLogic::StablePointLogic(MeasurementConfig config, QObject *parent) : 
     pointIsStable(false), config(config)
 {
 
-    static QTimer *timer = new QTimer(parent);
-    connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
-    timer->start(250);
 }
 
 StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(copy.pointIsStable), config(copy.config){
