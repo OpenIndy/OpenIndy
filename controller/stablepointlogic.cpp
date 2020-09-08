@@ -36,6 +36,13 @@ void StablePointLogic::checkStablePoint() {
     }
 }
 
+void StablePointLogic::euclideanDistance(double &result, OiVec v1, OiVec v2) {
+    double dot;
+    OiVec v = v2 - v1;
+    OiVec::dot(dot, v, v);
+    result = qSqrt(dot);
+}
+
 /*!
  * \brief WatchWindowDialog::realTimeReading
  * \param reading

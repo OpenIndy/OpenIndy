@@ -40,6 +40,9 @@ private slots:
     void checkStablePoint();
 
 private:
+    void euclideanDistance(double &result, oi::math::OiVec v1, oi::math::OiVec v2); // TODO move to OiVec
+
+private:
     QElapsedTimer elapsed;
     oi::math::OiVec lastXyz;
     oi::math::OiVec lastStableXyz;
