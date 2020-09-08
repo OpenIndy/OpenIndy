@@ -13,13 +13,15 @@ class StablePointLogic : public QObject
     Q_OBJECT
 
 public:
-    explicit StablePointLogic(QPointer<OiJob> job, QObject *parent = 0);
+    explicit StablePointLogic(MeasurementConfig config, QObject *parent = 0);
     StablePointLogic(const StablePointLogic &copy, QObject *parent = 0);
+    StablePointLogic &operator=(const StablePointLogic &copy);
     ~StablePointLogic();
 
 public slots:
     void startStablePointMeasurement();
     void stopStablePointMeasurement();
+    void realTimeReading(const QVariantMap &reading);
 
 signals:
     void startMeasurement();
@@ -29,14 +31,11 @@ signals:
 
 private slots:
     void checkStablePoint();
-    void realTimeReading(const QVariantMap &reading);
-
-    void connectSensor();
 
 private:
     //QPointer<Station> activeStation;
     bool pointIsStable;
-    QPointer<OiJob> job;
+
 };
 
 }

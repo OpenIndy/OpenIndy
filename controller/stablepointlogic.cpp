@@ -2,8 +2,8 @@
 
 using namespace oi;
 
-StablePointLogic::StablePointLogic(QPointer<OiJob> job, QObject *parent) : QObject(parent),
-    job(job)
+StablePointLogic::StablePointLogic(MeasurementConfig config, QObject *parent) : QObject(parent),
+    pointIsStable(false), config(config)
 {
 
     static QTimer *timer = new QTimer(parent);
@@ -11,9 +11,13 @@ StablePointLogic::StablePointLogic(QPointer<OiJob> job, QObject *parent) : QObje
     timer->start(250);
 }
 
-StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent){
-    this->job = copy.job;
+StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(copy.pointIsStable), config(copy.config){
+}
+
+StablePointLogic &StablePointLogic::operator=(const StablePointLogic &copy) {
     this->pointIsStable = copy.pointIsStable;
+    this->config = copy.config;
+    return *this;
 }
 
 /*!
