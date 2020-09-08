@@ -49,7 +49,25 @@ void StablePointTest::testStablePoint1()
     logic->startStablePointMeasurement();
 
     // send readings from sensor
-    QPointer<TestSensor> sensor = new TestSensor();
+    QString readings("\
+ # move phase, step 2 mm\n\
+ 110.01 200.01 300.01\n\
+ 108.01 200.01 300.01\n\
+ 106.01 200.01 300.01\n\
+ 104.01 200.01 300.01\n\
+ 102.21 200.01 300.01\n\
+ # stable phase\n\
+ 100.12 200.01 300.01\n\
+ 100.13 200.01 300.01\n\
+ 100.01 200.01 300.01\n\
+ 100.03 200.01 300.01\n\
+ 100.04 200.01 300.01\n\
+ 100.05 200.01 300.01\n\
+ 100.01 200.01 300.01\n\
+ 100.03 200.01 300.01\n\
+ 100.04 200.01 300.01");
+    QPointer<TestSensor> sensor = new TestSensor(200, readings);
+
     // connect sensor to logic
     connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
     QThread* sensorThread = new QThread();
