@@ -2078,14 +2078,14 @@ void Controller::stopStablePointMeasurement() {
     QPointer<Station> activeStation = getConnectedActiveStation();
 
     if(!this->stablePointLogic.isNull()) {
-        this->stablePointLogic->stopStablePointMeasurement();
+        this->stablePointLogic->stopStablePointMeasurement(); // TODO or call Controller::stopReadingStream ???
 
-        QObject::disconnect(stablePointLogic, &StablePointLogic::measure, this, &Controller::startMeasurement);
+        QObject::disconnect(stablePointLogic, &StablePointLogic::startStreaming, this, &Controller::startReadingStream);
         QObject::disconnect(stablePointLogic, &StablePointLogic::stopStreaming, this, &Controller::stopReadingStream);
-        QObject::disconnect(stablePointLogic, &StablePointLogic::measure, this, &Controller::startMeasurement);
+        QObject::disconnect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement);
         QObject::disconnect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading);
     }
-    this->stablePointLogic.clear();
+    // this->stablePointLogic.clear();
 
 }
 
@@ -2108,13 +2108,15 @@ void Controller::startStablePointMeasurement() {
     }
 
     // start
-    this->stablePointLogic = new StablePointLogic(activeFeature->getGeometry()->getMeasurementConfig(), this);
+     if(this->stablePointLogic.isNull()) {
+        this->stablePointLogic = new StablePointLogic(this);
+     }
 
     QObject::connect(stablePointLogic, &StablePointLogic::startStreaming, this, &Controller::startReadingStream, Qt::AutoConnection);
     QObject::connect(stablePointLogic, &StablePointLogic::stopStreaming, this, &Controller::stopReadingStream, Qt::AutoConnection);
-    QObject::connect(stablePointLogic, &StablePointLogic::measure, this, &Controller::startMeasurement, Qt::AutoConnection);
+    QObject::connect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
 
-    this->stablePointLogic->startStablePointMeasurement();
+    this->stablePointLogic->startStablePointMeasurement(activeFeature->getGeometry()->getMeasurementConfig());
 
 }

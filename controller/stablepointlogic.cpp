@@ -3,13 +3,10 @@
 using namespace oi;
 using namespace oi::math;
 
-StablePointLogic::StablePointLogic(MeasurementConfig config, QObject *parent) : QObject(parent),
-    pointIsStable(false), config(config)
-{
-
+StablePointLogic::StablePointLogic(QObject *parent) : QObject(parent), pointIsStable(false) {
 }
 
-StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(false), config(config) {
+StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(false) {
 }
 
 StablePointLogic &StablePointLogic::operator=(const StablePointLogic &copy) {
@@ -31,7 +28,7 @@ void StablePointLogic::checkStablePoint() {
 
     if(this->pointIsStable) {
         this->pointIsStable = false;
-
+        emit this->stopStreaming();
         emit this->startMeasurement();
     }
 }
@@ -119,10 +116,11 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
 
 void StablePointLogic::stopStablePointMeasurement(){
     emit this->stopStreaming();
-
 }
 
-void StablePointLogic::startStablePointMeasurement(){
+void StablePointLogic::startStablePointMeasurement(MeasurementConfig config){
+    this->config = config;
+
     qDebug() << "startStablePointMeasurement";
     QPointer<QTimer> timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));

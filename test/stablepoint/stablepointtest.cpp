@@ -45,8 +45,8 @@ void StablePointTest::testStablePoint_basic()
     config.setStablePointThresholdTime(1.); // [second]
     config.setStablePointMinDistance(1.0);  // [mm]
 
-    QPointer<StablePointLogic> logic = new StablePointLogic(config, this);
-    logic->startStablePointMeasurement();
+    QPointer<StablePointLogic> logic = new StablePointLogic(this);
+    logic->startStablePointMeasurement(config);
 
     // send readings from sensor
     QString readings("\

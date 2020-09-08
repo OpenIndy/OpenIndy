@@ -31,13 +31,13 @@ class StablePointLogic : public QObject
     Q_OBJECT
 
 public:
-    explicit StablePointLogic(MeasurementConfig config, QObject *parent = 0);
+    explicit StablePointLogic(QObject *parent = 0);
     StablePointLogic(const StablePointLogic &copy, QObject *parent = 0);
     StablePointLogic &operator=(const StablePointLogic &copy);
     ~StablePointLogic();
 
 public slots:
-    void startStablePointMeasurement();
+    void startStablePointMeasurement(MeasurementConfig config);
     void stopStablePointMeasurement();
     void realTimeReading(const QVariantMap &reading);
 
