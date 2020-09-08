@@ -1517,28 +1517,40 @@ void Controller::startCustomAction(const QString &task){
 
 }
 
-/*!
- * \brief Controller::startWatchWindow
- * \param streamFormat
+/**
+ * @brief Controller::getConnectedActiveStation
+ * @return connected active station or 0
  */
-void Controller::startWatchWindow(ReadingTypes streamFormat){
-
+QPointer<Station> Controller::getConnectedActiveStation() {
     //check current job
     if(this->job.isNull()){
-        return;
+        return 0;
     }
 
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
+        return 0;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
         this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+        return 0;
+    }
+
+    return activeStation;
+}
+
+/*!
+ * \brief Controller::startReadingStream
+ * \param streamFormat
+ */
+void Controller::startReadingStream(ReadingTypes streamFormat){
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()){
+       return;
     }
 
     //start streaming
@@ -1548,26 +1560,13 @@ void Controller::startWatchWindow(ReadingTypes streamFormat){
 }
 
 /*!
- * \brief Controller::stopWatchWindow
+ * \brief Controller::stopReadingStream
  */
-void Controller::stopWatchWindow(){
+void Controller::stopReadingStream(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //stop streaming
@@ -2137,8 +2136,8 @@ void Controller::connectRequestHandler(){
     //sensor actions
     QObject::connect(&this->requestHandler, &OiRequestHandler::startAim, this, &Controller::startAim, Qt::AutoConnection);
     QObject::connect(&this->requestHandler, &OiRequestHandler::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
-    QObject::connect(&this->requestHandler, &OiRequestHandler::startReadingStream, this, &Controller::startWatchWindow, Qt::AutoConnection);
-    QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopWatchWindow, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startReadingStream, this, &Controller::startReadingStream, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopReadingStream, Qt::AutoConnection);
 
     //connect streaming
     QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::QueuedConnection);

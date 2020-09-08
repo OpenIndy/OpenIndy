@@ -3123,8 +3123,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 
             //connect watch window dialog
-            QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
-            QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startReadingStream, Qt::AutoConnection);
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopReadingStream, Qt::AutoConnection);
         }
 
         qDebug() << "openWatchWindow"

@@ -141,8 +141,8 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(const QString &task);
-    void startWatchWindow(ReadingTypes streamFormat);
-    void stopWatchWindow();
+    void startReadingStream(ReadingTypes streamFormat);
+    void stopReadingStream();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
@@ -358,6 +358,7 @@ private:
     // synchronize saveProject calls
     QMutex saveProjectMutex;
 
+    QPointer<Station> getConnectedActiveStation();
     QPointer<StablePointLogic> stablePointLogic;
 
 };
