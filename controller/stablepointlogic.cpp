@@ -61,10 +61,8 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
     xyz.setAt(2, reading.value("z").toDouble());
 
     if(lastXyz.getSize() > 0) { // 2-n call
-        double dot;
-        OiVec v = xyz - lastXyz;
-        OiVec::dot(dot, v, v);
-        double distance = qSqrt(dot);
+        double distance;
+        euclideanDistance(distance, xyz, lastXyz);
 
         qDebug() << "distance" << distance;
         if(distance <= this->config.getStablePointMinDistance()) {
