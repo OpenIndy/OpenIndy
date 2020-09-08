@@ -1,6 +1,6 @@
 #include "testsensor.h"
 
-TestSensor::TestSensor(int sleep, QString readings, QObject *parent) : QObject(parent), sleep(sleep), readings(readings)
+TestSensor::TestSensor(int sleep, QString readings, QObject *parent) : QThread(parent), sleep(sleep), readings(readings)
 {
 
 }
@@ -9,8 +9,8 @@ TestSensor::~TestSensor()
 
 }
 
-void TestSensor::process() {
-    qDebug() << "process";
+void TestSensor::run() {
+    qDebug() << "run";
 
     QStringList readingL = readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts);
     for ( const QString& r : readingL ) {

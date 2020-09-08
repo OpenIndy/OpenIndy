@@ -6,9 +6,14 @@
 #include <QThread>
 #include <QString>
 #include <QStringList>
+#include <QQueue>
 #include <QDebug>
+#include <atomic>
+#include "types.h"
 
-class TestSensor : public QObject
+using namespace oi;
+
+class TestSensor : public QThread
 {
     Q_OBJECT
 public:
@@ -17,8 +22,9 @@ public:
 
 signals:
     void realTimeReading(const QVariantMap &reading);
-    void finished();
-    void error(QString err);
+
+protected:
+    void run();
 
 public slots:
     void process();
