@@ -25,9 +25,9 @@ StablePointLogic::~StablePointLogic(){
     //
 }
 
-// signal  controller
+// signal controller
 void StablePointLogic::checkStablePoint() {
-    qDebug() << "checkStablePoint";
+    qDebug() << "checkStablePoint: pointIsStable" << this->pointIsStable;
 
     if(this->pointIsStable) {
         this->pointIsStable = false;
@@ -49,8 +49,6 @@ void StablePointLogic::euclideanDistance(double &result, OiVec v1, OiVec v2) {
  */
 void StablePointLogic::realTimeReading(const QVariantMap &reading){
 
-    qDebug() << "realTimeReading" << reading;
-
     if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
         return;
     }
@@ -60,24 +58,62 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
     xyz.setAt(1, reading.value("y").toDouble());
     xyz.setAt(2, reading.value("z").toDouble());
 
-    if(lastXyz.getSize() > 0) { // 2-n call
+    if(readingDatas.size() > 0) { // 2-n call
         double distance;
-        euclideanDistance(distance, xyz, lastXyz);
+        euclideanDistance(distance, xyz, readingDatas.last().xyz);
 
-        qDebug() << "distance" << distance;
-        if(distance <= this->config.getStablePointMinDistance()) {
-            // timer starten
-            this->elapsed.restart();
-            // if time up
-            this->pointIsStable = true;
-        } else {
-            this->pointIsStable = false;
-            //this->elapsed
-            // timer stoppen
+        double lastMeasuredPointDistance  = DBL_MAX;
+        if(lastStableXyz.getSize() > 0) {
+            euclideanDistance(lastMeasuredPointDistance, xyz, lastStableXyz);
         }
 
+        ReadingData rd;
+        rd.elapsed = elapsedTimer.elapsed();
+        rd.xyz = xyz;
+        rd.distanceToPrevReading = distance;
+        rd.distanceToPrevStable = lastMeasuredPointDistance;
+        rd.guessStable = distance < config.getStablePointThresholdRange() && lastMeasuredPointDistance > config.getStablePointMinDistance();
+        qDebug() << "elapsed" << rd.elapsed
+                 << "xyz" << reading // rd.xyz
+                 << "guessStable" << rd.guessStable
+                 << "distanceToPrevReading" << rd.distanceToPrevReading
+                 << "distanceToPrevStable" << rd.distanceToPrevStable;
+        readingDatas.enqueue(rd);
+
+        // remove old ReadingData
+        while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000) {
+            readingDatas.dequeue();
+        }
+
+        if(readingDatas.size() > 3) { // min readings in time range
+            // check if all true
+            this->pointIsStable = true;
+            for (int i = 0; i < readingDatas.size(); ++i) {
+                qDebug() << "    " << i <<  readingDatas.at(i).guessStable;
+                if(! readingDatas.at(i).guessStable) {
+                    this->pointIsStable = false;
+                    break;
+                }
+            }
+        }
+
+        qDebug() << "pointIsStable" << this->pointIsStable;
+
+
+    } else {
+        ReadingData rd;
+        rd.elapsed = elapsedTimer.elapsed();
+        rd.xyz = xyz;
+        rd.guessStable = false;
+        rd.distanceToPrevReading = DBL_MAX;
+        rd.distanceToPrevStable = DBL_MAX;
+        qDebug() << "elapsed" << rd.elapsed
+                 << "xyz" << reading // rd.xyz
+                 << "guessStable" << rd.guessStable
+                 << "distanceToPrevReading" << rd.distanceToPrevReading
+                 << "distanceToPrevStable" << rd.distanceToPrevStable;
+        readingDatas.enqueue(rd);
     }
-    lastXyz = xyz;
 
 }
 
@@ -87,10 +123,12 @@ void StablePointLogic::stopStablePointMeasurement(){
 }
 
 void StablePointLogic::startStablePointMeasurement(){
-    qDebug() << "start timer";
+    qDebug() << "startStablePointMeasurement";
     QPointer<QTimer> timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
     timer->start(250);
+
+    this->elapsedTimer.start();
 
     emit this->startStreaming(ReadingTypes::eCartesianReading);
 }

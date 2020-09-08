@@ -8,12 +8,23 @@
 #include <QVariant>
 #include <QtMath>
 #include <QElapsedTimer>
+#include <QQueue>
+#include <atomic>
 
 #include "oivec.h"
 #include "types.h"
 #include "measurementconfig.h"
+#include "float.h"  // DBL_MAX
 
 namespace oi{
+
+struct ReadingData {
+    oi::math::OiVec xyz;
+    long elapsed;
+    bool guessStable;
+    double distanceToPrevReading;
+    double distanceToPrevStable;
+};
 
 class StablePointLogic : public QObject
 {
@@ -43,8 +54,9 @@ private:
     void euclideanDistance(double &result, oi::math::OiVec v1, oi::math::OiVec v2); // TODO move to OiVec
 
 private:
-    QElapsedTimer elapsed;
-    oi::math::OiVec lastXyz;
+    QQueue<ReadingData> readingDatas;
+
+    QElapsedTimer elapsedTimer;
     oi::math::OiVec lastStableXyz;
     MeasurementConfig config;
 
