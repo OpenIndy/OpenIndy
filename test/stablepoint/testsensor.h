@@ -27,12 +27,14 @@ protected:
     void run();
 
 public slots:
-    void process();
+    void stopStreaming();
+    void startStreaming(ReadingTypes rt);
 
 private:
     QVariantMap cartesianReading(double x, double y, double z);
     int sleep;
     QString readings;
+    std::atomic<bool> streaming;
 
 };
 
