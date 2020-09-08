@@ -8,7 +8,7 @@
 #include "chooselalib.h"
 #include "util.h"
 #include "stablepointlogic.h"
-#include "oijob.h"
+#include "testsensor.h"
 
 #define COMPARE_DOUBLE(actual, expected, threshold) QVERIFY(std::abs(actual-expected)< threshold);
 #define _OI_VEC(v) v.getAt(0) << "," << v.getAt(1) << "," << v.getAt(2)
@@ -46,20 +46,49 @@ OiVec StablePointTest::createTrackerXYZ(double x, double y, double z) {
     return trackerXYZ;
 }
 
+// basic test
 void StablePointTest::testStablePoint1()
 {
 
-
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
-    QPointer<OiJob> job;
-    StablePointLogic logic = StablePointLogic(job);
+    //StablePointLogic *logic = new StablePointLogic(job, this);
+    MeasurementConfig config;
+    config.setIsStablePoint(true);
+    config.setStablePointThresholdTime(1.); // [second]
+    config.setStablePointMinDistance(1.0);  // [mm]
+
+    QPointer<StablePointLogic> logic = new StablePointLogic(config, this);
+    logic->startStablePointMeasurement();
+
+    // send readings from sensor
+    QPointer<TestSensor> sensor = new TestSensor();
+    connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
+    QThread* sensorThread = new QThread();
+    sensor->moveToThread(sensorThread);
+    connect(sensorThread, SIGNAL (started()), sensor, SLOT (process()));
+    sensorThread->start();
+
+
+    QThread::msleep(1000);
+    QSignalSpy spy_startMeasurement(logic, SIGNAL(startStreaming()));
+
+    // check all 250ms first run is false
+    QCOMPARE(spy_startMeasurement.wait(300), false);
+    QCOMPARE(spy_startMeasurement.count(), 0);
+
+    // start   
+    QCOMPARE(spy_startMeasurement.wait(300), true);
+    QCOMPARE(spy_startMeasurement.count(), 1);
+
+
+    logic->stopStablePointMeasurement();
 
     QTEST_ASSERT(false);
 
 }
 
 
-QTEST_APPLESS_MAIN(StablePointTest)
+QTEST_MAIN(StablePointTest) // instead of QTEST_APPLESS_MAIN because of QTimer
 
 #include "stablepointtest.moc"

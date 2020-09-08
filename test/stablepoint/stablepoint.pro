@@ -15,7 +15,8 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += stablepointtest.cpp
+SOURCES += stablepointtest.cpp \
+    testsensor.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 
@@ -38,7 +39,8 @@ SOURCES += \
 
 # test dependencies
 HEADERS +=  \
-    $$PWD/../../controller/stablepointlogic.h
+    $$PWD/../../controller/stablepointlogic.h \
+    testsensor.h
 
 CONFIG(debug, debug|release) {
     BUILD_DIR=debug
