@@ -33,6 +33,7 @@ private Q_SLOTS:
 
 StablePointTest::StablePointTest()
 {
+    qRegisterMetaType<oi::ReadingTypes>("ReadingTypes");
 }
 
 // basic test
