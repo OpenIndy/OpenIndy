@@ -1,6 +1,7 @@
 #include "stablepointlogic.h"
 
 using namespace oi;
+using namespace oi::math;
 
 StablePointLogic::StablePointLogic(MeasurementConfig config, QObject *parent) : QObject(parent),
     pointIsStable(false), config(config)
@@ -26,6 +27,8 @@ StablePointLogic::~StablePointLogic(){
 
 // signal  controller
 void StablePointLogic::checkStablePoint() {
+    qDebug() << "checkStablePoint";
+
     if(this->pointIsStable) {
         this->pointIsStable = false;
 
@@ -39,30 +42,38 @@ void StablePointLogic::checkStablePoint() {
  */
 void StablePointLogic::realTimeReading(const QVariantMap &reading){
 
-    //check current job
-    if(this->job.isNull()){
+    qDebug() << "realTimeReading" << reading;
+
+    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
         return;
     }
 
-    QPointer<Station> activeStation = this->job->getActiveStation();
-    //check active station
-    if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
-        return;
-    }
+    OiVec xyz(3);
+    xyz.setAt(0, reading.value("x").toDouble());
+    xyz.setAt(1, reading.value("y").toDouble());
+    xyz.setAt(2, reading.value("z").toDouble());
 
-    if(true /*this->settings.readingType == eCartesianReading*/){
-        // calculate stable
+    if(lastXyz.getSize() > 0) { // 2-n call
+        double dot;
+        OiVec v = xyz - lastXyz;
+        OiVec::dot(dot, v, v);
+        double distance = qSqrt(dot);
 
-        if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
-            return;
+        qDebug() << "distance" << distance;
+        if(distance <= this->config.getStablePointMinDistance()) {
+            // timer starten
+            this->elapsed.restart();
+            // if time up
+            this->pointIsStable = true;
+        } else {
+            this->pointIsStable = false;
+            //this->elapsed
+            // timer stoppen
         }
 
-        /*
-         *  reading.value("x").toDouble();
-         *  reading.value("y").toDouble();
-         *  reading.value("z").toDouble();
-        */
     }
+    lastXyz = xyz;
+
 }
 
 void StablePointLogic::stopStablePointMeasurement(){

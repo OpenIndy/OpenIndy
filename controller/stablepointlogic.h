@@ -40,7 +40,10 @@ private slots:
     void checkStablePoint();
 
 private:
-    //QPointer<Station> activeStation;
+    QElapsedTimer elapsed;
+    oi::math::OiVec lastXyz;
+    oi::math::OiVec lastStableXyz;
+    MeasurementConfig config;
     bool pointIsStable;
 
 };
