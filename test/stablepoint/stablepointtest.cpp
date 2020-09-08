@@ -72,11 +72,12 @@ void StablePointTest::testStablePoint_basic()
 
     // connect sensor to logic
     connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
-    QThread* sensorThread = new QThread();
-    sensor->moveToThread(sensorThread);
-    connect(sensorThread, SIGNAL (started()), sensor, SLOT (process()));
-    sensorThread->start();
+    connect(logic, &StablePointLogic::stopStreaming, sensor, &TestSensor::stopStreaming);
+    connect(logic, &StablePointLogic::startStreaming, sensor, &TestSensor::startStreaming);
 
+    sensor->start();
+
+    logic->startStablePointMeasurement(config);
 
     QSignalSpy spy_startMeasurement(logic, SIGNAL(startMeasurement()));
 
