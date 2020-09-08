@@ -26,7 +26,7 @@ public:
     StablePointTest();
 
 private Q_SLOTS:
-    void testStablePoint1();
+    void testStablePoint_basic();
 
 };
 
@@ -35,7 +35,7 @@ StablePointTest::StablePointTest()
 }
 
 // basic test
-void StablePointTest::testStablePoint1()
+void StablePointTest::testStablePoint_basic()
 {
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
@@ -76,10 +76,9 @@ void StablePointTest::testStablePoint1()
     sensorThread->start();
 
 
-    QThread::msleep(1000);
     QSignalSpy spy_startMeasurement(logic, SIGNAL(startMeasurement()));
 
-    QCOMPARE(spy_startMeasurement.wait(2000), true);
+    QCOMPARE(spy_startMeasurement.wait(3000), true);
     QCOMPARE(spy_startMeasurement.count(), 1);
 
 
