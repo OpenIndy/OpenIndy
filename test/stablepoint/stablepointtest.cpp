@@ -42,22 +42,15 @@ void StablePointTest::testStablePoint_basic()
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
-    MeasurementConfig config;
-    config.setIsStablePoint(true);
-    config.setStablePointThresholdTime(1.); // [second]
-    config.setStablePointMinDistance(1.0);  // [mm]
-
-    QPointer<StablePointLogic> logic = new StablePointLogic(this);
-
-    // send readings from sensor
+    // readings from sensor
     QString readings("\
-# move phase, step 2 mm\n\
+# move phase, step 2 mm \n\
 110.01 200.01 300.01\n\
 108.01 200.01 300.01\n\
 106.01 200.01 300.01\n\
 104.01 200.01 300.01\n\
 102.21 200.01 300.01\n\
-# stable phase\n\
+# stable phase \n\
 100.12 200.01 300.01\n\
 100.13 200.01 300.01\n\
 100.01 200.01 300.01\n\
@@ -68,17 +61,26 @@ void StablePointTest::testStablePoint_basic()
 100.03 200.01 300.01\n\
 100.04 200.01 300.01");
 
-    QPointer<TestSensor> sensor = new TestSensor(200, readings);
 
-    // connect sensor to logic
+    MeasurementConfig config;
+    config.setIsStablePoint(true);
+    config.setStablePointThresholdTime(1.); // [second]
+    config.setStablePointMinDistance(1.0);  // [mm]
+
+    QPointer<StablePointLogic> logic = new StablePointLogic(this);
+
+    QPointer<TestSensor> sensor = new TestSensor(200, readings);
+    sensor->start(); // starting background thread
+
+    // connect sensor and logic
     connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
     connect(logic, &StablePointLogic::stopStreaming, sensor, &TestSensor::stopStreaming);
     connect(logic, &StablePointLogic::startStreaming, sensor, &TestSensor::startStreaming);
 
-    sensor->start();
-
+    // start stable point measurement
     logic->startStablePointMeasurement(config);
 
+    // check if "real" measurement is triggert
     QSignalSpy spy_startMeasurement(logic, SIGNAL(startMeasurement()));
 
     QCOMPARE(spy_startMeasurement.wait(3000), true);
