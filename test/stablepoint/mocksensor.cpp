@@ -26,7 +26,7 @@ void MockSensor::run() {
             QVariantMap readingMap;
             readingMap.insert("x", xzy.at(0));
             readingMap.insert("y", xzy.at(1));
-            readingMap.insert("z", xzy.at(0));
+            readingMap.insert("z", xzy.at(2));
 
             emit realTimeReading(readingMap);
         }
