@@ -8,7 +8,7 @@
 #include "chooselalib.h"
 #include "util.h"
 #include "stablepointlogic.h"
-#include "testsensor.h"
+#include "mocksensor.h"
 
 #define COMPARE_DOUBLE(actual, expected, threshold) QVERIFY(std::abs(actual-expected)< threshold);
 #define _OI_VEC(v) v.getAt(0) << "," << v.getAt(1) << "," << v.getAt(2)
@@ -69,13 +69,13 @@ void StablePointTest::testStablePoint_basic()
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
-    QPointer<TestSensor> sensor = new TestSensor(200, readings);
+    QPointer<MockSensor> sensor = new MockSensor(200, readings);
     sensor->start(); // starting background thread
 
     // connect sensor and logic
-    connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
-    connect(logic, &StablePointLogic::stopStreaming, sensor, &TestSensor::stopStreaming);
-    connect(logic, &StablePointLogic::startStreaming, sensor, &TestSensor::startStreaming);
+    connect(sensor, &MockSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
+    connect(logic, &StablePointLogic::stopStreaming, sensor, &MockSensor::stopStreaming);
+    connect(logic, &StablePointLogic::startStreaming, sensor, &MockSensor::startStreaming);
 
     // start stable point measurement
     logic->startStablePointMeasurement(config);
