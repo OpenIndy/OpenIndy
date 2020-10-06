@@ -147,14 +147,14 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 100.10 210.01 300.01\n\
 100.21 210.01 300.01");
 
-    QPointer<TestSensor> sensor = new TestSensor(200, readings);
 
-    // connect sensor to logic
-    connect(sensor, &TestSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
-    QThread* sensorThread = new QThread();
-    sensor->moveToThread(sensorThread);
-    connect(sensorThread, SIGNAL (started()), sensor, SLOT (process()));
-    sensorThread->start();
+    QPointer<MockSensor> sensor = new MockSensor(200, readings);
+    sensor->start(); // starting background thread
+
+    // connect sensor and logic
+    connect(sensor, &MockSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
+    connect(logic, &StablePointLogic::stopStreaming, sensor, &MockSensor::stopStreaming);
+    connect(logic, &StablePointLogic::startStreaming, sensor, &MockSensor::startStreaming);
 
 
     QSignalSpy spy_startMeasurement(logic, SIGNAL(startMeasurement()));
