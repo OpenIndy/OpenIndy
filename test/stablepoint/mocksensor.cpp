@@ -1,15 +1,15 @@
-#include "testsensor.h"
+#include "mocksensor.h"
 
-TestSensor::TestSensor(int sleep, QString readings, QObject *parent) : QThread(parent), sleep(sleep), readings(readings)
+MockSensor::MockSensor(int sleep, QString readings, QObject *parent) : QThread(parent), sleep(sleep), readings(readings)
 {
     streaming = false;
 }
-TestSensor::~TestSensor()
+MockSensor::~MockSensor()
 {
 
 }
 
-void TestSensor::run() {
+void MockSensor::run() {
     qDebug() << "run";
 
     QQueue<QString> readingQ;
@@ -37,12 +37,12 @@ void TestSensor::run() {
 
 }
 
-void TestSensor::stopStreaming() {
+void MockSensor::stopStreaming() {
     qDebug() << "stopStreaming";
     this->streaming = false;
 }
 
-void TestSensor::startStreaming(ReadingTypes rt) {
+void MockSensor::startStreaming(ReadingTypes rt) {
     qDebug() << "startStreaming";
     this->streaming = true;
 }

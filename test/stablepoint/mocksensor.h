@@ -1,5 +1,5 @@
-#ifndef TESTSENSOR_H
-#define TESTSENSOR_H
+#ifndef MOCKSENSOR_H
+#define MOCKSENSOR_H
 
 #include <QObject>
 #include <QVariantMap>
@@ -13,12 +13,12 @@
 
 using namespace oi;
 
-class TestSensor : public QThread
+class MockSensor : public QThread
 {
     Q_OBJECT
 public:
-    TestSensor(int sleep, QString readings, QObject *parent = 0);
-    ~TestSensor();
+    MockSensor(int sleep, QString readings, QObject *parent = 0);
+    ~MockSensor();
 
 signals:
     void realTimeReading(const QVariantMap &reading);
@@ -38,4 +38,4 @@ private:
 
 };
 
-#endif // TESTSENSOR_H
+#endif // MOCKSENSOR_H
