@@ -55,7 +55,7 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
     xyz.setAt(1, reading.value("y").toDouble());
     xyz.setAt(2, reading.value("z").toDouble());
 
-    if(readingDatas.size() > 0) { // 2-n call
+    if(readingDatas.size() > 0) { // 2. to n. call
         double distance;
         euclideanDistance(distance, xyz, readingDatas.last().xyz);
 
@@ -86,18 +86,32 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
             // check if all true
             this->pointIsStable = true;
             for (int i = 0; i < readingDatas.size(); ++i) {
-                qDebug() << "    " << i <<  readingDatas.at(i).guessStable;
+                qDebug() << "    " << i
+                         << "elapsed" << readingDatas.at(i).elapsed
+                         << "xyz" << readingDatas.at(i).xyz.getAt(0) <<  readingDatas.at(i).xyz.getAt(1) <<  readingDatas.at(i).xyz.getAt(2)
+                         << "guessStable" <<  readingDatas.at(i).guessStable
+                         << "distanceToPrevReading" <<  readingDatas.at(i).distanceToPrevReading
+                         << "distanceToPrevStable" <<  readingDatas.at(i).distanceToPrevStable;
                 if(! readingDatas.at(i).guessStable) {
                     this->pointIsStable = false;
                     break;
                 }
+            }
+
+            if(this->pointIsStable) {
+                this->lastStableXyz.replace(xyz);
+                qDebug() << "stable" << reading;
+                qDebug() << "lastStableXyz"
+                             << lastStableXyz.getAt(0)
+                             << lastStableXyz.getAt(1)
+                             << lastStableXyz.getAt(2);
             }
         }
 
         qDebug() << "pointIsStable" << this->pointIsStable;
 
 
-    } else {
+    } else { // 1. call
         ReadingData rd;
         rd.elapsed = elapsedTimer.elapsed();
         rd.xyz = xyz;
