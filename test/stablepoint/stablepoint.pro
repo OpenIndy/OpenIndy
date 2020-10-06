@@ -16,7 +16,7 @@ TEMPLATE = app
 
 
 SOURCES += stablepointtest.cpp \
-    testsensor.cpp
+    mocksensor.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 
@@ -40,7 +40,7 @@ SOURCES += \
 # test dependencies
 HEADERS +=  \
     $$PWD/../../controller/stablepointlogic.h \
-    testsensor.h
+    mocksensor.h
 
 CONFIG(debug, debug|release) {
     BUILD_DIR=debug
