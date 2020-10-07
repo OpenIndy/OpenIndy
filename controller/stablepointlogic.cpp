@@ -1,5 +1,11 @@
 #include "stablepointlogic.h"
 
+#define DEBUG_READINGDATA(rd) "elapsed" << rd.elapsed \
+    << "xyz" << rd.xyz.getAt(0) <<  rd.xyz.getAt(1) <<  rd.xyz.getAt(2) \
+    << "guessStable" <<  rd.guessStable \
+    << "distanceToPrevReading" <<  rd.distanceToPrevReading \
+    << "distanceToPrevStable" <<  rd.distanceToPrevStable
+
 using namespace oi;
 using namespace oi::math;
 
@@ -72,21 +78,13 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
         rd.distanceToPrevReading = distance;
         rd.distanceToPrevStable = lastMeasuredPointDistance;
         rd.guessStable = distance < config.getStablePointThresholdRange() && lastMeasuredPointDistance > config.getStablePointMinDistance();
-        qDebug() << "elapsed" << rd.elapsed
-                 << "xyz" << reading // rd.xyz
-                 << "guessStable" << rd.guessStable
-                 << "distanceToPrevReading" << rd.distanceToPrevReading
-                 << "distanceToPrevStable" << rd.distanceToPrevStable;
+        qDebug() << DEBUG_READINGDATA(rd);
+
         readingDatas.enqueue(rd);
 
         // remove old ReadingData
         while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000) {
-            qDebug() << "remove "
-                     << "elapsed" << readingDatas.head().elapsed
-                     << "xyz" << readingDatas.head().xyz.getAt(0) <<  readingDatas.head().xyz.getAt(1) <<  readingDatas.head().xyz.getAt(2)
-                     << "guessStable" <<  readingDatas.head().guessStable
-                     << "distanceToPrevReading" <<  readingDatas.head().distanceToPrevReading
-                     << "distanceToPrevStable" <<  readingDatas.head().distanceToPrevStable;
+            qDebug() << "remove " << DEBUG_READINGDATA(readingDatas.head());
             readingDatas.dequeue();
         }
 
@@ -95,12 +93,7 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
             // check if all true
             this->pointIsStable = true;
             for (int i = 0; i < readingDatas.size(); ++i) {
-                qDebug() << "    " << i
-                         << "elapsed" << readingDatas.at(i).elapsed
-                         << "xyz" << readingDatas.at(i).xyz.getAt(0) <<  readingDatas.at(i).xyz.getAt(1) <<  readingDatas.at(i).xyz.getAt(2)
-                         << "guessStable" <<  readingDatas.at(i).guessStable
-                         << "distanceToPrevReading" <<  readingDatas.at(i).distanceToPrevReading
-                         << "distanceToPrevStable" <<  readingDatas.at(i).distanceToPrevStable;
+                qDebug() << "    " << i << DEBUG_READINGDATA(readingDatas.at(i));
                 if(! readingDatas.at(i).guessStable) {
                     this->pointIsStable = false;
                     break;
@@ -127,11 +120,7 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
         rd.guessStable = false;
         rd.distanceToPrevReading = DBL_MAX;
         rd.distanceToPrevStable = DBL_MAX;
-        qDebug() << "elapsed" << rd.elapsed
-                 << "xyz" << reading // rd.xyz
-                 << "guessStable" << rd.guessStable
-                 << "distanceToPrevReading" << rd.distanceToPrevReading
-                 << "distanceToPrevStable" << rd.distanceToPrevStable;
+        qDebug() << DEBUG_READINGDATA(rd);
         readingDatas.enqueue(rd);
     }
 
