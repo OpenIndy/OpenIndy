@@ -55,7 +55,9 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
     xyz.setAt(1, reading.value("y").toDouble());
     xyz.setAt(2, reading.value("z").toDouble());
 
+    qDebug() << "size 1" << readingDatas.size();
     if(readingDatas.size() > 0) { // 2. to n. call
+
         double distance;
         euclideanDistance(distance, xyz, readingDatas.last().xyz);
 
@@ -79,9 +81,16 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
 
         // remove old ReadingData
         while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000) {
+            qDebug() << "remove "
+                     << "elapsed" << readingDatas.head().elapsed
+                     << "xyz" << readingDatas.head().xyz.getAt(0) <<  readingDatas.head().xyz.getAt(1) <<  readingDatas.head().xyz.getAt(2)
+                     << "guessStable" <<  readingDatas.head().guessStable
+                     << "distanceToPrevReading" <<  readingDatas.head().distanceToPrevReading
+                     << "distanceToPrevStable" <<  readingDatas.head().distanceToPrevStable;
             readingDatas.dequeue();
         }
 
+        qDebug() << "size 2" << readingDatas.size();
         if(readingDatas.size() > 3) { // min readings in time range
             // check if all true
             this->pointIsStable = true;
