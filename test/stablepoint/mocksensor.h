@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <atomic>
 #include "types.h"
+#include <QElapsedTimer>
 
 using namespace oi;
 

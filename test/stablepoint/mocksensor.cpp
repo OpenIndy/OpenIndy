@@ -15,6 +15,8 @@ void MockSensor::run() {
     QQueue<QString> readingQ;
     readingQ.append(readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts));
 
+    QElapsedTimer elapsedTimer;
+    elapsedTimer.start();
     while(!readingQ.isEmpty()) {
         if(streaming) {
             QString r = readingQ.dequeue();
@@ -27,6 +29,7 @@ void MockSensor::run() {
             readingMap.insert("x", xzy.at(0));
             readingMap.insert("y", xzy.at(1));
             readingMap.insert("z", xzy.at(2));
+            readingMap.insert("elapsed", elapsedTimer.elapsed());
 
             qDebug() << "MockSensor" << readingMap;
             emit realTimeReading(readingMap);
