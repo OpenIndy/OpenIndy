@@ -51,7 +51,7 @@ void StablePointLogic::euclideanDistance(double &result, OiVec v1, OiVec v2) {
  * \param reading
  */
 void StablePointLogic::realTimeReading(const QVariantMap &reading){
-
+    // recieve readings
     if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
         return;
     }
@@ -64,33 +64,38 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
     qDebug() << "size 1" << readingDatas.size();
     if(readingDatas.size() > 0) { // 2. to n. call
 
+        // distance to prevoius reading
         double distance;
         euclideanDistance(distance, xyz, readingDatas.last().xyz);
 
+        // distance to last stable point
         double lastMeasuredPointDistance  = DBL_MAX;
         if(lastStableXyz.getSize() > 0) {
             euclideanDistance(lastMeasuredPointDistance, xyz, lastStableXyz);
         }
 
+        // create current ReadingData and add to queue
         ReadingData rd;
         rd.elapsed = elapsedTimer.elapsed();
         rd.xyz = xyz;
         rd.distanceToPrevReading = distance;
         rd.distanceToPrevStable = lastMeasuredPointDistance;
+        // guess stable because distance is ok
         rd.guessStable = distance < config.getStablePointThresholdRange() && lastMeasuredPointDistance > config.getStablePointMinDistance();
         qDebug() << DEBUG_READINGDATA(rd);
 
         readingDatas.enqueue(rd);
 
-        // remove old ReadingData
+        // removing old ReadingData by time
         while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000) {
             qDebug() << "remove " << DEBUG_READINGDATA(readingDatas.head());
             readingDatas.dequeue();
         }
 
         qDebug() << "size 2" << readingDatas.size();
+        // queue contains ReadingData in time range only
         if(readingDatas.size() > 3) { // min readings in time range
-            // check if all true
+            // checking if all ReadingData in time range are "guessStable"
             this->pointIsStable = true;
             for (int i = 0; i < readingDatas.size(); ++i) {
                 qDebug() << "    " << i << DEBUG_READINGDATA(readingDatas.at(i));
@@ -100,6 +105,7 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
                 }
             }
 
+            // checking if stable point is found
             if(this->pointIsStable) {
                 this->lastStableXyz.replace(xyz);
                 qDebug() << "stable" << reading;
