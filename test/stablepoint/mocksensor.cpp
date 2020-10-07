@@ -10,7 +10,7 @@ MockSensor::~MockSensor()
 }
 
 void MockSensor::run() {
-    qDebug() << "run";
+    qDebug() << "MockSensor::run";
 
     QQueue<QString> readingQ;
     readingQ.append(readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts));
@@ -28,6 +28,7 @@ void MockSensor::run() {
             readingMap.insert("y", xzy.at(1));
             readingMap.insert("z", xzy.at(2));
 
+            qDebug() << "MockSensor" << readingMap;
             emit realTimeReading(readingMap);
         }
 
@@ -38,11 +39,11 @@ void MockSensor::run() {
 }
 
 void MockSensor::stopStreaming() {
-    qDebug() << "stopStreaming";
+    qDebug() << "MockSensor::stopStreaming";
     this->streaming = false;
 }
 
 void MockSensor::startStreaming(ReadingTypes rt) {
-    qDebug() << "startStreaming";
+    qDebug() << "MockSensor::startStreaming";
     this->streaming = true;
 }
