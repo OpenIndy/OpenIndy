@@ -140,6 +140,8 @@ void StablePointLogic::startStablePointMeasurement(MeasurementConfig config){
     connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
     timer->start(250);
 
+    // keep: this->lastStableXyz
+    this->readingDatas.clear(); // remove previouse
     this->elapsedTimer.start();
 
     emit this->startStreaming(ReadingTypes::eCartesianReading);
