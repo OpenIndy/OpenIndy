@@ -56,6 +56,7 @@ void StablePointTest::testStablePoint_basic()
 100.01 200.01 300.01\n\
 100.03 200.01 300.01\n\
 100.04 200.01 300.01\n\
+##\n\
 100.05 200.01 300.01\n\
 100.01 200.01 300.01\n\
 100.03 200.01 300.01\n\
@@ -96,40 +97,32 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 
     ChooseLALib::setLinearAlgebra(ChooseLALib::Armadillo);
 
-    MeasurementConfig config;
-    config.setIsStablePoint(true);
-    config.setStablePointThresholdTime(1.0); // [second]
-    config.setStablePointThresholdRange(1.0); // [mm]
-    config.setStablePointMinDistance(1.0);  // [mm]
-
-    QPointer<StablePointLogic> logic = new StablePointLogic(this);
-    logic->startStablePointMeasurement(config);
-
-    // send readings from sensor
+    // readings from sensor
     QString readings("\
-# move phase, step 2 mm\n\
+# 1 second: move phase, step 2 mm\n\
 110.01 200.01 300.01\n\
 108.01 200.01 300.01\n\
 106.01 200.01 300.01\n\
 104.01 200.01 300.01\n\
 102.21 200.01 300.01\n\
-# stable phase\n\
+# 3 seconds: stable phase\n\
 100.12 200.01 300.01\n\
 100.13 200.01 300.01\n\
 100.01 200.01 300.01\n\
 100.03 200.01 300.01\n\
 100.04 200.01 300.01\n\
+##\n\
 100.05 200.01 300.01\n\
 100.01 200.01 300.01\n\
 100.03 200.01 300.01\n\
 100.04 200.01 300.01\n\
 100.01 200.01 300.01\n\
+##\n\
 100.03 200.01 300.01\n\
 100.04 200.01 300.01\n\
 100.05 200.01 300.01\n\
 100.01 200.01 300.01\n\
 100.03 200.01 300.01\n\
-100.04 200.01 300.01\n\
 # move phase, step 2 mm\n\
 100.01 201.91 300.01\n\
 100.01 202.01 300.01\n\
@@ -137,15 +130,16 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 100.01 206.01 300.01\n\
 100.01 208.01 300.01\n\
 # stable phase\n\
-100.50 210.01 300.01\n\
-100.10 210.01 300.01\n\
-100.20 210.01 300.01\n\
-100.30 210.01 300.01\n\
-100.40 210.01 300.01\n\
-100.50 210.01 300.01\n\
-100.10 210.01 300.01\n\
-100.10 210.01 300.01\n\
-100.21 210.01 300.01");
+100.35 210.01 300.01\n\
+100.31 210.01 300.01\n\
+100.32 210.01 300.01\n\
+100.33 210.01 300.01\n\
+100.34 210.01 300.01\n\
+##\n\
+100.35 210.01 300.01\n\
+100.31 210.01 300.01\n\
+100.31 210.01 300.01\n\
+100.32 210.01 300.01");
 
 
     QPointer<MockSensor> sensor = new MockSensor(200, readings);
