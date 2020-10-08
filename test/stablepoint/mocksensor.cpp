@@ -24,11 +24,11 @@ void MockSensor::run() {
                 continue;
             }
 
-            QStringList xzy = r.split(QRegExp("[ ]"), QString::SkipEmptyParts);
+            QStringList xyz = r.split(QRegExp("[ ]"), QString::SkipEmptyParts);
             QVariantMap readingMap;
-            readingMap.insert("x", xzy.at(0));
-            readingMap.insert("y", xzy.at(1));
-            readingMap.insert("z", xzy.at(2));
+            readingMap.insert("x", xyz.at(0));
+            readingMap.insert("y", xyz.at(1));
+            readingMap.insert("z", xyz.at(2));
             readingMap.insert("elapsed", elapsedTimer.elapsed());
 
             qDebug() << "MockSensor" << readingMap;
