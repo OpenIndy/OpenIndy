@@ -1331,46 +1331,6 @@ void MainWindow::on_actionView_settings_triggered(){
 }
 
 /*!
- * \brief MainWindow::showToolWidget
- * \param pluginName
- * \param toolName
- */
-void MainWindow::showToolWidget(const QString &pluginName, const QString &toolName){
-
-    //get and check model
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get a list of available tool plugins
-    const QList<QPointer<Tool> > &tools = this->control.getAvailableTools();
-
-    //search the list for the specified tool
-    foreach(const QPointer<Tool> &tool, tools){
-
-        if(tool.isNull()){
-            continue;
-        }
-
-        if(tool->getMetaData().pluginName.compare(pluginName) == 0
-                && tool->getMetaData().name.compare(toolName) == 0){
-            tool->setJob(sourceModel->getCurrentJob());
-            tool->show();
-            continue;
-        }
-
-    }
-
-}
-
-/*!
  * \brief MainWindow::resizeTableView
  * Triggered whenever the user double clicks a header item of a table view
  */
@@ -2492,7 +2452,7 @@ void MainWindow::initToolMenus(){
         }
 
         //connect the triggered event of the action
-        QObject::connect(action, &ToolAction::openToolWidget, this, &MainWindow::showToolWidget);
+        QObject::connect(action, &ToolAction::openToolWidget, &this->control, &Controller::showToolWidget);
 
     }
 

@@ -146,6 +146,9 @@ public slots:
     //init configs from mainwindowSlot
     void initConfigs();
 
+    //show tool widget
+    void showToolWidget(const QString &pluginName, const QString &toolName);
+
 signals:
 
     //#################################################
