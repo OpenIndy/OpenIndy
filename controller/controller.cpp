@@ -2162,6 +2162,7 @@ void Controller::connectToolPlugin(const QPointer<Tool> &tool){
         return;
     }
 
+    // Tool -> Controller
     QObject::connect(tool.data(), &Tool::startConnect, this, &Controller::startConnect, Qt::AutoConnection);
     QObject::connect(tool.data(), &Tool::startDisconnect, this, &Controller::startDisconnect, Qt::AutoConnection);
     QObject::connect(tool.data(), &Tool::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
@@ -2175,6 +2176,9 @@ void Controller::connectToolPlugin(const QPointer<Tool> &tool){
     QObject::connect(tool.data(), &Tool::startChangeMotorState, this, &Controller::startChangeMotorState, Qt::AutoConnection);
     QObject::connect(tool.data(), &Tool::startCustomAction, this, &Controller::startCustomAction, Qt::AutoConnection);
     QObject::connect(tool.data(), &Tool::sendMessage, this, &Controller::log, Qt::AutoConnection);
+
+    // Controller -> Tool
+    QObject::connect(this, &Controller::setCurrentJob, tool.data(), &Tool::setCurrentJob, Qt::AutoConnection);
 
 }
 
