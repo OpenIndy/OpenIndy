@@ -215,6 +215,8 @@ signals:
 
     //whole job instance changed
     void currentJobChanged();
+    // set current job to other modules / tools
+    void setCurrentJob(const QPointer<OiJob> &job);
 
     //#################################
     //import export task status changes
