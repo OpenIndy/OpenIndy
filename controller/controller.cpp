@@ -1838,6 +1838,7 @@ void Controller::setJob(const QPointer<OiJob> &job){
     }
 
     emit this->currentJobChanged();
+    emit this->setCurrentJob(this->job); // set current job to other modules or tools
 
 }
 
