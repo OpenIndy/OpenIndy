@@ -142,7 +142,8 @@ SOURCES += \
     $$PWD/../models/featuredifferencetablemodel.cpp \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
     $$PWD/../controller/config/projectconfig.cpp \
-    $$PWD/../ui/dialogs/uiutil.cpp
+    $$PWD/../ui/dialogs/uiutil.cpp \
+    $$PWD/../controller/stablepointlogic.cpp
 
 # header files
 HEADERS  += \
@@ -246,7 +247,8 @@ HEADERS  += \
     $$PWD/../models/featuredifferencetablemodel.h \
     $$PWD/../models/featuredifferenceproxymodel.h \
     $$PWD/../controller/config/projectconfig.h \
-    $$PWD/../ui/dialogs/uiutil.h
+    $$PWD/../ui/dialogs/uiutil.h \
+    $$PWD/../controller/stablepointlogic.h
 
 # ui files
 FORMS    += \

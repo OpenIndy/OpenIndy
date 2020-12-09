@@ -1046,28 +1046,15 @@ void Controller::startMeasurement(){
  */
 void Controller::_startMeasurement(bool dummyPoint){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()){
+       return;
     }
 
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
         this->log("No active feature", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
-    if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -1100,28 +1087,16 @@ void Controller::_startMeasurement(bool dummyPoint){
  */
 void Controller::startMove(const Reading &reading){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()){
+       return;
     }
+
 
     //get and check active feature
     QPointer<FeatureWrapper> activeFeature = this->job->getActiveFeature();
     if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
         this->log("No active feature", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
-    if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -1335,22 +1310,9 @@ void Controller::startAimAndMeasure(){
  */
 void Controller::startToggleSight(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //inform about start of sensor action
@@ -1366,22 +1328,9 @@ void Controller::startToggleSight(){
  */
 void Controller::startInitialize(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //inform about start of sensor action
@@ -1397,22 +1346,9 @@ void Controller::startInitialize(){
  */
 void Controller::startHome(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //inform about start of sensor action
@@ -1428,22 +1364,9 @@ void Controller::startHome(){
  */
 void Controller::startCompensation(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //inform about start of sensor action
@@ -1459,22 +1382,9 @@ void Controller::startCompensation(){
  */
 void Controller::startChangeMotorState(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //inform about start of sensor action
@@ -1491,22 +1401,9 @@ void Controller::startChangeMotorState(){
  */
 void Controller::startCustomAction(const QString &task){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //inform about start of sensor action
@@ -1517,28 +1414,40 @@ void Controller::startCustomAction(const QString &task){
 
 }
 
-/*!
- * \brief Controller::startWatchWindow
- * \param streamFormat
+/**
+ * @brief Controller::getConnectedActiveStation
+ * @return connected active station or 0
  */
-void Controller::startWatchWindow(ReadingTypes streamFormat){
-
+QPointer<Station> Controller::getConnectedActiveStation() {
     //check current job
     if(this->job.isNull()){
-        return;
+        return 0;
     }
 
     //get and check active station
     QPointer<Station> activeStation = this->job->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
+        return 0;
     }
 
     //check sensor
     if(!activeStation->getIsSensorConnected()){
         this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+        return 0;
+    }
+
+    return activeStation;
+}
+
+/*!
+ * \brief Controller::startReadingStream
+ * \param streamFormat
+ */
+void Controller::startReadingStream(ReadingTypes streamFormat){
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()){
+       return;
     }
 
     //start streaming
@@ -1548,26 +1457,13 @@ void Controller::startWatchWindow(ReadingTypes streamFormat){
 }
 
 /*!
- * \brief Controller::stopWatchWindow
+ * \brief Controller::stopReadingStream
  */
-void Controller::stopWatchWindow(){
+void Controller::stopReadingStream(){
 
-    //check current job
-    if(this->job.isNull()){
-        return;
-    }
-
-    //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){
-        this->log("No active station", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    //check sensor
-    if(!activeStation->getIsSensorConnected()){
-        this->log("No sensor connected to the active station", eErrorMessage, eMessageBoxMessage);
-        return;
+       return;
     }
 
     //stop streaming
@@ -2138,8 +2034,8 @@ void Controller::connectRequestHandler(){
     //sensor actions
     QObject::connect(&this->requestHandler, &OiRequestHandler::startAim, this, &Controller::startAim, Qt::AutoConnection);
     QObject::connect(&this->requestHandler, &OiRequestHandler::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
-    QObject::connect(&this->requestHandler, &OiRequestHandler::startReadingStream, this, &Controller::startWatchWindow, Qt::AutoConnection);
-    QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopWatchWindow, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::startReadingStream, this, &Controller::startReadingStream, Qt::AutoConnection);
+    QObject::connect(&this->requestHandler, &OiRequestHandler::stopReadingStream, this, &Controller::stopReadingStream, Qt::AutoConnection);
 
     //connect streaming
     QObject::connect(this, &Controller::sensorActionStarted, &this->requestHandler, &OiRequestHandler::sensorActionStarted, Qt::QueuedConnection);
@@ -2208,5 +2104,52 @@ void Controller::showToolWidget(const QString &pluginName, const QString &toolNa
         }
 
     }
+
+}
+
+void Controller::stopStablePointMeasurement() {
+    QPointer<Station> activeStation = getConnectedActiveStation();
+
+    if(!this->stablePointLogic.isNull()) {
+        this->stablePointLogic->stopStablePointMeasurement(); // TODO or call Controller::stopReadingStream ???
+
+        QObject::disconnect(stablePointLogic, &StablePointLogic::startStreaming, this, &Controller::startReadingStream);
+        QObject::disconnect(stablePointLogic, &StablePointLogic::stopStreaming, this, &Controller::stopReadingStream);
+        QObject::disconnect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement);
+        QObject::disconnect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading);
+    }
+    // this->stablePointLogic.clear();
+
+}
+
+void Controller::startStablePointMeasurement() {
+
+    // clean up / stop
+    if(!this->stablePointLogic.isNull()) {
+        this->stopStablePointMeasurement();
+    }
+
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()) {
+        return;
+    }
+
+    QPointer<FeatureWrapper> activeFeature= this->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    // start
+     if(this->stablePointLogic.isNull()) {
+        this->stablePointLogic = new StablePointLogic(this);
+     }
+
+    QObject::connect(stablePointLogic, &StablePointLogic::startStreaming, this, &Controller::startReadingStream, Qt::AutoConnection);
+    QObject::connect(stablePointLogic, &StablePointLogic::stopStreaming, this, &Controller::stopReadingStream, Qt::AutoConnection);
+    QObject::connect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
+    QObject::connect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
+
+    this->stablePointLogic->startStablePointMeasurement(activeFeature->getGeometry()->getMeasurementConfig());
 
 }

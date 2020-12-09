@@ -29,3 +29,5 @@ Makefile
 
 dist
 build/*_resource.rc
+
+**/debug/

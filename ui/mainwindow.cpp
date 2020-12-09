@@ -463,6 +463,16 @@ void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgTy
 
 }
 
+bool MainWindow::isStablePointMeasurement() {
+    QPointer<FeatureWrapper> activeFeature = this->control.getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    return activeFeature->getGeometry()->getMeasurementConfig().getIsStablePoint();
+}
+
 /*!
  * \brief MainWindow::keyPressEvent
  * Triggered whenever the user has pressed a key
@@ -488,9 +498,15 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
 
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
+        }else if(isStablePointMeasurement()) {
+            this->control.startStablePointMeasurement();
         }else{ //normal measurement
             this->control._startMeasurement(e->modifiers() == Qt::ShiftModifier);
         }
+        break;
+
+    case Qt::Key_Escape: // stop or terminate all running actions
+        this->control.stopStablePointMeasurement();
         break;
 
     case Qt::Key_A: //aim
@@ -3067,8 +3083,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 
             //connect watch window dialog
-            QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startWatchWindow, Qt::AutoConnection);
-            QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopWatchWindow, Qt::AutoConnection);
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::startStreaming, &this->control, &Controller::startReadingStream, Qt::AutoConnection);
+            QObject::connect(watchWindowDialog, &WatchWindowDialog::stopStreaming, &this->control, &Controller::stopReadingStream, Qt::AutoConnection);
         }
 
         qDebug() << "openWatchWindow"

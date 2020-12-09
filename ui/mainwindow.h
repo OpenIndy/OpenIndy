@@ -382,6 +382,8 @@ private:
 
     int saveProjectIfDigestChanged();
 
+    bool isStablePointMeasurement();
+
     //############################
     //OpenIndy dialogs and widgets
     //############################
