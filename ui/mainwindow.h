@@ -254,9 +254,6 @@ private slots:
     //show settings dialog
     void on_actionView_settings_triggered();
 
-    //show tool widget
-    void showToolWidget(const QString &pluginName, const QString &toolName);
-
     //resize table views
     void resizeTableView();
 

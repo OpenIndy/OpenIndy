@@ -146,6 +146,9 @@ public slots:
     //init configs from mainwindowSlot
     void initConfigs();
 
+    //show tool widget
+    void showToolWidget(const QString &pluginName, const QString &toolName);
+
 signals:
 
     //#################################################
@@ -212,6 +215,8 @@ signals:
 
     //whole job instance changed
     void currentJobChanged();
+    // set current job to other modules / tools
+    void setCurrentJob(const QPointer<OiJob> &job);
 
     //#################################
     //import export task status changes
