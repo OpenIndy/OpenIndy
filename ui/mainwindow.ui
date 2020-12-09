@@ -61,6 +61,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>70</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="sizeAdjustPolicy">
            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
           </property>
@@ -79,6 +85,12 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>70</width>
+            <height>0</height>
+           </size>
           </property>
           <property name="autoFillBackground">
            <bool>false</bool>
@@ -99,6 +111,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>70</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -117,7 +135,7 @@
          <widget class="QLineEdit" name="lineEdit_searchFeatureName">
           <property name="minimumSize">
            <size>
-            <width>300</width>
+            <width>150</width>
             <height>0</height>
            </size>
           </property>
