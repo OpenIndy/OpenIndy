@@ -135,15 +135,19 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
 
 void StablePointLogic::stopStablePointMeasurement(){
     emit this->stopStreaming();
+    if(!checkStableTimer.isNull()) {
+        checkStableTimer->stop();
+    }
+
 }
 
 void StablePointLogic::startStablePointMeasurement(MeasurementConfig config){
     this->config = config;
 
     qDebug() << "startStablePointMeasurement";
-    QPointer<QTimer> timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
-    timer->start(250);
+    checkStableTimer = new QTimer(this);
+    connect(checkStableTimer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
+    checkStableTimer->start(250);
 
     // keep: this->lastStableXyz
     this->readingDatas.clear(); // remove previouse
