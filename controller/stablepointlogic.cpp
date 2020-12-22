@@ -36,6 +36,7 @@ void StablePointLogic::checkStablePoint() {
         this->pointIsStable = false;
         emit this->stopStreaming();
         emit this->startMeasurement();
+        emit this->startStreaming(ReadingTypes::eCartesianReading);
     }
 }
 
