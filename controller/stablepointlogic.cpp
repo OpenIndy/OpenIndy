@@ -88,14 +88,14 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
         readingDatas.enqueue(rd);
 
         // removing old ReadingData by time
-        while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000) {
+        while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000.) {
             qDebug() << "remove " << DEBUG_READINGDATA(readingDatas.head());
             readingDatas.dequeue();
         }
 
         qDebug() << "size 2" << readingDatas.size();
         // queue contains ReadingData in time range only
-        if(readingDatas.size() > 3) { // min readings in time range
+        if(readingDatas.size() > 0) { // min readings in time range
             // checking if all ReadingData in time range are "guessStable"
             this->pointIsStable = true;
             for (int i = 0; i < readingDatas.size(); ++i) {
