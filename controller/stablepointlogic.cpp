@@ -82,7 +82,7 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
         rd.distanceToPrevReading = distance;
         rd.distanceToPrevStable = lastMeasuredPointDistance;
         // guess stable because distance is ok
-        rd.guessStable = distance < config.getStablePointThresholdRange() && lastMeasuredPointDistance > config.getStablePointMinDistance();
+        rd.guessStable = distance * 1000. < config.getStablePointThresholdRange() && lastMeasuredPointDistance * 1000. > config.getStablePointMinDistance();
         qDebug() << DEBUG_READINGDATA(rd);
 
         readingDatas.enqueue(rd);
