@@ -2122,6 +2122,16 @@ void Controller::stopStablePointMeasurement() {
 
 }
 
+
+bool Controller::isStablePointMeasurement() {
+    QPointer<FeatureWrapper> activeFeature = this->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    return activeFeature->getGeometry()->getMeasurementConfig().getIsStablePoint();
+}
 void Controller::startStablePointMeasurement() {
 
     // clean up / stop

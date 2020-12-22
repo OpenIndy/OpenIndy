@@ -59,6 +59,8 @@ public:
     void stopStablePointMeasurement(); // TODO OI-496: signal / slot?
     void startStablePointMeasurement();// TODO OI-496: signal / slot?
 
+    bool isStablePointMeasurement(); // TODO OI-496: private ?
+
 public slots:
 
     //#######################
