@@ -2108,6 +2108,8 @@ void Controller::showToolWidget(const QString &pluginName, const QString &toolNa
 }
 
 void Controller::stopStablePointMeasurement() {
+    qDebug() << "stopStablePointMeasurement";
+
     QPointer<Station> activeStation = getConnectedActiveStation();
 
     if(!this->stablePointLogic.isNull()) {
