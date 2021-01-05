@@ -92,6 +92,8 @@ void StablePointTest::testStablePoint_basic()
 
 
     logic->stopStablePointMeasurement();
+    sensor->terminate();
+    sensor->wait(1000);
 
 }
 
@@ -182,7 +184,8 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
     QCOMPARE(spy_startMeasurement.count(), 1);
 
     logic->stopStablePointMeasurement();
-
+    sensor->terminate();
+    sensor->wait(1000);
 }
 
 QTEST_MAIN(StablePointTest) // instead of QTEST_APPLESS_MAIN because of QTimer
