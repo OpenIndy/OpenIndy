@@ -436,6 +436,7 @@ private:
     QLabel *label_statusUnitAngular;
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
+    QLabel *label_statusStablePointMeasurement;
 
     //######
     //models
