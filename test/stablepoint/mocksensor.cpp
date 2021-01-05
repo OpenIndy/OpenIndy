@@ -21,7 +21,8 @@ void MockSensor::run() {
         if(streaming) {
             QString r = readingQ.dequeue();
             if(r.startsWith("#")) {
-                continue;
+                qDebug() << "MockSensor" << r;
+                continue; // no sleep
             }
 
             QStringList xyz = r.split(QRegExp("[ ]"), QString::SkipEmptyParts);

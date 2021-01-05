@@ -3,8 +3,8 @@
 #define DEBUG_READINGDATA(rd) "elapsed" << rd.elapsed \
     << "xyz" << rd.xyz.getAt(0) <<  rd.xyz.getAt(1) <<  rd.xyz.getAt(2) \
     << "guessStable" <<  rd.guessStable \
-    << "distanceToPrevReading" <<  rd.distanceToPrevReading \
-    << "distanceToPrevStable" <<  rd.distanceToPrevStable
+    << "distanceToPrevReading" << (rd.distanceToPrevReading < DBL_MAX ? QString::number(rd.distanceToPrevReading, 'f', 5) : "max" )  << "[m]" \
+    << "distanceToPrevStable" << (rd.distanceToPrevStable < DBL_MAX ? QString::number(rd.distanceToPrevStable, 'f', 5) : "max" ) << "[m]"
 
 using namespace oi;
 using namespace oi::math;
