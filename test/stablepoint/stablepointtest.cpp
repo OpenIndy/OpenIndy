@@ -177,8 +177,6 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
     QCOMPARE(spy_startMeasurement.wait(2500), false);
     QCOMPARE(spy_startMeasurement.count(), 0);
 
-    // start stable point measurement
-    logic->startStablePointMeasurement(config);
     qDebug() << "test 3";
     QCOMPARE(spy_startMeasurement.wait(5000), true);
     QCOMPARE(spy_startMeasurement.count(), 1);
