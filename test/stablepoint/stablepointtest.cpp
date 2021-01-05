@@ -69,6 +69,7 @@ void StablePointTest::testStablePoint_basic()
     config.setIsStablePoint(true);
     config.setStablePointThresholdTime(1.); // [second]
     config.setStablePointMinDistance(1.0);  // [mm]
+    config.setStablePointThresholdRange(0.1); // [mm]
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
