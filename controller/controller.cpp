@@ -2108,6 +2108,8 @@ void Controller::showToolWidget(const QString &pluginName, const QString &toolNa
 }
 
 void Controller::stopStablePointMeasurement() {
+    qDebug() << "stopStablePointMeasurement";
+
     QPointer<Station> activeStation = getConnectedActiveStation();
 
     if(!this->stablePointLogic.isNull()) {
@@ -2122,6 +2124,16 @@ void Controller::stopStablePointMeasurement() {
 
 }
 
+
+bool Controller::activeFeatureUseStablePointMeasurement() {
+    QPointer<FeatureWrapper> activeFeature = this->getActiveFeature();
+    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
+        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
+        return false;
+    }
+
+    return activeFeature->getGeometry()->getMeasurementConfig().getIsStablePoint();
+}
 void Controller::startStablePointMeasurement() {
 
     // clean up / stop

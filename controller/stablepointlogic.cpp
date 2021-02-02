@@ -3,8 +3,8 @@
 #define DEBUG_READINGDATA(rd) "elapsed" << rd.elapsed \
     << "xyz" << rd.xyz.getAt(0) <<  rd.xyz.getAt(1) <<  rd.xyz.getAt(2) \
     << "guessStable" <<  rd.guessStable \
-    << "distanceToPrevReading" <<  rd.distanceToPrevReading \
-    << "distanceToPrevStable" <<  rd.distanceToPrevStable
+    << "distanceToPrevReading" << (rd.distanceToPrevReading < DBL_MAX ? QString::number(rd.distanceToPrevReading, 'f', 5) : "max" )  << "[m]" \
+    << "distanceToPrevStable" << (rd.distanceToPrevStable < DBL_MAX ? QString::number(rd.distanceToPrevStable, 'f', 5) : "max" ) << "[m]"
 
 using namespace oi;
 using namespace oi::math;
@@ -36,6 +36,7 @@ void StablePointLogic::checkStablePoint() {
         this->pointIsStable = false;
         emit this->stopStreaming();
         emit this->startMeasurement();
+        emit this->startStreaming(ReadingTypes::eCartesianReading);
     }
 }
 
@@ -81,20 +82,20 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
         rd.distanceToPrevReading = distance;
         rd.distanceToPrevStable = lastMeasuredPointDistance;
         // guess stable because distance is ok
-        rd.guessStable = distance < config.getStablePointThresholdRange() && lastMeasuredPointDistance > config.getStablePointMinDistance();
+        rd.guessStable = distance * 1000. < config.getStablePointThresholdRange() && lastMeasuredPointDistance * 1000. > config.getStablePointMinDistance();
         qDebug() << DEBUG_READINGDATA(rd);
 
         readingDatas.enqueue(rd);
 
         // removing old ReadingData by time
-        while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000) {
+        while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000.) {
             qDebug() << "remove " << DEBUG_READINGDATA(readingDatas.head());
             readingDatas.dequeue();
         }
 
         qDebug() << "size 2" << readingDatas.size();
         // queue contains ReadingData in time range only
-        if(readingDatas.size() > 3) { // min readings in time range
+        if(readingDatas.size() > 0) { // min readings in time range
             // checking if all ReadingData in time range are "guessStable"
             this->pointIsStable = true;
             for (int i = 0; i < readingDatas.size(); ++i) {
@@ -134,15 +135,19 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
 
 void StablePointLogic::stopStablePointMeasurement(){
     emit this->stopStreaming();
+    if(!checkStableTimer.isNull()) {
+        checkStableTimer->stop();
+    }
+
 }
 
 void StablePointLogic::startStablePointMeasurement(MeasurementConfig config){
     this->config = config;
 
     qDebug() << "startStablePointMeasurement";
-    QPointer<QTimer> timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
-    timer->start(250);
+    checkStableTimer = new QTimer(this);
+    connect(checkStableTimer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
+    checkStableTimer->start(250);
 
     // keep: this->lastStableXyz
     this->readingDatas.clear(); // remove previouse

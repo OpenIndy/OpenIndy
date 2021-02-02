@@ -463,16 +463,6 @@ void MainWindow::showStatusMessage(const QString &msg, const MessageTypes &msgTy
 
 }
 
-bool MainWindow::isStablePointMeasurement() {
-    QPointer<FeatureWrapper> activeFeature = this->control.getActiveFeature();
-    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
-        return false;
-    }
-
-    return activeFeature->getGeometry()->getMeasurementConfig().getIsStablePoint();
-}
-
 /*!
  * \brief MainWindow::keyPressEvent
  * Triggered whenever the user has pressed a key
@@ -498,7 +488,8 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
 
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
-        }else if(isStablePointMeasurement()) {
+        }else if(control.activeFeatureUseStablePointMeasurement()) {
+            this->label_statusStablePointMeasurement->setText("stable point");
             this->control.startStablePointMeasurement();
         }else{ //normal measurement
             this->control._startMeasurement(e->modifiers() == Qt::ShiftModifier);
@@ -506,6 +497,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         break;
 
     case Qt::Key_Escape: // stop or terminate all running actions
+        this->label_statusStablePointMeasurement->setText("");
         this->control.stopStablePointMeasurement();
         break;
 
@@ -2494,6 +2486,7 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitMetric = new QLabel();
     this->label_statusUnitAngular = new QLabel();
     this->label_statusUnitTemperature = new QLabel();
+    this->label_statusStablePointMeasurement = new QLabel();
 
     //format GUI elements
     this->label_statusUnitMetric->setMinimumWidth(50);
@@ -2502,8 +2495,10 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitAngular->setAlignment(Qt::AlignHCenter);
     this->label_statusUnitTemperature->setMinimumWidth(50);
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
+    this->label_statusStablePointMeasurement->setStyleSheet("QLabel { color : orangered;  font-weight: bold;}");
 
     //add GUI elements to status bar
+    this->ui->statusBar->addPermanentWidget(this->label_statusStablePointMeasurement);
     this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);

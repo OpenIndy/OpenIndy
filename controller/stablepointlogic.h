@@ -62,6 +62,8 @@ private:
 
     std::atomic<bool> pointIsStable;
 
+    QPointer<QTimer> checkStableTimer;
+
 };
 
 }
