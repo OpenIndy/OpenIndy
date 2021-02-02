@@ -488,7 +488,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
 
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
-        }else if(control.isStablePointMeasurement()) {
+        }else if(control.activeFeatureUseStablePointMeasurement()) {
             this->label_statusStablePointMeasurement->setText("stable point");
             this->control.startStablePointMeasurement();
         }else{ //normal measurement
