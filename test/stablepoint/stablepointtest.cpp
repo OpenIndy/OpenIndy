@@ -73,7 +73,7 @@ void StablePointTest::testStablePoint_basic()
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
-    QPointer<MockSensor> sensor = new MockSensor(160, readings);
+    QPointer<MockSensor> sensor = new MockSensor(200, readings);
 
     // connect sensor and logic
     connect(sensor, &MockSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
@@ -81,6 +81,9 @@ void StablePointTest::testStablePoint_basic()
     connect(logic, &StablePointLogic::startStreaming, sensor, &MockSensor::startStreaming);
 
     sensor->start(); // starting background thread
+
+    QSignalSpy spy_started(sensor, SIGNAL(started()));
+    spy_started.wait(2000);
 
     // start stable point measurement
     logic->startStablePointMeasurement(config);
@@ -143,9 +146,13 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 0.10034 0.21001 0.30001\n\
 ##\n\
 0.10035 0.21001 0.30001\n\
-0.10031 0.21001 0.30001\n\
-0.10031 0.21001 0.30001\n\
-0.10032 0.21001 0.30001");
+0.10035 0.21002 0.30001\n\
+0.10035 0.21001 0.30001\n\
+0.10035 0.21002 0.30001\n\
+0.10035 0.21001 0.30001\n\
+0.10035 0.21002 0.30001\n\
+0.10035 0.21001 0.30001\n\
+");
 
     MeasurementConfig config;
     config.setIsStablePoint(true);
@@ -155,7 +162,7 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
-    QPointer<MockSensor> sensor = new MockSensor(160, readings);
+    QPointer<MockSensor> sensor = new MockSensor(200, readings);
 
     // connect sensor and logic
     connect(sensor, &MockSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
@@ -164,6 +171,9 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 
     sensor->start(); // starting background thread
 
+    QSignalSpy spy_started(sensor, SIGNAL(started()));
+    spy_started.wait(2000);
+
     // start stable point measurement
     logic->startStablePointMeasurement(config);
 
@@ -171,7 +181,7 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
     QSignalSpy spy_startMeasurement(logic, SIGNAL(startMeasurement()));
 
     qDebug() << "test 1";
-    QCOMPARE(spy_startMeasurement.wait(3000), true);
+    QCOMPARE(spy_startMeasurement.wait(10000), true);
     QCOMPARE(spy_startMeasurement.count(), 1);
 
     spy_startMeasurement.clear();
