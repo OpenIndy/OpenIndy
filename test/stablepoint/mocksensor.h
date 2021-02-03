@@ -36,6 +36,7 @@ private:
     int sleep;
     QString readings;
     std::atomic<bool> streaming;
+    QQueue<QString> readingQ;
 
 };
 

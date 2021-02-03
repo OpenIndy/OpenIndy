@@ -3,6 +3,8 @@
 MockSensor::MockSensor(int sleep, QString readings, QObject *parent) : QThread(parent), sleep(sleep), readings(readings)
 {
     streaming = false;
+
+    readingQ.append(readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts));
 }
 MockSensor::~MockSensor()
 {
@@ -11,9 +13,6 @@ MockSensor::~MockSensor()
 
 void MockSensor::run() {
     qDebug() << "MockSensor::run";
-
-    QQueue<QString> readingQ;
-    readingQ.append(readings.split(QRegExp("[\r\n]"), QString::SkipEmptyParts));
 
     QElapsedTimer elapsedTimer;
     elapsedTimer.start();
