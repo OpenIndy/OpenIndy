@@ -74,12 +74,13 @@ void StablePointTest::testStablePoint_basic()
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
     QPointer<MockSensor> sensor = new MockSensor(200, readings);
-    sensor->start(); // starting background thread
 
     // connect sensor and logic
     connect(sensor, &MockSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
     connect(logic, &StablePointLogic::stopStreaming, sensor, &MockSensor::stopStreaming);
     connect(logic, &StablePointLogic::startStreaming, sensor, &MockSensor::startStreaming);
+
+    sensor->start(); // starting background thread
 
     // start stable point measurement
     logic->startStablePointMeasurement(config);
@@ -154,13 +155,14 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
-    QPointer<MockSensor> sensor = new MockSensor(200, readings);
-    sensor->start(); // starting background thread
+    QPointer<MockSensor> sensor = new MockSensor(170, readings);
 
     // connect sensor and logic
     connect(sensor, &MockSensor::realTimeReading, logic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
     connect(logic, &StablePointLogic::stopStreaming, sensor, &MockSensor::stopStreaming);
     connect(logic, &StablePointLogic::startStreaming, sensor, &MockSensor::startStreaming);
+
+    sensor->start(); // starting background thread
 
     // start stable point measurement
     logic->startStablePointMeasurement(config);
