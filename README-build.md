@@ -19,7 +19,7 @@
 
     sudo apt install qt5-default
     sudo apt install libqt5svg5-dev libqt5websockets5-dev 
-    sudo apt install qt5serialport5-dev
+    sudo apt install libqt5serialport5-dev
     sudo apt install libqt5multimedia5 libqt5multimedia5-plugins qtmultimedia5-dev
     sudo apt install qtcreator   
 
