@@ -23,6 +23,8 @@ Controller::Controller(QObject *parent) : QObject(parent){
         timer->start(250);
     }
 
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage, this, &Controller::log, Qt::QueuedConnection);
+
     //initialize display configs
     this->initDisplayConfigs();
 

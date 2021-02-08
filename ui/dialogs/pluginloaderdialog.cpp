@@ -15,8 +15,8 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget *parent) : QDialog(parent),
                      this->ui->progressBar, &QProgressBar::setValue, Qt::AutoConnection);
     QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::importFinished,
                      this, &PluginLoaderDialog::importFinished, Qt::AutoConnection);
-    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage,
-                     this, &PluginLoaderDialog::sendMessage, Qt::AutoConnection);
+    //QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage,
+    //                 this, &PluginLoaderDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!
