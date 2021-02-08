@@ -1,10 +1,17 @@
-# build
+# OpenIndy
 
-## Ubuntu
+OpenIndy is a metrology software solution that can be extended by [plugins](https://github.com/OpenIndy/OiPluginTemplate). The project started in 2013 as a student project in the Department of Geoinformatics and Surveying ([HS Mainz](https://www.hs-mainz.de/)).
 
-tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
+## IDE
 
-### install dependencies
+OpenIndy is developed with the Qt framework (Qt libs + Qt Creator IDE). You can download the framework [here](http://qt-project.org/downloads).
+## build
+
+### Ubuntu
+
+Tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
+
+#### install dependencies
 
     sudo apt install git
     
@@ -16,8 +23,8 @@ tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
     sudo apt install libblas-dev
     sudo apt install liblapack-dev
     sudo apt install libarmadillo-dev
-  
-### install Qt shipped with Ubuntu
+
+#### install Qt shipped with Ubuntu
 
     sudo apt install qt5-default
     sudo apt install libqt5svg5-dev libqt5websockets5-dev 
@@ -26,7 +33,7 @@ tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
 
     sudo apt install qtcreator
 
-### clone and build OpenIndy
+#### clone and build OpenIndy
 
     git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy.git
 
@@ -35,7 +42,7 @@ tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
     qmake openIndy.pro -r -spec linux-g++ CONFIG+=debug
     make
 
-### clone and build OpenIndy-DefaultPlugin
+#### clone and build OpenIndy-DefaultPlugin
 
     git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy-DefaultPlugin.git
 
@@ -44,9 +51,12 @@ tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
     qmake OpenIndy-DefaultPlugin.pro -r -spec linux-g++ CONFIG+=debug
     make
 
-### run
+#### run
 
-Copy content of OpenIndy/res-rt to bin/debug and start openIndy from Qt Creator. 
+Copy nessesary files to bin/debug and start openIndy from Qt Creator.
+
+    cp -R res-rt/* bin/debug/
+    cp db/oisystemdb.sqlite bin/debug/
 
 ### commandline: install & run
 
