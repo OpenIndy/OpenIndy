@@ -678,7 +678,10 @@ QList<sdb::Function> SystemDbManager::getCreateFunctionsFromDB(const FeatureType
         if(type == eTrafoParamFeature){
             condition = QString("fp.iid = '%1'").arg(OiMetaData::iid_SystemTransformation);
         }else{
-            condition = QString("fp.iid = '%1' OR fp.iid = '%2'").arg(OiMetaData::iid_FitFunction).arg(OiMetaData::iid_ConstructFunction);
+            condition = QString("fp.iid = '%1' OR fp.iid = '%2' OR fp.iid = '%3'")
+                    .arg(OiMetaData::iid_FitFunction)
+                    .arg(OiMetaData::iid_ConstructFunction)
+                    .arg(OiMetaData::iid_SpecialFunction);
         }
 
         //query all available plugins
@@ -764,10 +767,11 @@ QList<sdb::Function> SystemDbManager::getChangeFunctions(const FeatureTypes &typ
         QString query2;
 
         //exclude fit, construct functions and system trafos
-        QString condition = QString("NOT (fp.iid = '%1' OR fp.iid = '%2' OR fp.iid = '%3')")
+        QString condition = QString("NOT (fp.iid = '%1' OR fp.iid = '%2' OR fp.iid = '%3' OR fp.iid = '%4')")
                 .arg(OiMetaData::iid_SystemTransformation)
                 .arg(OiMetaData::iid_FitFunction)
-                .arg(OiMetaData::iid_ConstructFunction);
+                .arg(OiMetaData::iid_ConstructFunction)
+                .arg(OiMetaData::iid_SpecialFunction);
 
         //query all available plugins
         query = QString("SELECT %1 %2 %3 %4 %5 FROM functionPlugin AS fp INNER JOIN plugin AS p %6")

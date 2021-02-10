@@ -488,7 +488,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                 if(!function.isNull()){
 
                                     //fit and construct functions
-                                    if(function->getMetaData().iid == FitFunction_iidd || function->getMetaData().iid == ConstructFunction_iidd){
+                                    if(function->getMetaData().iid == FitFunction_iidd
+                                            || function->getMetaData().iid == ConstructFunction_iidd
+                                            || function->getMetaData().iid == SpecialFunction_iidd
+                                            ){
 
                                         int functionCount = feature->getFeature()->getFunctions().size();
                                         //remove old functions
@@ -506,8 +509,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                     }else{ //other functions
 
                                         if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
-                                                && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd ||
-                                                    feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd)){
+                                                && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd
+                                                    || feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd
+                                                    || feature->getFeature()->getFunctions().first()->getMetaData().iid == SpecialFunction_iidd
+                                                    )){
 
                                             feature->getFeature()->addFunction(function);
                                         }

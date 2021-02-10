@@ -120,7 +120,8 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                     if(this->currentJob->getActiveFeature()->getGeometry()->getIsNominal()){ //nominal
 
-                        if(function.iid.compare(OiMetaData::iid_ConstructFunction) != 0
+                        if(function.iid.compare(OiMetaData::iid_SpecialFunction) != 0
+                                && function.iid.compare(OiMetaData::iid_ConstructFunction) != 0
                                 && function.iid.compare(OiMetaData::iid_FitFunction) != 0
                                 && function.iid.compare(OiMetaData::iid_GeodeticFunction) != 0
                                 && function.iid.compare(OiMetaData::iid_SystemTransformation) != 0){
@@ -131,15 +132,15 @@ bool FunctionTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex
 
                         if(this->currentJob->getActiveFeature()->getFeature()->getFunctions().size() == 0){ // first function
 
-                            if(function.iid.compare(OiMetaData::iid_GenerateFeatureFunction) != 0
-                                    && function.iid.compare(OiMetaData::iid_ObjectTransformation) != 0
+                            if(function.iid.compare(OiMetaData::iid_ObjectTransformation) != 0
                                     && function.iid.compare(OiMetaData::iid_SystemTransformation) != 0){
                                 return true;
                             }
 
                         }else{ //not the first function
 
-                            if(function.iid.compare(OiMetaData::iid_ConstructFunction) != 0
+                            if(function.iid.compare(OiMetaData::iid_SpecialFunction) != 0
+                                    && function.iid.compare(OiMetaData::iid_ConstructFunction) != 0
                                     && function.iid.compare(OiMetaData::iid_FitFunction) != 0
                                     && function.iid.compare(OiMetaData::iid_GeodeticFunction) != 0
                                     && function.iid.compare(OiMetaData::iid_SystemTransformation) != 0){
