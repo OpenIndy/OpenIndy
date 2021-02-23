@@ -10,15 +10,23 @@ using namespace oi;
 using namespace oi::math;
 
 StablePointLogic::StablePointLogic(QObject *parent) : QObject(parent), pointIsStable(false) {
+    this->init();
 }
 
 StablePointLogic::StablePointLogic(const StablePointLogic &copy, QObject *parent) : QObject(parent), pointIsStable(false) {
+    this->init();
 }
 
 StablePointLogic &StablePointLogic::operator=(const StablePointLogic &copy) {
     this->pointIsStable = false;
     this->config = copy.config;
     return *this;
+}
+
+void StablePointLogic::init() {
+    checkStableTimer = new QTimer(this);
+    connect(checkStableTimer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
+    checkStableTimer->start(250);
 }
 
 /*!
@@ -145,9 +153,6 @@ void StablePointLogic::startStablePointMeasurement(MeasurementConfig config){
     this->config = config;
 
     qDebug() << "startStablePointMeasurement";
-    checkStableTimer = new QTimer(this);
-    connect(checkStableTimer, SIGNAL(timeout()), this, SLOT(checkStablePoint()));
-    checkStableTimer->start(250);
 
     // keep: this->lastStableXyz
     this->readingDatas.clear(); // remove previouse

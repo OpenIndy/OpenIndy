@@ -52,6 +52,7 @@ private slots:
 
 private:
     void euclideanDistance(double &result, oi::math::OiVec v1, oi::math::OiVec v2); // TODO move to OiVec
+    void init();
 
 private:
     QQueue<ReadingData> readingDatas;
