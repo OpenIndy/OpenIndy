@@ -80,17 +80,29 @@ Copy nessesary files to bin/debug and start openIndy from Qt Creator.
 
 ## Windows & MinGW
 
+Tested with Qt 5.5.1 / MinGW 4.9.2
+
 ### install Qt
 
 install required  Qt / Qt Creator
 
-### clone OpenIndy
+### clone and build OpenIndy
 
     git clone  --recurse-submodule https://github.com/OpenIndy/OpenIndy.git
 
-### clone OpenIndy-DefaultPlugin
+
+    cd OpenIndy
+    qmake.exe OpenIndy.pro -r -spec win32-g++ "CONFIG+=debug"
+    mingw32-make.exe
+
+### clone and build OpenIndy-DefaultPlugin
 
     git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy-DefaultPlugin.git
+
+
+    cd OpenIndy-DefaultPlugin
+    qmake.exe OpenIndy-DefaultPlugin.pro -r -spec win32-g++ "CONFIG+=debug"
+    mingw32-make.exe
 
 ### Qt Creator: build and run OpenIndy
 
