@@ -80,7 +80,7 @@ Copy nessesary files to bin/debug and start openIndy from Qt Creator.
 
 ## Windows & MinGW
 
-Tested with Qt 5.5.1 / MinGW 4.9.2
+Tested with Qt 5.5.1 / MinGW 4.9.2 & Qt Creator 5.12.2	mingw_730_64
 
 ### install Qt
 
