@@ -11,7 +11,7 @@
 
 namespace oi{
 
-const int OI_CORE_EXPORT getDropDownMenuSize(QStringList list, const int menuSize);
+const int Q_DECL_EXPORT getDropDownMenuSize(QStringList list, const int menuSize);
 
 }
 
