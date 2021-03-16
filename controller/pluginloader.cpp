@@ -53,7 +53,7 @@ PluginMetaData PluginLoader::getPluginMetaData(const QString &path){
     //search in the given folder for a valid plugin
     QDir pluginsDir(path);
 
-    foreach(const QString &fileName, pluginsDir.entryList(QStringList("p_*"), QDir::Files)) {
+    foreach(const QString &fileName, pluginsDir.entryList(QStringList() << "p_*.dll" << "libp_*.so", QDir::Files)) {
 
         //get file path and check if the file is a valied plugin
         QString filePath = pluginsDir.absoluteFilePath(fileName);
