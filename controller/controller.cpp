@@ -1473,6 +1473,18 @@ void Controller::stopReadingStream(){
 
 }
 
+void Controller::finishMeasurement(){
+    qDebug() << "Controller::finishMeasurement()";
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()){
+       return;
+    }
+
+    qDebug() << "Controller::finishMeasurement() emit";
+    //finish Measurement streaming
+    emit activeStation->finishMeasurement();
+
+}
 /*!
  * \brief Controller::log
  * Prints a message to the specified destination

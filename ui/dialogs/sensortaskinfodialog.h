@@ -28,6 +28,9 @@ public:
 
     void setDisplayMessage(const QString &msg);
 
+signals:
+    void finishMeasurement();
+
 private slots:
 
     //#########################
@@ -35,6 +38,8 @@ private slots:
     //#########################
 
     void on_pushButton_cancel_clicked();
+
+    void on_pushButton_finish_clicked();
 
 private:
     Ui::SensorTaskInfoDialog *ui;

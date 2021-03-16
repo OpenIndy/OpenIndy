@@ -33,3 +33,8 @@ void SensorTaskInfoDialog::on_pushButton_cancel_clicked(){
     this->close();
 }
 
+
+void SensorTaskInfoDialog::on_pushButton_finish_clicked()
+{
+    emit finishMeasurement();
+}

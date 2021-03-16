@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>236</width>
     <height>100</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>sensor info</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="12,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="12,0">
    <item>
     <widget class="QLabel" name="label_info">
      <property name="text">
@@ -25,7 +25,14 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+     <item>
+      <widget class="QPushButton" name="pushButton_finish">
+       <property name="text">
+        <string>Finish</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -41,8 +48,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_cancel">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="text">
-        <string>cancel</string>
+        <string>Cancel</string>
        </property>
       </widget>
      </item>
