@@ -3,6 +3,7 @@
 # Project created by QtCreator 2020-01-28T14:06:30
 #
 #-------------------------------------------------
+CONFIG   += c++11
 
 QT       += testlib xml
 
