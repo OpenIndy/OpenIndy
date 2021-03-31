@@ -5,7 +5,7 @@
  * \brief SensorTaskInfoDialog::SensorTaskInfoDialog
  * \param parent
  */
-SensorTaskInfoDialog::SensorTaskInfoDialog(QWidget *parent) : QDialog(parent),
+SensorTaskInfoDialog::SensorTaskInfoDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint),
     ui(new Ui::SensorTaskInfoDialog)
 {
     ui->setupUi(this);
