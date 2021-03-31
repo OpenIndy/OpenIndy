@@ -38,3 +38,7 @@ void SensorTaskInfoDialog::on_pushButton_finish_clicked()
 {
     emit finishMeasurement();
 }
+
+void SensorTaskInfoDialog::enableFinishButton(const bool enabled) {
+    this->ui->pushButton_finish->setEnabled(enabled);
+}
