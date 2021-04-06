@@ -27,6 +27,10 @@ public:
     //################
 
     void setDisplayMessage(const QString &msg);
+    void enableFinishButton(const bool enabled); // currently used for finish scan
+
+signals:
+    void finishMeasurement();
 
 private slots:
 
@@ -35,6 +39,8 @@ private slots:
     //#########################
 
     void on_pushButton_cancel_clicked();
+
+    void on_pushButton_finish_clicked();
 
 private:
     Ui::SensorTaskInfoDialog *ui;

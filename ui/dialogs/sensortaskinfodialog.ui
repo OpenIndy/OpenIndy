@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>236</width>
     <height>100</height>
    </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>sensor info</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="12,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
    <item>
     <widget class="QLabel" name="label_info">
      <property name="text">
@@ -40,9 +43,12 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_cancel">
+      <widget class="QPushButton" name="pushButton_finish">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
-        <string>cancel</string>
+        <string>Finish</string>
        </property>
       </widget>
      </item>

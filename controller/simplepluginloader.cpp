@@ -21,6 +21,7 @@ void SimplePluginLoader::importFinished(bool success) {
     }
 
     this->log("could not import plugin.");
+    exit(1);
 }
 
 void SimplePluginLoader::log(const QString &msg) {

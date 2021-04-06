@@ -367,6 +367,7 @@ void MainWindow::sensorActionStarted(const QString &name){
  * \param msg
  */
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
+    this->sensorTaskInfoDialog.enableFinishButton(false);
     this->sensorTaskInfoDialog.close();
     emit this->log(msg, eInformationMessage, eConsoleMessage);
 }
@@ -485,7 +486,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     //check triggered keys
     switch(e->key()){
     case Qt::Key_F3: //measure
-
+        this->sensorTaskInfoDialog.enableFinishButton(true);
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
         }else if(control.activeFeatureUseStablePointMeasurement()) {
@@ -2242,6 +2243,9 @@ void MainWindow::connectDialogs(){
     //connect station properties dialog
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
+
+    // connect SensorTaskInfo dialog
+    QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
 
 }
 

@@ -145,6 +145,7 @@ public slots:
     void startCustomAction(const QString &task);
     void startReadingStream(ReadingTypes streamFormat);
     void stopReadingStream();
+    void finishMeasurement();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);

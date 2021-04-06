@@ -5,7 +5,7 @@
  * \brief SensorTaskInfoDialog::SensorTaskInfoDialog
  * \param parent
  */
-SensorTaskInfoDialog::SensorTaskInfoDialog(QWidget *parent) : QDialog(parent),
+SensorTaskInfoDialog::SensorTaskInfoDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint),
     ui(new Ui::SensorTaskInfoDialog)
 {
     ui->setupUi(this);
@@ -33,3 +33,12 @@ void SensorTaskInfoDialog::on_pushButton_cancel_clicked(){
     this->close();
 }
 
+
+void SensorTaskInfoDialog::on_pushButton_finish_clicked()
+{
+    emit finishMeasurement();
+}
+
+void SensorTaskInfoDialog::enableFinishButton(const bool enabled) {
+    this->ui->pushButton_finish->setEnabled(enabled);
+}
