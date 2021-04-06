@@ -493,10 +493,12 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->label_statusStablePointMeasurement->setText("stable point");
             this->control.startStablePointMeasurement();
         }else{ //normal measurement
-            this->control._startMeasurement(e->modifiers() == Qt::ShiftModifier);
+            this->control._startMeasurement(false);
         }
         break;
-
+    case Qt::Key_F2: //measure
+            this->control._startMeasurement(true);
+        break;
     case Qt::Key_Escape: // stop or terminate all running actions
         this->label_statusStablePointMeasurement->setText("");
         this->control.stopStablePointMeasurement();
