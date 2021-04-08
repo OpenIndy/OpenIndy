@@ -1073,7 +1073,7 @@ void Controller::_startMeasurement(bool dummyPoint){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("performing measurement...");
+    emit this->sensorActionStarted("performing measurement...", true);
 
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
