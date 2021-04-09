@@ -496,7 +496,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->control._startMeasurement(false);
         }
         break;
-    case Qt::Key_F2: //measure
+    case Qt::Key_F5: // measure as dummy point
             this->control._startMeasurement(true);
         break;
     case Qt::Key_Escape: // stop or terminate all running actions
