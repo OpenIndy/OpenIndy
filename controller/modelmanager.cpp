@@ -1072,6 +1072,7 @@ void ModelManager::updateGroupsModel(){
     //get a list of all available groups
     if(!ModelManager::currentJob.isNull()){
         groups = ModelManager::currentJob->getFeatureGroupList();
+        groups.sort();
     }
 
     //add default entry (all groups) if not exists
