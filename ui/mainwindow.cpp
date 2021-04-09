@@ -356,8 +356,9 @@ void MainWindow::currentJobChanged(){
  * \brief MainWindow::sensorActionStarted
  * \param name
  */
-void MainWindow::sensorActionStarted(const QString &name){
+void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
     this->sensorTaskInfoDialog.setDisplayMessage(name);
+    this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
     showCentered(this->sensorTaskInfoDialog);
 }
 
@@ -486,7 +487,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     //check triggered keys
     switch(e->key()){
     case Qt::Key_F3: //measure
-        this->sensorTaskInfoDialog.enableFinishButton(true);
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
         }else if(control.activeFeatureUseStablePointMeasurement()) {
@@ -496,7 +496,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->control._startMeasurement(false);
         }
         break;
-    case Qt::Key_F2: //measure
+    case Qt::Key_F5: // measure as dummy point
             this->control._startMeasurement(true);
         break;
     case Qt::Key_Escape: // stop or terminate all running actions
