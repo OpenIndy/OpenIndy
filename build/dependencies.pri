@@ -3,15 +3,69 @@ include($$PWD/../lib/OpenIndy-Core/include.pri)
 
 linux: LIBS = -lGLU
 
+# openIndy
+CONFIG(release, debug|release) {
+    openIndy.path = $$PWD/../install/release
+    openIndy.files += $$PWD/../bin/release/openIndy.exe
+} else {
+    openIndy.path = $$PWD/../install/debug
+    openIndy.files += $$PWD/../bin/debug/openIndy.exe
+}
+INSTALLS += openIndy
+
 #-----------------
 #copy dependencies
 #-----------------
 
+# openIndyCore
+CONFIG(release, debug|release) {
+    openIndyCore.path = $$PWD/../install/release
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/release/openIndyCore1.dll
+} else {
+    openIndyCore.path = $$PWD/../install/debug
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/debug/openIndyCore1.dll
+}
+INSTALLS += openIndyCore
+
+# openIndyMath
+CONFIG(release, debug|release) {
+    openIndyMath.path = $$PWD/../install/release
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release/openIndyMath1.dll
+} else {
+    openIndyMath.path = $$PWD/../install/debug
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/openIndyMath1.dll
+}
+INSTALLS += openIndyMath
+
+# oisystemdb
+CONFIG(release, debug|release) {
+    oisystemdb.path = $$PWD/../install/release
+    oisystemdb.files += $$PWD/../db/oisystemdb.sqlite
+} else {
+    oisystemdb.path = $$PWD/../install/debug
+    oisystemdb.files += $$PWD/../db/oisystemdb.sqlite
+}
+INSTALLS += oisystemdb
+
+# res-rt
+CONFIG(release, debug|release) {
+    res_rt.path = $$PWD/../install/release
+    res_rt.files += $$PWD/../res-rt/config
+    res_rt.files += $$PWD/../res-rt/example
+    res_rt.files += $$PWD/../res-rt/plugins
+} else {
+    res_rt.path = $$PWD/../install/debug
+    res_rt.files += $$PWD/../res-rt/config
+    res_rt.files += $$PWD/../res-rt/example
+    res_rt.files += $$PWD/../res-rt/plugins
+}
+INSTALLS += res_rt
+
 # blas / lapack
 win32 {
 
-    win32:CONFIG(release, debug|release): blaslapack.path = $$PWD/../bin/release
-    win32:CONFIG(debug, debug|release): blaslapack.path = $$PWD/../bin/debug
+    win32:CONFIG(release, debug|release): blaslapack.path = $$PWD/../install/release
+    win32:CONFIG(debug, debug|release): blaslapack.path = $$PWD/../install/debug
 
     !contains(QT_ARCH, x86_64) {
         blaslapack.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/lib/armadillo-3.910.0/examples/lib_win32/blas_win32_MT.dll
@@ -28,8 +82,8 @@ win32 {
 # splash screen
 win32 {
 
-    win32:CONFIG(release, debug|release): splash.path = $$PWD/../bin/release
-    win32:CONFIG(debug, debug|release): splash.path = $$PWD/../bin/debug
+    win32:CONFIG(release, debug|release): splash.path = $$PWD/../install/release
+    win32:CONFIG(debug, debug|release): splash.path = $$PWD/../install/debug
 
     splash.files += $$PWD/../res/icons/splash.png
 
@@ -39,8 +93,8 @@ win32 {
 
 linux {
 
-    linux:CONFIG(release, debug|release): splash.path = $$PWD/../bin/release
-    linux:CONFIG(debug, debug|release): splash.path = $$PWD/../bin/debug
+    linux:CONFIG(release, debug|release): splash.path = $$PWD/../install/release
+    linux:CONFIG(debug, debug|release): splash.path = $$PWD/../install/debug
 
     splash.files += $$PWD/../res/icons/splash.png
 
