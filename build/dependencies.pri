@@ -4,6 +4,7 @@ include($$PWD/../lib/OpenIndy-Core/include.pri)
 linux: LIBS = -lGLU
 
 # openIndy
+win32 {
 CONFIG(release, debug|release) {
     openIndy.path = $$PWD/../install/release
     openIndy.files += $$PWD/../bin/release/openIndy.exe
@@ -12,11 +13,23 @@ CONFIG(release, debug|release) {
     openIndy.files += $$PWD/../bin/debug/openIndy.exe
 }
 INSTALLS += openIndy
+}
+
+linux {
+CONFIG(release, debug|release) {
+    openIndy.path = $$PWD/../install/release
+    openIndy.files += $$PWD/../bin/release/openIndy
+} else {
+    openIndy.path = $$PWD/../install/debug
+    openIndy.files += $$PWD/../bin/debug/openIndy
+}
+INSTALLS += openIndy
+}
 
 #-----------------
 #copy dependencies
 #-----------------
-
+win32 {
 # openIndyCore
 CONFIG(release, debug|release) {
     openIndyCore.path = $$PWD/../install/release
@@ -36,6 +49,29 @@ CONFIG(release, debug|release) {
     openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/openIndyMath1.dll
 }
 INSTALLS += openIndyMath
+}
+
+linux {
+# openIndyCore
+CONFIG(release, debug|release) {
+    openIndyCore.path = $$PWD/../install/release
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/release/libopenIndyCore.so*
+} else {
+    openIndyCore.path = $$PWD/../install/debug
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/debug/libopenIndyCore.so*
+}
+INSTALLS += openIndyCore
+
+# openIndyMath
+CONFIG(release, debug|release) {
+    openIndyMath.path = $$PWD/../install/release
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release/libopenIndyMath.so*
+} else {
+    openIndyMath.path = $$PWD/../install/debug
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/libopenIndyMath.so*
+}
+INSTALLS += openIndyMath
+}
 
 # oisystemdb
 CONFIG(release, debug|release) {
