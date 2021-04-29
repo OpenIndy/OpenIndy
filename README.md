@@ -48,6 +48,7 @@ Tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
     cd OpenIndy
     qmake openIndy.pro -r -spec linux-g++ CONFIG+=debug
     make
+    make install
 
 #### clone and build OpenIndy-DefaultPlugin
 
@@ -57,26 +58,16 @@ Tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
     cd OpenIndy-DefaultPlugin
     qmake OpenIndy-DefaultPlugin.pro -r -spec linux-g++ CONFIG+=debug
     make
-
-#### run
-
-Copy nessesary files to bin/debug and start openIndy from Qt Creator.
-
-    cp -R res-rt/* bin/debug/
-    cp db/oisystemdb.sqlite bin/debug/
+    make install
 
 ### commandline: install & run
 
     cd OpenIndy
-    mkdir -p dist/lib
-    cp bin/debug/openIndy dist/
-    cp -R res-rt/* dist/
-    cp db/oisystemdb.sqlite dist/
-    find lib -name "libopenIndy*.so.*" -exec cp -v {} dist/lib/ \;
+    cp -R res-rt/openIndy.sh install/debug/
 
     # run
-    chmod +x ./dist/openIndy.sh
-    ./dist/openIndy.sh
+    chmod +x ./install/debug/openIndy.sh
+    ./install/debug/openIndy.sh
 
 ## Windows & MinGW
 
@@ -94,6 +85,7 @@ install required  Qt / Qt Creator
     cd OpenIndy
     qmake.exe OpenIndy.pro -r -spec win32-g++ "CONFIG+=debug"
     mingw32-make.exe
+    mingw32-make.exe install
 
 ### clone and build OpenIndy-DefaultPlugin
 
@@ -103,29 +95,21 @@ install required  Qt / Qt Creator
     cd OpenIndy-DefaultPlugin
     qmake.exe OpenIndy-DefaultPlugin.pro -r -spec win32-g++ "CONFIG+=debug"
     mingw32-make.exe
+    mingw32-make.exe install
 
 ### Qt Creator: build and run OpenIndy
 
 Add `./lib/OpenIndy-Core/lib/OpenIndy-Math/lib/armadillo-3.910.0/examples/lib_win32` to Qt Creator PATH.
-Copy content of OpenIndy/res-rt and db\oisystemdb.sqlite to bin/debug and start openIndy from Qt Creator.
 
 ### commandline: install & run
 
     cd OpenIndy
-    mkdir dist
-    copy bin\debug\openIndy.exe dist\
 
-    xcopy res-rt\*.* dist\ /s /e
-    copy db\oisystemdb.sqlite dist\
+    xcopy res-rt\openIndy.bat install\debug\ /s /e
 
-    copy lib\OpenIndy-Core\bin\debug\openIndyCore1.dll dist\
-    copy lib\OpenIndy-Core\lib\OpenIndy-Math\bin\debug\openIndyMath1.dll dist\
-    copy lib\OpenIndy-Core\lib\OpenIndy-Math\lib\armadillo-3.910.0\examples\lib_win32\blas_win32_MT.dll dist\
-    copy lib\OpenIndy-Core\lib\OpenIndy-Math\lib\armadillo-3.910.0\examples\lib_win32\lapack_win32_MT.dll dist\
+    cd install\debug
 
     rem run
-
-    cd dist
 
     rem set `QT_DIR` to your Qt install path
     openIndy.bat
