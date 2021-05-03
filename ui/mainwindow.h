@@ -38,6 +38,7 @@
 #include "nominalpropertiesdialog.h"
 #include "trafoparampropertiesdialog.h"
 #include "aboutdialog.h"
+#include "showlicensesdialog.h"
 #include "stationpropertiesdialog.h"
 #include "exportdialog.h"
 
@@ -259,6 +260,7 @@ private slots:
 
     //remove observations
     void on_actionRemoveObservations_triggered();
+    void on_actionShow_Licenses_triggered();
     void removeObservationOfActiveFeature();
 
     //show about dialog
@@ -404,6 +406,7 @@ private:
     NominalPropertiesDialog nominalPropertiesDialog;
     TrafoParamPropertiesDialog trafoParamPropertiesDialog;
     AboutDialog aboutDialog;
+    ShowLicensesDialog showLicensesDialog;
     StationPropertiesDialog stationPropertiesDialog;
 
     //widget with scalar input parameters

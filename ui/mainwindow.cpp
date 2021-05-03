@@ -1413,7 +1413,12 @@ void MainWindow::removeObservationOfActiveFeature(){
 void MainWindow::on_actionAbout_OpenIndy_triggered(){
     showCentered(this->aboutDialog);
 }
-
+/*!
+ * \brief MainWindow::on_actionAbout_OpenIndy_triggered
+ */
+void MainWindow::on_actionShow_Licenses_triggered(){
+    showCentered(this->showLicensesDialog);
+}
 /*!
  * \brief MainWindow::on_pushButton_addBundle_clicked
  */

@@ -143,7 +143,8 @@ SOURCES += \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
     $$PWD/../controller/config/projectconfig.cpp \
     $$PWD/../ui/dialogs/uiutil.cpp \
-    $$PWD/../controller/stablepointlogic.cpp
+    $$PWD/../controller/stablepointlogic.cpp \
+    $$PWD/../ui/dialogs/showlicensesdialog.cpp
 
 # header files
 HEADERS  += \
@@ -248,7 +249,8 @@ HEADERS  += \
     $$PWD/../models/featuredifferenceproxymodel.h \
     $$PWD/../controller/config/projectconfig.h \
     $$PWD/../ui/dialogs/uiutil.h \
-    $$PWD/../controller/stablepointlogic.h
+    $$PWD/../controller/stablepointlogic.h \
+    $$PWD/../ui/dialogs/showlicensesdialog.h
 
 # ui files
 FORMS    += \
@@ -270,7 +272,8 @@ FORMS    += \
     $$PWD/../ui/dialogs/aboutdialog.ui \
     $$PWD/../ui/dialogs/trafoparampropertiesdialog.ui \
     $$PWD/../ui/dialogs/stationpropertiesdialog.ui \
-    $$PWD/../ui/dialogs/exportdialog.ui
+    $$PWD/../ui/dialogs/exportdialog.ui \
+    $$PWD/../ui/dialogs/showlicensesdialog.ui
 
 # resource files
 RESOURCES += \

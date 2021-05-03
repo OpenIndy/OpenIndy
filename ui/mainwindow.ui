@@ -491,6 +491,7 @@ background-position: center center;</string>
      <string>Help</string>
     </property>
     <addaction name="actionAbout_OpenIndy"/>
+    <addaction name="actionShow_Licenses"/>
    </widget>
    <widget class="QMenu" name="menuSensor">
     <property name="title">
@@ -1394,6 +1395,11 @@ background-position: center center;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F4</string>
+   </property>
+  </action>
+  <action name="actionShow_Licenses">
+   <property name="text">
+    <string>Show Licenses</string>
    </property>
   </action>
  </widget>
