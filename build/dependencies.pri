@@ -6,13 +6,11 @@ linux: LIBS = -lGLU
 # openIndy
 win32 {
 CONFIG(release, debug|release) {
-    openIndy.path = $$PWD/../install/release
-    openIndy.files += $$PWD/../bin/release/openIndy.exe
+    target.path = $$PWD/../install/release
 } else {
-    openIndy.path = $$PWD/../install/debug
-    openIndy.files += $$PWD/../bin/debug/openIndy.exe
+    target.path = $$PWD/../install/debug
 }
-INSTALLS += openIndy
+INSTALLS += target
 }
 
 linux {
