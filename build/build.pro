@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 CONFIG += c++11
-QT       += core gui sql svg serialport network opengl xml websockets multimedia
+QT       += core gui sql svg serialport network xml websockets multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4):
 
