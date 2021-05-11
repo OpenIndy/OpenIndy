@@ -421,12 +421,6 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->checkBox_timeDependent->blockSignals(false);
     this->ui->checkBox_twoFace->blockSignals(false);
 
-    // stable point
-    this->ui->checkBox_isStablePoint->setChecked(mConfig.getIsStablePoint());
-    this->ui->lineEdit_stablePoint_min_distance->setText(QString::number(mConfig.getStablePointMinDistance()));
-    this->ui->lineEdit_stablePoint_thresholdRange->setText(QString::number(mConfig.getStablePointThresholdRange()));
-    this->ui->lineEdit_stablePoint_thresholdTime->setText(QString::number(mConfig.getStablePointThresholdTime()));
-
 }
 
 /*!
@@ -464,11 +458,6 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setDistanceDependent(this->ui->checkBox_distanceDependent->isChecked());
     mConfig.setTimeDependent(this->ui->checkBox_timeDependent->isChecked());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
-
-    mConfig.setIsStablePoint(this->ui->checkBox_isStablePoint->isChecked());
-    mConfig.setStablePointMinDistance(this->ui->lineEdit_stablePoint_min_distance->text().toDouble()); // [mm]
-    mConfig.setStablePointThresholdRange(this->ui->lineEdit_stablePoint_thresholdRange->text().toDouble()); // [mm]
-    mConfig.setStablePointThresholdTime(this->ui->lineEdit_stablePoint_thresholdTime->text().toDouble()); // [second]
 
     mConfig.setIsSaved(true);
 
