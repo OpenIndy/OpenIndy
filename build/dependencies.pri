@@ -15,13 +15,11 @@ INSTALLS += target
 
 linux {
 CONFIG(release, debug|release) {
-    openIndy.path = $$PWD/../install/release
-    openIndy.files += $$PWD/../bin/release/openIndy
+    target.path = $$PWD/../install/release
 } else {
-    openIndy.path = $$PWD/../install/debug
-    openIndy.files += $$PWD/../bin/debug/openIndy
+    target.path = $$PWD/../install/debug
 }
-INSTALLS += openIndy
+INSTALLS += target
 }
 
 #-----------------
@@ -31,20 +29,20 @@ win32 {
 # openIndyCore
 CONFIG(release, debug|release) {
     openIndyCore.path = $$PWD/../install/release
-    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/release/openIndyCore1.dll
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/install/release/openIndyCore1.dll
 } else {
     openIndyCore.path = $$PWD/../install/debug
-    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/debug/openIndyCore1.dll
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/install/debug/openIndyCore1.dll
 }
 INSTALLS += openIndyCore
 
 # openIndyMath
 CONFIG(release, debug|release) {
     openIndyMath.path = $$PWD/../install/release
-    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release/openIndyMath1.dll
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/install/release/openIndyMath1.dll
 } else {
     openIndyMath.path = $$PWD/../install/debug
-    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/openIndyMath1.dll
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/install/debug/openIndyMath1.dll
 }
 INSTALLS += openIndyMath
 }
@@ -53,20 +51,20 @@ linux {
 # openIndyCore
 CONFIG(release, debug|release) {
     openIndyCore.path = $$PWD/../install/release
-    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/release/libopenIndyCore.so*
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/install/release/libopenIndyCore.so*
 } else {
     openIndyCore.path = $$PWD/../install/debug
-    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/bin/debug/libopenIndyCore.so*
+    openIndyCore.files += $$PWD/../lib/OpenIndy-Core/install/debug/libopenIndyCore.so*
 }
 INSTALLS += openIndyCore
 
 # openIndyMath
 CONFIG(release, debug|release) {
     openIndyMath.path = $$PWD/../install/release
-    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release/libopenIndyMath.so*
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/install/release/libopenIndyMath.so*
 } else {
     openIndyMath.path = $$PWD/../install/debug
-    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug/libopenIndyMath.so*
+    openIndyMath.files += $$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/install/debug/libopenIndyMath.so*
 }
 INSTALLS += openIndyMath
 }
