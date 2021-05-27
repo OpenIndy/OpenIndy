@@ -637,12 +637,15 @@ void PluginTreeItem::setUpPlugin(){
     PluginTreeItem *sensors = new PluginTreeItem("sensors:");
     PluginTreeItem *laserTracker = new PluginTreeItem("laser tracker:");
     PluginTreeItem *totalStation = new PluginTreeItem("total stations:");
+    PluginTreeItem *measurementArm = new PluginTreeItem("measurement arms:");
     foreach(const sdb::Sensor &sensor, plugin.sensors){
         PluginTreeItem *sensorItem = new PluginTreeItem(sensor);
         if(sensor.iid.compare(OiMetaData::iid_LaserTracker) == 0){
             laserTracker->appendChild(sensorItem);
         }else if(sensor.iid.compare(OiMetaData::iid_TotalStation) == 0){
             totalStation->appendChild(sensorItem);
+        }else if(sensor.iid.compare(OiMetaData::iid_MeasurementArm) == 0){
+            measurementArm->appendChild(sensorItem);
         }else{
             delete sensorItem;
             continue;
@@ -650,6 +653,7 @@ void PluginTreeItem::setUpPlugin(){
     }
     sensors->appendChild(laserTracker);
     sensors->appendChild(totalStation);
+    sensors->appendChild(measurementArm);
 
     //set up functions
     PluginTreeItem *functions = new PluginTreeItem("functions:");

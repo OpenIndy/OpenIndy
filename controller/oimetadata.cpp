@@ -6,8 +6,9 @@ QString OiMetaData::version = "0.0.1";
 //define plugin interface versions
 QString OiMetaData::iid_Plugin = Plugin_iidd;
 QString OiMetaData::iid_Sensor = Sensor_iidd;
-QString OiMetaData::iid_LaserTracker=LaserTracker_iidd ;
+QString OiMetaData::iid_LaserTracker= LaserTracker_iidd;
 QString OiMetaData::iid_TotalStation = TotalStation_iidd;
+QString OiMetaData::iid_MeasurementArm = MeasurementArm_iidd;
 QString OiMetaData::iid_ConstructFunction = ConstructFunction_iidd;
 QString OiMetaData::iid_FitFunction = FitFunction_iidd;
 QString OiMetaData::iid_SpecialFunction = SpecialFunction_iidd;
@@ -46,6 +47,8 @@ bool OiMetaData::findIID(const QString &iid){
         return true;
     }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
         return true;
+    }else if(iid.compare(OiMetaData::iid_MeasurementArm) == 0){
+        return true;
     }else if(iid.compare(OiMetaData::iid_Plugin) == 0){
         return true;
     }else if(iid.compare(OiMetaData::iid_Simulation) == 0){
@@ -76,6 +79,8 @@ SensorTypes OiMetaData::getSensorTypeEnum(const QString &iid){
         return eLaserTracker;
     }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
         return eTotalStation;
+    }else if(iid.compare(OiMetaData::iid_MeasurementArm) == 0){
+        return eMeasurementArm;
     }
 
     return eUndefinedSensor;
@@ -92,6 +97,7 @@ QStringList OiMetaData::getSensorTypeNames(){
 
     result.append(OiMetaData::iid_LaserTracker);
     result.append(OiMetaData::iid_TotalStation);
+    result.append(OiMetaData::iid_MeasurementArm);
 
     return result;
 
@@ -108,6 +114,8 @@ QString OiMetaData::getSensorTypeName(const QString &iid){
         return "laser tracker";
     }else if(iid.compare(OiMetaData::iid_TotalStation) == 0){
         return "total station";
+    }else if(iid.compare(OiMetaData::iid_MeasurementArm) == 0){
+        return "measurement arm";
     }
     return "";
 
