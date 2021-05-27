@@ -510,6 +510,23 @@ void SensorConfigurationDialog::toggleVisibility(const SensorConfiguration &sCon
         this->ui->label_ip->setVisible(true);
         this->ui->lineEdit_port->setVisible(true);
         this->ui->label_port->setVisible(true);
+    }else if(sConfig.getConnectionConfig().typeOfConnection == eUSBConnection){
+        this->ui->comboBox_baudrate->setVisible(false);
+        this->ui->label_baudRate->setVisible(false);
+        this->ui->comboBox_databits->setVisible(false);
+        this->ui->label_databits->setVisible(false);
+        this->ui->comboBox_flowcontrol->setVisible(false);
+        this->ui->label_flowControl->setVisible(false);
+        this->ui->comboBox_parity->setVisible(false);
+        this->ui->label_parity->setVisible(false);
+        this->ui->comboBox_stopbits->setVisible(false);
+        this->ui->label_stopBits->setVisible(false);
+        this->ui->comboBox_comPort->setVisible(false);
+        this->ui->label_comPort->setVisible(false);
+        this->ui->comboBox_ip->setVisible(false);
+        this->ui->label_ip->setVisible(false);
+        this->ui->lineEdit_port->setVisible(false);
+        this->ui->label_port->setVisible(false);
     }
 
     //enable sensor config tab-widget
