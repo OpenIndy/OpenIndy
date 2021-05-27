@@ -2088,6 +2088,8 @@ void Controller::connectToolPlugin(const QPointer<Tool> &tool){
     QObject::connect(tool.data(), &Tool::startCustomAction, this, &Controller::startCustomAction, Qt::AutoConnection);
     QObject::connect(tool.data(), &Tool::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
+    QObject::connect(tool.data(), &Tool::addFeatures, this, &Controller::addFeatures, Qt::AutoConnection);
+
     // Controller -> Tool
     QObject::connect(this, &Controller::setCurrentJob, tool.data(), &Tool::setCurrentJob, Qt::AutoConnection);
 
