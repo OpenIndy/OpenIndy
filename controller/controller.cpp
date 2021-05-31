@@ -850,6 +850,11 @@ void Controller::saveProject(){
         return;
     }
 
+    // add tool data
+    foreach (QPointer<Tool> tool, this->toolPlugins) {
+        tool->toOpenIndyXML(project);
+    }
+
     //save project xml
     QSaveFile saveFile(fileDevice->fileName());
     if(saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
@@ -946,6 +951,12 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
 
     //set new job
     this->setJob(newJob);
+
+    // load tool data
+    foreach (QPointer<Tool> tool, this->toolPlugins) {
+        tool->setJob(newJob);
+        tool->fromOpenIndyXML(project);
+    }
 
     //switch to active coordinate system
     this->featureUpdater.switchCoordinateSystem();
