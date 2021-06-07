@@ -18,7 +18,7 @@ ShowLicensesDialog::ShowLicensesDialog(QWidget *parent) :
     ui->setupUi(this);
 
     // parse licenses from file system
-    QDir licensesDir(QDir::currentPath() + "/licenses");
+    QDir licensesDir(QCoreApplication::applicationDirPath() + "/licenses");
     qDebug() << licensesDir;
 
     QStringList oiComponents = licensesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDir::SortFlag::Name);
