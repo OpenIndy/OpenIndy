@@ -15,6 +15,7 @@
 #include "sensorparametersdelegate.h"
 
 #include "sensorconfiguration.h"
+#include "clipboardutil.h"
 
 namespace Ui {
 class StationPropertiesDialog;

@@ -23,6 +23,7 @@
 #include "observationtabledelegate.h"
 #include "readingtabledelegate.h"
 #include "functionstatisticmodel.h"
+#include "clipboardutil.h"
 
 using namespace oi;
 

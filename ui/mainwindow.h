@@ -47,6 +47,7 @@
 #include "bundlestationsmodel.h"
 
 #include "projectconfig.h"
+#include "clipboardutil.h"
 
 #include <QSound>
 using namespace oi;
