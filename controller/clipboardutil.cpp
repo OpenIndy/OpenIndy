@@ -3,11 +3,11 @@
 void ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
     if(model.isNull()) {
         emit sendMessage("copyToClipboard: model is null", MessageTypes::eWarningMessage);
-        return false;
+        return;
     }
     if(selectionModel.isNull()) {
         emit sendMessage("copyToClipboard: selectionModel is null", MessageTypes::eWarningMessage);
-        return false;
+        return;
     }
 
     QModelIndexList selection = selectionModel->selectedIndexes();
@@ -15,7 +15,7 @@ void ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer
     //check and sort selection
     if(selection.size() <= 0){
         emit sendMessage("copyToClipboard: selection is empty", MessageTypes::eWarningMessage);
-        return false;
+        return;
     }
     qSort(selection);
 
