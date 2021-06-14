@@ -20,7 +20,7 @@ class ClipBoardUtil: public QObject
 public:
     //ClipBoardUtil();
 
-    bool copyToClipBoard(QPointer<QAbstractItemModel> model,QPointer<QItemSelectionModel> selectionModel);
+    void copyToClipBoard(QPointer<QAbstractItemModel> model,QPointer<QItemSelectionModel> selectionModel);
 
 signals:
     void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;

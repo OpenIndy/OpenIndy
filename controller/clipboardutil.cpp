@@ -1,6 +1,6 @@
 #include "clipboardutil.h"
 
-bool ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
+void ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
     if(model.isNull()) {
         emit sendMessage("copyToClipboard: model is null", MessageTypes::eWarningMessage);
         return false;
@@ -45,5 +45,5 @@ bool ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer
     clipboard->clear();
     clipboard->setText(copy_table);
 
-    return true;
+    emit sendMessage("successfully copied to clipboard", MessageTypes::eInformationMessage);
 }
