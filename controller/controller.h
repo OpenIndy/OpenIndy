@@ -158,6 +158,8 @@ public slots:
 
 signals:
 
+    void sensorStatus(const SensorStatus &status, const QString &msg);
+
     //#################################################
     //signals to inform about current job state changes
     //#################################################
@@ -257,6 +259,7 @@ signals:
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showClientMessage(const QString &msg, const MessageTypes &msgType);
+    void showStatusSensor(const SensorStatus &code, const QString &msg);
 
     //#################
     //update status bar

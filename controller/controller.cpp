@@ -268,6 +268,7 @@ void Controller::setSensorConfig(const SensorConfiguration &sConfig, bool connec
         this->log(QString("No sensor available with the name %1").arg(sConfig.getSensorName()), eErrorMessage, eMessageBoxMessage);
         return;
     }
+    QObject::connect(sensor, &Sensor::sensorStatus, this, &Controller::sensorStatus);
 
     //set active station's sensor
     sensor->setSensorConfiguration(sConfig);
