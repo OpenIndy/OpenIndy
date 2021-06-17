@@ -1733,7 +1733,6 @@ void MainWindow::copyToClipboard(){
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
     }
 
-    ClipBoardUtil clipBoardUtil;
     clipBoardUtil.copyToClipBoard(model, selectionModel);
 
 }
@@ -1750,7 +1749,6 @@ void MainWindow::copyDifferencesToClipboard()
     model = this->ui->tableView_FeatureDifferences->model();
     selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
 
-    ClipBoardUtil clipBoardUtil;
     clipBoardUtil.copyToClipBoard(model, selectionModel);
 }
 

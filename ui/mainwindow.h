@@ -466,6 +466,7 @@ private:
     QList<QPointer<FeatureWrapper> > foundFeatures;
     int showFoundFeatureIndex;
 
+    ClipBoardUtil clipBoardUtil;
 };
 
 #endif // MAINWINDOW_H

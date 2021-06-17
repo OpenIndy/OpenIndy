@@ -104,6 +104,8 @@ private:
 
     QPointer<FunctionStatisticModel> functionStatisticModel;
 
+    ClipBoardUtil clipBoardUtil;
+
 private:
     Ui::ActualPropertiesDialog *ui;
 };

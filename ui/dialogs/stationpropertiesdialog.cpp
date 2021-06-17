@@ -329,7 +329,6 @@ void StationPropertiesDialog::copyToClipboard(){
         selectionModel = this->ui->tableView_sensorParameters->selectionModel();
     }
 
-    ClipBoardUtil clipBoardUtil;
     clipBoardUtil.copyToClipBoard(model, selectionModel);
 
 }

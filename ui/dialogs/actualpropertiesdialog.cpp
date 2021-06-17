@@ -139,7 +139,6 @@ void ActualPropertiesDialog::copyToClipboard(){
         selectionModel = this->ui->tableView_readings->selectionModel();
     }
 
-    ClipBoardUtil clipBoardUtil;
     clipBoardUtil.copyToClipBoard(model, selectionModel);
 
 }

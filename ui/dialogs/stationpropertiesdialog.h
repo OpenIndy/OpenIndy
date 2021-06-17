@@ -109,6 +109,8 @@ private:
     SensorConfiguration sConfig;
     bool isActiveStation;
 
+    ClipBoardUtil clipBoardUtil;
+
 };
 
 #endif // STATIONPROPERTIESDIALOG_H
