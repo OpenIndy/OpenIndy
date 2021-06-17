@@ -54,6 +54,8 @@ signals:
     void unUseObservation(bool use, const QModelIndex &index);
     void removeObservationsById(const QList<int> selectedIds);
 
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
+
 private slots:
 
     //#########################

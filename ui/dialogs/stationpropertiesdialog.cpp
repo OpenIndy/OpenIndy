@@ -16,6 +16,7 @@ StationPropertiesDialog::StationPropertiesDialog(QWidget *parent) : QDialog(pare
     //init models
     this->initModels();
 
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &StationPropertiesDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!

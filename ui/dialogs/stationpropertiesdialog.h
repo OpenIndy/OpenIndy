@@ -56,6 +56,8 @@ signals:
     //save changes made to the sensor config
     void sensorConfigurationChanged(const SensorConfiguration &sConfig);
 
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
+
 private slots:
 
     //#########################

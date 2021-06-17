@@ -18,6 +18,8 @@ ActualPropertiesDialog::ActualPropertiesDialog(QWidget *parent) :
                      &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
     QObject::connect(this,&ActualPropertiesDialog::unUseObservation, &ModelManager::getObservationModel(),
                      &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
+
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &ActualPropertiesDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!

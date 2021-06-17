@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //connect bundle view
     this->connectBundleView();
 
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
+
     //initially resize table view to fit the default job
     this->resizeTableView();
 
@@ -2134,6 +2136,7 @@ void MainWindow::connectDialogs(){
     //connect actual properties dialog
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::removeObservationsById, &this->control, &Controller::removeObservationsById, Qt::AutoConnection);
+    QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     //connect nominal properties dialog
     QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);
@@ -2144,6 +2147,7 @@ void MainWindow::connectDialogs(){
     //connect station properties dialog
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     // connect SensorTaskInfo dialog
     QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
