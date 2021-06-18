@@ -71,6 +71,7 @@ void FeatureUpdater::recalcFeatureSet(){
         //recalc the feature if it was not recalced yet and is no trafo param
         if(!feature->getFeature()->getIsUpdated() && feature->getFeatureTypeEnum() != eTrafoParamFeature){
             //this->recalcFeature(feature->getFeature());
+            feature->getFeature()->setProperty("OI_EXEC_CONTEXT", 1);
             this->recursiveFeatureRecalculation(feature->getFeature());
         }
 
@@ -143,6 +144,8 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
         return;
     }
 
+    trafoParam->setProperty("OI_EXEC_CONTEXT", 2);
+
     //set up input feature
     if(trafoParam->getStartSystem()->getIsStationSystem() && trafoParam->getDestinationSystem()->getIsStationSystem()){ //actual - actual
         this->setUpTrafoParamActualActual(trafoParam, systemTransformation);
@@ -169,7 +172,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
         if(dependentFeature.isNull() || dependentFeature->getFeature().isNull() || !dependentFeature->getTrafoParam().isNull()){
             continue;
         }
-
+        dependentFeature->getFeature()->setProperty("OI_EXEC_CONTEXT", trafoParam->property("OI_EXEC_CONTEXT"));
         this->recalcFeature(dependentFeature->getFeature());
 
     }
@@ -359,13 +362,13 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
 
     //recalculate all needed features
     foreach(QPointer<FeatureWrapper> neededFeature, feature->getPreviouslyNeeded()){
-
         //check needed feature
         if(neededFeature.isNull() || neededFeature->getFeature().isNull()
                 || !neededFeature->getTrafoParam().isNull()){
             continue;
         }
 
+        neededFeature->getFeature()->setProperty("OI_EXEC_CONTEXT", feature->property("OI_EXEC_CONTEXT"));
         //recalculate needed feature
         this->recursiveFeatureRecalculation(neededFeature->getFeature());
 
@@ -389,6 +392,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
             continue;
         }
 
+        dependentFeature->getFeature()->setProperty("OI_EXEC_CONTEXT", feature->property("OI_EXEC_CONTEXT"));
         //recalculate dependent feature
         this->recursiveFeatureRecalculation(dependentFeature->getFeature());
 
@@ -937,6 +941,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
  */
 void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation)
 {
+    trafoParam->setProperty("OI_EXEC_CONTEXT", 3);
     //delete old copy elements
     systemTransformation->inputPointsStartSystem.clear();
     systemTransformation->inputPointsDestinationSystem.clear();
