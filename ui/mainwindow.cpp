@@ -3189,11 +3189,14 @@ void MainWindow::on_pushButton_showNextFoundFeature_clicked()
     showFoundFeature(showFoundFeatureIndex);
 }
 
-void MainWindow::showStatusSensor(const SensorStatus &code, const QString &msg) {
-     if(SensorStatus::eReadyForMeasurement == code) {
-         this->label_statusSensor->setStyleSheet("QLabel { background-color : lightgreen;}");
-     } else {
-         this->label_statusSensor->setStyleSheet("QLabel { background-color : red;}");
+void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg) {
+    switch(status){
+    case SensorStatus::eReadyForMeasurement:
+        this->label_statusSensor->setStyleSheet("QLabel { background-color : lightgreen;}");
+        break;
+     case SensorStatus::eNotReadyForMeasurement:
+        this->label_statusSensor->setStyleSheet("QLabel { background-color : red;}");
+        break;
      }
      this->label_statusSensor->setText(msg);
  }
