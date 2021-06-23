@@ -215,7 +215,7 @@ void ScalarParameterWidget::getParameterFromGUI(){
         QLineEdit *intValue = static_cast<QLineEdit*>(intIterator.value());
         if(intValue->hasAcceptableInput()){ //if line edit contains an integer
             this->intParameter.insert(intKey, intValue->text().toInt());
-        } else if (intValue->text().trimmed() == "") {
+        } else if (intValue->text().trimmed().isEmpty()) {
             this->intParameter.insert(intKey, 0); // set to 0
         }
     }
@@ -228,7 +228,7 @@ void ScalarParameterWidget::getParameterFromGUI(){
         QLineEdit *doubleValue = static_cast<QLineEdit*>(doubleIterator.value());
         if(doubleValue->hasAcceptableInput()){ //if line edit contains a double
             this->doubleParameter.insert(doubleKey, doubleValue->text().toDouble());
-        } else if (doubleValue->text().trimmed() == "") {
+        } else if (doubleValue->text().trimmed().isEmpty()) {
             this->doubleParameter.insert(doubleKey, 0.0); // set to 0
         }
     }
