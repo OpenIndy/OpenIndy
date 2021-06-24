@@ -5,6 +5,7 @@
 #include <iostream>
 #include <QDebug>
 #include "plugincopier.h"
+#include "pluginloader.h"
 
 class SimplePluginLoader : public QObject
 {
