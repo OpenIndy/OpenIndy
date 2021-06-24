@@ -2076,6 +2076,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::autoSwitchToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::sensorStatus, this, &MainWindow::showStatusSensor, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
@@ -3085,3 +3086,15 @@ void MainWindow::on_pushButton_showNextFoundFeature_clicked()
     }
     showFoundFeature(showFoundFeatureIndex);
 }
+
+void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg) {
+    switch(status){
+    case SensorStatus::eReadyForMeasurement:
+        this->label_statusSensor->setStyleSheet("QLabel { background-color : lightgreen;}");
+        break;
+     case SensorStatus::eNotReadyForMeasurement:
+        this->label_statusSensor->setStyleSheet("QLabel { background-color : red;}");
+        break;
+     }
+     this->label_statusSensor->setText(msg);
+ }
