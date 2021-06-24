@@ -6,6 +6,7 @@ SimplePluginLoader::SimplePluginLoader(QString path)
 
     QObject::connect(&pluginCopier, &PluginCopier::sendMessage, this, &SimplePluginLoader::log, Qt::AutoConnection);
     QObject::connect(&pluginCopier, &PluginCopier::importFinished, this, &SimplePluginLoader::importFinished, Qt::AutoConnection);
+    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage, this, &SimplePluginLoader::log, Qt::AutoConnection);
 }
 
 void SimplePluginLoader::importFinished(bool success) {
