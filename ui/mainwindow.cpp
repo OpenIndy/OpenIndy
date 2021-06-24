@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //connect bundle view
     this->connectBundleView();
 
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
+
     //initially resize table view to fit the default job
     this->resizeTableView();
 
@@ -1712,93 +1714,29 @@ void MainWindow::deleteFeatures(bool checked){
 void MainWindow::copyToClipboard(){
 
     //init variables
-    QAbstractItemModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QAbstractItemModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
 
     //get selection of the active table view
     if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
         model = this->ui->tableView_bundleParameter->model();
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
-        selection = selectionModel->selectedIndexes();
-    }else if(this->ui->dockWidget_differences->isActiveWindow()){
+    } else if(this->ui->dockWidget_differences->isActiveWindow()){
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }
 
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
+    clipBoardUtil.copyToClipBoard(model, selectionModel);
 
-        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
-
-        if(functionColumn == eFeatureDisplayFunctions) {
-
-            int activeFeatureID = this->control.getActiveFeature()->getFeature()->getId();
-            QString copy_table;
-            copy_table.append(QString::number(activeFeatureID));
-            copy_table.append("\n");
-
-            QClipboard *clipboard = QApplication::clipboard();
-            clipboard->clear();
-            clipboard->setText(copy_table);
-
-            return;
-        }
-    }
-
-    //check and sort selection
-    if(selection.size() <= 0){
-        return;
-    }
-    qSort(selection);
-
-    //###############################
-    //copy the selection to clipboard
-    //###############################
-
-    QString copy_table;
-    QModelIndex last = selection.last();
-    QModelIndex previous = selection.first();
-    selection.removeFirst();
-
-    //loop over all selected rows and columns
-    for(int i = 0; i < selection.size(); i++){
-
-        QVariant data = model->data(previous);
-        QString text = data.toString();
-
-        QModelIndex index = selection.at(i);
-        copy_table.append(text);
-
-        //if new line
-        if(index.row() != previous.row()){
-            copy_table.append("\n");
-        }else{ //if same line, but new column
-            copy_table.append("\t");
-        }
-        previous = index;
-    }
-
-    //get last selected cell
-    copy_table.append(model->data(last).toString());
-    copy_table.append("\n");
-
-    //set values to clipboard, so you can paste them elsewhere
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(copy_table);
 }
 
 /*!
@@ -1807,55 +1745,13 @@ void MainWindow::copyToClipboard(){
 void MainWindow::copyDifferencesToClipboard()
 {
     //init variables
-    QAbstractItemModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QAbstractItemModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
 
     model = this->ui->tableView_FeatureDifferences->model();
     selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-    selection = selectionModel->selectedIndexes();
 
-    //check and sort selection
-    if(selection.size() <= 0){
-        return;
-    }
-    qSort(selection);
-
-    //###############################
-    //copy the selection to clipboard
-    //###############################
-
-    QString copy_table;
-    QModelIndex last = selection.last();
-    QModelIndex previous = selection.first();
-    selection.removeFirst();
-
-    //loop over all selected rows and columns
-    for(int i = 0; i < selection.size(); i++){
-
-        QVariant data = model->data(previous);
-        QString text = data.toString();
-
-        QModelIndex index = selection.at(i);
-        copy_table.append(text);
-
-        //if new line
-        if(index.row() != previous.row()){
-            copy_table.append("\n");
-        }else{ //if same line, but new column
-            copy_table.append("\t");
-        }
-        previous = index;
-    }
-
-    //get last selected cell
-    copy_table.append(model->data(last).toString());
-    copy_table.append("\n");
-
-    //set values to clipboard, so you can paste them elsewhere
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(copy_table);
+    clipBoardUtil.copyToClipBoard(model, selectionModel);
 }
 
 /*!
@@ -2240,6 +2136,7 @@ void MainWindow::connectDialogs(){
     //connect actual properties dialog
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::removeObservationsById, &this->control, &Controller::removeObservationsById, Qt::AutoConnection);
+    QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     //connect nominal properties dialog
     QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);
@@ -2250,6 +2147,7 @@ void MainWindow::connectDialogs(){
     //connect station properties dialog
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     // connect SensorTaskInfo dialog
     QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);

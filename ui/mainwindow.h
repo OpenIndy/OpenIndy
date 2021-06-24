@@ -47,6 +47,7 @@
 #include "bundlestationsmodel.h"
 
 #include "projectconfig.h"
+#include "clipboardutil.h"
 
 #include <QSound>
 using namespace oi;
@@ -465,6 +466,7 @@ private:
     QList<QPointer<FeatureWrapper> > foundFeatures;
     int showFoundFeatureIndex;
 
+    ClipBoardUtil clipBoardUtil;
 };
 
 #endif // MAINWINDOW_H

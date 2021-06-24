@@ -144,7 +144,8 @@ SOURCES += \
     $$PWD/../controller/config/projectconfig.cpp \
     $$PWD/../ui/dialogs/uiutil.cpp \
     $$PWD/../controller/stablepointlogic.cpp \
-    $$PWD/../ui/dialogs/showlicensesdialog.cpp
+    $$PWD/../ui/dialogs/showlicensesdialog.cpp \
+    $$PWD/../controller/clipboardutil.cpp
 
 # header files
 HEADERS  += \
@@ -250,7 +251,8 @@ HEADERS  += \
     $$PWD/../controller/config/projectconfig.h \
     $$PWD/../ui/dialogs/uiutil.h \
     $$PWD/../controller/stablepointlogic.h \
-    $$PWD/../ui/dialogs/showlicensesdialog.h
+    $$PWD/../ui/dialogs/showlicensesdialog.h \
+    $$PWD/../controller/clipboardutil.h
 
 # ui files
 FORMS    += \
