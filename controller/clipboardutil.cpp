@@ -43,7 +43,12 @@ void ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer
     //set values to clipboard, so you can paste them elsewhere
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->clear();
-    clipboard->setText(copy_table);
 
-    emit sendMessage("successfully copied to clipboard", MessageTypes::eInformationMessage);
+    if(copy_table.isEmpty()) {
+        emit sendMessage("copy to clipboard failed", MessageTypes::eWarningMessage);
+    } else {
+        clipboard->setText(copy_table);
+
+        emit sendMessage("successfully copied to clipboard", MessageTypes::eInformationMessage);
+    }
 }
