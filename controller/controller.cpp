@@ -833,6 +833,16 @@ void Controller::saveProject(){
         return;
     }
 
+    QList<QPointer<Tool> > tools = this->getAvailableTools();
+    QList<QPointer<Tool> >::iterator toolIt;
+    for (toolIt = tools.begin(); toolIt != tools.end(); ++toolIt) {
+        const QPointer<Tool>& tool = *toolIt;
+        if(!tool->saveProjectEnabled()) {
+            this->log(QString("Saving project denied by tool: %1").arg(tool->getMetaData().name), eErrorMessage, eMessageBoxMessage);
+            return;
+        }
+    }
+
     //get and check name and file path
     QString name = this->job->getJobName();
     QPointer<QFileDevice> fileDevice = this->job->getJobDevice();
