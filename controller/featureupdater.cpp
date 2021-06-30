@@ -162,7 +162,8 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
     }
 
     //recalculate trafo param
-    trafoParam->recalc();
+    struct FunctionContext ctx = {20.0, 30.0, "steel"};
+    trafoParam->recalc(ctx); // OI_EXEC_CONTEXT
     trafoParam->setIsUpdated(true);
 
     //recalc dependent features
