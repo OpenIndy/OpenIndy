@@ -162,7 +162,8 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
     }
 
     //recalculate trafo param
-    struct FunctionContext ctx = {20.0, 30.0, "steel"};
+    FunctionContext ctx;
+    ctx.actualTemperatur = 30.0;
     trafoParam->recalc(ctx); // OI_EXEC_CONTEXT
     trafoParam->setIsUpdated(true);
 
