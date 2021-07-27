@@ -1307,7 +1307,7 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
 void FeatureTableModel::connectJob(){
     QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    // QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
@@ -1327,7 +1327,7 @@ void FeatureTableModel::disconnectJob(){
 
     QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::requestUpdateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::requestUpdateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::requestUpdateModel);
+    //QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::requestUpdateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::requestUpdateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::requestUpdateModel);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::requestUpdateModel);

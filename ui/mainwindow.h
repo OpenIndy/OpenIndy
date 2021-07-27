@@ -47,6 +47,7 @@
 #include "bundlestationsmodel.h"
 
 #include "projectconfig.h"
+#include "clipboardutil.h"
 
 #include <QSound>
 using namespace oi;
@@ -175,6 +176,7 @@ private slots:
     //display messages
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
+    void showStatusSensor(const SensorStatus &code, const QString &msg);
 
     //#########################
     //actions triggered by user
@@ -465,6 +467,7 @@ private:
     QList<QPointer<FeatureWrapper> > foundFeatures;
     int showFoundFeatureIndex;
 
+    ClipBoardUtil clipBoardUtil;
 };
 
 #endif // MAINWINDOW_H

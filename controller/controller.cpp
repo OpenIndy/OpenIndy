@@ -268,6 +268,7 @@ void Controller::setSensorConfig(const SensorConfiguration &sConfig, bool connec
         this->log(QString("No sensor available with the name %1").arg(sConfig.getSensorName()), eErrorMessage, eMessageBoxMessage);
         return;
     }
+    QObject::connect(sensor, &Sensor::sensorStatus, this, &Controller::sensorStatus);
 
     //set active station's sensor
     sensor->setSensorConfiguration(sConfig);
@@ -830,6 +831,16 @@ void Controller::saveProject(){
     if(this->job.isNull()){
         this->log("No job available", eErrorMessage, eMessageBoxMessage);
         return;
+    }
+
+    QList<QPointer<Tool> > tools = this->getAvailableTools();
+    QList<QPointer<Tool> >::iterator toolIt;
+    for (toolIt = tools.begin(); toolIt != tools.end(); ++toolIt) {
+        const QPointer<Tool>& tool = *toolIt;
+        if(!tool->saveProjectEnabled()) {
+            this->log(QString("Saving project denied by tool: %1").arg(tool->getMetaData().name), eErrorMessage, eMessageBoxMessage);
+            return;
+        }
     }
 
     //get and check name and file path
