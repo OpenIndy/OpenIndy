@@ -16,6 +16,7 @@
 #include "trafocontroller.h"
 #include "oijob.h"
 #include "sortlistbyname.h"
+#include "functioncontext.h"
 
 using namespace oi;
 
@@ -56,8 +57,8 @@ public slots:
     //#####################
 
     //recalculate features
-    void recalcFeatureSet();
-    void recalcFeature(const QPointer<Feature> &feature);
+    void recalcFeatureSet(const FunctionContext &ctx = FunctionContext{});
+    void recalcFeature(const QPointer<Feature> &feature, const FunctionContext &ctx = FunctionContext{});
     void recalcTrafoParam(const QPointer<TrafoParam> &trafoParam);
     bool recalcBundle(const QPointer<CoordinateSystem> &bundleSystem);
 
@@ -74,13 +75,13 @@ private:
     void disconnectJob();
 
     //recursive recalculation
-    void recursiveFeatureRecalculation(const QPointer<Feature> &feature);
+    void recursiveFeatureRecalculation(const QPointer<Feature> &feature, const FunctionContext &ctx = FunctionContext{});
 
     //set up input elements for trafo param features
     void setUpTrafoParamActualActual(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
     void setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
     void setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
-    void setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
+    void setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation, const FunctionContext &ctx = FunctionContext{});
 
     //change the active coordinate system (does not transform observations)
     void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
@@ -88,9 +89,9 @@ private:
     void recalcFeatureSetWithoutTransformation();
     void recalcFeatureWithoutTransformation(const QPointer<Feature> &feature);
     //change with transformation for bundle
-    void switchCoordinateSystemWithTransformation(const QPointer<CoordinateSystem> &destinationSystem);
+    void switchCoordinateSystemWithTransformation(const QPointer<CoordinateSystem> &destinationSystem, const FunctionContext &ctx = FunctionContext{});
 
-    void transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem);
+    void transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem, const FunctionContext &ctx = FunctionContext{});
 
     //copy geometry
     void copyGeometry(InputElement &newElement, const QPointer<FeatureWrapper> &oldElement, const ElementTypes &type);

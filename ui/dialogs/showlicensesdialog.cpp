@@ -19,7 +19,6 @@ ShowLicensesDialog::ShowLicensesDialog(QWidget *parent) :
 
     // parse licenses from file system
     QDir licensesDir(QCoreApplication::applicationDirPath() + "/licenses");
-    qDebug() << licensesDir;
 
     QStringList oiComponents = licensesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDir::SortFlag::Name);
     foreach(QString oiComponent, oiComponents) {
@@ -35,7 +34,6 @@ ShowLicensesDialog::ShowLicensesDialog(QWidget *parent) :
             QDir licenseFilesDir(moduleDir.absolutePath() + "/" + module);
             QStringList licenseFiles = licenseFilesDir.entryList(QDir::Files, QDir::SortFlag::Name);
             foreach(QString licenseFile, licenseFiles) {
-                qDebug() << oiComponent << module << licenseFile;
                 FileItem* licenseFileItem = new FileItem(licenseFile, licenseFilesDir.absolutePath() + "/" + licenseFile);
                 moduleItem->appendRow(licenseFileItem);
             }
@@ -53,11 +51,8 @@ ShowLicensesDialog::ShowLicensesDialog(QWidget *parent) :
 }
 
 void ShowLicensesDialog::onClick(const QModelIndex& idx) {
-    qDebug() << idx;
-
     FileItem* fileItem = dynamic_cast<FileItem*>(this->model.itemFromIndex(idx));
     if(fileItem != nullptr) {
-        qDebug() << fileItem->path;
         QFile file(fileItem->path);
         file.open(QFile::ReadOnly | QFile::Text);
         this->ui->plainTextEdit->setPlainText(file.readAll());

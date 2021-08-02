@@ -38,7 +38,7 @@ void FeatureUpdater::setCurrentJob(const QPointer<OiJob> &job){
  * \brief FeatureUpdater::recalcFeatureSet
  * Recalculate the hole set of features of the current OpenIndy job
  */
-void FeatureUpdater::recalcFeatureSet(){
+void FeatureUpdater::recalcFeatureSet(const FunctionContext &ctx){
 
     //check job
     if(this->currentJob.isNull()){
@@ -72,7 +72,7 @@ void FeatureUpdater::recalcFeatureSet(){
         if(!feature->getFeature()->getIsUpdated() && feature->getFeatureTypeEnum() != eTrafoParamFeature){
             //this->recalcFeature(feature->getFeature());
             feature->getFeature()->setProperty("OI_EXEC_CONTEXT", 1);
-            this->recursiveFeatureRecalculation(feature->getFeature());
+            this->recursiveFeatureRecalculation(feature->getFeature(), ctx);
         }
 
     }
@@ -87,7 +87,7 @@ void FeatureUpdater::recalcFeatureSet(){
  * Recalculates a single feature of an OpenIndy job and all its dependencies
  * \param feature
  */
-void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
+void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature, const FunctionContext &ctx){
 
     //check job
     if(this->currentJob.isNull()){
@@ -117,7 +117,7 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
     }
 
     //recalculate feature
-    this->recursiveFeatureRecalculation(feature);
+    this->recursiveFeatureRecalculation(feature, ctx);
 
     emit this->featureRecalculated(feature->getId());
 
@@ -145,6 +145,9 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
     }
 
     trafoParam->setProperty("OI_EXEC_CONTEXT", 2);
+    FunctionContext ctx;
+    ctx.isValid = true;
+    ctx.actualTemperatur = 30.0;
 
     //set up input feature
     if(trafoParam->getStartSystem()->getIsStationSystem() && trafoParam->getDestinationSystem()->getIsStationSystem()){ //actual - actual
@@ -156,14 +159,12 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
                                                                    && !trafoParam->getDestinationSystem()->getIsBundleSystem()))
              || (trafoParam->getDestinationSystem()->getIsBundleSystem() && (!trafoParam->getStartSystem()->getIsStationSystem()
                                                                              && !trafoParam->getStartSystem()->getIsBundleSystem()))){ //bundle - nominal
-        this->setUpTrafoParamBundleNominal(trafoParam, systemTransformation);
+        this->setUpTrafoParamBundleNominal(trafoParam, systemTransformation, ctx);
     }else{ //nominal - nominal
         this->setUpTrafoParamNominalNominal(trafoParam, systemTransformation);
     }
 
     //recalculate trafo param
-    FunctionContext ctx;
-    ctx.actualTemperatur = 30.0;
     trafoParam->recalc(ctx); // OI_EXEC_CONTEXT
     trafoParam->setIsUpdated(true);
 
@@ -175,7 +176,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
             continue;
         }
         dependentFeature->getFeature()->setProperty("OI_EXEC_CONTEXT", trafoParam->property("OI_EXEC_CONTEXT"));
-        this->recalcFeature(dependentFeature->getFeature());
+        this->recalcFeature(dependentFeature->getFeature(), ctx);
 
     }
 
@@ -355,7 +356,7 @@ void FeatureUpdater::disconnectJob(){
  * Is called on a feature to recursively recalculate the feature and all its dependencies
  * \param feature
  */
-void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feature){
+void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feature, const FunctionContext &ctx){
 
     //check wether the feature has already been updated
     if(feature->getIsUpdated()){
@@ -372,7 +373,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
 
         neededFeature->getFeature()->setProperty("OI_EXEC_CONTEXT", feature->property("OI_EXEC_CONTEXT"));
         //recalculate needed feature
-        this->recursiveFeatureRecalculation(neededFeature->getFeature());
+        this->recursiveFeatureRecalculation(neededFeature->getFeature(), ctx);
 
     }
 
@@ -382,7 +383,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
     }
 
     //recalculate feature and mark it as updated
-    feature->recalc();
+    feature->recalc(ctx);
     feature->setIsUpdated(true);
 
     //recalculate dependent features
@@ -396,7 +397,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
 
         dependentFeature->getFeature()->setProperty("OI_EXEC_CONTEXT", feature->property("OI_EXEC_CONTEXT"));
         //recalculate dependent feature
-        this->recursiveFeatureRecalculation(dependentFeature->getFeature());
+        this->recursiveFeatureRecalculation(dependentFeature->getFeature(), ctx);
 
     }
 
@@ -941,7 +942,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
  * \param trafoParam
  * \param systemTransformation
  */
-void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation)
+void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation, const FunctionContext &ctx)
 {
     trafoParam->setProperty("OI_EXEC_CONTEXT", 3);
     //delete old copy elements
@@ -1007,7 +1008,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     //###################
 
     //switch to "from" system
-    this->switchCoordinateSystemWithTransformation(trafoParam->getStartSystem());
+    this->switchCoordinateSystemWithTransformation(trafoParam->getStartSystem(), ctx);
 
     //set up input elements for alignment transformations
     if(isAlignment){
@@ -1094,7 +1095,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     //set up destination system
     //#########################
 
-    this->switchCoordinateSystemWithTransformation(trafoParam->getDestinationSystem());
+    this->switchCoordinateSystemWithTransformation(trafoParam->getDestinationSystem(), ctx);
 
     //set up input elements for alignment transformation
     if(isAlignment){
@@ -1355,7 +1356,7 @@ void FeatureUpdater::recalcFeatureWithoutTransformation(const QPointer<Feature> 
  * \brief FeatureUpdater::switchCoordinateSystemWithTransformation
  * \param destinationSystem
  */
-void FeatureUpdater::switchCoordinateSystemWithTransformation(const QPointer<CoordinateSystem> &destinationSystem)
+void FeatureUpdater::switchCoordinateSystemWithTransformation(const QPointer<CoordinateSystem> &destinationSystem, const FunctionContext &ctx)
 {
     //check current job
     if(this->currentJob.isNull()){
@@ -1367,7 +1368,7 @@ void FeatureUpdater::switchCoordinateSystemWithTransformation(const QPointer<Coo
         return;
     }
 
-    this->transformObsAndNominals(destinationSystem);
+    this->transformObsAndNominals(destinationSystem, ctx); // OI_EXEC_CONTEXT
 
     //this->recalcFeatureSet();
 }
@@ -1376,7 +1377,7 @@ void FeatureUpdater::switchCoordinateSystemWithTransformation(const QPointer<Coo
  * \brief FeatureUpdater::transformObsAndNominals
  * \param destinationSystem
  */
-void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem)
+void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &destinationSystem, const FunctionContext &ctx)
 {
     if(destinationSystem.isNull()) {
         return; // nothing to do
@@ -1399,7 +1400,7 @@ void FeatureUpdater::transformObsAndNominals(const QPointer<CoordinateSystem> &d
 
     }
 
-    this->recalcFeatureSet();
+    this->recalcFeatureSet(ctx);// <-- hier ctx übergeben
 
     //#############################################################################
     //set nominals to solved only if their nominal system is the destination system

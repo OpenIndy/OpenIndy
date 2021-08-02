@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QDialog>
 #include <QDir>
-#include <QDebug>
 #include <QStandardItem>
 #include <QStandardItemModel>
 
