@@ -1776,12 +1776,13 @@ void MainWindow::pasteFromClipboard(){
     QSortFilterProxyModel *model = NULL;
     QItemSelectionModel *selectionModel = NULL;
     QModelIndexList selection;
+    bool isFunctionColumnSelected = false;
 
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
         selectionModel = this->ui->tableView_features->selectionModel();
-
+        isFunctionColumnSelected = eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1808,23 +1809,20 @@ void MainWindow::pasteFromClipboard(){
         emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    qSort(selection);
 
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
-        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
+    if(isFunctionColumnSelected && selection.size() > 1) {
 
-        if(functionColumn == eFeatureDisplayFunctions){
+        QMessageBox msgBox;
+        msgBox.setText("Only select one feature to paste functions to.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
 
-            if(selection.size() > 1){
-                QMessageBox msgBox;
-                msgBox.setText("Only select one feature to paste functions to.");
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setDefaultButton(QMessageBox::Ok);
-                int ret = msgBox.exec();
-                return;
-            }
-        }
+        return;
     }
+
+
+    qSort(selection);
 
     //get values from clipboard, so you can copy them
     QClipboard *clipboard = QApplication::clipboard();
