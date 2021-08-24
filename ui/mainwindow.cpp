@@ -1774,15 +1774,17 @@ void MainWindow::copyDifferencesToClipboard()
 void MainWindow::pasteFromClipboard(){
 
     //init variables
-    QSortFilterProxyModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
+    QPointer<QSortFilterProxyModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
     bool isFunctionColumnSelected = false;
 
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
         selectionModel = this->ui->tableView_features->selectionModel();
-        isFunctionColumnSelected = eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && !selectionModel->selectedIndexes().isEmpty()
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1791,14 +1793,14 @@ void MainWindow::pasteFromClipboard(){
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
     }
 
-    if(model == NULL){
+    if(model.isNull()){
         qDebug() << "no model selected";
         return;
     }
 
     //get and check destination model (in the sense of copy target)
-    FeatureTableModel *destModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(destModel == NULL){
+    QPointer<FeatureTableModel> destModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(destModel.isNull()){
         qDebug() << "no destination model avialable";
         return;
     }
