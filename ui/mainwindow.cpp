@@ -1725,7 +1725,9 @@ void MainWindow::copyToClipboard(){
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view: copy displayed values or feature id !
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
-        isFunctionColumnSelected = eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && !selectionModel->selectedIndexes().isEmpty()
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1774,7 +1776,6 @@ void MainWindow::pasteFromClipboard(){
     //init variables
     QSortFilterProxyModel *model = NULL;
     QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
     bool isFunctionColumnSelected = false;
 
     //get models depending on the current tab view
@@ -1803,23 +1804,16 @@ void MainWindow::pasteFromClipboard(){
     }
 
     //get selected indexes
-    selection = selectionModel->selectedIndexes();
+    QModelIndexList selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
         emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     if(isFunctionColumnSelected && selection.size() > 1) {
-
-        QMessageBox msgBox;
-        msgBox.setText("Only select one feature to paste functions to.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        int ret = msgBox.exec();
-
+        emit this->log("Only select one feature to paste functions to.", eErrorMessage, eMessageBoxMessage);
         return;
     }
-
 
     qSort(selection);
 
