@@ -1716,14 +1716,16 @@ void MainWindow::copyToClipboard(){
     //init variables
     QPointer<QAbstractItemModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
 
     //get selection of the active table view
     if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view: copy displayed values or feature id !
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
+        isFunctionColumnSelected = eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1735,7 +1737,18 @@ void MainWindow::copyToClipboard(){
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
     }
 
-    clipBoardUtil.copyToClipBoard(model, selectionModel);
+    if(isFunctionColumnSelected) {
+
+        int activeFeatureID = this->control.getActiveFeature()->getFeature()->getId();
+        QString copy_table;
+        copy_table.append(QString::number(activeFeatureID));
+        copy_table.append("\n");
+
+        clipBoardUtil.copyToClipBoard(copy_table);
+
+    } else { // common case: copy displayed values
+        clipBoardUtil.copySelectionToClipBoard(model, selectionModel);
+    }
 
 }
 
