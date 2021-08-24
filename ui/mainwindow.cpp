@@ -1766,39 +1766,26 @@ void MainWindow::pasteFromClipboard(){
 
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
-
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_features->selectionModel();
 
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
-
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
-
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
-
         model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
     }
 
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
+    if(model == NULL){
+        qDebug() << "no model selected";
+        return;
+    }
+
+    //get and check destination model (in the sense of copy target)
+    FeatureTableModel *destModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(destModel == NULL){
+        qDebug() << "no destination model avialable";
         return;
     }
 
@@ -1847,13 +1834,13 @@ void MainWindow::pasteFromClipboard(){
     if(rows.size() == 1){
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(0));
+            destModel->setData(model->mapToSource(currentIndex), rows.at(0));
         }
     }else{
         int i = 0;
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            destModel->setData(model->mapToSource(currentIndex), rows.at(i));
             i++;
         }
     }
