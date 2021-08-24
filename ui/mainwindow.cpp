@@ -1739,9 +1739,8 @@ void MainWindow::copyToClipboard(){
 
     if(isFunctionColumnSelected) {
 
-        int activeFeatureID = this->control.getActiveFeature()->getFeature()->getId();
         QString copy_table;
-        copy_table.append(QString::number(activeFeatureID));
+        copy_table.append(QString::number(this->control.getActiveFeature()->getFeature()->getId()));
         copy_table.append("\n");
 
         clipBoardUtil.copyToClipBoard(copy_table);
