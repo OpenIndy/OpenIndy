@@ -1,6 +1,6 @@
 #include "clipboardutil.h"
 
-void ClipBoardUtil::copySelectionToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
+void ClipBoardUtil::copySelectionAsCsvToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
     if(model.isNull()) {
         emit sendMessage("copyToClipboard: model is null", MessageTypes::eWarningMessage);
         return;

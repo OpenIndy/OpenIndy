@@ -1719,6 +1719,7 @@ void MainWindow::copyToClipboard(){
     bool isFunctionColumnSelected = false;
 
     //get selection of the active table view
+    // keep order of if statments
     if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
@@ -1748,7 +1749,7 @@ void MainWindow::copyToClipboard(){
         clipBoardUtil.copyToClipBoard(copy_table);
 
     } else { // common case: copy displayed values
-        clipBoardUtil.copySelectionToClipBoard(model, selectionModel);
+        clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
     }
 
 }
@@ -1765,7 +1766,7 @@ void MainWindow::copyDifferencesToClipboard()
     model = this->ui->tableView_FeatureDifferences->model();
     selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
 
-    clipBoardUtil.copySelectionToClipBoard(model, selectionModel);
+    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 }
 
 /*!

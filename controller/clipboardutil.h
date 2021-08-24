@@ -21,7 +21,7 @@ public:
     //ClipBoardUtil();
 
     // copy displayed values
-    void copySelectionToClipBoard(QPointer<QAbstractItemModel> model,QPointer<QItemSelectionModel> selectionModel);
+    void copySelectionAsCsvToClipBoard(QPointer<QAbstractItemModel> model,QPointer<QItemSelectionModel> selectionModel);
     // copy text to clipboard
     void copyToClipBoard(QString coyp_table);
 
