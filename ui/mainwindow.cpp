@@ -1727,8 +1727,8 @@ void MainWindow::copyToClipboard(){
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
         isFunctionColumnSelected = !selectionModel.isNull()
-                && !selectionModel->selectedIndexes().isEmpty()
-                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1784,8 +1784,8 @@ void MainWindow::pasteFromClipboard(){
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
         selectionModel = this->ui->tableView_features->selectionModel();
         isFunctionColumnSelected = !selectionModel.isNull()
-                && !selectionModel->selectedIndexes().isEmpty()
-                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().last().column());
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
