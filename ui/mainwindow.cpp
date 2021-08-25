@@ -1716,14 +1716,19 @@ void MainWindow::copyToClipboard(){
     //init variables
     QPointer<QAbstractItemModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
 
     //get selection of the active table view
+    // keep order of if statments
     if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view: copy displayed values or feature id !
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1735,7 +1740,17 @@ void MainWindow::copyToClipboard(){
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
     }
 
-    clipBoardUtil.copyToClipBoard(model, selectionModel);
+    if(isFunctionColumnSelected) {
+
+        QString copy_table;
+        copy_table.append(QString::number(this->control.getActiveFeature()->getFeature()->getId()));
+        copy_table.append("\n");
+
+        clipBoardUtil.copyToClipBoard(copy_table);
+
+    } else { // common case: copy displayed values
+        clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
+    }
 
 }
 
@@ -1751,7 +1766,7 @@ void MainWindow::copyDifferencesToClipboard()
     model = this->ui->tableView_FeatureDifferences->model();
     selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
 
-    clipBoardUtil.copyToClipBoard(model, selectionModel);
+    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 }
 
 /*!
@@ -1760,71 +1775,50 @@ void MainWindow::copyDifferencesToClipboard()
 void MainWindow::pasteFromClipboard(){
 
     //init variables
-    QSortFilterProxyModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QSortFilterProxyModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
 
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
-
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_features->selectionModel();
-
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
-
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
-
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
-
         model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
     }
 
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
+    if(model.isNull()){
+        qDebug() << "no model selected";
+        return;
+    }
+
+    //get and check destination model (in the sense of copy target)
+    QPointer<FeatureTableModel> destModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(destModel.isNull()){
+        qDebug() << "no destination model avialable";
         return;
     }
 
     //get selected indexes
-    selection = selectionModel->selectedIndexes();
+    QModelIndexList selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
         emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    qSort(selection);
 
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
-        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
-
-        if(functionColumn == eFeatureDisplayFunctions){
-
-            if(selection.size() > 1){
-                QMessageBox msgBox;
-                msgBox.setText("Only select one feature to paste functions to.");
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setDefaultButton(QMessageBox::Ok);
-                int ret = msgBox.exec();
-                return;
-            }
-        }
+    if(isFunctionColumnSelected && selection.size() > 1) {
+        emit this->log("Only select one feature to paste functions to.", eErrorMessage, eMessageBoxMessage);
+        return;
     }
+
+    qSort(selection);
 
     //get values from clipboard, so you can copy them
     QClipboard *clipboard = QApplication::clipboard();
@@ -1847,13 +1841,13 @@ void MainWindow::pasteFromClipboard(){
     if(rows.size() == 1){
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(0));
+            destModel->setData(model->mapToSource(currentIndex), rows.at(0));
         }
     }else{
         int i = 0;
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            destModel->setData(model->mapToSource(currentIndex), rows.at(i));
             i++;
         }
     }

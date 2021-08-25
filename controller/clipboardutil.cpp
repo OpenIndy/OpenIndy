@@ -1,6 +1,6 @@
 #include "clipboardutil.h"
 
-void ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
+void ClipBoardUtil::copySelectionAsCsvToClipBoard(QPointer<QAbstractItemModel> model, QPointer<QItemSelectionModel> selectionModel) {
     if(model.isNull()) {
         emit sendMessage("copyToClipboard: model is null", MessageTypes::eWarningMessage);
         return;
@@ -40,6 +40,10 @@ void ClipBoardUtil::copyToClipBoard(QPointer<QAbstractItemModel> model, QPointer
         }
     }
 
+    copyToClipBoard(copy_table);
+}
+
+void ClipBoardUtil::copyToClipBoard(QString copy_table) {
     //set values to clipboard, so you can paste them elsewhere
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->clear();
