@@ -50,6 +50,8 @@ Tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
     make
     make install
 
+Call the above command line _qmake openIndy.pro -r -spec linux-g++ CONFIG+=debug_ and _make install_ three times to ensure that all submodules are copied to the OpenIndy/install directory.
+
 #### clone and build OpenIndy-DefaultPlugin
 
     git clone --recurse-submodule https://github.com/OpenIndy/OpenIndy-DefaultPlugin.git
