@@ -200,6 +200,12 @@ void FeatureFunctionsDialog::on_treeView_availableElements_entered(const QModelI
 
 }
 
+void FeatureFunctionsDialog::on_treeView_availableElements_doubleClicked(const QModelIndex &index) {
+    if(this->ui->cmd_addElement->isEnabled()) {
+        this->on_cmd_addElement_clicked();
+    }
+}
+
 /*!
  * \brief FeatureFunctionsDialog::on_treeView_usedElements_clicked
  * Triggered whenever the user has selected one or more used elements
@@ -246,6 +252,12 @@ void FeatureFunctionsDialog::on_treeView_usedElements_entered(const QModelIndex 
 
     this->ui->cmd_removeElement->setEnabled(true);
 
+}
+
+void FeatureFunctionsDialog::on_treeView_usedElements_doubleClicked(const QModelIndex &index) {
+    if(this->ui->cmd_removeElement->isEnabled()) {
+        this->on_cmd_removeElement_clicked();
+    }
 }
 
 /*!
