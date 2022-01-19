@@ -33,3 +33,5 @@ build/*_resource.rc
 
 **/debug/
 **/release/
+
+install
