@@ -3092,3 +3092,15 @@ void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg
      }
      this->label_statusSensor->setText(msg);
  }
+
+void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
+{
+
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    model->setSortingMode((FeatureSorter::SortingMode)index);
+
+}
