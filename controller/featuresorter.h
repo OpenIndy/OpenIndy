@@ -35,7 +35,6 @@ public:
         eSortStandard,                  // by id and put nominal behind actual
         eSortBy_Name_ActNom,            // by "feature name" and put nominal behind actual
         eSortBy_Group_Name_ActNom,      // by "group name", "feature name" and put nominal behind actual
-        eSortBy_Id_ActNom               // same as eSortStandard
     };
 
     //#################################
@@ -79,9 +78,8 @@ private:
     //##############
 
     bool sortStandard(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
-    bool sortName(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
-    bool sortGroup(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
-    bool sortId(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
+    bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
+    bool sortBy_Group_Name(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
 
 };
 
