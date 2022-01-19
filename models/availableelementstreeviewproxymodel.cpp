@@ -351,6 +351,23 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
 
     }
 
+    if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()) {
+        QPointer<Feature> feature = item->getFeature()->getFeature();
+        if(!this->filterFeatureName.isEmpty() && feature->getFeatureName() != this->filterFeatureName) { // filter by featurename
+            return false;
+        }
+        if(!this->filterGroupName.isEmpty() && feature->getGroupName() != this->filterGroupName) { // filter by groupname
+            return false;
+        }
+
+        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal && !item->getFeature()->getGeometry()->getIsNominal()) {
+            return false;
+        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual && item->getFeature()->getGeometry()->getIsNominal()) {
+            return false;
+        }
+
+    }
+
     //check wether item contains an element of the type neededElement
     if(item->getHasElement(neededElementType)){
         return true;
