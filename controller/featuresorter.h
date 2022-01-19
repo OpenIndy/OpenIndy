@@ -32,9 +32,9 @@ public:
     //#############
 
     enum SortingMode{
-        eSortStandard,                  // by id and put nominal behind actual
-        eSortBy_Name_ActNom,            // by "feature name" and put nominal behind actual
-        eSortBy_Group_Name_ActNom,      // by "group name", "feature name" and put nominal behind actual
+        eSortStandard,                  // sort by: id, isNominal
+        eSortBy_Name_ActNom,            // sort by: featureName, isNominal
+        eSortBy_Group_Name_ActNom,      // sort by: groupName, featureName, isNominal
     };
 
     //#################################
