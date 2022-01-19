@@ -70,10 +70,12 @@ private slots:
     //avaialable elements tree view
     void on_treeView_availableElements_clicked(const QModelIndex &index);
     void on_treeView_availableElements_entered(const QModelIndex &index);
+    void on_treeView_availableElements_doubleClicked(const QModelIndex &index);
 
     //used elements tree view
     void on_treeView_usedElements_clicked(const QModelIndex &index);
     void on_treeView_usedElements_entered(const QModelIndex &index);
+    void on_treeView_usedElements_doubleClicked(const QModelIndex &index);
 
     //add or remove elements
     void on_cmd_addElement_clicked();
