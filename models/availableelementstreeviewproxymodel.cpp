@@ -330,7 +330,7 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
     if(item.isNull()){
         return false;
     }
-    ElementTypes e = item->getElementType();
+
     //check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
     if(item->getElementType() == neededElementType){
 
