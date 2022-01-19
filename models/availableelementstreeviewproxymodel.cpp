@@ -330,7 +330,7 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
     if(item.isNull()){
         return false;
     }
-    ElementTypes e = item->getElementType();
+
     //check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
     if(item->getElementType() == neededElementType){
 
@@ -347,6 +347,23 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
             return !inputElements.contains(item->getObservation()->getId());
         }else if(item->getIsReading() && !item->getReading().isNull()){
             return !inputElements.contains(item->getReading()->getId());
+        }
+
+    }
+
+    if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()) {
+        QPointer<Feature> feature = item->getFeature()->getFeature();
+        if(!this->filterFeatureName.isEmpty() && feature->getFeatureName() != this->filterFeatureName) { // filter by featurename
+            return false;
+        }
+        if(!this->filterGroupName.isEmpty() && feature->getGroupName() != this->filterGroupName) { // filter by groupname
+            return false;
+        }
+
+        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal && !item->getFeature()->getGeometry()->getIsNominal()) {
+            return false;
+        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual && item->getFeature()->getGeometry()->getIsNominal()) {
+            return false;
         }
 
     }
@@ -489,3 +506,19 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
     }
 
 }
+
+void AvailableElementsTreeViewProxyModel::filterByActualNominal(ActualNominalFilter filter) {
+    this->filterActualNominal = filter;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByGroup(QString groupName) {
+    this->filterGroupName = groupName;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByFeatureName(QString featureName) {
+    this->filterFeatureName = featureName;
+    this->invalidateFilter();
+}
+
