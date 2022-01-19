@@ -3009,18 +3009,27 @@ void MainWindow::updateCompleter() {
             return;
         }
 
-        int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        int featureNameColumn = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        int groupNameColumn = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayGroup);
         QStringList featureNames;
+        QStringList groupNames;
         for(int row=0; row < model->rowCount(); row++) {
-            QString name = model->data(model->index(row,column), Qt::DisplayRole).toString();
-            if(!featureNames.contains(name)) {
-                featureNames.append(name);
+            QString featureName = model->data(model->index(row,featureNameColumn), Qt::DisplayRole).toString();
+            if(!featureNames.contains(featureName)) {
+                featureNames.append(featureName);
+            }
+            QString groupName = model->data(model->index(row,groupNameColumn), Qt::DisplayRole).toString();
+            if(!groupNames.contains(groupName) && !groupName.isNull() && !groupName.isEmpty()) {
+                groupNames.append(groupName);
             }
         }
         QCompleter *completer = new QCompleter(featureNames, this);
         completer->setFilterMode(Qt::MatchContains);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         this->ui->lineEdit_searchFeatureName->setCompleter(completer);
+        this->featureFunctionsDialog.setFeatureNameCompleter(completer);
+        this->featureFunctionsDialog.setGroupNames(groupNames);
+
     }
 }
 
