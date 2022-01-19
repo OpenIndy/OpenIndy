@@ -39,6 +39,15 @@ CONFIG(debug, debug|release) {
 } else {
     BUILD_DIR=release
 }
+# test dependencies
+SOURCES += \
+    $$PWD/../../controller/featuresorter.cpp \
+    $$PWD/../../controller/config/featuretablesortingconfig.cpp
+
+# test dependencies
+HEADERS +=  \
+    $$PWD/../../controller/featuresorter.h \
+    $$PWD/../../controller/config/featuretablesortingconfig.h
 
 #INCLUDEPATH += \
 #    $$PWD/../..
