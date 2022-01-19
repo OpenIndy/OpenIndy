@@ -489,3 +489,19 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
     }
 
 }
+
+void AvailableElementsTreeViewProxyModel::filterByActualNominal(ActualNominalFilter filter) {
+    this->filterActualNominal = filter;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByGroup(QString groupName) {
+    this->filterGroupName = groupName;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByFeatureName(QString featureName) {
+    this->filterFeatureName = featureName;
+    this->invalidateFilter();
+}
+
