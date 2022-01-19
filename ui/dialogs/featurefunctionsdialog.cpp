@@ -431,6 +431,7 @@ void FeatureFunctionsDialog::initGUI(){
     //connect weights tableview
     QObject::connect(this->ui->tableView_weights->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &FeatureFunctionsDialog::resizeTableView, Qt::AutoConnection);
 
+    this->ui->treeView_availableElements->setSortingEnabled(true);
 }
 
 /*!

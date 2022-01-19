@@ -6,6 +6,7 @@
  */
 AvailableElementsTreeViewProxyModel::AvailableElementsTreeViewProxyModel(QObject *parent) : QSortFilterProxyModel(parent){
     this->resetSelectedFunctionPosition();
+    this->setSortCaseSensitivity(Qt::CaseInsensitive);
 }
 
 /*!
