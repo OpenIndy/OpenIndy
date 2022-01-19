@@ -535,3 +535,13 @@ bool FeatureFunctionsDialog::checkSupportsWeights()
 
     return model->getSupportsWeights(index);
 }
+
+void FeatureFunctionsDialog::setFeatureNameCompleter(QCompleter *completer) {
+   this->ui->lineEdit_searchByFeatureName->setCompleter(completer);
+}
+
+void FeatureFunctionsDialog::setGroupNames(QStringList groupNames) {
+    this->ui->comboBox_groups->clear();
+    this->ui->comboBox_groups->addItem("All Groups");
+    this->ui->comboBox_groups->addItems(groupNames);
+}
