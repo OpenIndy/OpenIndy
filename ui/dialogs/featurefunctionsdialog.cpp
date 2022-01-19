@@ -545,3 +545,35 @@ void FeatureFunctionsDialog::setGroupNames(QStringList groupNames) {
     this->ui->comboBox_groups->addItem("All Groups");
     this->ui->comboBox_groups->addItems(groupNames);
 }
+
+void FeatureFunctionsDialog::on_comboBox_features_currentIndexChanged(int index)
+{
+    AvailableElementsTreeViewProxyModel *model = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    if(model == NULL){
+        return;
+    }
+    model->filterByActualNominal((ActualNominalFilter)index);
+}
+
+void FeatureFunctionsDialog::on_comboBox_groups_currentIndexChanged(int index)
+{
+    AvailableElementsTreeViewProxyModel *model = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    if(model == NULL){
+        return;
+    }
+    if(index == 0) {
+        model->filterByGroup("");
+    } else {
+        model->filterByGroup(this->ui->comboBox_groups->itemText(index));
+    }
+}
+
+void FeatureFunctionsDialog::on_lineEdit_searchByFeatureName_textChanged(const QString &text)
+{
+    AvailableElementsTreeViewProxyModel *model = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    if(model == NULL){
+        return;
+    }
+
+    model->filterByFeatureName(text);
+}
