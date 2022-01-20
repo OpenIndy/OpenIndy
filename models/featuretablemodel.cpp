@@ -531,6 +531,15 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                         copyFeature->getFeature()->getFunctions().at(i)->getScalarInputParams());
                             }
                             if(editMode & EditMode::eFunctionCopyUsedElements) {
+                                QMap<int, QList<InputElement> > inputElements = copyFeature->getFeature()->getFunctions().at(i)->getInputElements();
+                                QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
+                                while (iterator != inputElements.constEnd()) {
+                                    QList<InputElement> elements = iterator.value();
+                                    for (int i = 0; i < elements.size(); ++i) {
+                                        feature->getFeature()->getFunctions().at(i)->addInputElement(elements.at(i), iterator.key());
+                                    }
+                                    ++iterator;
+                                }
 
                             }
                         }
