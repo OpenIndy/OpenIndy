@@ -31,6 +31,12 @@ public:
     explicit FeatureTableModel(const QPointer<OiJob> &job, QObject *parent = 0);
     explicit FeatureTableModel(QObject *parent = 0);
 
+    enum EditMode { // bit flags
+        eDefault = 0, // do nothing
+        eFunctionCopyScalarInputParams = 1<<0,
+        eFunctionCopyUsedElements = 1<<1,
+    };
+
     //########################################
     //override methods of abstract table model
     //########################################
