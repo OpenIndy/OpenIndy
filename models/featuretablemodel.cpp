@@ -525,9 +525,14 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
                     //assign function parameters from copied function to the new functions
                     if(feature->getFeature()->getFunctions().size() == copyFeature->getFeature()->getFunctions().size()){
-                        for(int i = 0; i < feature->getFeature()->getFunctions().size(); i++){
-                            feature->getFeature()->getFunctions().at(i)->setScalarInputParams(
+                        for(int i = 0; i < feature->getFeature()->getFunctions().size(); i++){ // guess same order
+                            if(editMode & EditMode::eFunctionCopyScalarInputParams) {
+                                feature->getFeature()->getFunctions().at(i)->setScalarInputParams(
                                         copyFeature->getFeature()->getFunctions().at(i)->getScalarInputParams());
+                            }
+                            if(editMode & EditMode::eFunctionCopyUsedElements) {
+
+                            }
                         }
                     }
                     return true;
