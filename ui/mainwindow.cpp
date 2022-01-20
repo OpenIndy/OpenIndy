@@ -1841,10 +1841,12 @@ void MainWindow::pasteFromClipboard(){
     if(rows.size() == 1){
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            destModel->setData(model->mapToSource(currentIndex),
-                               rows.at(0),
-                               Qt::EditRole,
-                               isFunctionColumnSelected ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams : FeatureTableModel::EditMode::eDefault);
+            destModel->setData( model->mapToSource(currentIndex),
+                                rows.at(0),
+                                Qt::EditRole,
+                                isFunctionColumnSelected
+                                    ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams | FeatureTableModel::EditMode::eFunctionCopyUsedElements
+                                    : FeatureTableModel::EditMode::eDefault);
         }
     }else{
         int i = 0;
