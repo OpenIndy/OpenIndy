@@ -349,7 +349,7 @@ QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
 
     //check index
     if(!index.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get rowIndex
@@ -359,7 +359,7 @@ QString SensorTableModel::getSensorDescription(const QModelIndex &index) const{
     QModelIndex pluginIndex = this->index(rowIndex, 1);
     QModelIndex sensorIndex = this->index(rowIndex, 0);
     if(!pluginIndex.isValid() || !sensorIndex.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get plugin and sensor name
@@ -429,7 +429,7 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
 
     //check index
     if(!index.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get rowIndex
@@ -439,7 +439,7 @@ QString SensorTableModel::getPluginFilePath(const QModelIndex &index) const{
     QModelIndex pluginIndex = this->index(rowIndex, 1);
     QModelIndex sensorIndex = this->index(rowIndex, 0);
     if(!pluginIndex.isValid() || !sensorIndex.isValid()){
-        return eUndefinedSensor;
+        return "UndefinedSensor";
     }
 
     //get plugin and sensor name
@@ -493,7 +493,7 @@ QList<ReadingTypes> SensorTableModel::getSupportedReadingTypes() const{
 
     //get reading types and delete sensor
     types = sensor->getSupportedReadingTypes();
-    delete sensor;
+    delete sensor.data();
 
     return types;
 
@@ -522,7 +522,7 @@ QList<SensorFunctions> SensorTableModel::getSupportedSensorActions() const{
 
     //get functions and delete sensor
     functions =  sensor->getSupportedSensorActions();
-    delete sensor;
+    delete sensor.data();
 
     return functions;
 
@@ -551,7 +551,7 @@ QList<ConnectionTypes> SensorTableModel::getSupportedConnectionTypes() const{
 
     //get connection types and delete sensor
     types =  sensor->getSupportedConnectionTypes();
-    delete sensor;
+    delete sensor.data();
 
     return types;
 
@@ -606,7 +606,7 @@ SensorConfiguration SensorTableModel::getDefaultSensorConfig() const{
     }
     sConfig.setConnectionConfig(cConfig);
 
-    delete sensor;
+    delete sensor.data();
 
     return sConfig;
 

@@ -135,10 +135,6 @@ void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
  */
 void CreateFeatureDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     //init GUI elements based on the current feature type
     this->initGUI();
 
@@ -306,13 +302,13 @@ void CreateFeatureDialog::initModels(){
     this->ui->comboBox_destinationSystem->setModel(&ModelManager::getCoordinateSystemsModel());
 
     //set combobox size
-    int sizeSystem =oi::getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
+    int sizeSystem = getDropDownMenuSize(ModelManager::getCoordinateSystemsModel().stringList(), this->ui->comboBox_startSystem->width());
     this->ui->comboBox_startSystem->view()->setMinimumWidth(sizeSystem);
     this->ui->comboBox_destinationSystem->view()->setMinimumWidth(sizeSystem);
 
     //set model for possible nominal systems of a nominal geometry
     this->ui->comboBox_nominalSystem->setModel(&ModelManager::getNominalSystemsModel());
-    int sizeNominal = oi::getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
+    int sizeNominal = getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
     this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
     //set model for available functions

@@ -18,6 +18,8 @@ ActualPropertiesDialog::ActualPropertiesDialog(QWidget *parent) :
                      &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
     QObject::connect(this,&ActualPropertiesDialog::unUseObservation, &ModelManager::getObservationModel(),
                      &ObservationModel::setObservationUseStateByContextmenu, Qt::AutoConnection);
+
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &ActualPropertiesDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!
@@ -127,62 +129,19 @@ void ActualPropertiesDialog::on_comboBox_displayedFunction_currentIndexChanged(i
 void ActualPropertiesDialog::copyToClipboard(){
 
     //init variables
-    QAbstractItemModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QAbstractItemModel> model = NULL;
+    QPointer<QItemSelectionModel>selectionModel = NULL;
 
     //get selection of the active table view
     if(this->ui->tabWidget_selectedFeature->currentWidget() == this->ui->tab_observations){ //observation table view
         model = this->ui->tableView_observation->model();
         selectionModel = this->ui->tableView_observation->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }else if(this->ui->tabWidget_selectedFeature->currentWidget() == this->ui->tab_readings){ //reading table view
         model = this->ui->tableView_readings->model();
         selectionModel = this->ui->tableView_readings->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }
 
-    //check and sort selection
-    if(selection.size() <= 0){
-        return;
-    }
-    qSort(selection);
-
-    //###############################
-    //copy the selection to clipboard
-    //###############################
-
-    QString copy_table;
-    QModelIndex last = selection.last();
-    QModelIndex previous = selection.first();
-    selection.removeFirst();
-
-    //loop over all selected rows and columns
-    for(int i = 0; i < selection.size(); i++){
-
-        QVariant data = model->data(previous);
-        QString text = data.toString();
-
-        QModelIndex index = selection.at(i);
-        copy_table.append(text);
-
-        //if new line
-        if(index.row() != previous.row()){
-            copy_table.append('\n');
-        }else{ //if same line, but new column
-            copy_table.append('\t');
-        }
-        previous = index;
-
-    }
-
-    //get last selected cell
-    copy_table.append(model->data(last).toString());
-    copy_table.append('\n');
-
-    //set values to clipboard, so you can copy them
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(copy_table);
+    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 
 }
 
@@ -191,10 +150,6 @@ void ActualPropertiesDialog::copyToClipboard(){
  * \param event
  */
 void ActualPropertiesDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
 
     this->resizeTableView();
 
@@ -314,8 +269,12 @@ void ActualPropertiesDialog::unUseObservations()
     //get selected indexes
     selection = this->getSelection();
     if(selection.size() > 0){
+        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+        if(model == NULL){
+            return;
+        }
         foreach (QModelIndex idx, selection) {
-            emit this->useObservation(false, idx);
+            emit this->useObservation(false, model->mapToSource(idx));
         }
     }
 }
@@ -331,8 +290,12 @@ void ActualPropertiesDialog::useObservations()
     //get selected indexes
     selection = this->getSelection();
     if(selection.size() > 0){
+        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+        if(model == NULL){
+            return;
+        }
         foreach (QModelIndex idx, selection) {
-            emit this->useObservation(true, idx);
+            emit this->useObservation(true, model->mapToSource(idx));
         }
     }
 }
@@ -349,8 +312,12 @@ void ActualPropertiesDialog::deleteObservations()
     selection = this->getSelection();
     if(selection.size() > 0){
         QList<int> selectedIds;
+        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
+        if(model == NULL){
+            return;
+        }
         foreach (QModelIndex idx, selection) {
-            int i = ModelManager::getObservationModel().getObservationIdByIndex(idx);
+            int i = ModelManager::getObservationModel().getObservationIdByIndex(model->mapToSource(idx));
             if (i >= 0) {
                 selectedIds.append(i);
             }

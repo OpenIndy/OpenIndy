@@ -655,7 +655,7 @@ void PluginTreeItem::setUpPlugin(){
     PluginTreeItem *functions = new PluginTreeItem("functions:");
     PluginTreeItem *fitFunctions = new PluginTreeItem("fit functions:");
     PluginTreeItem *constructFunctions = new PluginTreeItem("construct functions:");
-    PluginTreeItem *generateFunctions = new PluginTreeItem("generate feature functions:");
+    PluginTreeItem *specialFunctions = new PluginTreeItem("special functions:");
     PluginTreeItem *geodeticFunctions = new PluginTreeItem("geodetic functions:");
     PluginTreeItem *objectTransformations = new PluginTreeItem("object transformations:");
     PluginTreeItem *systemTransformations = new PluginTreeItem("system transformations:");
@@ -665,8 +665,8 @@ void PluginTreeItem::setUpPlugin(){
             fitFunctions->appendChild(functionItem);
         }else if(function.iid.compare(OiMetaData::iid_ConstructFunction) == 0){
             constructFunctions->appendChild(functionItem);
-        }else if(function.iid.compare(OiMetaData::iid_GenerateFeatureFunction) == 0){
-            generateFunctions->appendChild(functionItem);
+        }else if(function.iid.compare(OiMetaData::iid_SpecialFunction) == 0){
+            specialFunctions->appendChild(functionItem);
         }else if(function.iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
             geodeticFunctions->appendChild(functionItem);
         }else if(function.iid.compare(OiMetaData::iid_ObjectTransformation) == 0){
@@ -680,10 +680,12 @@ void PluginTreeItem::setUpPlugin(){
     }
     functions->appendChild(fitFunctions);
     functions->appendChild(constructFunctions);
-    functions->appendChild(generateFunctions);
     functions->appendChild(geodeticFunctions);
     functions->appendChild(objectTransformations);
     functions->appendChild(systemTransformations);
+    if(specialFunctions->getChildCount() > 0) {
+        functions->appendChild(specialFunctions);
+    }
 
     //set up tools
     PluginTreeItem *tools = new PluginTreeItem("tools:");

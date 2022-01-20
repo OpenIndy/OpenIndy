@@ -3,8 +3,8 @@
 # Project created by QtCreator 2013-10-12T15:43:14
 #
 #-------------------------------------------------
-
-QT       += core gui sql svg serialport network opengl xml websockets multimedia
+CONFIG += c++11
+QT       += core gui sql svg serialport network xml websockets multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4):
 
@@ -42,6 +42,7 @@ INCLUDEPATH += \
 # source files
 SOURCES += \
     $$PWD/../main.cpp \
+    $$PWD/../controller/simplepluginloader.cpp \
     $$PWD/../ui/mainwindow.cpp \
     $$PWD/../ui/dialogs/createfeaturedialog.cpp \
     $$PWD/../controller/console.cpp \
@@ -93,6 +94,7 @@ SOURCES += \
     $$PWD/../models/plugintreeviewmodel.cpp \
     $$PWD/../ui/dialogs/pluginmanagerdialog.cpp \
     $$PWD/../ui/dialogs/watchwindowdialog.cpp \
+    $$PWD/../ui/dialogs/watchwindowutil.cpp \
     $$PWD/../controller/exchange/projectexchanger.cpp \
     $$PWD/../ui/dialogs/measurementconfigurationdialog.cpp \
     $$PWD/../models/measurementconfigurationmodel.cpp \
@@ -139,10 +141,15 @@ SOURCES += \
     $$PWD/../models/bundleparametertableproxymodel.cpp \
     $$PWD/../models/featuredifferencetablemodel.cpp \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
-    $$PWD/../controller/config/projectconfig.cpp
+    $$PWD/../controller/config/projectconfig.cpp \
+    $$PWD/../ui/dialogs/uiutil.cpp \
+    $$PWD/../controller/stablepointlogic.cpp \
+    $$PWD/../ui/dialogs/showlicensesdialog.cpp \
+    $$PWD/../controller/clipboardutil.cpp
 
 # header files
 HEADERS  += \
+    $$PWD/../controller/simplepluginloader.h \
     $$PWD/../ui/mainwindow.h \
     $$PWD/../ui/dialogs/createfeaturedialog.h \
     $$PWD/../controller/console.h \
@@ -194,6 +201,7 @@ HEADERS  += \
     $$PWD/../models/plugintreeviewmodel.h \
     $$PWD/../ui/dialogs/pluginmanagerdialog.h \
     $$PWD/../ui/dialogs/watchwindowdialog.h \
+    $$PWD/../ui/dialogs/watchwindowutil.h \
     $$PWD/../controller/exchange/projectexchanger.h \
     $$PWD/../ui/dialogs/measurementconfigurationdialog.h \
     $$PWD/../models/measurementconfigurationmodel.h \
@@ -240,7 +248,11 @@ HEADERS  += \
     $$PWD/../models/bundleparametertableproxymodel.h \
     $$PWD/../models/featuredifferencetablemodel.h \
     $$PWD/../models/featuredifferenceproxymodel.h \
-    $$PWD/../controller/config/projectconfig.h
+    $$PWD/../controller/config/projectconfig.h \
+    $$PWD/../ui/dialogs/uiutil.h \
+    $$PWD/../controller/stablepointlogic.h \
+    $$PWD/../ui/dialogs/showlicensesdialog.h \
+    $$PWD/../controller/clipboardutil.h
 
 # ui files
 FORMS    += \
@@ -262,7 +274,8 @@ FORMS    += \
     $$PWD/../ui/dialogs/aboutdialog.ui \
     $$PWD/../ui/dialogs/trafoparampropertiesdialog.ui \
     $$PWD/../ui/dialogs/stationpropertiesdialog.ui \
-    $$PWD/../ui/dialogs/exportdialog.ui
+    $$PWD/../ui/dialogs/exportdialog.ui \
+    $$PWD/../ui/dialogs/showlicensesdialog.ui
 
 # resource files
 RESOURCES += \
@@ -270,4 +283,4 @@ RESOURCES += \
 
 # app icon
 win32:RC_FILE = $$PWD/../res/openIndy.rc
-unix:ICON = $$PWD/../res/openIndy.icns
+linux:ICON = $$PWD/../res/openIndy.icns

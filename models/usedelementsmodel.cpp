@@ -33,11 +33,14 @@ int UsedElementsModel::rowCount(const QModelIndex &parent) const{
     }
     Function *function = feature->getFunctions().at(this->functionPosition);
 
+    NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
+    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+
     //check input elements
-    if(!function->getInputElements().contains(this->neededElementIndex)){
+    if(!function->getInputElements().contains(inputElementKey)){
         return 0;
     }
-    return function->getInputElements()[this->neededElementIndex].size();
+    return function->getInputElements()[inputElementKey].size();
 
 }
 
@@ -79,12 +82,14 @@ QVariant UsedElementsModel::data(const QModelIndex &index, int role) const{
     }
     Function *function = feature->getFunctions().at(this->functionPosition);
 
+    NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
+    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
     //check and get input element
-    if(!function->getInputElements().contains(this->neededElementIndex)
-            || index.row() >= function->getInputElements()[this->neededElementIndex].size()){
+    if(!function->getInputElements().contains(inputElementKey)
+            || index.row() >= function->getInputElements()[inputElementKey].size()){
         return QVariant();
     }
-    InputElement element = function->getInputElements()[this->neededElementIndex].at(index.row());
+    InputElement element = function->getInputElements()[inputElementKey].at(index.row());
 
     if(role == Qt::DisplayRole){
 
@@ -216,11 +221,14 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
     }
     Function *function = feature->getFunctions().at(this->functionPosition);
 
+    NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
+    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
     //check and get input elements
-    if(!function->getInputElements().contains(this->neededElementIndex)){
+    if(!function->getInputElements().contains(inputElementKey)){
         return;
     }
-    QList<InputElement> inputElements = function->getInputElements().value(this->neededElementIndex);
+
+    QList<InputElement> inputElements = function->getInputElements().value(inputElementKey);
 
     //remove all selected elements
     foreach(const QModelIndex &index, selection){
@@ -231,7 +239,7 @@ void UsedElementsModel::removeUsedElements(const QModelIndexList &selection){
         }
 
         emit this->startRemoveUsedElements(this->currentJob->getActiveFeature(), this->functionPosition,
-                                           this->neededElementIndex, inputElements.at(index.row()).id);
+                                           inputElementKey, inputElements.at(index.row()).id);
 
     }
 

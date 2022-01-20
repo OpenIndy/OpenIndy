@@ -452,7 +452,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     MeasurementConfig mConfig;
     mConfig.setName(name);
     mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
-    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble());
+    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
     mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
     mConfig.setCount(this->ui->lineEdit_numMeas->text().toInt());
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
@@ -473,10 +473,6 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
  * \param event
  */
 void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
 
     QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
                         this, &MeasurementConfigurationDialog::measurementConfigNameChanged, Qt::AutoConnection);
@@ -535,4 +531,24 @@ void MeasurementConfigurationDialog::initModels(){
 void MeasurementConfigurationDialog::on_checkBox_measureWithAim_clicked()
 {
      this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1)
+{
+    this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1)
+{
+    this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::on_checkBox_isStablePoint_clicked()
+{
+    this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1)
+{
+    this->updateMeasurementConfigFromSelection();
 }

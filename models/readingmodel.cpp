@@ -60,7 +60,7 @@ int ReadingModel::columnCount(const QModelIndex &parent) const{
 QVariant ReadingModel::data(const QModelIndex &index, int role) const{
 
     //check role
-    if(role != Qt::DisplayRole){
+    if(role != Qt::DisplayRole && role != Qt::TextAlignmentRole){
         return QVariant();
     }
 
@@ -99,75 +99,104 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
         return QVariant();
     }
 
-    switch((ReadingDisplayAttributes)columnIndex){
-    case eReadingDisplayId:
-        return reading->getDisplayId();
-    case eReadingDisplayType:
-        return reading->getDisplayType();
-    case eReadingDisplayTime:
-        return reading->getDisplayTime();
-    case eReadingDisplaySensor:
-        return reading->getDisplaySensor();
-    case eReadingDisplaySide:
-        return reading->getDisplaySide();
-    case eReadingDisplayAzimuth:
-        return reading->getDisplayAzimuth(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                          this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplayZenith:
-        return reading->getDisplayZenith(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                         this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplayDistance:
-        return reading->getDisplayDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                           this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplayX:
-        return reading->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                    this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplayY:
-        return reading->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                    this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplayZ:
-        return reading->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                    this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplayI:
-        return reading->getDisplayI(6);
-    case eReadingDisplayJ:
-        return reading->getDisplayJ(6);
-    case eReadingDisplayK:
-        return reading->getDisplayK(6);
-    case eReadingDisplayTemperature:
-        return reading->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
-                                              this->parameterDisplayConfig.getDisplayDigits(eTemperature));
-    case eReadingDisplayImported:
-        return reading->isImported() ? "imported" : "";
-    case eReadingDisplaySigmaAzimuth:
-        return reading->getDisplaySigmaAzimuth(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                               this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplaySigmaZenith:
-        return reading->getDisplaySigmaZenith(this->parameterDisplayConfig.getDisplayUnit(eAngular),
-                                              this->parameterDisplayConfig.getDisplayDigits(eAngular));
-    case eReadingDisplaySigmaDistance:
-        return reading->getDisplaySigmaDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                                this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplaySigmaX:
-        return reading->getDisplaySigmaX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplaySigmaY:
-        return reading->getDisplaySigmaY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplaySigmaZ:
-        return reading->getDisplaySigmaZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
-                                         this->parameterDisplayConfig.getDisplayDigits(eMetric));
-    case eReadingDisplaySigmaI:
-        return reading->getDisplaySigmaI(6);
-    case eReadingDisplaySigmaJ:
-        return reading->getDisplaySigmaJ(6);
-    case eReadingDisplaySigmaK:
-        return reading->getDisplaySigmaK(6);
-    case eReadingDisplaySigmaTemperature:
-        return reading->getDisplaySigmaTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
-                                                   this->parameterDisplayConfig.getDisplayDigits(eTemperature));
-    }
+    if(role == Qt::DisplayRole){
 
+        switch((ReadingDisplayAttributes)columnIndex){
+        case eReadingDisplayId:
+            return reading->getDisplayId();
+        case eReadingDisplayType:
+            return reading->getDisplayType();
+        case eReadingDisplayTime:
+            return reading->getDisplayTime();
+        case eReadingDisplaySensor:
+            return reading->getDisplaySensor();
+        case eReadingDisplaySide:
+            return reading->getDisplaySide();
+        case eReadingDisplayAzimuth:
+            return reading->getDisplayAzimuth(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                              this->parameterDisplayConfig.getDisplayDigits(eAngular));
+        case eReadingDisplayZenith:
+            return reading->getDisplayZenith(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                             this->parameterDisplayConfig.getDisplayDigits(eAngular));
+        case eReadingDisplayDistance:
+            return reading->getDisplayDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                               this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplayX:
+            return reading->getDisplayX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplayY:
+            return reading->getDisplayY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplayZ:
+            return reading->getDisplayZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                        this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplayI:
+            return reading->getDisplayI(6);
+        case eReadingDisplayJ:
+            return reading->getDisplayJ(6);
+        case eReadingDisplayK:
+            return reading->getDisplayK(6);
+        case eReadingDisplayTemperature:
+            return reading->getDisplayTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
+                                                  this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+        case eReadingDisplayImported:
+            return reading->isImported() ? "imported" : "";
+        case eReadingDisplaySigmaAzimuth:
+            return reading->getDisplaySigmaAzimuth(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                                   this->parameterDisplayConfig.getDisplayDigits(eAngular));
+        case eReadingDisplaySigmaZenith:
+            return reading->getDisplaySigmaZenith(this->parameterDisplayConfig.getDisplayUnit(eAngular),
+                                                  this->parameterDisplayConfig.getDisplayDigits(eAngular));
+        case eReadingDisplaySigmaDistance:
+            return reading->getDisplaySigmaDistance(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                    this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplaySigmaX:
+            return reading->getDisplaySigmaX(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplaySigmaY:
+            return reading->getDisplaySigmaY(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplaySigmaZ:
+            return reading->getDisplaySigmaZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eReadingDisplaySigmaI:
+            return reading->getDisplaySigmaI(6);
+        case eReadingDisplaySigmaJ:
+            return reading->getDisplaySigmaJ(6);
+        case eReadingDisplaySigmaK:
+            return reading->getDisplaySigmaK(6);
+        case eReadingDisplaySigmaTemperature:
+            return reading->getDisplaySigmaTemperature(this->parameterDisplayConfig.getDisplayUnit(eTemperature),
+                                                       this->parameterDisplayConfig.getDisplayDigits(eTemperature));
+        }
+
+    }else if(role == Qt::TextAlignmentRole){
+
+        switch((ReadingDisplayAttributes)columnIndex){
+        case eReadingDisplayAzimuth:
+        case eReadingDisplayZenith:
+        case eReadingDisplayDistance:
+        case eReadingDisplayX:
+        case eReadingDisplayY:
+        case eReadingDisplayZ:
+        case eReadingDisplayI:
+        case eReadingDisplayJ:
+        case eReadingDisplayK:
+        case eReadingDisplayTemperature:
+        case eReadingDisplaySigmaAzimuth:
+        case eReadingDisplaySigmaZenith:
+        case eReadingDisplaySigmaDistance:
+        case eReadingDisplaySigmaX:
+        case eReadingDisplaySigmaY:
+        case eReadingDisplaySigmaZ:
+        case eReadingDisplaySigmaI:
+        case eReadingDisplaySigmaJ:
+        case eReadingDisplaySigmaK:
+        case eReadingDisplaySigmaTemperature:
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+        }
+
+    }
     return QVariant();
 
 }

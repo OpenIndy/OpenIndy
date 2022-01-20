@@ -114,8 +114,8 @@ private:
                                  const MeasurementConfig &mConfig, const QString &path, const QString &fName);
 
     // import readings of features
-    void importMeasurements(QList<QPointer<FeatureWrapper>> features);
-    void createActuals(QList<QPointer<FeatureWrapper>> features);
+    void importMeasurements(QList<QPointer<FeatureWrapper> > features);
+    void createActuals(QList<QPointer<FeatureWrapper> > features);
 
 };
 

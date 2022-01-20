@@ -82,6 +82,8 @@ void ObservationTableColumnConfig::init(){
     this->displayColumns.append(eObservationDisplayVY);
     this->displayColumns.append(eObservationDisplayVZ);
     this->displayColumns.append(eObservationDisplayV);
+    this->displayColumns.append(eObservationDisplayVR);
     this->displayColumns.append(eObservationDisplayIsUsed);
+    this->displayColumns.append(eObservationDisplayIsDummyPoint);
 
 }

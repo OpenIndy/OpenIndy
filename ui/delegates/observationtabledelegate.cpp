@@ -45,32 +45,3 @@ void ObservationTableDelegate::setEditorData(QWidget *editor, const QModelIndex 
 void ObservationTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const{
 
 }
-
-/*!
- * \brief ObservationTableDelegate::sizeHint
- * \param option
- * \param index
- * \return
- */
-QSize ObservationTableDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
-
-    //check model index
-    if(!index.isValid()){
-        return QSize(5, 22);
-    }
-
-    //get and check models
-    const ObservationProxyModel *observationProxyModel = static_cast<const ObservationProxyModel*>(index.model());
-    if(observationProxyModel == NULL){
-        return QSize(5, 22);
-    }
-
-    QString input = observationProxyModel->data(index).toString();
-
-    QFontMetrics metrics(option.font);
-
-    int width = metrics.width(input) + option.decorationSize.width();
-
-    return QSize(width, 22);
-
-}

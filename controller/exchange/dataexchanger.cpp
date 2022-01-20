@@ -341,10 +341,10 @@ bool DataExchanger::importObservations(const QString &filename){
 
 }
 
-void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features) {
+void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper> > features) {
     QDateTime curDateTime = QDateTime::currentDateTime();
     foreach (QPointer<FeatureWrapper> importedFeature, features) {
-        QList<QPointer<FeatureWrapper>> jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
+        QList<QPointer<FeatureWrapper> > jobFeatures = this->currentJob->getFeaturesByName(importedFeature->getFeature()->getFeatureName());
         if (jobFeatures.isEmpty()) {
             qDebug() << "features not found: " << importedFeature->getFeature()->getFeatureName();
             continue;
@@ -417,7 +417,7 @@ void DataExchanger::importMeasurements(QList<QPointer<FeatureWrapper>> features)
     }
 }
 
-void DataExchanger::createActuals(QList<QPointer<FeatureWrapper>> features) {
+void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
 
     foreach (QPointer<FeatureWrapper> fw, features) {
         switch(fw->getFeatureTypeEnum()) {
@@ -573,6 +573,12 @@ void DataExchanger::exportFeatures(const bool &success)
     if(this->exchangeThread.isRunning()){
         this->exchangeThread.quit();
         this->exchangeThread.wait();
+    }
+
+    if(success){
+        emit this->sendMessage("Features successfully exported", eInformationMessage, eMessageBoxMessage);
+    }else{
+        emit this->sendMessage("Features not exported successfully", eErrorMessage, eMessageBoxMessage);
     }
 }
 

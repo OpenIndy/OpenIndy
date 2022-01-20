@@ -4,6 +4,9 @@
 QSqlDatabase SystemDbManager::db;
 bool SystemDbManager::isInit = false;
 
+QThreadStorage<QMap<FeatureTypes, QList<sdb::Function> > > SystemDbManager::functionCache;
+QThreadStorage<QMap<QString, sdb::Plugin> > SystemDbManager::caches;
+
 /*!
  * \brief SystemDbManager::addPlugin
  * Saves an OpenIndy plugin in the system database
@@ -226,11 +229,29 @@ QList<sdb::Plugin> SystemDbManager::getPlugins(){
 
 /*!
  * \brief SystemDbManager::getPlugin
- * Get the plugin with the specified name
+ * Get the plugin with the specified name from cache or database
  * \param name
  * \return
  */
-sdb::Plugin SystemDbManager::getPlugin(const QString &name){
+sdb::Plugin SystemDbManager::getPlugin(const QString &name) {
+    if(caches.localData().contains(name)) {
+        return caches.localData().value(name);
+    } else {
+        sdb::Plugin plugin = SystemDbManager::getPluginFromDB(name);
+        if(plugin.id > -1) {
+            caches.localData().insert(name, plugin);
+        }
+        return plugin;
+    }
+}
+
+ /*!
+  * \brief SystemDbManager::getPluginFromDB
+  * Get the plugin with the specified name
+  * \param name
+  * \return
+  */
+sdb::Plugin SystemDbManager::getPluginFromDB(const QString &name){
 
     sdb::Plugin plugin;
 
@@ -632,6 +653,15 @@ QList<sdb::Function> SystemDbManager::getFunctions(){
  * \return
  */
 QList<sdb::Function> SystemDbManager::getCreateFunctions(const FeatureTypes &type){
+    if(functionCache.localData().contains(type)) {
+        return functionCache.localData().value(type);
+    } else {
+        QList<sdb::Function> functions = SystemDbManager::getCreateFunctionsFromDB(type);
+        functionCache.localData().insert(type, functions);
+        return functions;
+    }
+}
+QList<sdb::Function> SystemDbManager::getCreateFunctionsFromDB(const FeatureTypes &type){
 
     QList<sdb::Function> functions;
 
@@ -648,7 +678,10 @@ QList<sdb::Function> SystemDbManager::getCreateFunctions(const FeatureTypes &typ
         if(type == eTrafoParamFeature){
             condition = QString("fp.iid = '%1'").arg(OiMetaData::iid_SystemTransformation);
         }else{
-            condition = QString("fp.iid = '%1' OR fp.iid = '%2'").arg(OiMetaData::iid_FitFunction).arg(OiMetaData::iid_ConstructFunction);
+            condition = QString("fp.iid = '%1' OR fp.iid = '%2' OR fp.iid = '%3'")
+                    .arg(OiMetaData::iid_FitFunction)
+                    .arg(OiMetaData::iid_ConstructFunction)
+                    .arg(OiMetaData::iid_SpecialFunction);
         }
 
         //query all available plugins
@@ -734,10 +767,11 @@ QList<sdb::Function> SystemDbManager::getChangeFunctions(const FeatureTypes &typ
         QString query2;
 
         //exclude fit, construct functions and system trafos
-        QString condition = QString("NOT (fp.iid = '%1' OR fp.iid = '%2' OR fp.iid = '%3')")
+        QString condition = QString("NOT (fp.iid = '%1' OR fp.iid = '%2' OR fp.iid = '%3' OR fp.iid = '%4')")
                 .arg(OiMetaData::iid_SystemTransformation)
                 .arg(OiMetaData::iid_FitFunction)
-                .arg(OiMetaData::iid_ConstructFunction);
+                .arg(OiMetaData::iid_ConstructFunction)
+                .arg(OiMetaData::iid_SpecialFunction);
 
         //query all available plugins
         query = QString("SELECT %1 %2 %3 %4 %5 FROM functionPlugin AS fp INNER JOIN plugin AS p %6")

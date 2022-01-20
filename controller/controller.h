@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QString>
-#include <QIODevice>
+#include <QFileDevice>
 #include <QSaveFile>
 #include <QFile>
 #include <QFileInfo>
@@ -29,6 +29,7 @@
 #include "pluginloader.h"
 #include "oiwebsocketserver.h"
 #include "projectconfig.h"
+#include "stablepointlogic.h"
 
 using namespace oi;
 
@@ -52,6 +53,13 @@ public:
     const QList<QPointer<Tool> > &getAvailableTools() const;
 
     bool hasProjectDigestChanged();
+
+    void _startMeasurement(bool dummyPoint);
+
+    void stopStablePointMeasurement(); // TODO OI-496: signal / slot?
+    void startStablePointMeasurement();// TODO OI-496: signal / slot?
+
+    bool activeFeatureUseStablePointMeasurement(); // TODO OI-496: private ?
 
 public slots:
 
@@ -119,7 +127,7 @@ public slots:
     //save or load a job
     void saveProject();
     void saveProject(const QString &fileName);
-    void loadProject(const QString &projectName, const QPointer<QIODevice> &device);
+    void loadProject(const QString &projectName, const QPointer<QFileDevice> &device);
     const QPointer<OiJob> &createDefaultJob();
 
     //sensor actions
@@ -135,8 +143,9 @@ public slots:
     void startCompensation();
     void startChangeMotorState();
     void startCustomAction(const QString &task);
-    void startWatchWindow(ReadingTypes streamFormat);
-    void stopWatchWindow();
+    void startReadingStream(ReadingTypes streamFormat);
+    void stopReadingStream();
+    void finishMeasurement();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
@@ -144,7 +153,12 @@ public slots:
     //init configs from mainwindowSlot
     void initConfigs();
 
+    //show tool widget
+    void showToolWidget(const QString &pluginName, const QString &toolName);
+
 signals:
+
+    void sensorStatus(const SensorStatus &status, const QString &msg);
 
     //#################################################
     //signals to inform about current job state changes
@@ -210,6 +224,8 @@ signals:
 
     //whole job instance changed
     void currentJobChanged();
+    // set current job to other modules / tools
+    void setCurrentJob(const QPointer<OiJob> &job);
 
     //#################################
     //import export task status changes
@@ -230,7 +246,7 @@ signals:
     //##############
 
     //sensor actions
-    void sensorActionStarted(const QString &name);
+    void sensorActionStarted(const QString &name, const bool enableFinishButton = false);
     void sensorActionFinished(const bool &success, const QString &msg);
     void measurementCompleted();
     void measurementDone(bool success);
@@ -243,6 +259,7 @@ signals:
     void showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showClientMessage(const QString &msg, const MessageTypes &msgType);
+    void showStatusSensor(const SensorStatus &code, const QString &msg);
 
     //#################
     //update status bar
@@ -351,6 +368,9 @@ private:
 
     // synchronize saveProject calls
     QMutex saveProjectMutex;
+
+    QPointer<Station> getConnectedActiveStation();
+    QPointer<StablePointLogic> stablePointLogic;
 
 };
 

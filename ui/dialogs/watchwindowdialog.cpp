@@ -1,13 +1,12 @@
 #include "watchwindowdialog.h"
-
 #include "ui_watchwindowdialog.h"
 
 /*!
  * \brief WatchWindowDialog::WatchWindowDialog
  * \param parent
  */
-WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
-    ui(new Ui::WatchWindowDialog)
+WatchWindowDialog::WatchWindowDialog(WatchWindowBehavior b, QPointer<OiJob> job, QList<QPointer<FeatureWrapper> > f, QWidget *parent) : QDialog(parent),
+    ui(new Ui::WatchWindowDialog), behavior(b), currentJob(job), features(f)
 {
     ui->setupUi(this);
 
@@ -30,7 +29,7 @@ WatchWindowDialog::WatchWindowDialog(QWidget *parent) : QDialog(parent),
 
     // time that monitors "watchWindowUpdated" state
     this->watchWindowUpdated = false;
-    QTimer *timer = new QTimer(this);
+    static QTimer *timer = new QTimer(parent);
     connect(timer, SIGNAL(timeout()), this, SLOT(clearWatchWindow()));
     timer->start(500);
 }
@@ -43,44 +42,11 @@ WatchWindowDialog::~WatchWindowDialog(){
 }
 
 /*!
- * \brief WatchWindowDialog::getCurrentJob
- * \return
- */
-const QPointer<OiJob> &WatchWindowDialog::getCurrentJob() const{
-    return this->currentJob;
-}
-
-/*!
- * \brief WatchWindowDialog::setCurrentJob
- * \param job
- */
-void WatchWindowDialog::setCurrentJob(const QPointer<OiJob> &job){
-    if(!job.isNull()){
-        this->currentJob = job;
-        this->connectJob();
-    }
-}
-
-/*!
  * \brief WatchWindowDialog::on_spinBox_decimalDigits_valueChanged
  * \param arg1
  */
 void WatchWindowDialog::on_spinBox_decimalDigits_valueChanged(int arg1){
     this->settings.digits = this->ui->spinBox_decimalDigits->value();
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_actnom_clicked
- */
-void WatchWindowDialog::on_radioButton_actnom_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
-}
-
-/*!
- * \brief WatchWindowDialog::on_radioButton_nomact_clicked
- */
-void WatchWindowDialog::on_radioButton_nomact_clicked(){
-    this->settings.reference = this->ui->radioButton_actnom->isChecked()?eActualNominal:eNominalActual;
 }
 
 /*!
@@ -210,13 +176,8 @@ void WatchWindowDialog::realTimeReading(const QVariantMap &reading){
  * \param event
  */
 void WatchWindowDialog::showEvent(QShowEvent *event){
-
     //necessary to rescale all
     this->lablesRescaled = false;
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
 
     //connect sensor
     this->connectSensor();
@@ -289,7 +250,7 @@ void WatchWindowDialog::addLabel(DisplayAttributes att,  QFont f) {
     QLabel *label = new QLabel();
     label->setFont(f);
     label->setAutoFillBackground(true);
-    label->setAlignment(Qt::AlignVCenter);
+    label->setAlignment(Qt::AlignCenter);
     label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     label->setScaledContents(true);
     QHBoxLayout *layout = new QHBoxLayout();
@@ -326,22 +287,15 @@ void WatchWindowDialog::connectSensor(){
     QObject::connect(this->activeStation, &Station::realTimeReading, this, &WatchWindowDialog::realTimeReading);
 }
 
-/*!
- * \brief WatchWindowDialog::connectJob
- */
-void WatchWindowDialog::connectJob(){
 
-}
-
-QString WatchWindowDialog::getNameLabel() {
-    if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
+QString WatchWindowDialog::getNameLabel(QPointer<FeatureWrapper> feature) {
+    if(feature.isNull()){
         return "";
     }
 
-    QPointer<Feature> feature = this->currentJob->getActiveFeature()->getFeature();
     return QString("%1%2")
-            .arg(feature->getFeatureName())
-            .arg(feature->getFeatureWrapper()->getGeometry() ? feature->getFeatureWrapper()->getGeometry()->getIsNominal() ? "&nbsp;&nbsp;nom" : "&nbsp;&nbsp;act" : "");
+            .arg(feature->getFeature()->getFeatureName())
+            .arg(feature->getGeometry().isNull() ? "" : feature->getGeometry()->getIsNominal() ? "  nom" : "  act");
 }
 
 /*!
@@ -349,35 +303,14 @@ QString WatchWindowDialog::getNameLabel() {
  * \param reading
  */
 void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
+    //get and transform tracker position
+    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
+        return;
+    }
 
     //check and get active coordinate system
     QPointer<CoordinateSystem> activeSystem = this->currentJob->getActiveCoordinateSystem();
     if(activeSystem.isNull()){
-        return;
-    }
-
-    //check the active position (geometry, station, coordinate system)
-    Position pos;
-
-    if(this->currentJob.isNull() || this->currentJob->getActiveFeature().isNull()){
-        return;
-    //check if current feature is a solved geometry with position
-    }else if(!this->currentJob->getActiveFeature()->getGeometry().isNull() && this->currentJob->getActiveFeature()->getGeometry()->hasPosition()
-             && this->currentJob->getActiveFeature()->getGeometry()->getIsSolved()){
-
-        pos = this->currentJob->getActiveFeature()->getGeometry()->getPosition();
-
-    //check if active feature is a coordinate system
-    }else if(!this->currentJob->getActiveFeature()->getCoordinateSystem().isNull()){
-
-        pos = this->currentJob->getActiveFeature()->getCoordinateSystem()->getOrigin();
-
-    //check if active feature is a station
-    }else if(!this->currentJob->getActiveFeature()->getStation().isNull()){
-
-        pos = this->currentJob->getActiveFeature()->getStation()->getPosition()->getPosition();
-
-    }else{
         return;
     }
 
@@ -387,10 +320,6 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
         return;
     }
 
-    //get and transform tracker position
-    if(!reading.contains("x") || !reading.contains("y") || !reading.contains("z")){
-        return;
-    }
     OiVec trackerXYZ(4);
     trackerXYZ.setAt(0, reading.value("x").toDouble());
     trackerXYZ.setAt(1, reading.value("y").toDouble());
@@ -398,47 +327,52 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
     trackerXYZ.setAt(3, 1.0);
     trackerXYZ = trafo * trackerXYZ;
 
+    QPointer<FeatureWrapper> feature = getFeature(trackerXYZ);
+    //check the active position (geometry, station, coordinate system)
+    Result result = util.getPosition(feature, trackerXYZ);
+
+    if(result.position.isNull()) {
+        return;
+    }
+
+    OiVec delta = result.delta;
     //set feature name
-    this->streamData[eName]->setText(QString("<table width=\"100%\"><tr><td><p align=\"center\">%1</p></td></tr> </table>")
-                                     .arg(getNameLabel()));
+    this->streamData[eName]->setText(getNameLabel(feature));
 
     //set x
     setDisplayValue(eX, "x", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(0) - pos.getVector().getAt(0);
-        }else{
-            return pos.getVector().getAt(0) - trackerXYZ.getAt(0);
-        }
+        return delta.getAt(0);
     });
 
     //set y
     setDisplayValue(eY, "y", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(1) - pos.getVector().getAt(1);
-        }else{
-            return pos.getVector().getAt(1) - trackerXYZ.getAt(1);
-        }
+        return delta.getAt(1);
     });
 
     //set z
     setDisplayValue(eZ, "z", [&](){
         //get display value
-        if(this->settings.reference == eActualNominal){
-            return trackerXYZ.getAt(2) - pos.getVector().getAt(2);
-        }else{
-            return pos.getVector().getAt(2) - trackerXYZ.getAt(2);
-        }
+        return delta.getAt(2);
     });
 
     //set d3D    
     setDisplayValue(eD3D, "d3D", [&](){
         //get display value
-        OiVec d = pos.getVectorH() - trackerXYZ;
-        return qSqrt(d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2));
+        return result.d3D;
     });
 
+    setVisibility();
+
+    // valid reading available
+    this->watchWindowUpdated = true;
+
+    //resize labels (maximum font size that is possible)
+    this->resizeWatchWindowValues();
+}
+
+void WatchWindowDialog::setVisibility() {
     //set visibility
     //list of visible layouts (0=name 1=x 2=y 3=z 4=d3D
     QList<DisplayAttributes>  visibleLayouts;
@@ -484,13 +418,8 @@ void WatchWindowDialog::setUpCartesianWatchWindow(const QVariantMap &reading){
             this->masterLayout->setStretch(masterLayoutIndex[attr], 1);
         }
     }
-
-    // valid reading available
-    this->watchWindowUpdated = true;
-
-    //resize labels (maximum font size that is possible)
-    this->resizeWatchWindowValues();
 }
+
 void WatchWindowDialog::setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v) {
     if(this->settings.displayValues.contains(attr)){
         double value = convertFromDefault(v(), ModelManager::getParameterDisplayConfig().getDisplayUnit(eMetric));
@@ -580,7 +509,7 @@ void WatchWindowDialog::resizeWatchWindowValues(){
         h = this->streamData[eName]->height();
         double w = this->streamData[eName]->width();
         QFontMetrics fmName(fName);
-        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(getNameLabel()) ));
+        fName.setPointSize(fName.pointSize() * min(h/fmName.height(), w/fmName.width(streamData[eName]->text()) ));
 
         //x
         h = this->streamData[eX]->height();
@@ -649,4 +578,43 @@ void WatchWindowDialog::clearWatchWindow() {
 void WatchWindowDialog::on_checkBox_showLastMeasurement_clicked()
 {
     this->settings.showLastMeasurement = this->ui->checkBox_showLastMeasurement->isChecked();
+}
+
+QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
+    switch(this->behavior) {
+    case eShowAlwaysActiveFeature:
+        if(!this->currentJob.isNull()) {
+            return this->currentJob->getActiveFeature();
+        }
+        break;
+    case eShowCurrentSelectedFeature:
+        if(!this->features.isEmpty()) {
+            return this->features[0];
+        }
+        break;
+    case eShowNearestNominal:
+        if(!this->currentJob.isNull()) {
+            double dd = -1.0;
+            QPointer<FeatureWrapper> nearestFeature;
+            for(QPointer<FeatureWrapper> feature : (true ? this->features : this->currentJob->getFeaturesList())) {
+
+                Position pos = util.getPosition(feature, trackerXYZ).position;
+                if(!pos.isNull() && !feature->getPoint().isNull() /* filter point */) {
+
+                    OiVec d = pos.getVectorH() - trackerXYZ;
+                    double fdd =  d.getAt(0)*d.getAt(0)+d.getAt(1)*d.getAt(1)+d.getAt(2)*d.getAt(2); // no need for sqrt
+                    if(fdd < dd || dd < 0.0 /* first element */) {
+                        dd = fdd;
+                        nearestFeature = feature;
+                    }
+
+                }
+
+            }
+            return nearestFeature;
+        }
+        break;
+    }
+
+    return QPointer<FeatureWrapper>();
 }

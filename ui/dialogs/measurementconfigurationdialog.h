@@ -90,6 +90,14 @@ private slots:
 
     void on_checkBox_measureWithAim_clicked();
 
+    void on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1);
+
+    void on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1);
+
+    void on_checkBox_isStablePoint_clicked();
+
+    void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
+
 private:
     Ui::MeasurementConfigurationDialog *ui;
 

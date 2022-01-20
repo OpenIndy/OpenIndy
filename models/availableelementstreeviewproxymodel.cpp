@@ -6,6 +6,7 @@
  */
 AvailableElementsTreeViewProxyModel::AvailableElementsTreeViewProxyModel(QObject *parent) : QSortFilterProxyModel(parent){
     this->resetSelectedFunctionPosition();
+    this->setSortCaseSensitivity(Qt::CaseInsensitive);
 }
 
 /*!
@@ -118,7 +119,8 @@ bool AvailableElementsTreeViewProxyModel::validateSelection(const QModelIndexLis
     }
 
     //get needed element
-    ElementTypes neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex).typeOfElement;
+    NeededElement neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex);
+    ElementTypes neededElementType = neededElement.typeOfElement;
 
     //check each model index
     foreach(const QModelIndex &index, selection){
@@ -140,7 +142,7 @@ bool AvailableElementsTreeViewProxyModel::validateSelection(const QModelIndexLis
         }
 
         //check if item is or contains the needed element type
-        if(!item->getHasElement(neededElement)){
+        if(!item->getHasElement(neededElementType)){
             return false;
         }
 
@@ -176,7 +178,9 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
     Function *function = feature->getFunctions().at(this->functionPosition);
 
     //get needed element
-    ElementTypes neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex).typeOfElement;
+    NeededElement neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex);
+    const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+    ElementTypes neededElementType = neededElement.typeOfElement;
 
     //check each model index
     QList<FeatureTreeItem *> inputElements; //input elements of type neededElement
@@ -199,17 +203,17 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
         }
 
         //check if item is or contains the needed element type
-        if(!item->getHasElement(neededElement)){
+        if(!item->getHasElement(neededElementType)){
             continue;
         }
 
-        this->addInputElement(inputElements, item, function->getNeededElements().at(this->neededElementIndex).typeOfElement);
+        this->addInputElement(inputElements, item, neededElementType);
 
     }
 
     //add the input elements
-    if(getIsFeature(neededElement) || neededElement == eDirectionElement
-            || neededElement == ePositionElement || neededElement == eRadiusElement){ //feature
+    if(getIsFeature(neededElementType) || neededElementType == eDirectionElement
+            || neededElementType == ePositionElement || neededElementType == eRadiusElement){ //feature
 
         //temporary save all feature pointers
         QList<QPointer<FeatureWrapper> > features;
@@ -224,13 +228,13 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
         function->blockSignals(true);
         foreach(const QPointer<FeatureWrapper> &feature, features){
             emit this->addInputFeature(this->currentJob->getActiveFeature(), this->functionPosition,
-                                       this->neededElementIndex, feature);
+                                       inputElementKey, feature);
         }
         this->currentJob->getActiveFeature()->getFeature()->blockSignals(false);
         function->blockSignals(false);
         function->inputElementsChanged();
 
-    }else if(neededElement == eObservationElement){ //observation
+    }else if(neededElementType == eObservationElement){ //observation
 
         //temporary save all observation pointers
         QList<QPointer<Observation> > observations;
@@ -245,7 +249,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
         function->blockSignals(true);
         foreach(const QPointer<Observation> &observation, observations){
             emit this->addInputObservation(this->currentJob->getActiveFeature(), this->functionPosition,
-                                       this->neededElementIndex, observation);
+                                       inputElementKey, observation);
         }
         this->currentJob->getActiveFeature()->getFeature()->blockSignals(false);
         function->blockSignals(false);
@@ -254,7 +258,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
             this->currentJob->getActiveFeature()->getGeometry()->geomObservationsChanged(this->currentJob->getActiveFeature()->getFeature()->getId());
         }
 
-    }else if(getIsReading(neededElement)){ //reading
+    }else if(getIsReading(neededElementType)){ //reading
 
         //temporary save all reading pointers
         QList<QPointer<Reading> > readings;
@@ -269,7 +273,7 @@ void AvailableElementsTreeViewProxyModel::addInputElements(const QModelIndexList
         function->blockSignals(true);
         foreach(const QPointer<Reading> &reading, readings){
             emit this->addInputReading(this->currentJob->getActiveFeature(), this->functionPosition,
-                                       this->neededElementIndex, reading);
+                                       inputElementKey, reading);
         }
         this->currentJob->getActiveFeature()->getFeature()->blockSignals(false);
         function->blockSignals(false);
@@ -307,7 +311,9 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
     Function *function = feature->getFunctions().at(this->functionPosition);
 
     //get needed element
-    ElementTypes neededElement = function->getNeededElements().at(this->neededElementIndex).typeOfElement;
+    NeededElement neededElement = feature->getFunctions().at(this->functionPosition)->getNeededElements().at(this->neededElementIndex);
+    ElementTypes neededElementType = neededElement.typeOfElement;
+
 
     //get feature tree item
     QPointer<FeatureTreeItem> item(NULL);
@@ -327,7 +333,7 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
     }
 
     //check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
-    if(item->getElementType() == neededElement){
+    if(item->getElementType() == neededElementType){
 
         //check if the element equals the feature to be calculated
         if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
@@ -346,8 +352,25 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
 
     }
 
+    if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()) {
+        QPointer<Feature> feature = item->getFeature()->getFeature();
+        if(!this->filterFeatureName.isEmpty() && feature->getFeatureName() != this->filterFeatureName) { // filter by featurename
+            return false;
+        }
+        if(!this->filterGroupName.isEmpty() && feature->getGroupName() != this->filterGroupName) { // filter by groupname
+            return false;
+        }
+
+        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal && !item->getFeature()->getGeometry()->getIsNominal()) {
+            return false;
+        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual && item->getFeature()->getGeometry()->getIsNominal()) {
+            return false;
+        }
+
+    }
+
     //check wether item contains an element of the type neededElement
-    if(item->getHasElement(neededElement)){
+    if(item->getHasElement(neededElementType)){
         return true;
     }
     return false;
@@ -459,17 +482,12 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
         }
 
         //check if function already contains the element
-        QMap<int, QList<InputElement> > functionInputElements = this->currentJob->getActiveFeature()->getFeature()->getFunctions().at(this->functionPosition)->getInputElements();
-        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
-            if(functionInputElements.contains(item->getFeature()->getFeature()->getId())){
-                return;
-            }
-        }else if(item->getIsObservation() && !item->getObservation().isNull()){
-            if(functionInputElements.contains(item->getObservation()->getId())){
-                return;
-            }
-        }else if(item->getIsReading() && !item->getReading().isNull()){
-            if(functionInputElements.contains(item->getReading()->getId())){
+        QPointer<Function> function = this->currentJob->getActiveFeature()->getFeature()->getFunctions().at(this->functionPosition);
+        NeededElement neededElement = function->getNeededElements().at(this->neededElementIndex);
+        const int inputElementKey = neededElement.key > InputElementKey::eNotSet ? neededElement.key : this->neededElementIndex;
+        QMap<int, QList<InputElement> > functionInputElements = function->getInputElements();
+        foreach(const InputElement &element, functionInputElements[inputElementKey]) {
+            if(element.id == item->getId()) {
                 return;
             }
         }
@@ -489,3 +507,19 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
     }
 
 }
+
+void AvailableElementsTreeViewProxyModel::filterByActualNominal(ActualNominalFilter filter) {
+    this->filterActualNominal = filter;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByGroup(QString groupName) {
+    this->filterGroupName = groupName;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByFeatureName(QString featureName) {
+    this->filterFeatureName = featureName;
+    this->invalidateFilter();
+}
+

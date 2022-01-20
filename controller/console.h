@@ -1,6 +1,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include <atomic>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -9,6 +10,9 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QFile>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QTimer>
 
 #include "types.h"
 #include "util.h"
@@ -23,21 +27,13 @@ private:
     explicit Console(QObject *parent = 0);
 
 public:
+    ~Console();
+
     static const QPointer<Console> &getInstance();
-
-    //##############################
-    //get model with console entries
-    //##############################
-
-    QStringListModel &getConsoleModel();
 
 signals:
 
-    //##################################
-    //signal to inform about new entries
-    //##################################
-
-    void lineAdded();
+    void appendMessageToConsole(QString text);
 
 public slots:
 
@@ -50,12 +46,17 @@ public slots:
     void addLine(const QString &msg, const MessageTypes &msgType, const double &value);
     void addLine(const QString &msg, const MessageTypes &msgType, const int &value);
 
+private slots:
+    void flushToConsoleView();
+
 private:
 
     //##############
     //helper methods
     //##############
 
+
+    void add(const QString &msg, const MessageTypes &msgType, const QString &value = "");
     void writeToLogFile(const QString &msg);
 
 private:
@@ -66,9 +67,12 @@ private:
     //console contents
     //################
 
-    QStringList log;
-    QStringListModel output;
+    QFile outFile;
 
+    std::atomic<bool> flushToConsoleViewRequested;
+    // synchronize add call & buffer access
+    QMutex addMessageBufferMutex;
+    QStringList messageBuffer;
 };
 
 #endif // CONSOLE_H

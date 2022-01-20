@@ -11,6 +11,8 @@
 #include <QShowEvent>
 #include <QDesktopWidget>
 #include <QGridLayout>
+#include <QCompleter>
+#include <QStringList>
 
 #include "modelmanager.h"
 #include "oijob.h"
@@ -38,6 +40,9 @@ public:
     explicit FeatureFunctionsDialog(QWidget *parent = 0);
     ~FeatureFunctionsDialog();
 
+    // set data for element filter
+    void setFeatureNameCompleter(QCompleter *completer);
+    void setGroupNames(QStringList groupNames);
 signals:
 
     //##############################################################
@@ -70,10 +75,12 @@ private slots:
     //avaialable elements tree view
     void on_treeView_availableElements_clicked(const QModelIndex &index);
     void on_treeView_availableElements_entered(const QModelIndex &index);
+    void on_treeView_availableElements_doubleClicked(const QModelIndex &index);
 
     //used elements tree view
     void on_treeView_usedElements_clicked(const QModelIndex &index);
     void on_treeView_usedElements_entered(const QModelIndex &index);
+    void on_treeView_usedElements_doubleClicked(const QModelIndex &index);
 
     //add or remove elements
     void on_cmd_addElement_clicked();
@@ -91,6 +98,11 @@ private slots:
 
     //check if the function supports weights
     bool checkSupportsWeights();
+
+    // element filter selected
+    void on_comboBox_features_currentIndexChanged(int index);
+    void on_comboBox_groups_currentIndexChanged(int index);
+    void on_lineEdit_searchByFeatureName_textChanged(const QString &arg1);
 
 private:
     Ui::FeatureFunctionsDialog *ui;

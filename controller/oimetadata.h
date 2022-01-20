@@ -10,6 +10,7 @@
 #include "lasertracker.h"
 #include "totalstation.h"
 #include "constructfunction.h"
+#include "specialfunction.h"
 #include "fitfunction.h"
 #include "generatefeaturefunction.h"
 #include "geodeticfunction.h"
@@ -38,7 +39,7 @@ public:
     static QString iid_TotalStation;
     static QString iid_ConstructFunction;
     static QString iid_FitFunction;
-    static QString iid_GenerateFeatureFunction;
+    static QString iid_SpecialFunction;
     static QString iid_GeodeticFunction;
     static QString iid_BundleAdjustment;
     static QString iid_ObjectTransformation;

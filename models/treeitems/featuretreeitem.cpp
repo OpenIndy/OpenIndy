@@ -335,7 +335,7 @@ QPointer<FeatureTreeItem> FeatureTreeItem::getChild(const int &index){
         QPointer<FeatureTreeItem> itemToRemove = this->children.at(index);
         if(!itemToRemove.isNull()){
             itemToRemove->deleteChildren();
-            delete itemToRemove;
+            delete itemToRemove.data();
         }
         this->children.removeAt(index);
         this->childCount--;
@@ -589,4 +589,21 @@ void FeatureTreeItem::setUpReading(){
     }else{
         this->displayValue = "id:" + QString::number(this->reading->getId()) + this->reading->getObservation()->getStation()->getFeatureName();
     }
+}
+
+/*!
+ * \brief FeatureTreeItem::getId
+ * \return feature / observation / reading id or -1
+ */
+int FeatureTreeItem::getId() {
+
+    if(getIsFeature() && !getFeature().isNull() && !getFeature()->getFeature().isNull()){
+        return getFeature()->getFeature()->getId();
+    }else if(getIsObservation() && !getObservation().isNull()){
+        return getObservation()->getId();
+    }else if(getIsReading() && !getReading().isNull()){
+        return getReading()->getId();
+    }
+
+    return  -1;
 }

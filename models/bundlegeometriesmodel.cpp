@@ -257,6 +257,14 @@ void BundleGeometriesModel::updateModel(){
 
         //get target geometries
         QList<QPointer<oi::Geometry> > geometries = feature->getStation()->getTargetGeometries();
+        struct {
+            bool operator()(QPointer<oi::Geometry> a, QPointer<oi::Geometry> b) const
+            {
+                return a->getId() < b->getId();
+            }
+        } customLess;
+        std::sort(geometries.begin(), geometries.end(), customLess);
+
         foreach(const QPointer<oi::Geometry> &geom, geometries){
             if(!geom.isNull() && geom->getIsCommon()){
                 BundleGeometryItem *geomItem = new BundleGeometryItem(geom->getFeatureName());

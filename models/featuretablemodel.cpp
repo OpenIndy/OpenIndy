@@ -115,7 +115,58 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const{
         default:
             break;
         }
+
+    }else if(role == Qt::TextAlignmentRole
+             && ( !feature->getGeometry().isNull()
+                  || !feature->getCoordinateSystem().isNull()
+                  || !feature->getStation().isNull()
+                 )) {
+
+        switch((FeatureDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex)){
+        case eFeatureDisplayStDev:
+        case eFeatureDisplayX:
+        case eFeatureDisplayY:
+        case eFeatureDisplayZ:
+        case eFeatureDisplayPrimaryI:
+        case eFeatureDisplayPrimaryJ:
+        case eFeatureDisplayPrimaryK:
+        case eFeatureDisplayRadiusA:
+        case eFeatureDisplayRadiusB:
+        case eFeatureDisplaySecondaryI:
+        case eFeatureDisplaySecondaryJ:
+        case eFeatureDisplaySecondaryK:
+        case eFeatureDisplayAperture:
+        case eFeatureDisplayA:
+        case eFeatureDisplayB:
+        case eFeatureDisplayC:
+        case eFeatureDisplayAngle:
+        case eFeatureDisplayDistance:
+        case eFeatureDisplayTemperature:
+        case eFeatureDisplayLength:
+        case eFeatureDisplayExpansionOriginX:
+        case eFeatureDisplayExpansionOriginY:
+        case eFeatureDisplayExpansionOriginZ:
+        case eFeatureDisplayFormError:
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+        }
+
+    }else if(role == Qt::TextAlignmentRole && !feature->getTrafoParam().isNull()) {
+
+        switch((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex)){
+        case eTrafoParamDisplayTranslationX:
+        case eTrafoParamDisplayTranslationY:
+        case eTrafoParamDisplayTranslationZ:
+        case eTrafoParamDisplayRotationX:
+        case eTrafoParamDisplayRotationY:
+        case eTrafoParamDisplayRotationZ:
+        case eTrafoParamDisplayScaleX:
+        case eTrafoParamDisplayScaleY:
+        case eTrafoParamDisplayScaleZ:
+        case eTrafoParamDisplayStDev:
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+        }
     }
+
     return QVariant();
 }
 
@@ -189,6 +240,9 @@ QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation,
                 header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
                 break;
             case eFeatureDisplayExpansionOriginZ:
+                header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
+                break;
+            case eFeatureDisplayFormError:
                 header.append(QString(" %1").arg(getUnitTypeName(this->parameterDisplayConfig.getDisplayUnit(eMetric))));
                 break;
             }
@@ -376,6 +430,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(feature->getFeatureTypeEnum()));
                 return true;
             }
+            break;
         }
         case eFeatureDisplayFunctions:{
 
@@ -433,7 +488,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                 if(!function.isNull()){
 
                                     //fit and construct functions
-                                    if(function->getMetaData().iid == FitFunction_iidd || function->getMetaData().iid == ConstructFunction_iidd){
+                                    if(function->getMetaData().iid == FitFunction_iidd
+                                            || function->getMetaData().iid == ConstructFunction_iidd
+                                            || function->getMetaData().iid == SpecialFunction_iidd
+                                            ){
 
                                         int functionCount = feature->getFeature()->getFunctions().size();
                                         //remove old functions
@@ -451,8 +509,10 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                     }else{ //other functions
 
                                         if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
-                                                && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd ||
-                                                    feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd)){
+                                                && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd
+                                                    || feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd
+                                                    || feature->getFeature()->getFunctions().first()->getMetaData().iid == SpecialFunction_iidd
+                                                    )){
 
                                             feature->getFeature()->addFunction(function);
                                         }
@@ -474,6 +534,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 }
                 return false;
             }
+            break;
         }
         case eFeatureDisplayX:
             if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
@@ -576,7 +637,30 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         switch ((TrafoParamDisplayAttributes)attr) {
         case eTrafoParamDisplayIsUsed:{
             bool isUsed = value.toBool();
-            feature->getTrafoParam()->setIsUsed(isUsed);
+            QPointer<TrafoParam> curTrafoParam = feature->getTrafoParam();
+
+            if(isUsed) { // first uncheck other
+                for(QPointer<FeatureWrapper> f : this->currentJob->getFeaturesByType(eTrafoParamFeature)) {
+                    QPointer<TrafoParam> trafoParam = f->getTrafoParam();
+                    if( trafoParam.isNull()
+                            || !trafoParam->getIsUsed() // is already false
+                            || curTrafoParam->getId() == trafoParam->getId() // it's me
+                            || curTrafoParam->getStartSystem() != trafoParam->getStartSystem() // no match
+                            || curTrafoParam->getDestinationSystem() != trafoParam->getDestinationSystem() // no match
+                            ) {
+                        continue;
+                    }
+
+                    bool oldState = trafoParam->blockSignals(true);
+                    trafoParam->setIsUsed(false);
+                    trafoParam->blockSignals(oldState);
+
+                }
+            }
+
+            // than set "isUsed" and emit signal
+            curTrafoParam->setIsUsed(isUsed);
+
             break;
         }/*case eTrafoParamDisplayIsDatumTransformation:{
             bool isDatum = value.toBool();
@@ -816,7 +900,7 @@ void FeatureTableModel::setActiveCoordinateSystem(const QString &name){
  * \brief FeatureTableModel::getActiveGroupName
  * \return
  */
-const QString &FeatureTableModel::getActiveGroupName() const{
+const QString FeatureTableModel::getActiveGroupName() const{
 
     //check current job
     if(this->currentJob.isNull()){
@@ -919,12 +1003,24 @@ void FeatureTableModel::setMeasurementConfigManager(const QPointer<MeasurementCo
     this->measurementConfigManager = mConfigManager;
 }
 
+void FeatureTableModel::requestUpdateModel() {
+    this->updateRequested = true;
+}
+
+void FeatureTableModel::updateModelIfRequested() {
+    if(this->updateRequested) {
+        updateModel();
+        this->updateRequested = false;
+    }
+}
+
 /*!
  * \brief FeatureTableModel::updateModel
  */
 void FeatureTableModel::updateModel(){
     emit this->layoutAboutToBeChanged();
     emit this->layoutChanged();
+    emit this->sendMessage("Feature table updated", eInformationMessage, eStatusBarMessage);
 }
 
 /*!
@@ -1037,6 +1133,9 @@ QVariant FeatureTableModel::getDisplayValue(const QPointer<FeatureWrapper> &feat
         case eFeatureDisplayExpansionOriginZ:
             return feature->getFeature()->getDisplayExpansionOriginZ(this->parameterDisplayConfig.getDisplayUnit(eMetric),
                                                                      this->parameterDisplayConfig.getDisplayDigits(eMetric));
+        case eFeatureDisplayFormError:
+            return feature->getFeature()->getDisplayFormError(this->parameterDisplayConfig.getDisplayUnit(eMetric),
+                                                             this->parameterDisplayConfig.getDisplayDigits(eMetric));
         }
 
     }else if(getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
@@ -1164,6 +1263,8 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
             return QColor(Qt::yellow);
         case eFeatureDisplayExpansionOriginZ:
             return QColor(Qt::yellow);
+        case eFeatureDisplayFormError:
+            return QColor(Qt::yellow);
         }
 
     }else if(!feature->getFeature()->getIsSolved() && getIsTrafoParamDisplayAttribute(attr)){ //trafo param attributes
@@ -1204,18 +1305,19 @@ QVariant FeatureTableModel::getBackgroundValue(const QPointer<FeatureWrapper> &f
  * \brief FeatureTableModel::connectJob
  */
 void FeatureTableModel::connectJob(){
+    QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    // QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged, this, &FeatureTableModel::requestUpdateModel, Qt::AutoConnection);
 
-    QObject::connect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged, this, &FeatureTableModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this, &FeatureTableModel::sendMessage, this->currentJob.data(), &OiJob::sendMessage, Qt::AutoConnection);
 }
 
 /*!
@@ -1223,16 +1325,18 @@ void FeatureTableModel::connectJob(){
  */
 void FeatureTableModel::disconnectJob(){
 
-    QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged, this, &FeatureTableModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureSetChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeCoordinateSystemChanged, this, &FeatureTableModel::requestUpdateModel);
+    //QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeStationChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureAttributesChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::featuresRecalculated, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryMeasurementConfigChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeGroupChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryIsCommonChanged, this, &FeatureTableModel::requestUpdateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::trafoParamIsDatumChanged, this, &FeatureTableModel::requestUpdateModel);
+
+    QObject::disconnect(this, &FeatureTableModel::sendMessage, this->currentJob.data(), &OiJob::sendMessage);
 
 }

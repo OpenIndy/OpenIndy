@@ -16,6 +16,7 @@ StationPropertiesDialog::StationPropertiesDialog(QWidget *parent) : QDialog(pare
     //init models
     this->initModels();
 
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &StationPropertiesDialog::sendMessage, Qt::AutoConnection);
 }
 
 /*!
@@ -172,10 +173,6 @@ void StationPropertiesDialog::updateSensorParameters(const SensorConfiguration &
  */
 void StationPropertiesDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     //update sensor config information
     this->initGUI();
 
@@ -321,63 +318,19 @@ void StationPropertiesDialog::initModels(){
 void StationPropertiesDialog::copyToClipboard(){
 
     //init variables
-    QAbstractItemModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QAbstractItemModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
 
     //get selection
     if(this->ui->tabWidget_stationProperties->currentWidget() == this->ui->tab_accuracy){ //accuracy table view
         model = this->ui->tableView_accuracy->model();
         selectionModel = this->ui->tableView_accuracy->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }else if(this->ui->tabWidget_stationProperties->currentWidget() == this->ui->tab_sensorParameters){ //sensor parameters table view
         model = this->ui->tableView_sensorParameters->model();
         selectionModel = this->ui->tableView_sensorParameters->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }
 
-    //check and sort selection
-    if(selection.size() <= 0){
-        return;
-    }
-    qSort(selection);
-
-    //###############################
-    //copy the selection to clipboard
-    //###############################
-
-    QString copy_table;
-    QModelIndex last = selection.last();
-    QModelIndex previous = selection.first();
-    selection.removeFirst();
-
-    //loop over all selected rows and columns
-    for(int i = 0; i < selection.size(); i++){
-
-        QVariant data = model->data(previous);
-        QString text = data.toString();
-
-        QModelIndex index = selection.at(i);
-        copy_table.append(text);
-
-        //if new line
-        if(index.row() != previous.row()){
-            copy_table.append("\n");
-        }else{ //if same line, but new column
-            copy_table.append("\t");
-        }
-        previous = index;
-
-    }
-
-    //get last selected cell
-    copy_table.append(model->data(last).toString());
-    copy_table.append("\n");
-
-    //set values to clipboard, so you can paste them elsewhere
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(copy_table);
+    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 
 }
 

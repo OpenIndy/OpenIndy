@@ -23,6 +23,7 @@
 #include "observationtabledelegate.h"
 #include "readingtabledelegate.h"
 #include "functionstatisticmodel.h"
+#include "clipboardutil.h"
 
 using namespace oi;
 
@@ -52,6 +53,8 @@ signals:
     void useObservation(bool use, const QModelIndex &index);
     void unUseObservation(bool use, const QModelIndex &index);
     void removeObservationsById(const QList<int> selectedIds);
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
 
 private slots:
 
@@ -102,6 +105,8 @@ private:
     //#################
 
     QPointer<FunctionStatisticModel> functionStatisticModel;
+
+    ClipBoardUtil clipBoardUtil;
 
 private:
     Ui::ActualPropertiesDialog *ui;

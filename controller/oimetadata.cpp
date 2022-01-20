@@ -10,7 +10,7 @@ QString OiMetaData::iid_LaserTracker=LaserTracker_iidd ;
 QString OiMetaData::iid_TotalStation = TotalStation_iidd;
 QString OiMetaData::iid_ConstructFunction = ConstructFunction_iidd;
 QString OiMetaData::iid_FitFunction = FitFunction_iidd;
-QString OiMetaData::iid_GenerateFeatureFunction = GenerateFeatureFunction_iidd;
+QString OiMetaData::iid_SpecialFunction = SpecialFunction_iidd;
 QString OiMetaData::iid_GeodeticFunction = GeodeticFunction_iidd;
 QString OiMetaData::iid_BundleAdjustment = BundleAdjustment_iidd;
 QString OiMetaData::iid_ObjectTransformation = ObjectTransformation_iidd;
@@ -34,7 +34,7 @@ bool OiMetaData::findIID(const QString &iid){
         return true;
     }else if(iid.compare(OiMetaData::iid_FitFunction) == 0){
         return true;
-    }else if(iid.compare(OiMetaData::iid_GenerateFeatureFunction) == 0){
+    }else if(iid.compare(OiMetaData::iid_SpecialFunction) == 0){
         return true;
     }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
         return true;
@@ -123,7 +123,7 @@ QStringList OiMetaData::getFunctionTypeNames(){
 
     result.append(OiMetaData::iid_FitFunction);
     result.append(OiMetaData::iid_ConstructFunction);
-    result.append(OiMetaData::iid_GenerateFeatureFunction);
+    result.append(OiMetaData::iid_SpecialFunction);
     result.append(OiMetaData::iid_GeodeticFunction);
     result.append(OiMetaData::iid_ObjectTransformation);
     result.append(OiMetaData::iid_SystemTransformation);
@@ -143,8 +143,8 @@ QString OiMetaData::getFunctionTypeName(const QString &iid){
         return "fit function";
     }else if(iid.compare(OiMetaData::iid_ConstructFunction) == 0){
         return "construct function";
-    }else if(iid.compare(OiMetaData::iid_GenerateFeatureFunction) == 0){
-        return "generate feature function";
+    }else if(iid.compare(OiMetaData::iid_SpecialFunction) == 0){
+        return "special function";
     }else if(iid.compare(OiMetaData::iid_GeodeticFunction) == 0){
         return "geodetic function";
     }else if(iid.compare(OiMetaData::iid_ObjectTransformation) == 0){

@@ -23,11 +23,8 @@
 #include "trafocontroller.h"
 #include "parameterdisplayconfig.h"
 #include "modelmanager.h"
-
-enum DisplayActualNominal{
-    eActualNominal = 0,
-    eNominalActual
-};
+#include "feature.h"
+#include "watchwindowutil.h"
 
 enum DisplayAttributes{
     eName = 0,
@@ -38,6 +35,12 @@ enum DisplayAttributes{
     eNotDeclared // should be the last element!
 };
 
+enum WatchWindowBehavior{
+    eShowAlwaysActiveFeature = 0, // show always the active feature
+    eShowCurrentSelectedFeature,  // open new watch window for current selected feature
+    eShowNearestNominal
+};
+
 using namespace oi;
 
 /*!
@@ -45,16 +48,13 @@ using namespace oi;
  */
 class WatchWindowSettings{
 public:
-    WatchWindowSettings() : digits(2), readingType(eCartesianReading), reference(eActualNominal), showLastMeasurement(true){}
+    WatchWindowSettings() : digits(2), readingType(eCartesianReading), showLastMeasurement(true){}
 
     //decimal digits for watch window values
     int digits;
 
     //reading type for the watch window values
     ReadingTypes readingType;
-
-    //reference (0 = actual-nominal, 1 = nominal-actual)
-    DisplayActualNominal reference;
 
     //display values and tolerance
     QMap<DisplayAttributes, double> displayValues;
@@ -77,15 +77,8 @@ class WatchWindowDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit WatchWindowDialog(QWidget *parent = 0);
+    explicit WatchWindowDialog(WatchWindowBehavior behavior, QPointer<OiJob> job, QList<QPointer<FeatureWrapper> > features, QWidget *parent = 0);
     ~WatchWindowDialog();
-
-    //###########################
-    //get or set the feature type
-    //###########################
-
-    const QPointer<OiJob> &getCurrentJob() const;
-    void setCurrentJob(const QPointer<OiJob> &job);
 
 signals:
 
@@ -110,8 +103,6 @@ private slots:
 
     //update settings
     void on_spinBox_decimalDigits_valueChanged(int arg1);
-    void on_radioButton_actnom_clicked();
-    void on_radioButton_nomact_clicked();
     void on_checkBox_x_clicked();
     void on_checkBox_y_clicked();
     void on_checkBox_z_clicked();
@@ -167,9 +158,9 @@ private:
     //#############################
     //current job and active sensor
     //#############################
-
+    WatchWindowBehavior behavior;
     QPointer<OiJob> currentJob;
-
+    QList<QPointer<FeatureWrapper> > features;
     //save active station here, to be able to disconnect it
     QPointer<Station> activeStation;
 
@@ -207,7 +198,12 @@ private:
 
     void addLabel(DisplayAttributes att,  QFont f);
     void setDisplayValue(DisplayAttributes attr, QString name, std::function<double()> v);
-    QString getNameLabel();
+    QString getNameLabel(QPointer<FeatureWrapper> feature);
+
+    QPointer<FeatureWrapper> getFeature(OiVec trackerXYZ);
+    void setVisibility();
+
+    WatchWindowUtil util;
 
 };
 

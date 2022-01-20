@@ -19,7 +19,6 @@ using namespace oi;
  */
 class FeatureTreeItem : public QObject
 {
-    friend class FeatureTreeItem;
     Q_OBJECT
 
 public:
@@ -43,6 +42,8 @@ public:
     const QPointer<FeatureWrapper> &getFeature() const;
     const QPointer<Observation> &getObservation() const;
     const QPointer<Reading> &getReading() const;
+
+    int getId();
 
     //get the type of the corresponding element
     ElementTypes getElementType() const;

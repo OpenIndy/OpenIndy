@@ -364,7 +364,7 @@ void PluginManagerDialog::on_pushButton_add_clicked(){
  * \brief PluginManagerDialog::on_pushButton_remove_clicked
  */
 void PluginManagerDialog::on_pushButton_remove_clicked(){
-
+// OI-758
 }
 
 /*!
@@ -401,7 +401,7 @@ void PluginManagerDialog::on_treeView_plugins_clicked(const QModelIndex &index){
     this->ui->txt_pluginVersion->setText(pluginItem->getPlugin().version);
 
     //set visibility
-    this->ui->pushButton_remove->setVisible(true);
+    this->ui->pushButton_remove->setVisible(false); // OI-758 TODO set to true
     this->ui->txt_pluginDescription->setVisible(true);
     this->ui->txt_pluginAuthor->setVisible(true);
     this->ui->txt_pluginFilePath->setVisible(true);
@@ -445,18 +445,6 @@ void PluginManagerDialog::on_treeView_plugins_clicked(const QModelIndex &index){
     }
 
     this->ui->widget_pluginInfo->setVisible(false);
-
-}
-
-/*!
- * \brief PluginManagerDialog::showEvent
- * \param event
- */
-void PluginManagerDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
 
 }
 

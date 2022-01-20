@@ -87,14 +87,12 @@ void SettingsDialog::on_lineEdit_autoSaveInterval_textChanged(const QString &arg
  * \param event
  */
 void SettingsDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
     this->ui->tabWidget_settings->setTabEnabled(2,false);
     this->ui->tabWidget_settings->setTabEnabled(3,false);
     this->initGUI();
     this->updateDisplayConfigFromSelection();
+
+    event->accept();
 }
 
 /*!

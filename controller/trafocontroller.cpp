@@ -143,17 +143,8 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
     }
 
     if(startSystem == destinationSystem){
-        OiVec v;
-        v.add(0.0);
-        v.add(0.0);
-        v.add(0.0);
-        Position origin;
-        origin.setVector(v);
-        startSystem->setOrigin(origin);
 
-        if(isStation){
-            startSystem->getStation()->getPosition()->setIsSolved(true);
-        }
+        setDefaultOriginAndNormal(startSystem, isStation);
 
         return;
 
@@ -167,16 +158,7 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
         //if trafo matrix is valid
         //check if matrix is 4x4 = homogeneous matrix
         if(hasTransformation && trafoMat.getRowCount() == 4 && trafoMat.getColCount() == 4){
-            OiVec v;
-            v.add(0.0);
-            v.add(0.0);
-            v.add(0.0);
-            v.add(1.0);
-
-            OiVec result = trafoMat * v;
-            Position newOrigin;
-            newOrigin.setVector(result);
-            startSystem->setOrigin(newOrigin);
+            startSystem->transformOriginAndAxis(trafoMat);
 
             if(isStation){
                 startSystem->getStation()->getPosition()->setIsSolved(true);
@@ -185,16 +167,20 @@ void TrafoController::transformCoordSystems(const QPointer<CoordinateSystem> &st
             return;
         }
     }
+
+    setDefaultOriginAndNormal(startSystem, isStation);
+
+}
+
+/*!
+ * \brief TrafoController::setDefaultOriginAndNormal set default origin / position (0,0,0) and default direction / normal (0,0,1)
+ */
+void TrafoController::setDefaultOriginAndNormal(const QPointer<CoordinateSystem> &startSystem,  bool isStation) {
+    startSystem->resetOriginAndAxis();
+
     if(isStation){
-        startSystem->getStation()->getPosition()->setIsSolved(false);
+        startSystem->getStation()->getPosition()->setIsSolved(true);
     }
-    OiVec tmp;
-    tmp.add(0.0);
-    tmp.add(0.0);
-    tmp.add(0.0);
-    Position tmpOrigin;
-    tmpOrigin.setVector(tmp);
-    startSystem->setOrigin(tmpOrigin);
 }
 
 /*!
@@ -229,9 +215,6 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
 
     //helper variable to ensure that the trafo chain contains a datum transformation
     bool datumTrafoInChain = false;
-
-    QString startSystemStr = startSystem->getFeatureName();
-    QString destSystemStr = destinationSystem->getFeatureName();
 
     //try to find a transformation chain
     foreach(const QPointer<TrafoParam> &tp, startSystem->getTransformationParameters()){

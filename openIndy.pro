@@ -1,9 +1,12 @@
+CONFIG += c++11
 
 TEMPLATE = subdirs
 
+CONFIG += ordered
 SUBDIRS = \
     core \
-    app
+    app \
+    test
 
 # project locations
 app.subdir = $$PWD/build

@@ -26,3 +26,12 @@ Makefile
 *-build-*
 *.Debug
 *.Release
+.qmake.stash
+
+dist
+build/*_resource.rc
+
+**/debug/
+**/release/
+
+install

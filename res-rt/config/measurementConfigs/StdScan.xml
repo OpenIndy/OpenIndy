@@ -1,0 +1,2 @@
+<!DOCTYPE measurementConfig>
+<measurementConfig name="StdScan" count="10" typeOfReading="2" distanceDependent="1" timeDependent="0" distanceInterval="20" iterations="143" measureTwoSides="0" timeInterval="0" isSaved="1"/>

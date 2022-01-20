@@ -200,6 +200,12 @@ void FeatureFunctionsDialog::on_treeView_availableElements_entered(const QModelI
 
 }
 
+void FeatureFunctionsDialog::on_treeView_availableElements_doubleClicked(const QModelIndex &index) {
+    if(this->ui->cmd_addElement->isEnabled()) {
+        this->on_cmd_addElement_clicked();
+    }
+}
+
 /*!
  * \brief FeatureFunctionsDialog::on_treeView_usedElements_clicked
  * Triggered whenever the user has selected one or more used elements
@@ -246,6 +252,12 @@ void FeatureFunctionsDialog::on_treeView_usedElements_entered(const QModelIndex 
 
     this->ui->cmd_removeElement->setEnabled(true);
 
+}
+
+void FeatureFunctionsDialog::on_treeView_usedElements_doubleClicked(const QModelIndex &index) {
+    if(this->ui->cmd_removeElement->isEnabled()) {
+        this->on_cmd_removeElement_clicked();
+    }
 }
 
 /*!
@@ -377,10 +389,6 @@ void FeatureFunctionsDialog::on_cmd_ok_clicked(){
  */
 void FeatureFunctionsDialog::showEvent(QShowEvent *event){
 
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-
     //set initial visibility of widgets to false
     this->ui->widget_element->setVisible(false);
     this->ui->widget_customParameter->setVisible(false);
@@ -423,6 +431,7 @@ void FeatureFunctionsDialog::initGUI(){
     //connect weights tableview
     QObject::connect(this->ui->tableView_weights->horizontalHeader(), &QHeaderView::sectionDoubleClicked, this, &FeatureFunctionsDialog::resizeTableView, Qt::AutoConnection);
 
+    this->ui->treeView_availableElements->setSortingEnabled(true);
 }
 
 /*!
@@ -538,4 +547,46 @@ bool FeatureFunctionsDialog::checkSupportsWeights()
     }
 
     return model->getSupportsWeights(index);
+}
+
+void FeatureFunctionsDialog::setFeatureNameCompleter(QCompleter *completer) {
+   this->ui->lineEdit_searchByFeatureName->setCompleter(completer);
+}
+
+void FeatureFunctionsDialog::setGroupNames(QStringList groupNames) {
+    this->ui->comboBox_groups->clear();
+    this->ui->comboBox_groups->addItem("All Groups");
+    this->ui->comboBox_groups->addItems(groupNames);
+}
+
+void FeatureFunctionsDialog::on_comboBox_features_currentIndexChanged(int index)
+{
+    AvailableElementsTreeViewProxyModel *model = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    if(model == NULL){
+        return;
+    }
+    model->filterByActualNominal((ActualNominalFilter)index);
+}
+
+void FeatureFunctionsDialog::on_comboBox_groups_currentIndexChanged(int index)
+{
+    AvailableElementsTreeViewProxyModel *model = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    if(model == NULL){
+        return;
+    }
+    if(index == 0) {
+        model->filterByGroup("");
+    } else {
+        model->filterByGroup(this->ui->comboBox_groups->itemText(index));
+    }
+}
+
+void FeatureFunctionsDialog::on_lineEdit_searchByFeatureName_textChanged(const QString &text)
+{
+    AvailableElementsTreeViewProxyModel *model = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    if(model == NULL){
+        return;
+    }
+
+    model->filterByFeatureName(text);
 }

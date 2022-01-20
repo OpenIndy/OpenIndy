@@ -14,9 +14,7 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget *parent) : QDialog(parent),
     QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::updateProgress,
                      this->ui->progressBar, &QProgressBar::setValue, Qt::AutoConnection);
     QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::importFinished,
-                     this, &PluginLoaderDialog::importFinished, Qt::AutoConnection);
-    QObject::connect(PluginLoader::getInstance().data(), &PluginLoader::sendMessage,
-                     this, &PluginLoaderDialog::sendMessage, Qt::AutoConnection);
+                     this, &PluginLoaderDialog::importFinished, Qt::AutoConnection);   
 }
 
 /*!
@@ -24,19 +22,6 @@ PluginLoaderDialog::PluginLoaderDialog(QWidget *parent) : QDialog(parent),
  */
 PluginLoaderDialog::~PluginLoaderDialog(){
     delete ui;
-}
-
-/*!
- * \brief PluginLoaderDialog::showEvent
- * \param event
- */
-void PluginLoaderDialog::showEvent(QShowEvent *event){
-
-    //put the dialog in the screen center
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    this->move( screen.center() - this->rect().center() );
-    event->accept();
-
 }
 
 /*!

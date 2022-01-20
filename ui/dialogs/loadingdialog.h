@@ -36,7 +36,6 @@ private:
     //methods to initialize GUI elements
     //##################################
 
-    void showEvent(QShowEvent *event);
     void closeEvent(QCloseEvent *event);
 
 private:
