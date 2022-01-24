@@ -353,7 +353,7 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
  * \param role
  * \return
  */
-bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role){
+bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role, int editMode){
 
     //check current job and model index
     if(this->currentJob.isNull() || !index.isValid()){
@@ -525,9 +525,23 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
 
                     //assign function parameters from copied function to the new functions
                     if(feature->getFeature()->getFunctions().size() == copyFeature->getFeature()->getFunctions().size()){
-                        for(int i = 0; i < feature->getFeature()->getFunctions().size(); i++){
-                            feature->getFeature()->getFunctions().at(i)->setScalarInputParams(
+                        for(int i = 0; i < feature->getFeature()->getFunctions().size(); i++){ // guess same order
+                            if(editMode & EditMode::eFunctionCopyScalarInputParams) {
+                                feature->getFeature()->getFunctions().at(i)->setScalarInputParams(
                                         copyFeature->getFeature()->getFunctions().at(i)->getScalarInputParams());
+                            }
+                            if(editMode & EditMode::eFunctionCopyUsedElements) {
+                                QMap<int, QList<InputElement> > inputElements = copyFeature->getFeature()->getFunctions().at(i)->getInputElements();
+                                QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
+                                while (iterator != inputElements.constEnd()) {
+                                    QList<InputElement> elements = iterator.value();
+                                    for (int i = 0; i < elements.size(); ++i) {
+                                        feature->getFeature()->getFunctions().at(i)->addInputElement(elements.at(i), iterator.key());
+                                    }
+                                    ++iterator;
+                                }
+
+                            }
                         }
                     }
                     return true;

@@ -1842,7 +1842,12 @@ void MainWindow::pasteFromClipboard(){
     if(rows.size() == 1){
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            destModel->setData(model->mapToSource(currentIndex), rows.at(0));
+            destModel->setData( model->mapToSource(currentIndex),
+                                rows.at(0),
+                                Qt::EditRole,
+                                isFunctionColumnSelected
+                                    ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams | FeatureTableModel::EditMode::eFunctionCopyUsedElements
+                                    : FeatureTableModel::EditMode::eDefault);
         }
     }else{
         int i = 0;
@@ -3107,3 +3112,15 @@ void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg
      }
      this->label_statusSensor->setText(msg);
  }
+
+void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
+{
+
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    model->setSortingMode((FeatureSorter::SortingMode)index);
+
+}

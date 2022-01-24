@@ -57,6 +57,28 @@
          <enum>QLayout::SetFixedSize</enum>
         </property>
         <item>
+         <widget class="QComboBox" name="comboBox_sortBy">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sort FeatureTable by&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Creation Date</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Feature Name</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Group And Feature Name</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="groupBox_activeCoordSystem">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
