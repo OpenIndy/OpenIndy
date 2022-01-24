@@ -590,5 +590,8 @@ void FeatureFunctionsDialog::on_lineEdit_searchByFeatureName_textChanged(const Q
         return;
     }
 
+    this->ui->treeView_availableElements->expandToDepth(0); // show feature names
+
     model->filterByFeatureName(text);
+
 }

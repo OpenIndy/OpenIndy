@@ -354,7 +354,7 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
 
     if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()) {
         QPointer<Feature> feature = item->getFeature()->getFeature();
-        if(!this->filterFeatureName.isEmpty() && feature->getFeatureName() != this->filterFeatureName) { // filter by featurename
+        if(!this->filterFeatureName.isEmpty() && !feature->getFeatureName().startsWith(this->filterFeatureName, Qt::CaseInsensitive)) { // filter by featurename
             return false;
         }
         if(!this->filterGroupName.isEmpty() && feature->getGroupName() != this->filterGroupName) { // filter by groupname
