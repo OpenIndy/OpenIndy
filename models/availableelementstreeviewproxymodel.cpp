@@ -361,9 +361,13 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
             return false;
         }
 
-        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal && !item->getFeature()->getGeometry()->getIsNominal()) {
+        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal // filter by nominal
+                && !item->getFeature()->getGeometry().isNull()
+                && !item->getFeature()->getGeometry()->getIsNominal()) {
             return false;
-        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual && item->getFeature()->getGeometry()->getIsNominal()) {
+        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual  // filter by actual
+                  && !item->getFeature()->getGeometry().isNull()
+                  && item->getFeature()->getGeometry()->getIsNominal()) {
             return false;
         }
 
