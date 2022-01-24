@@ -404,6 +404,12 @@ void FeatureFunctionsDialog::showEvent(QShowEvent *event){
 
     QObject::connect(this, &FeatureFunctionsDialog::setFunctionPos, &ModelManager::getFunctionWeightTableModel(), &FunctionWeightsTableModel::setFunctionPosition, Qt::AutoConnection);
 
+    AvailableElementsTreeViewProxyModel *availableElementsModel = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    availableElementsModel->resetFilter();
+    this->ui->comboBox_groups->setCurrentIndex(0);
+    this->ui->comboBox_features->setCurrentIndex(0);
+    this->ui->lineEdit_searchByFeatureName->setText("");
+
     event->accept();
 
 }
