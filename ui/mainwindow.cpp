@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initFilterComboBoxes();
     this->initStatusBar();
     this->initBundleView();
+    this->initFilterToolBar();
 
     //connect bundle view
     this->connectBundleView();
@@ -2378,6 +2379,12 @@ void MainWindow::initFilterComboBoxes(){
     this->updateGroupFilterSize();
     this->updateSystemFilterSize();
     this->updateActualNominalFilterSize();
+}
+
+void MainWindow::initFilterToolBar() {
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_activeCoordSystem);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_filter);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_search);
 }
 
 /*!

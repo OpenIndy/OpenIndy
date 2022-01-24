@@ -354,6 +354,7 @@ private:
     void initFilterComboBoxes();
     void initStatusBar();
     void initBundleView();
+    void initFilterToolBar();
 
     //##############################
     //methods to update GUI elements
