@@ -327,6 +327,8 @@ private slots:
 
     void on_pushButton_showNextFoundFeature_clicked();
 
+    void on_comboBox_sortBy_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 

@@ -49,10 +49,32 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0,0,14">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2,2,2,0,0,14">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
+        <item>
+         <widget class="QComboBox" name="comboBox_sortBy">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sort FeatureTable by&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Creation Date</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Feature Name</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Group And Feature Name</string>
+           </property>
+          </item>
+         </widget>
+        </item>
         <item>
          <widget class="QComboBox" name="comboBox_activeCoordSystem">
           <property name="sizePolicy">
