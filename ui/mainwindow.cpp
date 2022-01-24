@@ -2387,6 +2387,7 @@ void MainWindow::initFilterComboBoxes(){
 }
 
 void MainWindow::initFilterToolBar() {
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_orderBy);
     this->ui->toolBar_filter->addWidget(this->ui->groupBox_activeCoordSystem);
     this->ui->toolBar_filter->addWidget(this->ui->groupBox_filter);
     this->ui->toolBar_filter->addWidget(this->ui->groupBox_search);

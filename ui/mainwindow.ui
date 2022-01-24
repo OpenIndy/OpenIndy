@@ -52,36 +52,73 @@
        <number>5</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2,2,0,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
         <item>
-         <widget class="QComboBox" name="comboBox_sortBy">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sort FeatureTable by&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <widget class="QGroupBox" name="groupBox_orderBy">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <item>
-           <property name="text">
-            <string>Creation Date</string>
+          <property name="minimumSize">
+           <size>
+            <width>220</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Order by</string>
+          </property>
+          <widget class="QComboBox" name="comboBox_sortBy">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>200</width>
+             <height>20</height>
+            </rect>
            </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Feature Name</string>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Group And Feature Name</string>
+           <property name="minimumSize">
+            <size>
+             <width>200</width>
+             <height>0</height>
+            </size>
            </property>
-          </item>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sort FeatureTable by&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>Creation Date</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Feature Name</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Group And Feature Name</string>
+            </property>
+           </item>
+          </widget>
          </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_activeCoordSystem">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
