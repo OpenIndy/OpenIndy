@@ -54,6 +54,7 @@ public:
     void filterByActualNominal(ActualNominalFilter filter);
     void filterByGroup(QString groupName);
     void filterByFeatureName(QString featureName);
+    void resetFilter();
 
 signals:
 
