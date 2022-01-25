@@ -1622,14 +1622,37 @@ void MainWindow::aimAndMeasureFeatures(){
         }
     }
 
-    //aim and measure the first feature in the list of selected features
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
-    }
-
+    this->measureLogic(this->measureBehaviorDialog, this->control, this->measureFeatures, sourceModel);
 }
+
+bool MainWindow::measureLogic(MeasureBehaviorDialog measureBehaviorDialog, Controller control, QList<int> measureFeatures, FeatureTableModel *sourceModel) {
+    //aim and measure the first feature in the list of selected features
+    measureBehaviorDialog.resetDecision();
+    bool measureNextFeature = true;
+    if(measureFeatures.size() > 0){
+
+        if(measureNextFeature) {
+            sourceModel->setActiveFeature(measureFeatures[0]);
+            measureFeatures.removeAt(0);
+        }
+
+        // aim / move
+        control.startAim();
+
+        // search
+        if(measureBehaviorDialog.searchSMR()) {
+            control.startSearch();
+        }
+
+        // measure
+        try {
+            control.startMeasurement();
+        } catch(... /* explicit exception */) {
+            this->showCentered(measureBehaviorDialog);
+        }
+    }
+}
+
 
 /*!
  * \brief MainWindow::deleteFeatures

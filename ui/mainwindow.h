@@ -72,6 +72,8 @@ public:
 
     void loadProjectFile(QString file);
 
+    /* public for testing */
+    bool measureLogic(MeasureBehaviorDialog measureBehaviorDialog, Controller control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
 signals:
 
     //###################################
