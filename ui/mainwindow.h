@@ -41,6 +41,7 @@
 #include "showlicensesdialog.h"
 #include "stationpropertiesdialog.h"
 #include "exportdialog.h"
+#include "measurebehaviordialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -410,6 +411,7 @@ private:
     AboutDialog aboutDialog;
     ShowLicensesDialog showLicensesDialog;
     StationPropertiesDialog stationPropertiesDialog;
+    MeasureBehaviorDialog measureBehaviorDialog;
 
     //widget with scalar input parameters
     ScalarParameterWidget *bundleParameterWidget;
