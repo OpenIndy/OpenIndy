@@ -146,6 +146,7 @@ public slots:
     void startReadingStream(ReadingTypes streamFormat);
     void stopReadingStream();
     void finishMeasurement();
+    void startSearch();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);

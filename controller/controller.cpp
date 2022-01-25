@@ -2190,3 +2190,7 @@ void Controller::startStablePointMeasurement() {
     this->stablePointLogic->startStablePointMeasurement(activeFeature->getGeometry()->getMeasurementConfig());
 
 }
+
+void Controller::startSearch(){
+
+}
