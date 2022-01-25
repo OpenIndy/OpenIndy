@@ -404,6 +404,12 @@ void FeatureFunctionsDialog::showEvent(QShowEvent *event){
 
     QObject::connect(this, &FeatureFunctionsDialog::setFunctionPos, &ModelManager::getFunctionWeightTableModel(), &FunctionWeightsTableModel::setFunctionPosition, Qt::AutoConnection);
 
+    AvailableElementsTreeViewProxyModel *availableElementsModel = static_cast<AvailableElementsTreeViewProxyModel *>(this->ui->treeView_availableElements->model());
+    availableElementsModel->resetFilter();
+    this->ui->comboBox_groups->setCurrentIndex(0);
+    this->ui->comboBox_features->setCurrentIndex(0);
+    this->ui->lineEdit_searchByFeatureName->setText("");
+
     event->accept();
 
 }
@@ -549,10 +555,6 @@ bool FeatureFunctionsDialog::checkSupportsWeights()
     return model->getSupportsWeights(index);
 }
 
-void FeatureFunctionsDialog::setFeatureNameCompleter(QCompleter *completer) {
-   this->ui->lineEdit_searchByFeatureName->setCompleter(completer);
-}
-
 void FeatureFunctionsDialog::setGroupNames(QStringList groupNames) {
     this->ui->comboBox_groups->clear();
     this->ui->comboBox_groups->addItem("All Groups");
@@ -588,5 +590,8 @@ void FeatureFunctionsDialog::on_lineEdit_searchByFeatureName_textChanged(const Q
         return;
     }
 
+    this->ui->treeView_availableElements->expandToDepth(0); // show feature names
+
     model->filterByFeatureName(text);
+
 }

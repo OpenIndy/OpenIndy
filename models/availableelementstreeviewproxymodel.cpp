@@ -354,16 +354,20 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
 
     if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()) {
         QPointer<Feature> feature = item->getFeature()->getFeature();
-        if(!this->filterFeatureName.isEmpty() && feature->getFeatureName() != this->filterFeatureName) { // filter by featurename
+        if(!this->filterFeatureName.isEmpty() && !feature->getFeatureName().startsWith(this->filterFeatureName, Qt::CaseInsensitive)) { // filter by featurename
             return false;
         }
         if(!this->filterGroupName.isEmpty() && feature->getGroupName() != this->filterGroupName) { // filter by groupname
             return false;
         }
 
-        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal && !item->getFeature()->getGeometry()->getIsNominal()) {
+        if(this->filterActualNominal == ActualNominalFilter::eFilterNominal // filter by nominal
+                && !item->getFeature()->getGeometry().isNull()
+                && !item->getFeature()->getGeometry()->getIsNominal()) {
             return false;
-        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual && item->getFeature()->getGeometry()->getIsNominal()) {
+        } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual  // filter by actual
+                  && !item->getFeature()->getGeometry().isNull()
+                  && item->getFeature()->getGeometry()->getIsNominal()) {
             return false;
         }
 
@@ -523,3 +527,8 @@ void AvailableElementsTreeViewProxyModel::filterByFeatureName(QString featureNam
     this->invalidateFilter();
 }
 
+void AvailableElementsTreeViewProxyModel::resetFilter() {
+    this->filterFeatureName = QString::null;
+    this->filterGroupName = QString::null;
+    this->filterActualNominal = ActualNominalFilter::eFilterActualNominal;
+}

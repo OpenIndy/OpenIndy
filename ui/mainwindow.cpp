@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initFilterComboBoxes();
     this->initStatusBar();
     this->initBundleView();
+    this->initFilterToolBar();
 
     //connect bundle view
     this->connectBundleView();
@@ -2385,6 +2386,13 @@ void MainWindow::initFilterComboBoxes(){
     this->updateActualNominalFilterSize();
 }
 
+void MainWindow::initFilterToolBar() {
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_orderBy);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_activeCoordSystem);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_filter);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_search);
+}
+
 /*!
  * \brief MainWindow::initStatusBar
  */
@@ -3032,7 +3040,6 @@ void MainWindow::updateCompleter() {
         completer->setFilterMode(Qt::MatchContains);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         this->ui->lineEdit_searchFeatureName->setCompleter(completer);
-        this->featureFunctionsDialog.setFeatureNameCompleter(completer);
         this->featureFunctionsDialog.setGroupNames(groupNames);
 
     }

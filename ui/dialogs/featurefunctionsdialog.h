@@ -41,7 +41,6 @@ public:
     ~FeatureFunctionsDialog();
 
     // set data for element filter
-    void setFeatureNameCompleter(QCompleter *completer);
     void setGroupNames(QStringList groupNames);
 signals:
 
