@@ -145,7 +145,8 @@ SOURCES += \
     $$PWD/../ui/dialogs/uiutil.cpp \
     $$PWD/../controller/stablepointlogic.cpp \
     $$PWD/../ui/dialogs/showlicensesdialog.cpp \
-    $$PWD/../controller/clipboardutil.cpp
+    $$PWD/../controller/clipboardutil.cpp \
+    $$PWD/../ui/dialogs/measurebehaviordialog.cpp
 
 # header files
 HEADERS  += \
@@ -252,7 +253,8 @@ HEADERS  += \
     $$PWD/../ui/dialogs/uiutil.h \
     $$PWD/../controller/stablepointlogic.h \
     $$PWD/../ui/dialogs/showlicensesdialog.h \
-    $$PWD/../controller/clipboardutil.h
+    $$PWD/../controller/clipboardutil.h \
+    $$PWD/../ui/dialogs/measurebehaviordialog.h
 
 # ui files
 FORMS    += \
@@ -275,7 +277,8 @@ FORMS    += \
     $$PWD/../ui/dialogs/trafoparampropertiesdialog.ui \
     $$PWD/../ui/dialogs/stationpropertiesdialog.ui \
     $$PWD/../ui/dialogs/exportdialog.ui \
-    $$PWD/../ui/dialogs/showlicensesdialog.ui
+    $$PWD/../ui/dialogs/showlicensesdialog.ui \
+    $$PWD/../ui/dialogs/measurebehaviordialog.ui
 
 # resource files
 RESOURCES += \
