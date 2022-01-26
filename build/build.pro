@@ -146,7 +146,8 @@ SOURCES += \
     $$PWD/../controller/stablepointlogic.cpp \
     $$PWD/../ui/dialogs/showlicensesdialog.cpp \
     $$PWD/../controller/clipboardutil.cpp \
-    $$PWD/../ui/dialogs/measurebehaviordialog.cpp
+    $$PWD/../ui/dialogs/measurebehaviordialog.cpp \
+    $$PWD/../controller/measurebehaviorlogic.cpp
 
 # header files
 HEADERS  += \
@@ -254,7 +255,8 @@ HEADERS  += \
     $$PWD/../controller/stablepointlogic.h \
     $$PWD/../ui/dialogs/showlicensesdialog.h \
     $$PWD/../controller/clipboardutil.h \
-    $$PWD/../ui/dialogs/measurebehaviordialog.h
+    $$PWD/../ui/dialogs/measurebehaviordialog.h \
+    $$PWD/../controller/measurebehaviorlogic.h
 
 # ui files
 FORMS    += \
