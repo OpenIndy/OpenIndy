@@ -66,7 +66,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>220</width>
+            <width>0</width>
             <height>50</height>
            </size>
           </property>
@@ -117,14 +117,14 @@
         <item>
          <widget class="QGroupBox" name="groupBox_activeCoordSystem">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>120</width>
+            <width>0</width>
             <height>50</height>
            </size>
           </property>
@@ -163,14 +163,14 @@
         <item>
          <widget class="QGroupBox" name="groupBox_filter">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>230</width>
+            <width>0</width>
             <height>50</height>
            </size>
           </property>
@@ -237,14 +237,14 @@
         <item>
          <widget class="QGroupBox" name="groupBox_search">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>210</width>
+            <width>0</width>
             <height>50</height>
            </size>
           </property>
@@ -254,6 +254,12 @@
           <layout class="QHBoxLayout" name="horizontalLayout_11">
            <item>
             <widget class="QLineEdit" name="lineEdit_searchFeatureName">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimumSize">
               <size>
                <width>150</width>
@@ -269,6 +275,12 @@
             <widget class="QPushButton" name="pushButton_showNextFoundFeature">
              <property name="enabled">
               <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
              <property name="maximumSize">
               <size>
