@@ -97,6 +97,9 @@
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sort FeatureTable by&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
            <item>
             <property name="text">
              <string>Creation Date</string>
@@ -154,7 +157,7 @@
             </size>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+            <enum>QComboBox::AdjustToContents</enum>
            </property>
            <property name="frame">
             <bool>true</bool>
@@ -207,7 +210,7 @@
             <bool>false</bool>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+            <enum>QComboBox::AdjustToContents</enum>
            </property>
            <property name="modelColumn">
             <number>0</number>
@@ -238,7 +241,7 @@
             <bool>false</bool>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+            <enum>QComboBox::AdjustToContents</enum>
            </property>
            <property name="minimumContentsLength">
             <number>0</number>
