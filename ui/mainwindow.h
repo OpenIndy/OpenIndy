@@ -43,7 +43,6 @@
 #include "showlicensesdialog.h"
 #include "stationpropertiesdialog.h"
 #include "exportdialog.h"
-#include "measurebehaviordialog.h"
 
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
@@ -51,6 +50,8 @@
 
 #include "projectconfig.h"
 #include "clipboardutil.h"
+
+#include "measurebehaviorlogic.h"
 
 #include <QSound>
 using namespace oi;
@@ -71,9 +72,6 @@ public:
     ~MainWindow();
 
     void loadProjectFile(QString file);
-
-    /* public for testing */
-    bool measureLogic(MeasureBehaviorDialog measureBehaviorDialog, Controller control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
 signals:
 
     //###################################
@@ -418,7 +416,6 @@ private:
     AboutDialog aboutDialog;
     ShowLicensesDialog showLicensesDialog;
     StationPropertiesDialog stationPropertiesDialog;
-    MeasureBehaviorDialog measureBehaviorDialog;
 
     //widget with scalar input parameters
     ScalarParameterWidget *bundleParameterWidget;
