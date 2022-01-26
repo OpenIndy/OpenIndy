@@ -3049,7 +3049,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
 {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
+        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text(), true);
 
         this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size()>1);
 
