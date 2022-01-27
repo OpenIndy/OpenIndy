@@ -3049,7 +3049,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
 {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
+        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text(), true);
 
         this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size()>1);
 
@@ -3082,11 +3082,11 @@ void MainWindow::showFoundFeature(int index) {
                 QModelIndex index = model->index(row,column);
                 QString name = model->data(index, Qt::DisplayRole).toString();
                 if(name == feature->getFeature()->getFeatureName()) {
+                    feature->getFeature()->setActiveFeatureState(true);
                     this->ui->tableView_features->scrollTo(index);
+                    this->ui->tableView_features->viewport()->update(); // redraw the viewport so that only the active feature is highlighted
                 }
             }
-
-            sourceModel->setActiveFeature(feature->getFeature()->getId());
 
         }
     }
