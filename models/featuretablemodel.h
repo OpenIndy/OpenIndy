@@ -139,6 +139,8 @@ private:
     void connectJob();
     void disconnectJob();
 
+    QPointer<Function> loadFunctionByName(QString name);
+
 private:
 
     //###########
