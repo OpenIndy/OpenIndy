@@ -40,8 +40,6 @@ public:
     explicit FeatureFunctionsDialog(QWidget *parent = 0);
     ~FeatureFunctionsDialog();
 
-    // set data for element filter
-    void setGroupNames(QStringList groupNames);
 signals:
 
     //##############################################################

@@ -466,6 +466,8 @@ void FeatureFunctionsDialog::initModels(){
 
     this->ui->tableView_weights->setSortingEnabled(true);
 
+    this->ui->comboBox_groups->setModel(&ModelManager::getGroupNamesModel());
+
 }
 
 /*!
@@ -553,12 +555,6 @@ bool FeatureFunctionsDialog::checkSupportsWeights()
     }
 
     return model->getSupportsWeights(index);
-}
-
-void FeatureFunctionsDialog::setGroupNames(QStringList groupNames) {
-    this->ui->comboBox_groups->clear();
-    this->ui->comboBox_groups->addItem("All Groups");
-    this->ui->comboBox_groups->addItems(groupNames);
 }
 
 void FeatureFunctionsDialog::on_comboBox_features_currentIndexChanged(int index)
