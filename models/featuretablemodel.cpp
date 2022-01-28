@@ -466,87 +466,58 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                     return false;
                 }
 
-                QStringList functionNames;
-                foreach (QPointer<Function> func, copyFeature->getFeature()->getFunctions()) {
-                    functionNames.append(func->getMetaData().name);
-                }
+                foreach (QPointer<Function> copyFunction, copyFeature->getFeature()->getFunctions()) {
+                    QPointer<Function> function = loadFunctionByName(copyFunction->getMetaData().name);
 
-                if(functionNames.size() > 0){
-                    //*******************************************************
-                    // work around : get all functions and compare the names. then get the function plugin path to create the function.
-                    // the plugin path is not stored correctly in the metadata of the functions (It is a bug!!), thats why this workaraound is needed
-                    //*******************************************************
-                    QList<sdb::Function> allFunctions = SystemDbManager::getFunctions();
+                    if(!function.isNull()){
 
-                    foreach (QString s, functionNames) {
-                        foreach (sdb::Function f, allFunctions) {
-                            if(f.name.compare(s) == 0){
+                        //fit and construct functions
+                        if(function->getMetaData().iid == FitFunction_iidd
+                                || function->getMetaData().iid == ConstructFunction_iidd
+                                || function->getMetaData().iid == SpecialFunction_iidd
+                                ){
 
-                                QPointer<Function> function(NULL);
-                                function = PluginLoader::loadFunctionPlugin(f.plugin.file_path, f.name);
+                            int functionCount = feature->getFeature()->getFunctions().size();
+                            //remove old functions
+                            for(int i=0; i<functionCount; i++){
+                                this->currentJob->removeFunction(functionCount - i -1);
+                            }
+                            //add new function
+                            feature->getFeature()->addFunction(function);
 
-                                if(!function.isNull()){
+                        }else{ //other functions
 
-                                    //fit and construct functions
-                                    if(function->getMetaData().iid == FitFunction_iidd
-                                            || function->getMetaData().iid == ConstructFunction_iidd
-                                            || function->getMetaData().iid == SpecialFunction_iidd
-                                            ){
+                            if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
+                                    && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd
+                                        || feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd
+                                        || feature->getFeature()->getFunctions().first()->getMetaData().iid == SpecialFunction_iidd
+                                        )){
 
-                                        int functionCount = feature->getFeature()->getFunctions().size();
-                                        //remove old functions
-                                        for(int i=0; i<functionCount; i++){
-                                            this->currentJob->removeFunction(functionCount - i -1);
-                                            //feature->getFeature()->removeFunction(functionCount - i -1);
-                                        }
-                                        //add new function
-                                        feature->getFeature()->addFunction(function);
-
-                                        //save new default function for element type in the database
-                                        SystemDbManager::setDefaultFunction(feature->getFeatureTypeEnum(), f.name,
-                                                                            f.plugin.file_path);
-
-                                    }else{ //other functions
-
-                                        if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
-                                                && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd
-                                                    || feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd
-                                                    || feature->getFeature()->getFunctions().first()->getMetaData().iid == SpecialFunction_iidd
-                                                    )){
-
-                                            feature->getFeature()->addFunction(function);
-                                        }
-                                    }
-                                    break;
-                                }
+                                feature->getFeature()->addFunction(function);
                             }
                         }
-                    }
 
-                    //assign function parameters from copied function to the new functions
-                    if(feature->getFeature()->getFunctions().size() == copyFeature->getFeature()->getFunctions().size()){
-                        for(int i = 0; i < feature->getFeature()->getFunctions().size(); i++){ // guess same order
-                            if(editMode & EditMode::eFunctionCopyScalarInputParams) {
-                                feature->getFeature()->getFunctions().at(i)->setScalarInputParams(
-                                        copyFeature->getFeature()->getFunctions().at(i)->getScalarInputParams());
-                            }
-                            if(editMode & EditMode::eFunctionCopyUsedElements) {
-                                QMap<int, QList<InputElement> > inputElements = copyFeature->getFeature()->getFunctions().at(i)->getInputElements();
-                                QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
-                                while (iterator != inputElements.constEnd()) {
-                                    QList<InputElement> elements = iterator.value();
-                                    for (int i = 0; i < elements.size(); ++i) {
-                                        feature->getFeature()->getFunctions().at(i)->addInputElement(elements.at(i), iterator.key());
-                                    }
-                                    ++iterator;
+                        // assign function parameters from copied function to the new functions
+                        if(editMode & EditMode::eFunctionCopyScalarInputParams) {
+                            function->setScalarInputParams(
+                                    copyFunction->getScalarInputParams());
+                        } // <- copy scalar input params
+                        if(editMode & EditMode::eFunctionCopyUsedElements) {
+                            QMap<int, QList<InputElement> > inputElements = copyFunction->getInputElements();
+                            QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
+                            while (iterator != inputElements.constEnd()) {
+                                QList<InputElement> elements = iterator.value();
+                                for (int i = 0; i < elements.size(); ++i) {
+                                    function->addInputElement(elements.at(i), iterator.key());
                                 }
-
+                                ++iterator;
                             }
-                        }
+                        } // <- copy used elements
+
                     }
-                    return true;
+
                 }
-                return false;
+                return true;
             }
             break;
         }
@@ -686,6 +657,22 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
     }
 
     return false;
+}
+
+QPointer<Function> FeatureTableModel::loadFunctionByName(QString name) {
+    //*******************************************************
+    // work around : get all functions and compare the names. then get the function plugin path to create the function.
+    // the plugin path is not stored correctly in the metadata of the functions (It is a bug!!), thats why this workaraound is needed
+    //*******************************************************
+    QPointer<Function> function(NULL);
+
+    foreach (sdb::Function f, SystemDbManager::getFunctions()) {
+        if(f.name == name){
+            function = PluginLoader::loadFunctionPlugin(f.plugin.file_path, f.name);
+            break;
+        }
+    }
+    return function;
 }
 
 /*!
