@@ -3040,7 +3040,6 @@ void MainWindow::updateCompleter() {
         completer->setFilterMode(Qt::MatchContains);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         this->ui->lineEdit_searchFeatureName->setCompleter(completer);
-        this->featureFunctionsDialog.setGroupNames(groupNames);
 
     }
 }
