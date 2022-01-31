@@ -470,10 +470,12 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                     return false;
                 }
 
+                bool result = false;
                 foreach (QPointer<Function> copyFunction, copyFeature->getFeature()->getFunctions()) {
                     QPointer<Function> function = loadFunctionByName(copyFunction->getMetaData().name);
 
                     if(!function.isNull()){
+                        result = true;
 
                         //fit and construct functions
                         if(function->getMetaData().iid == FitFunction_iidd
@@ -521,7 +523,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                     }
 
                 }
-                return true;
+                return result;
             }
             break;
         }
