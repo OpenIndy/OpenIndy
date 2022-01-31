@@ -353,6 +353,10 @@ Qt::ItemFlags FeatureTableModel::flags(const QModelIndex &index) const{
  * \param role
  * \return
  */
+bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role){
+    return this->setData(index, value, role, EditMode::eFunctionCopyScalarInputParams);
+}
+
 bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & value, int role, int editMode){
 
     //check current job and model index

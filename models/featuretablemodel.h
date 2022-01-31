@@ -50,7 +50,9 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole, int editMode = EditMode::eDefault);
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    // extra parameter
+    bool setData(const QModelIndex &index, const QVariant &value, int role, int editMode);
 
     //##############################
     //get id of the feature at index
