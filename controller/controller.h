@@ -30,13 +30,14 @@
 #include "oiwebsocketserver.h"
 #include "projectconfig.h"
 #include "stablepointlogic.h"
+#include "controllersensoractions.h"
 
 using namespace oi;
 
 /*!
  * \brief The Controller class
  */
-class Controller : public QObject
+class Controller : public QObject, public ControllerSensorActions
 {
     Q_OBJECT
 
