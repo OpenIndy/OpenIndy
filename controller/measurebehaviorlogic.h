@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "measurebehaviordialog.h"
-#include "controller.h"
+#include "controllersensoractions.h"
 #include "featuretablemodel.h"
 
 class MeasureBehaviorLogic : public QObject
@@ -13,13 +13,15 @@ class MeasureBehaviorLogic : public QObject
 public:
     explicit MeasureBehaviorLogic(QObject *parent = 0);
 
-    bool measure(Controller &control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
+    bool measure(ControllerSensorActions &control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
 signals:
 
 public slots:
 
 protected:
     void showCentered(QDialog &dialog);
+
+    void setActiveFeature(FeatureTableModel *sourceModel, int featureId);
 
 private:
     MeasureBehaviorDialog measureBehaviorDialog;

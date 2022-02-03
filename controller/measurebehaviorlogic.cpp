@@ -5,14 +5,14 @@ MeasureBehaviorLogic::MeasureBehaviorLogic(QObject *parent) : QObject(parent)
 
 }
 
-bool MeasureBehaviorLogic::measure(Controller &control, QList<int> measureFeatures, FeatureTableModel *sourceModel) {
+bool MeasureBehaviorLogic::measure(ControllerSensorActions &control, QList<int> measureFeatures, FeatureTableModel *sourceModel) {
     //aim and measure the first feature in the list of selected features
     this->measureBehaviorDialog.resetDecision();
     bool measureNextFeature = true;
     if(measureFeatures.size() > 0){
 
         if(measureNextFeature) {
-            sourceModel->setActiveFeature(measureFeatures[0]);
+            this->setActiveFeature(sourceModel, measureFeatures[0]);
             measureFeatures.removeAt(0);
         }
 
@@ -38,4 +38,8 @@ bool MeasureBehaviorLogic::measure(Controller &control, QList<int> measureFeatur
 void MeasureBehaviorLogic::showCentered(QDialog &dialog) {
     dialog.show();
     // TODO refactoring: "use" MainWindow::showCentered
+}
+
+void MeasureBehaviorLogic::setActiveFeature(FeatureTableModel *sourceModel, int featureId) {
+    sourceModel->setActiveFeature(featureId);
 }
