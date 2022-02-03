@@ -18,37 +18,10 @@ SOURCES += measurebehaviortest.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
+include($$PWD/../../build/includes.pri)
+include($$PWD/../../lib/OpenIndy-Core/build/includes.pri)
+include($$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/build/includes.pri)
 
-# test dependencies
-INCLUDEPATH += \
-    $$PWD/../../ui/dialogs \
-    $$PWD/../../controller \
-    $$PWD/../../controller/config \
-    $$PWD/../../controller/param \
-    $$PWD/../../controller/exchange \
-    $$PWD/../../controller/network \
-    $$PWD/../../models \
-    $$PWD/../../models/treeitems \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/exchange \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/tool \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/networkAdjustment \
-    $$PWD/../../lib/OpenIndy-Core/include/util \
-    $$PWD/../../lib/OpenIndy-Core/include \
-    $$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/include \
-    $$PWD/../../lib/OpenIndy-Core/include/geometry \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/function \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/simulation \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/sensor \
-    $$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/include
-
-# test dependencies
-SOURCES += \
-    $$PWD/../../controller/measurebehaviorlogic.cpp
-
-# test dependencies
-HEADERS +=  \
-    $$PWD/../../controller/measurebehaviorlogic.h
 
 CONFIG(debug, debug|release) {
     BUILD_DIR=debug
