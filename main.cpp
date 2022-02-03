@@ -5,17 +5,11 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <iostream>
+#include <ctime>
 
 #include "mainwindow.h"
-#include "controller.h"
-#include "sensor.h"
-#include "console.h"
-
 #include "chooselalib.h"
-#include "oivec.h"
-
-#include <ctime>
-#include <simplepluginloader.h>
+#include "simplepluginloader.h"
 
 const QString _date = __DATE__;
 const QString _time = __TIME__;
