@@ -2,11 +2,15 @@
 #include <QtTest>
 
 #include <QPointer>
+#include <QList>
 
-#include "measurebehaviordialog.h"
-#include "measurebehaviorlogic.h"
+#include "ControllerSensorActions.h"
+#include "featuretablemodel.h"
 
-//using namespace oi;
+#include "testcontrollersensoractions.h"
+#include "testmeasurebehaviorlogic.h"
+
+using namespace oi;
 //using namespace oi::math;
 
 
@@ -30,10 +34,24 @@ MeasureBehaviorTest::MeasureBehaviorTest()
 void MeasureBehaviorTest::testAimAndSearch()
 {
 
-    MeasureBehaviorLogic logic;
+    TestMeasureBehaviorLogic logic;
+    TestControllerSensorActions controller;
+    QPointer<FeatureTableModel> featureTableModel;
+
+    QList<int> measureFeatures;
+
+    measureFeatures.append(101);
+    measureFeatures.append(102);
+    measureFeatures.append(103);
+    measureFeatures.append(104);
+    measureFeatures.append(105);
+
+    logic.measure(controller, measureFeatures, featureTableModel);
+
+    qDebug() << "done";
 
 }
 
-QTEST_MAIN(MeasureBehaviorTest) // instead of QTEST_APPLESS_MAIN because of QTimer
+QTEST_MAIN(MeasureBehaviorTest) // instead of QTEST_APPLESS_MAIN because of: "QWidget: Must construct a QApplication before a QWidget"
 
 #include "measurebehaviortest.moc"
