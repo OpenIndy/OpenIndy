@@ -18,7 +18,7 @@ const QString AppName = "OpenIndy";
 const QString AppUrl  = "www.openIndy.de";
 const QString AppAuthor = "M.Sc. Martin Lux, M.Sc. Benedikt Rauls, M.Sc. Jens Wambach";
 const QString AppAuthorMail = "info@openindy.de";
-const QString AppDate = "2018 (" + _date + "," + _time + ")";
+const QString AppDate = _date + "," + _time;
 
 #ifdef QT_NO_DEBUG
 const QString AppVersion = QString(OPENINDY_VERSION);
