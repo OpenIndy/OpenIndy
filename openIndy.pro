@@ -2,7 +2,6 @@ CONFIG += c++11
 
 TEMPLATE = subdirs
 
-CONFIG += ordered
 SUBDIRS = \
     core \
     app \
@@ -14,3 +13,4 @@ core.subdir = $$PWD/lib/OpenIndy-Core
 
 # project dependencies
 app.depends = core
+test.depends = app
