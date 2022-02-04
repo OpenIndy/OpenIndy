@@ -1809,9 +1809,9 @@ void MainWindow::pasteFromClipboard(){
         return;
     }
 
-    //get and check destination model (in the sense of copy target)
-    QPointer<FeatureTableModel> destModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(destModel.isNull()){
+    //get and check destination model (in the sense of copy target) the sourceModel of all upper proxy models is FeatureTableModel
+    QPointer<FeatureTableModel> featureTabelModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(featureTabelModel.isNull()){
         qDebug() << "no destination model avialable";
         return;
     }
@@ -1860,7 +1860,7 @@ void MainWindow::pasteFromClipboard(){
     if(rows.size() == 1){
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            destModel->setData( model->mapToSource(currentIndex),
+            featureTabelModel->setData( model->mapToSource(currentIndex),
                                 rows.at(0),
                                 Qt::EditRole,
                                 isFunctionColumnSelected
@@ -1871,7 +1871,7 @@ void MainWindow::pasteFromClipboard(){
         int i = 0;
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            destModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            featureTabelModel->setData(model->mapToSource(currentIndex), rows.at(i));
             i++;
         }
     }
