@@ -14,6 +14,8 @@
 #include <QDialog>
 #include <QCompleter>
 #include <QList>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "controller.h"
 #include "featureattributes.h"
