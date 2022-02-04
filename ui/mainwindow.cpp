@@ -1858,6 +1858,17 @@ void MainWindow::pasteFromClipboard(){
 
     //edit entries at selected indexes
     if(rows.size() == 1){
+
+        if(proxyModelType == ProxyModelType::eTrafoParamTable) {
+            QMessageBox msgBox;
+            msgBox.setText("Do you really want to replace existing functions?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            if(QMessageBox::Yes != msgBox.exec()) {
+                return;
+            }
+        }
+
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
             featureTabelModel->setData( model->mapToSource(currentIndex),
