@@ -1777,22 +1777,31 @@ void MainWindow::copyDifferencesToClipboard()
  * \brief MainWindow::pasteFromClipboard
  */
 void MainWindow::pasteFromClipboard(){
+    enum ProxyModelType {
+        eFeatureTable,
+        eTrafoParamTable,
+        eBundleParameterTable
+    };
 
     //init variables
     QPointer<QSortFilterProxyModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
     bool isFunctionColumnSelected = false;
 
+    ProxyModelType proxyModelType;
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
         selectionModel = this->ui->tableView_features->selectionModel();
+        proxyModelType = ProxyModelType::eFeatureTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
+        proxyModelType = ProxyModelType::eTrafoParamTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
         model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        proxyModelType = ProxyModelType::eBundleParameterTable;
     }
 
     if(model.isNull()){
