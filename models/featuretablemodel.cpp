@@ -439,12 +439,12 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
         case eFeatureDisplayFunctions:{
 
             //check if the feature is a geometry
-            if(feature->getGeometry().isNull()){
+            if(feature->getGeometry().isNull() && feature->getTrafoParam().isNull()){
                 return false;
             }
 
             //only actual features have a function
-            if(feature->getGeometry()->getIsNominal()){
+            if(!feature->getGeometry().isNull() && feature->getGeometry()->getIsNominal()){
                 return false;
             }
 
