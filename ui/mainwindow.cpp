@@ -1742,12 +1742,12 @@ void MainWindow::copyToClipboard(){
     }
 
     if(isFunctionColumnSelected) {
-
-        QString copy_table;
-        copy_table.append(QString::number(this->control.getActiveFeature()->getFeature()->getId()));
-        copy_table.append("\n");
-
-        clipBoardUtil.copyToClipBoard(copy_table);
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy function","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy function");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
     } else { // common case: copy displayed values
         clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
