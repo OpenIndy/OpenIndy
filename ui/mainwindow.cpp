@@ -1733,6 +1733,9 @@ void MainWindow::copyToClipboard(){
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eTrafoParamDisplayFunctions == ModelManager::getTrafoParamTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
         model = this->ui->tableView_bundleParameter->model();
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
@@ -1742,12 +1745,12 @@ void MainWindow::copyToClipboard(){
     }
 
     if(isFunctionColumnSelected) {
-
-        QString copy_table;
-        copy_table.append(QString::number(this->control.getActiveFeature()->getFeature()->getId()));
-        copy_table.append("\n");
-
-        clipBoardUtil.copyToClipBoard(copy_table);
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy function","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy function");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
     } else { // common case: copy displayed values
         clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
@@ -1774,25 +1777,31 @@ void MainWindow::copyDifferencesToClipboard()
  * \brief MainWindow::pasteFromClipboard
  */
 void MainWindow::pasteFromClipboard(){
+    enum ProxyModelType {
+        eFeatureTable,
+        eTrafoParamTable,
+        eBundleParameterTable
+    };
 
     //init variables
     QPointer<QSortFilterProxyModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
     bool isFunctionColumnSelected = false;
 
+    ProxyModelType proxyModelType;
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
         selectionModel = this->ui->tableView_features->selectionModel();
-        isFunctionColumnSelected = !selectionModel.isNull()
-                && selectionModel->selectedIndexes().size() == 1
-                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
+        proxyModelType = ProxyModelType::eFeatureTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
+        proxyModelType = ProxyModelType::eTrafoParamTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
         model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        proxyModelType = ProxyModelType::eBundleParameterTable;
     }
 
     if(model.isNull()){
@@ -1800,9 +1809,9 @@ void MainWindow::pasteFromClipboard(){
         return;
     }
 
-    //get and check destination model (in the sense of copy target)
-    QPointer<FeatureTableModel> destModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(destModel.isNull()){
+    //get and check destination model (in the sense of copy target) the sourceModel of all upper proxy models is FeatureTableModel
+    QPointer<FeatureTableModel> featureTabelModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(featureTabelModel.isNull()){
         qDebug() << "no destination model avialable";
         return;
     }
@@ -1822,27 +1831,49 @@ void MainWindow::pasteFromClipboard(){
     qSort(selection);
 
     //get values from clipboard, so you can copy them
+    QStringList rows;
     QClipboard *clipboard = QApplication::clipboard();
-    QString copy_table = clipboard->text();
+    QString content = clipboard->text();
 
-    //seperate copy table into columns: only one column is allowed
-    QStringList columns = copy_table.split('\t');
-    if(columns.size() != 1){
-        return;
-    }
+    QJsonDocument document = QJsonDocument::fromJson(content.toUtf8());
+    if(document.isObject()) { // check if content is JSON
+        QJsonObject object = document.object();
+        isFunctionColumnSelected = object.value("action").toString() == "copy function";
+        rows.append(QString::number(object.value("id").toInt()));
 
-    //seperate copy table into rows: either one or selection.size rows are allowed
-    QStringList rows = copy_table.split('\n');
-    if(rows.size() != 2 && rows.size() != selection.size()+1){
-        return;
+    } else { // otherwise the content will be accepted as CSV data
+        //seperate copy table into columns: only one column is allowed
+        QStringList columns = content.split('\t');
+        if(columns.size() != 1){
+            return;
+        }
+
+        //seperate copy table into rows: either one or selection.size rows are allowed
+        rows = content.split('\n');
+        if(rows.size() != 2 && rows.size() != selection.size()+1){
+            return;
+        }
+        rows.removeLast();
     }
-    rows.removeLast();
 
     //edit entries at selected indexes
     if(rows.size() == 1){
+
+        if( proxyModelType == ProxyModelType::eTrafoParamTable
+                && isFunctionColumnSelected) {
+
+            QMessageBox msgBox;
+            msgBox.setText("Do you really want to replace existing functions?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            if(QMessageBox::Yes != msgBox.exec()) {
+                return;
+            }
+        }
+
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            destModel->setData( model->mapToSource(currentIndex),
+            featureTabelModel->setData( model->mapToSource(currentIndex),
                                 rows.at(0),
                                 Qt::EditRole,
                                 isFunctionColumnSelected
@@ -1853,7 +1884,7 @@ void MainWindow::pasteFromClipboard(){
         int i = 0;
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            destModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            featureTabelModel->setData(model->mapToSource(currentIndex), rows.at(i));
             i++;
         }
     }

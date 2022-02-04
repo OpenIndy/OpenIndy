@@ -9,11 +9,13 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
-#include "QWindow"
-#include "QScreen"
-#include "QDialog"
+#include <QWindow>
+#include <QScreen>
+#include <QDialog>
 #include <QCompleter>
 #include <QList>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "controller.h"
 #include "featureattributes.h"
