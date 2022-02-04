@@ -1733,6 +1733,9 @@ void MainWindow::copyToClipboard(){
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eTrafoParamDisplayFunctions == ModelManager::getTrafoParamTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
         model = this->ui->tableView_bundleParameter->model();
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
