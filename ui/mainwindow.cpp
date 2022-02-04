@@ -1784,9 +1784,6 @@ void MainWindow::pasteFromClipboard(){
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
         selectionModel = this->ui->tableView_features->selectionModel();
-        isFunctionColumnSelected = !selectionModel.isNull()
-                && selectionModel->selectedIndexes().size() == 1
-                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1822,21 +1819,30 @@ void MainWindow::pasteFromClipboard(){
     qSort(selection);
 
     //get values from clipboard, so you can copy them
+    QStringList rows;
     QClipboard *clipboard = QApplication::clipboard();
-    QString copy_table = clipboard->text();
+    QString content = clipboard->text();
 
-    //seperate copy table into columns: only one column is allowed
-    QStringList columns = copy_table.split('\t');
-    if(columns.size() != 1){
-        return;
-    }
+    QJsonDocument document = QJsonDocument::fromJson(content.toUtf8());
+    if(document.isObject()) { // check if content is JSON
+        QJsonObject object = document.object();
+        isFunctionColumnSelected = object.value("action").toString() == "copy function";
+        rows.append(QString::number(object.value("id").toInt()));
 
-    //seperate copy table into rows: either one or selection.size rows are allowed
-    QStringList rows = copy_table.split('\n');
-    if(rows.size() != 2 && rows.size() != selection.size()+1){
-        return;
+    } else { // otherwise the content will be accepted as CSV data
+        //seperate copy table into columns: only one column is allowed
+        QStringList columns = content.split('\t');
+        if(columns.size() != 1){
+            return;
+        }
+
+        //seperate copy table into rows: either one or selection.size rows are allowed
+        rows = content.split('\n');
+        if(rows.size() != 2 && rows.size() != selection.size()+1){
+            return;
+        }
+        rows.removeLast();
     }
-    rows.removeLast();
 
     //edit entries at selected indexes
     if(rows.size() == 1){
