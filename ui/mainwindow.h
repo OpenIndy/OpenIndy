@@ -9,9 +9,9 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
-#include "QWindow"
-#include "QScreen"
-#include "QDialog"
+#include <QWindow>
+#include <QScreen>
+#include <QDialog>
 #include <QCompleter>
 #include <QList>
 
