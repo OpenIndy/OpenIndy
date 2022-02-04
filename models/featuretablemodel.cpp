@@ -451,6 +451,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             //get the feature to copy functions from
             QPointer<FeatureWrapper> copyFeature = this->currentJob->getFeatureById(value.toInt());
 
+            // 0. precondition: function(s) available ?
             if(!copyFeature.isNull() && !copyFeature->getFeature().isNull() && !copyFeature->getFeature()->getFunctions().size() == 0){
 
                 if(copyFeature->getFeature()->getId() == feature->getFeature()->getId()){
@@ -470,6 +471,17 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                     return false;
                 }
 
+                // 1. set current feature as "active feature" to make currentJob-calls work on the right feature :)
+                feature->getFeature()->setActiveFeatureState(true);
+
+
+                // 2. remove all functions if copy functions available
+                const int functionCount = feature->getFeature()->getFunctions().size();
+                for(int i=0; i<functionCount; i++){
+                    this->currentJob->removeFunction(0); // remove index 0 from active feature
+                }
+
+                // 3.1 loop over all copy / source function
                 bool result = false;
                 foreach (QPointer<Function> copyFunction, copyFeature->getFeature()->getFunctions()) {
                     QPointer<Function> function = loadFunctionByName(copyFunction->getMetaData().name);
@@ -477,37 +489,18 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                     if(!function.isNull()){
                         result = true;
 
-                        //fit and construct functions
-                        if(function->getMetaData().iid == FitFunction_iidd
-                                || function->getMetaData().iid == ConstructFunction_iidd
-                                || function->getMetaData().iid == SpecialFunction_iidd
-                                ){
+                        // 3.2 add new function
+                        this->currentJob->addFunction(function);
 
-                            int functionCount = feature->getFeature()->getFunctions().size();
-                            //remove old functions
-                            for(int i=0; i<functionCount; i++){
-                                this->currentJob->removeFunction(functionCount - i -1);
-                            }
-                            //add new function
-                            feature->getFeature()->addFunction(function);
+                        // 3.3 assign function parameters from copied function to the new functions
 
-                        }else{ //other functions
-
-                            if(feature->getFeature()->getFunctions().size() > 0 && !feature->getFeature()->getFunctions().at(0).isNull()
-                                    && (feature->getFeature()->getFunctions().first()->getMetaData().iid == FitFunction_iidd
-                                        || feature->getFeature()->getFunctions().first()->getMetaData().iid == ConstructFunction_iidd
-                                        || feature->getFeature()->getFunctions().first()->getMetaData().iid == SpecialFunction_iidd
-                                        )){
-
-                                feature->getFeature()->addFunction(function);
-                            }
-                        }
-
-                        // assign function parameters from copied function to the new functions
+                        // 3.3.1 copy scalar input params
                         if(editMode & EditMode::eFunctionCopyScalarInputParams) {
                             function->setScalarInputParams(
                                     copyFunction->getScalarInputParams());
                         } // <- copy scalar input params
+
+                        // 3.3.2 copy used elements
                         if(editMode & EditMode::eFunctionCopyUsedElements) {
                             QMap<int, QList<InputElement> > inputElements = copyFunction->getInputElements();
                             QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
@@ -519,7 +512,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                 ++iterator;
                             }
                         } // <- copy used elements
-
                     }
 
                 }
