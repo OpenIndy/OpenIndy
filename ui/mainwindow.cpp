@@ -1859,7 +1859,9 @@ void MainWindow::pasteFromClipboard(){
     //edit entries at selected indexes
     if(rows.size() == 1){
 
-        if(proxyModelType == ProxyModelType::eTrafoParamTable) {
+        if( proxyModelType == ProxyModelType::eTrafoParamTable
+                && isFunctionColumnSelected) {
+
             QMessageBox msgBox;
             msgBox.setText("Do you really want to replace existing functions?");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
