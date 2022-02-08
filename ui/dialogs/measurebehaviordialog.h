@@ -7,6 +7,7 @@ namespace Ui {
 class MeasureBehaviorDialog;
 }
 
+
 class MeasureBehaviorDialog : public QDialog
 {
     Q_OBJECT
@@ -26,6 +27,7 @@ public:
     void resetDecision();
 
     bool useDecision();
+
     bool skip();
     bool searchSMR();
     bool tryAgain();

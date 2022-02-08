@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
+    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
+
     //initially resize table view to fit the default job
     this->resizeTableView();
 
@@ -1622,8 +1624,10 @@ void MainWindow::aimAndMeasureFeatures(){
         }
     }
 
-    MeasureBehaviorLogic logic;
-    logic.measure(this->control, this->measureFeatures, sourceModel);
+    this->measureBehaviorLogic.init(&control, this->measureFeatures, sourceModel);
+    if(this->measureBehaviorLogic.next()) {
+        this->measureBehaviorLogic.measure();
+    }
 }
 
 /*!

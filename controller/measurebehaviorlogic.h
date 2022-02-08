@@ -2,6 +2,7 @@
 #define MEASUREBEHAVIORLOGIC_H
 
 #include <QObject>
+#include <QPointer>
 
 #include "measurebehaviordialog.h"
 #include "controllersensoractions.h"
@@ -13,19 +14,27 @@ class MeasureBehaviorLogic : public QObject
 public:
     explicit MeasureBehaviorLogic(QObject *parent = 0);
 
-    bool measure(ControllerSensorActions &control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
+    void init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
+    bool next();
+    void measure();
+
 signals:
 
 public slots:
+    void sensorActionFinished(const bool &success, const QString &msg);
 
 protected:
-    void showCentered(QDialog &dialog);
+    virtual void showCentered(QDialog &dialog);
 
-    void setActiveFeature(FeatureTableModel *sourceModel, int featureId);
+    virtual void setActiveFeature(FeatureTableModel *sourceModel, int featureId);
 
 private:
+
     MeasureBehaviorDialog measureBehaviorDialog;
 
+    ControllerSensorActions *control;
+    QList<int> measureFeatures;
+    FeatureTableModel *sourceModel;
 };
 
 #endif // MEASUREBEHAVIORLOGIC_H

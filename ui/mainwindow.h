@@ -474,6 +474,8 @@ private:
     int showFoundFeatureIndex;
 
     ClipBoardUtil clipBoardUtil;
+
+    MeasureBehaviorLogic measureBehaviorLogic;
 };
 
 #endif // MAINWINDOW_H
