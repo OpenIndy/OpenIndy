@@ -46,7 +46,8 @@ void MeasureBehaviorTest::testAimAndSearch()
     measureFeatures.append(104);
     measureFeatures.append(105);
 
-    logic.measure(controller, measureFeatures, featureTableModel);
+    logic.init(&controller, measureFeatures, featureTableModel);
+    logic.measure();
 
     qDebug() << "done";
 
