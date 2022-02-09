@@ -53,16 +53,13 @@ bool MeasureBehaviorLogic::next() {
 
 void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QString &msg) {
     qDebug() << "MeasureBehaviorLogic::sensorActionFinished" << success << msg;
-    if(false && "measurement finished" != msg) {
-        return;
-    }
 
-    if(success) {
+    if(success && SensorWorkerMessage::MEASUREMENT_FINISHED != msg) {
         if(this->next()) { // measure next feature if avialable
             this->measure();
         }
 
-    } else { //
+    } else if(true){ // Fehlerfälle
 
         if(!this->measureBehaviorDialog.useDecision()) {
             showCentered(this->measureBehaviorDialog);
