@@ -7,6 +7,7 @@
 #include "measurebehaviordialog.h"
 #include "controllersensoractions.h"
 #include "featuretablemodel.h"
+#include "sensorworkermessage.h"
 
 class MeasureBehaviorLogic : public QObject
 {
