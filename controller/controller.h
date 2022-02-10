@@ -62,6 +62,9 @@ public:
 
     bool activeFeatureUseStablePointMeasurement(); // TODO OI-496: private ?
 
+private slots:
+    void startAimAndMeasure();
+
 public slots:
 
     //#######################
@@ -137,7 +140,6 @@ public slots:
     void startMeasurement();
     void startMove(const Reading &reading);
     void startAim();
-    void startAimAndMeasure();
     void startToggleSight();
     void startInitialize();
     void startHome();
