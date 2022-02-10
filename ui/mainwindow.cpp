@@ -2297,6 +2297,8 @@ void MainWindow::initSensorPad(){
     this->actionToggleSightOrientation->setText("toggle sight orientation");
     this->actionCompensation = new QAction(0);
     this->actionCompensation->setText("compensation");
+    this->actionSearch = new QAction(0);
+    this->actionSearch->setText("search");
 
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
@@ -2309,6 +2311,7 @@ void MainWindow::initSensorPad(){
     this->ui->toolBar_controlPad->addAction(this->actionChangeMotorState);
     this->ui->toolBar_controlPad->addAction(this->actionToggleSightOrientation);
     this->ui->toolBar_controlPad->addAction(this->actionCompensation);
+    this->ui->toolBar_controlPad->addAction(this->actionSearch);
 
     //disable and hide actions as default
     this->actionConnect->setVisible(false);
@@ -2331,6 +2334,8 @@ void MainWindow::initSensorPad(){
     this->actionToggleSightOrientation->setEnabled(false);
     this->actionCompensation->setVisible(false);
     this->actionCompensation->setEnabled(false);
+    this->actionSearch->setVisible(false);
+    this->actionSearch->setEnabled(false);
 
     //connect actions
     QObject::connect(this->actionConnect, &QAction::triggered, &this->control, &Controller::startConnect, Qt::AutoConnection);
@@ -2343,6 +2348,7 @@ void MainWindow::initSensorPad(){
     QObject::connect(this->actionToggleSightOrientation, &QAction::triggered, &this->control, &Controller::startToggleSight, Qt::AutoConnection);
     QObject::connect(this->actionCompensation, &QAction::triggered, &this->control, &Controller::startCompensation, Qt::AutoConnection);
     QObject::connect(this->actionMove, &QAction::triggered, this, &MainWindow::showMoveSensorDialog, Qt::AutoConnection);
+    QObject::connect(this->actionSearch, &QAction::triggered, &this->control, &Controller::startSearch, Qt::AutoConnection);
 
 }
 
