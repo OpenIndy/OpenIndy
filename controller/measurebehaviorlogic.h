@@ -24,6 +24,10 @@ signals:
 public slots:
     void sensorActionFinished(const bool &success, const QString &msg);
 
+private slots:
+    void handleDecision();
+    void abortMeasurement();
+
 protected:
     virtual void showCentered(QDialog &dialog);
 
@@ -35,7 +39,9 @@ private:
 
     ControllerSensorActions *control;
     QList<int> measureFeatures;
+    int activeFeatureId;
     FeatureTableModel *sourceModel;
+
 };
 
 #endif // MEASUREBEHAVIORLOGIC_H
