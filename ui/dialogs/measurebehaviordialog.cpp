@@ -31,6 +31,8 @@ void MeasureBehaviorDialog::on_pushButton_skip_clicked()
 
 void MeasureBehaviorDialog::clicked(Decision decision) {
     this->decision = decision;
+
+    accept(); // close dialog
 }
 
 void MeasureBehaviorDialog::resetDecision() {
