@@ -2297,8 +2297,10 @@ void MainWindow::initSensorPad(){
     this->actionToggleSightOrientation->setText("toggle sight orientation");
     this->actionCompensation = new QAction(0);
     this->actionCompensation->setText("compensation");
+
     this->actionSearch = new QAction(0);
-    this->actionSearch->setText("search");
+    this->actionSearch->setText("search (Alt+S)");
+    this->actionSearch->setShortcut(QKeySequence::fromString("Alt+S"));
 
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
