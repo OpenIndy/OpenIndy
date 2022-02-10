@@ -430,6 +430,7 @@ private:
     QAction *actionChangeMotorState;
     QAction *actionToggleSightOrientation;
     QAction *actionCompensation;
+    QAction *actionSearch;
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
