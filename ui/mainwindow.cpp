@@ -383,29 +383,6 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
  */
 void MainWindow::measurementCompleted(){
 
-    //get feature table models
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
-    if(job.isNull()){
-        return;
-    }
-
-    //check wether there are more features left, that shall be aimed and measured
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
-    }
-
 }
 
 /*!
@@ -1613,17 +1590,17 @@ void MainWindow::aimAndMeasureFeatures(){
         return;
     }
 
-    //get selected features
-    this->measureFeatures.clear();
+    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
+    QList<int> measureFeatures;
     QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
     foreach(const QModelIndex &index, selection){
         int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-        if(id >= 0 && !this->measureFeatures.contains(id)){
-            this->measureFeatures.append(id);
+        if(id >= 0 && !measureFeatures.contains(id)){
+            measureFeatures.append(id);
         }
     }
 
-    this->measureBehaviorLogic.init(&control, this->measureFeatures, sourceModel);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();
     }
