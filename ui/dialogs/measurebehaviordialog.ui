@@ -61,6 +61,19 @@
     <string>Skip</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_message">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>291</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Failed to measure feature. Please decide:</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
