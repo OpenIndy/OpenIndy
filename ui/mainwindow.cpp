@@ -2262,8 +2262,8 @@ void MainWindow::initSensorPad(){
     this->actionCompensation->setText("compensation");
 
     this->actionSearch = new QAction(0);
-    this->actionSearch->setText("search (Alt+S)");
-    this->actionSearch->setShortcut(QKeySequence::fromString("Alt+S"));
+    this->actionSearch->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+    this->actionSearch->setText("search (Alt + S)");
 
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
