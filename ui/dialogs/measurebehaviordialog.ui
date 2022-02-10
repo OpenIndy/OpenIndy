@@ -19,24 +19,14 @@
   <property name="windowTitle">
    <string>Measure Behavior</string>
   </property>
-  <widget class="QCheckBox" name="checkBox_UsePreviousDecision">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>50</y>
-     <width>251</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Use decision for the following points</string>
-   </property>
-  </widget>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <widget class="QPushButton" name="pushButton_searchSMR">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>40</y>
      <width>93</width>
      <height>28</height>
     </rect>

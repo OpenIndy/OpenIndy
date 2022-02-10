@@ -37,11 +37,6 @@ void MeasureBehaviorDialog::clicked(Decision decision) {
 
 void MeasureBehaviorDialog::resetDecision() {
     this->decision = Decision::eNotSet;
-    this->ui->checkBox_UsePreviousDecision->setChecked(false);
-}
-
-bool MeasureBehaviorDialog::useDecision() {
-    return this->ui->checkBox_UsePreviousDecision->isChecked();
 }
 
 bool MeasureBehaviorDialog::skip() {
