@@ -26,8 +26,6 @@ public:
 
     void resetDecision();
 
-    bool useDecision();
-
     bool skip();
     bool searchSMR();
     bool tryAgain();
