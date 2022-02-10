@@ -2494,6 +2494,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionToggleSightOrientation->setEnabled(true);
         this->actionCompensation->setVisible(true);
         this->actionCompensation->setEnabled(true);
+        this->actionSearch->setVisible(supportedActions.contains(SensorFunctions::eSearch));
+        this->actionSearch->setEnabled(supportedActions.contains(SensorFunctions::eSearch));
 
         break;
 
