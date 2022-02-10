@@ -460,9 +460,6 @@ private:
     //helper attributes
     //#################
 
-    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
-    QList<int> measureFeatures;
-
     void enableOrDisableObservationsOfActiveFeature(bool);
 
     void showCentered(QDialog &dialog);
