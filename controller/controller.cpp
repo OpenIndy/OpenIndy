@@ -2192,5 +2192,13 @@ void Controller::startStablePointMeasurement() {
 }
 
 void Controller::startSearch(){
+    QPointer<Station> activeStation = getConnectedActiveStation();
+    if(activeStation.isNull()){
+       return;
+    }
 
+    //inform about start of sensor action
+    emit this->sensorActionStarted("performing search...", false /* TODO */);
+
+    activeStation->search();
 }
