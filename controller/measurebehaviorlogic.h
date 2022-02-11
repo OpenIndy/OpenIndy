@@ -20,16 +20,15 @@ public:
     bool next();
     void measure();
 
-signals:
-
 public slots:
     void sensorActionFinished(const bool &success, const QString &msg);
     void setDecision(Decision decision);
 
-private slots:
+protected slots:
     void handleDecision();
-    void abortMeasurement();
 
+private slots:
+    void abortMeasurement();
 
 protected:
     virtual void showCentered(QDialog &dialog);
@@ -38,15 +37,17 @@ protected:
 
 private:
     bool skip();
-    bool searchSMR();
+    bool search();
     bool tryAgain();
+    void resetDecision();
 
     MeasureBehaviorDialog measureBehaviorDialog;
 
     ControllerSensorActions *control;
-    QList<int> measureFeatures;
-    int activeFeatureId;
     FeatureTableModel *sourceModel;
+    QList<int> measureFeatures;
+
+    int activeFeatureId;
     Decision decision;
 
 };

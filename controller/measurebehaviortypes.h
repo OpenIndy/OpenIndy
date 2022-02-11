@@ -3,7 +3,7 @@
 
 enum Decision {
     eNotSet,
-    eSearchSMR,
+    eSearch,
     eTryAgain,
     eSkip,
 };

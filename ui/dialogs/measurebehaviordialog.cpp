@@ -15,7 +15,7 @@ MeasureBehaviorDialog::~MeasureBehaviorDialog()
 
 void MeasureBehaviorDialog::on_pushButton_searchSMR_clicked()
 {
-    this->clicked(Decision::eSearchSMR);
+    this->clicked(Decision::eSearch);
 }
 
 void MeasureBehaviorDialog::on_pushButton_tryAgain_clicked()
