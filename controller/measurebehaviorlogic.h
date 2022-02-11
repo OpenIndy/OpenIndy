@@ -8,6 +8,7 @@
 #include "controllersensoractions.h"
 #include "featuretablemodel.h"
 #include "sensorworkermessage.h"
+#include "measurebehaviortypes.h"
 
 class MeasureBehaviorLogic : public QObject
 {
@@ -23,10 +24,12 @@ signals:
 
 public slots:
     void sensorActionFinished(const bool &success, const QString &msg);
+    void setDecision(Decision decision);
 
 private slots:
     void handleDecision();
     void abortMeasurement();
+
 
 protected:
     virtual void showCentered(QDialog &dialog);
@@ -34,6 +37,9 @@ protected:
     virtual void setActiveFeature(FeatureTableModel *sourceModel, int featureId);
 
 private:
+    bool skip();
+    bool searchSMR();
+    bool tryAgain();
 
     MeasureBehaviorDialog measureBehaviorDialog;
 
@@ -41,6 +47,7 @@ private:
     QList<int> measureFeatures;
     int activeFeatureId;
     FeatureTableModel *sourceModel;
+    Decision decision;
 
 };
 

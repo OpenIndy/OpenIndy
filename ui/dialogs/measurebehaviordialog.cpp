@@ -3,7 +3,6 @@
 
 MeasureBehaviorDialog::MeasureBehaviorDialog(QWidget *parent) :
     QDialog(parent),
-    decision(Decision::eNotSet),
     ui(new Ui::MeasureBehaviorDialog)
 {
     ui->setupUi(this);
@@ -30,23 +29,8 @@ void MeasureBehaviorDialog::on_pushButton_skip_clicked()
 }
 
 void MeasureBehaviorDialog::clicked(Decision decision) {
-    this->decision = decision;
+    emit setDecision(decision);
 
     accept(); // close dialog
 }
 
-void MeasureBehaviorDialog::resetDecision() {
-    this->decision = Decision::eNotSet;
-}
-
-bool MeasureBehaviorDialog::skip() {
-    return this->decision == Decision::eSkip;
-}
-
-bool MeasureBehaviorDialog::searchSMR() {
-    return this->decision == Decision::eSearchSMR;
-}
-
-bool MeasureBehaviorDialog::tryAgain() {
-    return this->decision == Decision::eTryAgain;
-}
