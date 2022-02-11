@@ -8,6 +8,8 @@ class TestMeasureBehaviorLogic : public MeasureBehaviorLogic
 public:
     TestMeasureBehaviorLogic();
 
+    QList<int> featureIds;
+
 protected:
     void showCentered(QDialog &dialog);
 

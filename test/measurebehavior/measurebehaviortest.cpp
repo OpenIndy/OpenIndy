@@ -9,10 +9,9 @@
 
 #include "testcontrollersensoractions.h"
 #include "testmeasurebehaviorlogic.h"
+#include "measurebehaviortypes.h"
 
 using namespace oi;
-//using namespace oi::math;
-
 
 class MeasureBehaviorTest : public QObject
 {
@@ -22,7 +21,9 @@ public:
     MeasureBehaviorTest();
 
 private Q_SLOTS:
-    void testAimAndSearch();
+    void testSearch();
+    void testSkip();
+    void testAimAndMeasure();
 
 };
 
@@ -31,7 +32,7 @@ MeasureBehaviorTest::MeasureBehaviorTest()
 }
 
 // basic test
-void MeasureBehaviorTest::testAimAndSearch()
+void MeasureBehaviorTest::testAimAndMeasure()
 {
 
     TestMeasureBehaviorLogic logic;
@@ -43,13 +44,74 @@ void MeasureBehaviorTest::testAimAndSearch()
     measureFeatures.append(101);
     measureFeatures.append(102);
     measureFeatures.append(103);
-    measureFeatures.append(104);
-    measureFeatures.append(105);
 
     logic.init(&controller, measureFeatures, featureTableModel);
+    QCOMPARE(logic.next(), true);
     logic.measure();
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
 
-    qDebug() << "done";
+    QCOMPARE(logic.next(), false);
+    QCOMPARE(logic.featureIds.size(), 3);
+    QCOMPARE(controller.actions.join(","), QString("startAim,startMeasurement,startAim,startMeasurement,startAim,startMeasurement"));
+
+}
+
+void MeasureBehaviorTest::testSkip()
+{
+
+    TestMeasureBehaviorLogic logic;
+    TestControllerSensorActions controller;
+    QPointer<FeatureTableModel> featureTableModel;
+
+    QList<int> measureFeatures;
+
+    measureFeatures.append(101);
+    measureFeatures.append(102);
+    measureFeatures.append(103);
+
+    logic.init(&controller, measureFeatures, featureTableModel);
+    QCOMPARE(logic.next(), true);
+    logic.measure();
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
+
+    logic.setDecision(Decision::eSkip);
+    logic.sensorActionFinished(false, SensorWorkerMessage::FAILED_TO_MEASURE);
+
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
+
+    QCOMPARE(logic.next(), false);
+    QCOMPARE(logic.featureIds.size(), 3);
+    QCOMPARE(controller.actions.join(","), QString("startAim,startMeasurement,startAim,startMeasurement,startAim,startMeasurement"));
+}
+
+void MeasureBehaviorTest::testSearch()
+{
+
+    TestMeasureBehaviorLogic logic;
+    TestControllerSensorActions controller;
+    QPointer<FeatureTableModel> featureTableModel;
+
+    QList<int> measureFeatures;
+
+    measureFeatures.append(101);
+    measureFeatures.append(102);
+    measureFeatures.append(103);
+
+    logic.init(&controller, measureFeatures, featureTableModel);
+    QCOMPARE(logic.next(), true);
+    logic.measure();
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
+
+    logic.setDecision(Decision::eSearch);
+    logic.sensorActionFinished(false, SensorWorkerMessage::FAILED_TO_MEASURE);
+
+    logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
+
+    QCOMPARE(logic.next(), false);
+    QCOMPARE(logic.featureIds.size(), 3);
+    QCOMPARE(controller.actions.join(","), QString("startAim,startMeasurement,startAim,startMeasurement,startSearch,startMeasurement,startAim,startMeasurement"));
 
 }
 

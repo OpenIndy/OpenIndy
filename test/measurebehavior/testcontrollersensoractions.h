@@ -25,6 +25,8 @@ public:
     void stopReadingStream();
     void finishMeasurement();
     void startSearch();
+
+    QStringList actions;
 };
 
 #endif // TESTCONTROLLERSENSORACTIONS_H
