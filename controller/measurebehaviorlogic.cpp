@@ -8,7 +8,7 @@ MeasureBehaviorLogic::MeasureBehaviorLogic(QObject *parent) : QObject(parent), a
 }
 
 void MeasureBehaviorLogic::init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel) {
-    this->decision = Decision::eNotSet;
+    this->resetDecision();
 
     this->control = control;
     this->measureFeatures = measureFeatures;
@@ -25,11 +25,6 @@ void MeasureBehaviorLogic::measure() {
 
     // aim / move
     this->control->startAim();
-
-    // search
-    if(this->searchSMR()) {
-        this->control->startSearch();
-    }
 
     // measure
     this->control->startMeasurement();
@@ -89,16 +84,29 @@ void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QStri
 
 void MeasureBehaviorLogic::handleDecision() {
 
-    if(tryAgain()
-            || searchSMR()) {
-
+    if(tryAgain()) {
+        qDebug() << "tryAgain" << this->activeFeatureId;
+        resetDecision();
+        // aim / measure
         this->measure();
 
     } else if(skip()) {
+        qDebug() << "skip" << this->activeFeatureId;
+        resetDecision();
+        // skip
         if(this->next()) {
+            // aim / measure
             this->measure();
         }
 
+    } else if(search()) {
+        qDebug() << "search" << this->activeFeatureId;
+        resetDecision();
+        // search
+        this->control->startSearch();
+
+        // measure
+        this->control->startMeasurement();
     }
 
 }
@@ -125,14 +133,19 @@ void MeasureBehaviorLogic::setDecision(Decision decision) {
     this->decision = decision;
 }
 
+void MeasureBehaviorLogic::resetDecision() {
+    this->decision = Decision::eNotSet;
+}
+
 bool MeasureBehaviorLogic::skip() {
     return this->decision == Decision::eSkip;
 }
 
-bool MeasureBehaviorLogic::searchSMR() {
-    return this->decision == Decision::eSearchSMR;
+bool MeasureBehaviorLogic::search() {
+    return this->decision == Decision::eSearch;
 }
 
 bool MeasureBehaviorLogic::tryAgain() {
     return this->decision == Decision::eTryAgain;
 }
+
