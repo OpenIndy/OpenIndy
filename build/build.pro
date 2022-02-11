@@ -243,7 +243,8 @@ HEADERS  += \
     $$PWD/../controller/clipboardutil.h \
     $$PWD/../ui/dialogs/measurebehaviordialog.h \
     $$PWD/../controller/measurebehaviorlogic.h \
-    $$PWD/../controller/controllersensoractions.h
+    $$PWD/../controller/controllersensoractions.h \
+    $$PWD/../controller/measurebehaviortypes.h
 
 # ui files
 FORMS    += \

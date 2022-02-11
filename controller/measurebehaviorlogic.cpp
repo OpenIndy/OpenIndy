@@ -2,12 +2,13 @@
 
 MeasureBehaviorLogic::MeasureBehaviorLogic(QObject *parent) : QObject(parent), activeFeatureId(-1)
 {
+    QObject::connect(&this->measureBehaviorDialog, &MeasureBehaviorDialog::setDecision, this, &MeasureBehaviorLogic::setDecision);
     QObject::connect(&this->measureBehaviorDialog, &QDialog::accepted, this, &MeasureBehaviorLogic::handleDecision);
     QObject::connect(&this->measureBehaviorDialog, &QDialog::rejected, this, &MeasureBehaviorLogic::abortMeasurement);
 }
 
 void MeasureBehaviorLogic::init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel) {
-    this->measureBehaviorDialog.resetDecision();
+    this->decision = Decision::eNotSet;
 
     this->control = control;
     this->measureFeatures = measureFeatures;
@@ -26,7 +27,7 @@ void MeasureBehaviorLogic::measure() {
     this->control->startAim();
 
     // search
-    if(this->measureBehaviorDialog.searchSMR()) {
+    if(this->searchSMR()) {
         this->control->startSearch();
     }
 
@@ -88,12 +89,12 @@ void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QStri
 
 void MeasureBehaviorLogic::handleDecision() {
 
-    if(this->measureBehaviorDialog.tryAgain()
-            || this->measureBehaviorDialog.searchSMR()) {
+    if(tryAgain()
+            || searchSMR()) {
 
         this->measure();
 
-    } else if(this->measureBehaviorDialog.skip()) {
+    } else if(skip()) {
         if(this->next()) {
             this->measure();
         }
@@ -118,4 +119,20 @@ void MeasureBehaviorLogic::showCentered(QDialog &dialog) {
 
 void MeasureBehaviorLogic::setActiveFeature(FeatureTableModel *sourceModel, int featureId) {
     sourceModel->setActiveFeature(featureId);
+}
+
+void MeasureBehaviorLogic::setDecision(Decision decision) {
+    this->decision = decision;
+}
+
+bool MeasureBehaviorLogic::skip() {
+    return this->decision == Decision::eSkip;
+}
+
+bool MeasureBehaviorLogic::searchSMR() {
+    return this->decision == Decision::eSearchSMR;
+}
+
+bool MeasureBehaviorLogic::tryAgain() {
+    return this->decision == Decision::eTryAgain;
 }
