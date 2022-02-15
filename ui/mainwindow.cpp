@@ -1604,7 +1604,7 @@ void MainWindow::aimAndMeasureFeatures(){
         }
     }
 
-    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, &this->sensorTaskInfoDialog);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();
     }

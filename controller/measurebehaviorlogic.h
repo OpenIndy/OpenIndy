@@ -16,7 +16,7 @@ class MeasureBehaviorLogic : public QObject
 public:
     explicit MeasureBehaviorLogic(QObject *parent = 0);
 
-    void init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel);
+    void init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel, QPointer<QDialog> dialog = 0);
     bool next();
     void measure();
 
@@ -46,6 +46,8 @@ private:
     ControllerSensorActions *control;
     FeatureTableModel *sourceModel;
     QList<int> measureFeatures;
+
+    QPointer<QDialog> dialog;
 
     int activeFeatureId;
     Decision decision;
