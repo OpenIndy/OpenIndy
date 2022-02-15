@@ -363,7 +363,11 @@ void MainWindow::currentJobChanged(){
 void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
     this->sensorTaskInfoDialog.setDisplayMessage(name);
     this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
-    showCentered(this->sensorTaskInfoDialog);
+    if(this->sensorTaskInfoDialog.isVisible()){
+        this->sensorTaskInfoDialog.update();
+    } else {
+        showCentered(this->sensorTaskInfoDialog);
+    }
 }
 
 /*!
