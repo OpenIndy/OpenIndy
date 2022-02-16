@@ -376,6 +376,9 @@ private:
     QPointer<Station> getConnectedActiveStation();
     QPointer<StablePointLogic> stablePointLogic;
 
+    QPointer<QThread> sensorWorkerThread;
+    QPointer<Station> getActiveStation();
+
 };
 
 #endif // CONTROLLER_H
