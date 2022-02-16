@@ -474,6 +474,7 @@ private:
     ClipBoardUtil clipBoardUtil;
 
     MeasureBehaviorLogic measureBehaviorLogic;
+    QMessageBox commonMessageBox;
 };
 
 #endif // MAINWINDOW_H
