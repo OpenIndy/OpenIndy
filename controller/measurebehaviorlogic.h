@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QList>
 
 #include "measurebehaviordialog.h"
 #include "controllersensoractions.h"
@@ -16,7 +17,7 @@ class MeasureBehaviorLogic : public QObject
 public:
     explicit MeasureBehaviorLogic(QObject *parent = 0);
 
-    void init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel, QPointer<QDialog> dialog = 0);
+    void init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel, QList<QPointer<QDialog> > dialogs);
     bool next();
     void measure();
 
@@ -47,7 +48,7 @@ private:
     FeatureTableModel *sourceModel;
     QList<int> measureFeatures;
 
-    QPointer<QDialog> dialog;
+    QList<QPointer<QDialog> > dialogs;
 
     int activeFeatureId;
     Decision decision;

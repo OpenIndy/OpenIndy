@@ -7,14 +7,14 @@ MeasureBehaviorLogic::MeasureBehaviorLogic(QObject *parent) : QObject(parent), a
     QObject::connect(&this->measureBehaviorDialog, &QDialog::rejected, this, &MeasureBehaviorLogic::abortMeasurement);
 }
 
-void MeasureBehaviorLogic::init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel, QPointer<QDialog> dialog) {
+void MeasureBehaviorLogic::init(ControllerSensorActions *control, QList<int> measureFeatures, FeatureTableModel *sourceModel, QList<QPointer<QDialog> > dialogs) {
     this->resetDecision();
 
     this->control = control;
     this->measureFeatures = measureFeatures;
     this->sourceModel = sourceModel;
     this->activeFeatureId = -1;
-    this->dialog = dialog;
+    this->dialogs = dialogs;
 }
 
 /**
@@ -77,8 +77,12 @@ void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QStri
               && ( SensorWorkerMessage::FAILED_TO_MEASURE == msg                            // sync sensor
                    || SensorWorkerMessage::MEASUREMENT_DIT_NOT_DELIVER_ANY_RESULTS == msg)  // async sensor
               ){
-        if(!this->dialog.isNull()) {
-            this->dialog->close(); // close sensorTaskInfoDialog
+        // close / supress all unwanted dialogs
+        QList<QPointer<QDialog> >::iterator dialog;
+        for (dialog = dialogs.begin(); dialog != dialogs.end(); ++dialog){
+            if(!(*dialog).isNull()) {
+               (*dialog)->close(); // close dialog
+            }
         }
         showCentered(this->measureBehaviorDialog); // QDialog::accepted calls handleDecision() by signal / slot
     }
