@@ -1603,7 +1603,10 @@ void MainWindow::aimAndMeasureFeatures(){
         }
     }
 
-    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, &this->sensorTaskInfoDialog);
+    QList<QPointer<QDialog>> dialogsToClose;
+    dialogsToClose.append(&this->sensorTaskInfoDialog);
+    dialogsToClose.append(&this->commonMessageBox);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();
     }
