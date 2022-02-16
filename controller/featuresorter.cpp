@@ -112,6 +112,10 @@ bool FeatureSorter::lessThan(const QPointer<FeatureWrapper> &left, const QPointe
     switch(this->mode){
     case eSortStandard:
         return this->sortStandard(left, right);
+    case eSortBy_Name_ActNom:
+        return this->sortBy_Name_ActNom(left, right);
+    case eSortBy_Group_Name_ActNom:
+        return this->sortBy_Group_Name(left, right);
     }
 
     return false;
@@ -214,3 +218,28 @@ bool FeatureSorter::sortStandard(QPointer<FeatureWrapper> left, QPointer<Feature
         return leftId < rightId;
     }
 }
+
+bool FeatureSorter::sortBy_Name_ActNom(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const {
+    if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
+        return true;
+    } else if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) == 0) {
+        return left->getGeometry()->getIsNominal() < right->getGeometry()->getIsNominal();
+    }
+
+    return false;
+}
+
+bool FeatureSorter::sortBy_Group_Name(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const {
+    if(left->getFeature()->getGroupName().compare(right->getFeature()->getGroupName(), Qt::CaseInsensitive) < 0) {
+        return true;
+    } else if(left->getFeature()->getGroupName().compare(right->getFeature()->getGroupName(), Qt::CaseInsensitive) == 0) {
+        if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) < 0) {
+            return true;
+        } else if(left->getFeature()->getFeatureName().compare(right->getFeature()->getFeatureName(), Qt::CaseInsensitive) == 0) {
+            return left->getGeometry()->getIsNominal() < right->getGeometry()->getIsNominal();
+        }
+    }
+
+    return false;
+}
+

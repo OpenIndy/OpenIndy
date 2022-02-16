@@ -9,11 +9,13 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
-#include "QWindow"
-#include "QScreen"
-#include "QDialog"
+#include <QWindow>
+#include <QScreen>
+#include <QDialog>
 #include <QCompleter>
 #include <QList>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -328,6 +330,8 @@ private slots:
 
     void on_pushButton_showNextFoundFeature_clicked();
 
+    void on_comboBox_sortBy_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -355,6 +359,7 @@ private:
     void initFilterComboBoxes();
     void initStatusBar();
     void initBundleView();
+    void initFilterToolBar();
 
     //##############################
     //methods to update GUI elements

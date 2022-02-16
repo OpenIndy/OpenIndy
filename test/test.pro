@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 
-SUBDIRS = watchwindow stablepoint measurebehavior
+SUBDIRS = watchwindow stablepoint featuresorter measurebehavior

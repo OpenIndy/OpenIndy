@@ -32,7 +32,9 @@ public:
     //#############
 
     enum SortingMode{
-        eSortStandard
+        eSortStandard,                  // sort by: id, isNominal
+        eSortBy_Name_ActNom,            // sort by: featureName, isNominal
+        eSortBy_Group_Name_ActNom,      // sort by: groupName, featureName, isNominal
     };
 
     //#################################
@@ -76,6 +78,8 @@ private:
     //##############
 
     bool sortStandard(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
+    bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
+    bool sortBy_Group_Name(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
 
 };
 
