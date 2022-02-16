@@ -413,27 +413,25 @@ void MainWindow::measurementDone(bool success)
  */
 void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
 
-    QMessageBox msgBox;
-
     switch(msgType){
     case eInformationMessage:
-        msgBox.setIcon(QMessageBox::Information);
+        commonMessageBox.setIcon(QMessageBox::Information);
         break;
     case eWarningMessage:
-        msgBox.setIcon(QMessageBox::Warning);
+        commonMessageBox.setIcon(QMessageBox::Warning);
         break;
     case eErrorMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     case eCriticalMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     }
 
-    msgBox.setText(msg);
-    msgBox.setStandardButtons(QMessageBox::Ok);
+    commonMessageBox.setText(msg);
+    commonMessageBox.setStandardButtons(QMessageBox::Ok);
 
-    msgBox.exec();
+    commonMessageBox.exec();
 
 }
 
