@@ -1032,7 +1032,6 @@ void Controller::startConnect(){
     emit this->sensorActionStarted("connecting sensor...");
 
     //connect sensor
-    activeStation->setSensorWorkerThread(this->sensorWorkerThread);
     activeStation->connectSensor();
 
 }
