@@ -45,6 +45,10 @@ Controller::Controller(QObject *parent) : QObject(parent){
     this->connectFeatureUpdater();
     this->connectRequestHandler();
 
+    this->sensorWorkerThread = new QThread();
+    this->sensorWorkerThread->setObjectName("Sensor Worker");
+    this->sensorWorkerThread->start();
+
 }
 
 /*!
@@ -61,6 +65,13 @@ Controller::~Controller(){
     QPointer<Console> console = Console::getInstance();
     if(!console.isNull()) {
         delete Console::getInstance().data();
+    }
+
+    if(!this->sensorWorkerThread.isNull()) {
+        if(this->sensorWorkerThread->isRunning()) {
+            this->sensorWorkerThread->quit();
+            this->sensorWorkerThread->wait();
+        }
     }
 
 
@@ -243,7 +254,7 @@ void Controller::setSensorConfig(const SensorConfiguration &sConfig, bool connec
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
@@ -298,7 +309,7 @@ void Controller::removeActiveStationSensor(){
     }
 
     //get and check active station
-    QPointer<Station> station = this->job->getActiveStation();
+    QPointer<Station> station = this->getActiveStation();
     if(station.isNull()){
         return;
     }
@@ -343,7 +354,7 @@ void Controller::sensorConfigurationUpdated(const SensorConfiguration &sConfig){
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
@@ -1011,7 +1022,7 @@ void Controller::startConnect(){
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
@@ -1021,6 +1032,7 @@ void Controller::startConnect(){
     emit this->sensorActionStarted("connecting sensor...");
 
     //connect sensor
+    activeStation->setSensorWorkerThread(this->sensorWorkerThread);
     activeStation->connectSensor();
 
 }
@@ -1036,7 +1048,7 @@ void Controller::startDisconnect(){
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
@@ -1047,7 +1059,6 @@ void Controller::startDisconnect(){
 
     //disconnect sensor
     activeStation->disconnectSensor();
-
 }
 
 void Controller::startMeasurement(){
@@ -1158,7 +1169,7 @@ void Controller::startAim(){
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
@@ -1250,7 +1261,7 @@ void Controller::startAimAndMeasure(){
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull() || activeStation->getCoordinateSystem().isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return;
@@ -1438,7 +1449,7 @@ QPointer<Station> Controller::getConnectedActiveStation() {
     }
 
     //get and check active station
-    QPointer<Station> activeStation = this->job->getActiveStation();
+    QPointer<Station> activeStation = this->getActiveStation();
     if(activeStation.isNull()){
         this->log("No active station", eErrorMessage, eMessageBoxMessage);
         return 0;
@@ -1450,6 +1461,14 @@ QPointer<Station> Controller::getConnectedActiveStation() {
         return 0;
     }
 
+    return activeStation;
+}
+
+QPointer<Station> Controller::getActiveStation() {
+    QPointer<Station> activeStation = this->job->getActiveStation();
+    if(!activeStation.isNull()) {
+        activeStation->setSensorWorkerThread(this->sensorWorkerThread);
+    }
     return activeStation;
 }
 
