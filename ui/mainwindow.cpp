@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
+    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
+
     //initially resize table view to fit the default job
     this->resizeTableView();
 
@@ -362,7 +364,11 @@ void MainWindow::currentJobChanged(){
 void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
     this->sensorTaskInfoDialog.setDisplayMessage(name);
     this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
-    showCentered(this->sensorTaskInfoDialog);
+    if(this->sensorTaskInfoDialog.isVisible()){
+        this->sensorTaskInfoDialog.repaint();
+    } else {
+        showCentered(this->sensorTaskInfoDialog);
+    }
 }
 
 /*!
@@ -381,29 +387,6 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
  * Called whenever a measurement task was successfully completed
  */
 void MainWindow::measurementCompleted(){
-
-    //get feature table models
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
-    if(job.isNull()){
-        return;
-    }
-
-    //check wether there are more features left, that shall be aimed and measured
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
-    }
 
 }
 
@@ -430,27 +413,25 @@ void MainWindow::measurementDone(bool success)
  */
 void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
 
-    QMessageBox msgBox;
-
     switch(msgType){
     case eInformationMessage:
-        msgBox.setIcon(QMessageBox::Information);
+        commonMessageBox.setIcon(QMessageBox::Information);
         break;
     case eWarningMessage:
-        msgBox.setIcon(QMessageBox::Warning);
+        commonMessageBox.setIcon(QMessageBox::Warning);
         break;
     case eErrorMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     case eCriticalMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     }
 
-    msgBox.setText(msg);
-    msgBox.setStandardButtons(QMessageBox::Ok);
+    commonMessageBox.setText(msg);
+    commonMessageBox.setStandardButtons(QMessageBox::Ok);
 
-    msgBox.exec();
+    commonMessageBox.exec();
 
 }
 
@@ -1612,23 +1593,23 @@ void MainWindow::aimAndMeasureFeatures(){
         return;
     }
 
-    //get selected features
-    this->measureFeatures.clear();
+    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
+    QList<int> measureFeatures;
     QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
     foreach(const QModelIndex &index, selection){
         int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-        if(id >= 0 && !this->measureFeatures.contains(id)){
-            this->measureFeatures.append(id);
+        if(id >= 0 && !measureFeatures.contains(id)){
+            measureFeatures.append(id);
         }
     }
 
-    //aim and measure the first feature in the list of selected features
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
+    QList<QPointer<QDialog>> dialogsToClose;
+    dialogsToClose.append(&this->sensorTaskInfoDialog);
+    dialogsToClose.append(&this->commonMessageBox);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
+    if(this->measureBehaviorLogic.next()) {
+        this->measureBehaviorLogic.measure();
     }
-
 }
 
 /*!
@@ -2322,6 +2303,10 @@ void MainWindow::initSensorPad(){
     this->actionCompensation = new QAction(0);
     this->actionCompensation->setText("compensation");
 
+    this->actionSearch = new QAction(0);
+    this->actionSearch->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+    this->actionSearch->setText("search (Alt + S)");
+
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
     this->ui->toolBar_controlPad->addAction(this->actionDisconnect);
@@ -2333,6 +2318,7 @@ void MainWindow::initSensorPad(){
     this->ui->toolBar_controlPad->addAction(this->actionChangeMotorState);
     this->ui->toolBar_controlPad->addAction(this->actionToggleSightOrientation);
     this->ui->toolBar_controlPad->addAction(this->actionCompensation);
+    this->ui->toolBar_controlPad->addAction(this->actionSearch);
 
     //disable and hide actions as default
     this->actionConnect->setVisible(false);
@@ -2355,6 +2341,8 @@ void MainWindow::initSensorPad(){
     this->actionToggleSightOrientation->setEnabled(false);
     this->actionCompensation->setVisible(false);
     this->actionCompensation->setEnabled(false);
+    this->actionSearch->setVisible(false);
+    this->actionSearch->setEnabled(false);
 
     //connect actions
     QObject::connect(this->actionConnect, &QAction::triggered, &this->control, &Controller::startConnect, Qt::AutoConnection);
@@ -2367,6 +2355,7 @@ void MainWindow::initSensorPad(){
     QObject::connect(this->actionToggleSightOrientation, &QAction::triggered, &this->control, &Controller::startToggleSight, Qt::AutoConnection);
     QObject::connect(this->actionCompensation, &QAction::triggered, &this->control, &Controller::startCompensation, Qt::AutoConnection);
     QObject::connect(this->actionMove, &QAction::triggered, this, &MainWindow::showMoveSensorDialog, Qt::AutoConnection);
+    QObject::connect(this->actionSearch, &QAction::triggered, &this->control, &Controller::startSearch, Qt::AutoConnection);
 
 }
 
@@ -2512,6 +2501,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionToggleSightOrientation->setEnabled(true);
         this->actionCompensation->setVisible(true);
         this->actionCompensation->setEnabled(true);
+        this->actionSearch->setVisible(supportedActions.contains(SensorFunctions::eSearch));
+        this->actionSearch->setEnabled(supportedActions.contains(SensorFunctions::eSearch));
 
         break;
 

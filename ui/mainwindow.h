@@ -51,6 +51,8 @@
 #include "projectconfig.h"
 #include "clipboardutil.h"
 
+#include "measurebehaviorlogic.h"
+
 #include <QSound>
 using namespace oi;
 
@@ -70,7 +72,6 @@ public:
     ~MainWindow();
 
     void loadProjectFile(QString file);
-
 signals:
 
     //###################################
@@ -434,6 +435,7 @@ private:
     QAction *actionChangeMotorState;
     QAction *actionToggleSightOrientation;
     QAction *actionCompensation;
+    QAction *actionSearch;
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
@@ -459,9 +461,6 @@ private:
     //helper attributes
     //#################
 
-    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
-    QList<int> measureFeatures;
-
     void enableOrDisableObservationsOfActiveFeature(bool);
 
     void showCentered(QDialog &dialog);
@@ -473,6 +472,9 @@ private:
     int showFoundFeatureIndex;
 
     ClipBoardUtil clipBoardUtil;
+
+    MeasureBehaviorLogic measureBehaviorLogic;
+    QMessageBox commonMessageBox;
 };
 
 #endif // MAINWINDOW_H

@@ -22,17 +22,9 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 
 # test dependencies
-INCLUDEPATH += \
-    $$PWD/../../controller \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin \
-    $$PWD/../../lib/OpenIndy-Core/include/util \
-    $$PWD/../../lib/OpenIndy-Core/include \
-    $$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/include \
-    $$PWD/../../lib/OpenIndy-Core/include/geometry \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/function \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/simulation \
-    $$PWD/../../lib/OpenIndy-Core/include/plugin/sensor \
-    $$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/include
+include($$PWD/../../build/includes.pri)
+include($$PWD/../../lib/OpenIndy-Core/build/includes.pri)
+include($$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/build/includes.pri)
 
 # test dependencies
 SOURCES += \

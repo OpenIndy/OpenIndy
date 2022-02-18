@@ -30,13 +30,14 @@
 #include "oiwebsocketserver.h"
 #include "projectconfig.h"
 #include "stablepointlogic.h"
+#include "controllersensoractions.h"
 
 using namespace oi;
 
 /*!
  * \brief The Controller class
  */
-class Controller : public QObject
+class Controller : public QObject, public ControllerSensorActions
 {
     Q_OBJECT
 
@@ -60,6 +61,9 @@ public:
     void startStablePointMeasurement();// TODO OI-496: signal / slot?
 
     bool activeFeatureUseStablePointMeasurement(); // TODO OI-496: private ?
+
+private slots:
+    void startAimAndMeasure();
 
 public slots:
 
@@ -136,7 +140,6 @@ public slots:
     void startMeasurement();
     void startMove(const Reading &reading);
     void startAim();
-    void startAimAndMeasure();
     void startToggleSight();
     void startInitialize();
     void startHome();
@@ -146,6 +149,7 @@ public slots:
     void startReadingStream(ReadingTypes streamFormat);
     void stopReadingStream();
     void finishMeasurement();
+    void startSearch();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
@@ -371,6 +375,9 @@ private:
 
     QPointer<Station> getConnectedActiveStation();
     QPointer<StablePointLogic> stablePointLogic;
+
+    QPointer<QThread> sensorWorkerThread;
+    QPointer<Station> getActiveStation();
 
 };
 
