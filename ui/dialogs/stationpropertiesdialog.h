@@ -15,6 +15,7 @@
 #include "sensorparametersdelegate.h"
 
 #include "sensorconfiguration.h"
+#include "clipboardutil.h"
 
 namespace Ui {
 class StationPropertiesDialog;
@@ -54,6 +55,8 @@ signals:
 
     //save changes made to the sensor config
     void sensorConfigurationChanged(const SensorConfiguration &sConfig);
+
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
 
 private slots:
 
@@ -107,6 +110,8 @@ private:
 
     SensorConfiguration sConfig;
     bool isActiveStation;
+
+    ClipBoardUtil clipBoardUtil;
 
 };
 

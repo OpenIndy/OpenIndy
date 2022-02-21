@@ -28,9 +28,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initFilterComboBoxes();
     this->initStatusBar();
     this->initBundleView();
+    this->initFilterToolBar();
 
     //connect bundle view
     this->connectBundleView();
+
+    QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
+
+    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -359,7 +364,11 @@ void MainWindow::currentJobChanged(){
 void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
     this->sensorTaskInfoDialog.setDisplayMessage(name);
     this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
-    showCentered(this->sensorTaskInfoDialog);
+    if(this->sensorTaskInfoDialog.isVisible()){
+        this->sensorTaskInfoDialog.repaint();
+    } else {
+        showCentered(this->sensorTaskInfoDialog);
+    }
 }
 
 /*!
@@ -378,29 +387,6 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
  * Called whenever a measurement task was successfully completed
  */
 void MainWindow::measurementCompleted(){
-
-    //get feature table models
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
-    if(job.isNull()){
-        return;
-    }
-
-    //check wether there are more features left, that shall be aimed and measured
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
-    }
 
 }
 
@@ -427,27 +413,25 @@ void MainWindow::measurementDone(bool success)
  */
 void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
 
-    QMessageBox msgBox;
-
     switch(msgType){
     case eInformationMessage:
-        msgBox.setIcon(QMessageBox::Information);
+        commonMessageBox.setIcon(QMessageBox::Information);
         break;
     case eWarningMessage:
-        msgBox.setIcon(QMessageBox::Warning);
+        commonMessageBox.setIcon(QMessageBox::Warning);
         break;
     case eErrorMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     case eCriticalMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     }
 
-    msgBox.setText(msg);
-    msgBox.setStandardButtons(QMessageBox::Ok);
+    commonMessageBox.setText(msg);
+    commonMessageBox.setStandardButtons(QMessageBox::Ok);
 
-    msgBox.exec();
+    commonMessageBox.exec();
 
 }
 
@@ -1609,23 +1593,23 @@ void MainWindow::aimAndMeasureFeatures(){
         return;
     }
 
-    //get selected features
-    this->measureFeatures.clear();
+    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
+    QList<int> measureFeatures;
     QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
     foreach(const QModelIndex &index, selection){
         int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-        if(id >= 0 && !this->measureFeatures.contains(id)){
-            this->measureFeatures.append(id);
+        if(id >= 0 && !measureFeatures.contains(id)){
+            measureFeatures.append(id);
         }
     }
 
-    //aim and measure the first feature in the list of selected features
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
+    QList<QPointer<QDialog>> dialogsToClose;
+    dialogsToClose.append(&this->sensorTaskInfoDialog);
+    dialogsToClose.append(&this->commonMessageBox);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
+    if(this->measureBehaviorLogic.next()) {
+        this->measureBehaviorLogic.measure();
     }
-
 }
 
 /*!
@@ -1712,93 +1696,47 @@ void MainWindow::deleteFeatures(bool checked){
 void MainWindow::copyToClipboard(){
 
     //init variables
-    QAbstractItemModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QAbstractItemModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
 
     //get selection of the active table view
+    // keep order of if statments
     if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-        selection = selectionModel->selectedIndexes();
-    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view: copy displayed values or feature id !
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
-        selection = selectionModel->selectedIndexes();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
-        selection = selectionModel->selectedIndexes();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eTrafoParamDisplayFunctions == ModelManager::getTrafoParamTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
         model = this->ui->tableView_bundleParameter->model();
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
-        selection = selectionModel->selectedIndexes();
-    }else if(this->ui->dockWidget_differences->isActiveWindow()){
+    } else if(this->ui->dockWidget_differences->isActiveWindow()){
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-        selection = selectionModel->selectedIndexes();
     }
 
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
+    if(isFunctionColumnSelected) {
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy function","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy function");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
-        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
-
-        if(functionColumn == eFeatureDisplayFunctions) {
-
-            int activeFeatureID = this->control.getActiveFeature()->getFeature()->getId();
-            QString copy_table;
-            copy_table.append(QString::number(activeFeatureID));
-            copy_table.append("\n");
-
-            QClipboard *clipboard = QApplication::clipboard();
-            clipboard->clear();
-            clipboard->setText(copy_table);
-
-            return;
-        }
+    } else { // common case: copy displayed values
+        clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
     }
 
-    //check and sort selection
-    if(selection.size() <= 0){
-        return;
-    }
-    qSort(selection);
-
-    //###############################
-    //copy the selection to clipboard
-    //###############################
-
-    QString copy_table;
-    QModelIndex last = selection.last();
-    QModelIndex previous = selection.first();
-    selection.removeFirst();
-
-    //loop over all selected rows and columns
-    for(int i = 0; i < selection.size(); i++){
-
-        QVariant data = model->data(previous);
-        QString text = data.toString();
-
-        QModelIndex index = selection.at(i);
-        copy_table.append(text);
-
-        //if new line
-        if(index.row() != previous.row()){
-            copy_table.append("\n");
-        }else{ //if same line, but new column
-            copy_table.append("\t");
-        }
-        previous = index;
-    }
-
-    //get last selected cell
-    copy_table.append(model->data(last).toString());
-    copy_table.append("\n");
-
-    //set values to clipboard, so you can paste them elsewhere
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(copy_table);
 }
 
 /*!
@@ -1807,157 +1745,127 @@ void MainWindow::copyToClipboard(){
 void MainWindow::copyDifferencesToClipboard()
 {
     //init variables
-    QAbstractItemModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QAbstractItemModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
 
     model = this->ui->tableView_FeatureDifferences->model();
     selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-    selection = selectionModel->selectedIndexes();
 
-    //check and sort selection
-    if(selection.size() <= 0){
-        return;
-    }
-    qSort(selection);
-
-    //###############################
-    //copy the selection to clipboard
-    //###############################
-
-    QString copy_table;
-    QModelIndex last = selection.last();
-    QModelIndex previous = selection.first();
-    selection.removeFirst();
-
-    //loop over all selected rows and columns
-    for(int i = 0; i < selection.size(); i++){
-
-        QVariant data = model->data(previous);
-        QString text = data.toString();
-
-        QModelIndex index = selection.at(i);
-        copy_table.append(text);
-
-        //if new line
-        if(index.row() != previous.row()){
-            copy_table.append("\n");
-        }else{ //if same line, but new column
-            copy_table.append("\t");
-        }
-        previous = index;
-    }
-
-    //get last selected cell
-    copy_table.append(model->data(last).toString());
-    copy_table.append("\n");
-
-    //set values to clipboard, so you can paste them elsewhere
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->clear();
-    clipboard->setText(copy_table);
+    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 }
 
 /*!
  * \brief MainWindow::pasteFromClipboard
  */
 void MainWindow::pasteFromClipboard(){
+    enum ProxyModelType {
+        eFeatureTable,
+        eTrafoParamTable,
+        eBundleParameterTable
+    };
 
     //init variables
-    QSortFilterProxyModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QSortFilterProxyModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
 
+    ProxyModelType proxyModelType;
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
-
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_features->selectionModel();
-
+        proxyModelType = ProxyModelType::eFeatureTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
-
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
-
+        proxyModelType = ProxyModelType::eTrafoParamTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
-
         model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        proxyModelType = ProxyModelType::eBundleParameterTable;
     }
 
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
+    if(model.isNull()){
+        qDebug() << "no model selected";
+        return;
+    }
+
+    //get and check destination model (in the sense of copy target) the sourceModel of all upper proxy models is FeatureTableModel
+    QPointer<FeatureTableModel> featureTabelModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(featureTabelModel.isNull()){
+        qDebug() << "no destination model avialable";
         return;
     }
 
     //get selected indexes
-    selection = selectionModel->selectedIndexes();
+    QModelIndexList selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
         emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
+
+    if(isFunctionColumnSelected && selection.size() > 1) {
+        emit this->log("Only select one feature to paste functions to.", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
     qSort(selection);
 
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
-        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
-
-        if(functionColumn == eFeatureDisplayFunctions){
-
-            if(selection.size() > 1){
-                QMessageBox msgBox;
-                msgBox.setText("Only select one feature to paste functions to.");
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setDefaultButton(QMessageBox::Ok);
-                int ret = msgBox.exec();
-                return;
-            }
-        }
-    }
-
     //get values from clipboard, so you can copy them
+    QStringList rows;
     QClipboard *clipboard = QApplication::clipboard();
-    QString copy_table = clipboard->text();
+    QString content = clipboard->text();
 
-    //seperate copy table into columns: only one column is allowed
-    QStringList columns = copy_table.split('\t');
-    if(columns.size() != 1){
-        return;
-    }
+    QJsonDocument document = QJsonDocument::fromJson(content.toUtf8());
+    if(document.isObject()) { // check if content is JSON
+        QJsonObject object = document.object();
+        isFunctionColumnSelected = object.value("action").toString() == "copy function";
+        rows.append(QString::number(object.value("id").toInt()));
 
-    //seperate copy table into rows: either one or selection.size rows are allowed
-    QStringList rows = copy_table.split('\n');
-    if(rows.size() != 2 && rows.size() != selection.size()+1){
-        return;
+    } else { // otherwise the content will be accepted as CSV data
+        //seperate copy table into columns: only one column is allowed
+        QStringList columns = content.split('\t');
+        if(columns.size() != 1){
+            return;
+        }
+
+        //seperate copy table into rows: either one or selection.size rows are allowed
+        rows = content.split('\n');
+        if(rows.size() != 2 && rows.size() != selection.size()+1){
+            return;
+        }
+        rows.removeLast();
     }
-    rows.removeLast();
 
     //edit entries at selected indexes
     if(rows.size() == 1){
+
+        if( proxyModelType == ProxyModelType::eTrafoParamTable
+                && isFunctionColumnSelected) {
+
+            QMessageBox msgBox;
+            msgBox.setText("Do you really want to replace existing functions?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            if(QMessageBox::Yes != msgBox.exec()) {
+                return;
+            }
+        }
+
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(0));
+            featureTabelModel->setData( model->mapToSource(currentIndex),
+                                rows.at(0),
+                                Qt::EditRole,
+                                isFunctionColumnSelected
+                                    ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams | FeatureTableModel::EditMode::eFunctionCopyUsedElements
+                                    : FeatureTableModel::EditMode::eDefault);
         }
     }else{
         int i = 0;
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            featureTabelModel->setData(model->mapToSource(currentIndex), rows.at(i));
             i++;
         }
     }
@@ -2180,6 +2088,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::measurementDone, this, &MainWindow::autoSwitchToNextFeature, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::sensorStatus, this, &MainWindow::showStatusSensor, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
@@ -2240,6 +2149,7 @@ void MainWindow::connectDialogs(){
     //connect actual properties dialog
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::importObservations, &this->control, &Controller::importObservations, Qt::AutoConnection);
     QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::removeObservationsById, &this->control, &Controller::removeObservationsById, Qt::AutoConnection);
+    QObject::connect(&this->actualPropertiesDialog, &ActualPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     //connect nominal properties dialog
     QObject::connect(&this->nominalPropertiesDialog, &NominalPropertiesDialog::nominalParametersChanged, &this->control, &Controller::setNominalParameters, Qt::AutoConnection);
@@ -2250,6 +2160,7 @@ void MainWindow::connectDialogs(){
     //connect station properties dialog
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
+    QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     // connect SensorTaskInfo dialog
     QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
@@ -2392,6 +2303,10 @@ void MainWindow::initSensorPad(){
     this->actionCompensation = new QAction(0);
     this->actionCompensation->setText("compensation");
 
+    this->actionSearch = new QAction(0);
+    this->actionSearch->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+    this->actionSearch->setText("search (Alt + S)");
+
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
     this->ui->toolBar_controlPad->addAction(this->actionDisconnect);
@@ -2403,6 +2318,7 @@ void MainWindow::initSensorPad(){
     this->ui->toolBar_controlPad->addAction(this->actionChangeMotorState);
     this->ui->toolBar_controlPad->addAction(this->actionToggleSightOrientation);
     this->ui->toolBar_controlPad->addAction(this->actionCompensation);
+    this->ui->toolBar_controlPad->addAction(this->actionSearch);
 
     //disable and hide actions as default
     this->actionConnect->setVisible(false);
@@ -2425,6 +2341,8 @@ void MainWindow::initSensorPad(){
     this->actionToggleSightOrientation->setEnabled(false);
     this->actionCompensation->setVisible(false);
     this->actionCompensation->setEnabled(false);
+    this->actionSearch->setVisible(false);
+    this->actionSearch->setEnabled(false);
 
     //connect actions
     QObject::connect(this->actionConnect, &QAction::triggered, &this->control, &Controller::startConnect, Qt::AutoConnection);
@@ -2437,6 +2355,7 @@ void MainWindow::initSensorPad(){
     QObject::connect(this->actionToggleSightOrientation, &QAction::triggered, &this->control, &Controller::startToggleSight, Qt::AutoConnection);
     QObject::connect(this->actionCompensation, &QAction::triggered, &this->control, &Controller::startCompensation, Qt::AutoConnection);
     QObject::connect(this->actionMove, &QAction::triggered, this, &MainWindow::showMoveSensorDialog, Qt::AutoConnection);
+    QObject::connect(this->actionSearch, &QAction::triggered, &this->control, &Controller::startSearch, Qt::AutoConnection);
 
 }
 
@@ -2485,6 +2404,13 @@ void MainWindow::initFilterComboBoxes(){
     this->updateGroupFilterSize();
     this->updateSystemFilterSize();
     this->updateActualNominalFilterSize();
+}
+
+void MainWindow::initFilterToolBar() {
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_orderBy);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_activeCoordSystem);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_filter);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_search);
 }
 
 /*!
@@ -2575,6 +2501,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionToggleSightOrientation->setEnabled(true);
         this->actionCompensation->setVisible(true);
         this->actionCompensation->setEnabled(true);
+        this->actionSearch->setVisible(supportedActions.contains(SensorFunctions::eSearch));
+        this->actionSearch->setEnabled(supportedActions.contains(SensorFunctions::eSearch));
 
         break;
 
@@ -2660,12 +2588,12 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
 
     //add new self defined actions
     foreach(const QString &action, selfDefinedActions){
-        QRegExp rx("([\\w]+)([\\w\(\\)\\+]*)"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
+        QRegExp rx("([\\w ]+)(\\(([\\w]+\\+[\\w]+)\\))?"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
         rx.setPatternSyntax(QRegExp::RegExp);
         rx.indexIn(action);
 
-        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(2).replace("(", "").replace(")",""));
-        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(2).isEmpty() ? "" : QString(" %1").arg(rx.cap(2)));
+        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(3));
+        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(3).isEmpty() ? "" : " " + rx.cap(2));
         QString actionCommand = rx.cap(1);
 
         QPointer<QAction> customAction = new QAction(0);
@@ -3129,18 +3057,25 @@ void MainWindow::updateCompleter() {
             return;
         }
 
-        int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        int featureNameColumn = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        int groupNameColumn = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayGroup);
         QStringList featureNames;
+        QStringList groupNames;
         for(int row=0; row < model->rowCount(); row++) {
-            QString name = model->data(model->index(row,column), Qt::DisplayRole).toString();
-            if(!featureNames.contains(name)) {
-                featureNames.append(name);
+            QString featureName = model->data(model->index(row,featureNameColumn), Qt::DisplayRole).toString();
+            if(!featureNames.contains(featureName)) {
+                featureNames.append(featureName);
+            }
+            QString groupName = model->data(model->index(row,groupNameColumn), Qt::DisplayRole).toString();
+            if(!groupNames.contains(groupName) && !groupName.isNull() && !groupName.isEmpty()) {
+                groupNames.append(groupName);
             }
         }
         QCompleter *completer = new QCompleter(featureNames, this);
         completer->setFilterMode(Qt::MatchContains);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         this->ui->lineEdit_searchFeatureName->setCompleter(completer);
+
     }
 }
 
@@ -3148,7 +3083,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
 {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
+        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text(), true);
 
         this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size()>1);
 
@@ -3181,11 +3116,11 @@ void MainWindow::showFoundFeature(int index) {
                 QModelIndex index = model->index(row,column);
                 QString name = model->data(index, Qt::DisplayRole).toString();
                 if(name == feature->getFeature()->getFeatureName()) {
+                    feature->getFeature()->setActiveFeatureState(true);
                     this->ui->tableView_features->scrollTo(index);
+                    this->ui->tableView_features->viewport()->update(); // redraw the viewport so that only the active feature is highlighted
                 }
             }
-
-            sourceModel->setActiveFeature(feature->getFeature()->getId());
 
         }
     }
@@ -3199,4 +3134,28 @@ void MainWindow::on_pushButton_showNextFoundFeature_clicked()
         showFoundFeatureIndex = 0; // wrap around
     }
     showFoundFeature(showFoundFeatureIndex);
+}
+
+void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg) {
+    switch(status){
+    case SensorStatus::eReadyForMeasurement:
+        this->label_statusSensor->setStyleSheet("QLabel { background-color : lightgreen;}");
+        break;
+     case SensorStatus::eNotReadyForMeasurement:
+        this->label_statusSensor->setStyleSheet("QLabel { background-color : red;}");
+        break;
+     }
+     this->label_statusSensor->setText(msg);
+ }
+
+void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
+{
+
+    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(model == NULL){
+        return;
+    }
+
+    model->setSortingMode((FeatureSorter::SortingMode)index);
+
 }

@@ -100,6 +100,12 @@ QModelIndex FeatureTableProxyModel::mapToSource(const QModelIndex &proxyIndex) c
 
 }
 
+void FeatureTableProxyModel::setSortingMode(FeatureSorter::SortingMode mode)
+{
+    this->sorter.setSortingMode(mode);
+    this->invalidate();
+}
+
 /*!
  * \brief FeatureTableProxyModel::filterAcceptsRow
  * Filter features by group name and feature type

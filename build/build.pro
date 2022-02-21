@@ -23,21 +23,7 @@ include($$PWD/config.pri)
 include($$PWD/dependencies.pri)
 
 # include paths
-INCLUDEPATH += \
-    $$PWD/.. \
-    $$PWD/../models \
-    $$PWD/../models/treeitems \
-    $$PWD/../controller \
-    $$PWD/../controller/config \
-    $$PWD/../controller/exchange \
-    $$PWD/../controller/param \
-    $$PWD/../controller/network \
-    $$PWD/../ui \
-    $$PWD/../ui/delegates \
-    $$PWD/../ui/dialogs \
-    $$PWD/../ui/widgets \
-    $$PWD/../ui/actions \
-    $$PWD/../ui/selectionmodels
+include($$PWD/includes.pri)
 
 # source files
 SOURCES += \
@@ -144,7 +130,10 @@ SOURCES += \
     $$PWD/../controller/config/projectconfig.cpp \
     $$PWD/../ui/dialogs/uiutil.cpp \
     $$PWD/../controller/stablepointlogic.cpp \
-    $$PWD/../ui/dialogs/showlicensesdialog.cpp
+    $$PWD/../ui/dialogs/showlicensesdialog.cpp \
+    $$PWD/../controller/clipboardutil.cpp \
+    $$PWD/../ui/dialogs/measurebehaviordialog.cpp \
+    $$PWD/../controller/measurebehaviorlogic.cpp
 
 # header files
 HEADERS  += \
@@ -250,7 +239,12 @@ HEADERS  += \
     $$PWD/../controller/config/projectconfig.h \
     $$PWD/../ui/dialogs/uiutil.h \
     $$PWD/../controller/stablepointlogic.h \
-    $$PWD/../ui/dialogs/showlicensesdialog.h
+    $$PWD/../ui/dialogs/showlicensesdialog.h \
+    $$PWD/../controller/clipboardutil.h \
+    $$PWD/../ui/dialogs/measurebehaviordialog.h \
+    $$PWD/../controller/measurebehaviorlogic.h \
+    $$PWD/../controller/controllersensoractions.h \
+    $$PWD/../controller/measurebehaviortypes.h
 
 # ui files
 FORMS    += \
@@ -273,7 +267,8 @@ FORMS    += \
     $$PWD/../ui/dialogs/trafoparampropertiesdialog.ui \
     $$PWD/../ui/dialogs/stationpropertiesdialog.ui \
     $$PWD/../ui/dialogs/exportdialog.ui \
-    $$PWD/../ui/dialogs/showlicensesdialog.ui
+    $$PWD/../ui/dialogs/showlicensesdialog.ui \
+    $$PWD/../ui/dialogs/measurebehaviordialog.ui
 
 # resource files
 RESOURCES += \

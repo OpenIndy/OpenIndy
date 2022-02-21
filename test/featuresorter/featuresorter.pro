@@ -9,33 +9,48 @@ QT       += testlib xml
 
 QT       -= gui
 
-TARGET = tst_watchwindowtest
+TARGET = featuresortertest
 CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
 
 
-SOURCES += tst_watchwindowtest.cpp
+SOURCES += featuresortertest.cpp
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 
 # test dependencies
-include($$PWD/../../build/includes.pri)
-include($$PWD/../../lib/OpenIndy-Core/build/includes.pri)
-include($$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/build/includes.pri)
-
-# test dependencies
-SOURCES += \
-    $$PWD/../../ui/dialogs/watchwindowutil.cpp
-
+INCLUDEPATH += \
+    $$PWD/../../controller \
+    $$PWD/../../controller/config \
+    $$PWD/../../lib/OpenIndy-Core/include/util \
+    $$PWD/../../lib/OpenIndy-Core/include \
+    $$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/include \
+    $$PWD/../../lib/OpenIndy-Core/include/geometry \
+    $$PWD/../../lib/OpenIndy-Core/include/plugin/ \
+    $$PWD/../../lib/OpenIndy-Core/include/plugin/function \
+    $$PWD/../../lib/OpenIndy-Core/include/plugin/simulation \
+    $$PWD/../../lib/OpenIndy-Core/include/plugin/sensor
 
 CONFIG(debug, debug|release) {
     BUILD_DIR=debug
 } else {
     BUILD_DIR=release
 }
+# test dependencies
+SOURCES += \
+    $$PWD/../../controller/featuresorter.cpp \
+    $$PWD/../../controller/config/featuretablesortingconfig.cpp
 
+# test dependencies
+HEADERS +=  \
+    $$PWD/../../controller/featuresorter.h \
+    $$PWD/../../controller/config/featuretablesortingconfig.h
+
+#INCLUDEPATH += \
+#    $$PWD/../..
 
 # test dependencies as libraries
 linux-g++ {

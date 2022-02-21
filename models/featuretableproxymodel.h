@@ -42,6 +42,8 @@ public:
     QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
     QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
 
+    void setSortingMode(FeatureSorter::SortingMode mode);
+
 signals:
 
     //#########################

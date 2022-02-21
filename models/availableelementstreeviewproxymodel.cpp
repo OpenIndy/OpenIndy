@@ -6,6 +6,7 @@
  */
 AvailableElementsTreeViewProxyModel::AvailableElementsTreeViewProxyModel(QObject *parent) : QSortFilterProxyModel(parent){
     this->resetSelectedFunctionPosition();
+    this->setSortCaseSensitivity(Qt::CaseInsensitive);
 }
 
 /*!
@@ -316,46 +317,77 @@ bool AvailableElementsTreeViewProxyModel::filterAcceptsRow(int source_row, const
 
     //get feature tree item
     QPointer<FeatureTreeItem> item(NULL);
-    if(!source_parent.isValid()){ //parent is root item
-        FeatureTreeViewModel *model = dynamic_cast<FeatureTreeViewModel*>(this->sourceModel());
-        if(model != NULL && !model->getRootItem().isNull() && source_row < model->getRootItem()->getChildCount()){
-            item = model->getRootItem()->getChild(source_row);
+    {
+        if(!source_parent.isValid()){ //parent is root item
+            FeatureTreeViewModel *model = dynamic_cast<FeatureTreeViewModel*>(this->sourceModel());
+            if(model != NULL && !model->getRootItem().isNull() && source_row < model->getRootItem()->getChildCount()){
+                item = model->getRootItem()->getChild(source_row);
+            }
+        }else{
+            FeatureTreeItem *parent = static_cast<FeatureTreeItem*>(source_parent.internalPointer());
+            if(parent != NULL && source_row < parent->getChildCount()){
+                item = parent->getChild(source_row);
+            }
         }
-    }else{
-        FeatureTreeItem *parent = static_cast<FeatureTreeItem*>(source_parent.internalPointer());
-        if(parent != NULL && source_row < parent->getChildCount()){
-            item = parent->getChild(source_row);
+        if(item.isNull()){ // leave method if false / ignore item
+            return false;
         }
     }
-    if(item.isNull()){
-        return false;
+
+    { // check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
+        bool accept = true;
+        if(item->getElementType() == neededElementType){
+
+            //check if the element equals the feature to be calculated
+            if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+                accept = feature->getId() != item->getFeature()->getFeature()->getId();
+            }
+
+            //check if function already contains the element
+            QMap<int, QList<InputElement> > inputElements = function->getInputElements();
+            if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
+                accept = !inputElements.contains(item->getFeature()->getFeature()->getId());
+            }else if(item->getIsObservation() && !item->getObservation().isNull()){
+                accept = !inputElements.contains(item->getObservation()->getId());
+            }else if(item->getIsReading() && !item->getReading().isNull()){
+                accept = !inputElements.contains(item->getReading()->getId());
+            }
+
+        }
+        if(!accept) { // leave method if false / ignore item
+            return false;
+        }
     }
-    ElementTypes e = item->getElementType();
-    //check wether the item's type equals the needed element type but the item is already used or equals the feature to be calculated
-    if(item->getElementType() == neededElementType){
 
-        //check if the element equals the feature to be calculated
-        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
-            return !(feature->getId() == item->getFeature()->getFeature()->getId());
+    { // apply user filter
+        bool accept = true;
+        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()) {
+            QPointer<Feature> feature = item->getFeature()->getFeature();
+            if(!this->filterFeatureName.isEmpty() && !feature->getFeatureName().startsWith(this->filterFeatureName, Qt::CaseInsensitive)) { // filter by featurename
+                accept = false;
+            }
+            if(!this->filterGroupName.isEmpty() && feature->getGroupName() != this->filterGroupName) { // filter by groupname
+                accept = false;
+            }
+
+            if(this->filterActualNominal == ActualNominalFilter::eFilterNominal // filter by nominal
+                    && !item->getFeature()->getGeometry().isNull()
+                    && !item->getFeature()->getGeometry()->getIsNominal()) {
+                accept = false;
+            } else if(this->filterActualNominal == ActualNominalFilter::eFilterActual  // filter by actual
+                      && !item->getFeature()->getGeometry().isNull()
+                      && item->getFeature()->getGeometry()->getIsNominal()) {
+                accept = false;
+            }
+
         }
-
-        //check if function already contains the element
-        QMap<int, QList<InputElement> > inputElements = function->getInputElements();
-        if(item->getIsFeature() && !item->getFeature().isNull() && !item->getFeature()->getFeature().isNull()){
-            return !inputElements.contains(item->getFeature()->getFeature()->getId());
-        }else if(item->getIsObservation() && !item->getObservation().isNull()){
-            return !inputElements.contains(item->getObservation()->getId());
-        }else if(item->getIsReading() && !item->getReading().isNull()){
-            return !inputElements.contains(item->getReading()->getId());
+        if(!accept) { // leave method if false / ignore item because it was filtered by user input
+            return false;
         }
-
     }
 
     //check wether item contains an element of the type neededElement
-    if(item->getHasElement(neededElementType)){
-        return true;
-    }
-    return false;
+    return item->getHasElement(neededElementType);
 
 }
 
@@ -488,4 +520,25 @@ void AvailableElementsTreeViewProxyModel::addInputElement(QList<FeatureTreeItem 
         }
     }
 
+}
+
+void AvailableElementsTreeViewProxyModel::filterByActualNominal(ActualNominalFilter filter) {
+    this->filterActualNominal = filter;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByGroup(QString groupName) {
+    this->filterGroupName = groupName;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::filterByFeatureName(QString featureName) {
+    this->filterFeatureName = featureName;
+    this->invalidateFilter();
+}
+
+void AvailableElementsTreeViewProxyModel::resetFilter() {
+    this->filterFeatureName = QString::null;
+    this->filterGroupName = QString::null;
+    this->filterActualNominal = ActualNominalFilter::eFilterActualNominal;
 }
