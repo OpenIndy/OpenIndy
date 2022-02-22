@@ -37,6 +37,7 @@ public:
     static QString iid_Plugin;
     static QString iid_LaserTracker;
     static QString iid_TotalStation;
+    static QString iid_MeasurementArm;
     static QString iid_ConstructFunction;
     static QString iid_FitFunction;
     static QString iid_SpecialFunction;

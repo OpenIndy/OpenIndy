@@ -2531,6 +2531,19 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
 
         break;
 
+    case eMeasurementArm:
+
+        this->actionConnect->setVisible(true);
+        this->actionConnect->setEnabled(true);
+        this->actionDisconnect->setVisible(true);
+        this->actionDisconnect->setEnabled(true);
+        this->actionInitialize->setVisible(false);
+        this->actionInitialize->setEnabled(false);
+        this->actionMeasure->setVisible(true);
+        this->actionMeasure->setEnabled(true);
+
+        break;
+
     default:
 
         this->actionConnect->setVisible(false);

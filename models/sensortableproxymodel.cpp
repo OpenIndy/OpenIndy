@@ -24,12 +24,10 @@ const SensorTypes &SensorTableProxyModel::getSensorType() const{
 void SensorTableProxyModel::setSensorType(const SensorTypes &type){
 
     //check sensor type
-    if(type != eLaserTracker && type != eTotalStation){
-        return;
+    if(type >= eLaserTracker && type < eUndefinedSensor){
+        this->sensorType = type;
+        this->invalidateFilter();
     }
-
-    this->sensorType = type;
-    this->invalidateFilter();
 
 }
 
