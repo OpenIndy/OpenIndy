@@ -20,6 +20,10 @@ SOURCES += stablepointtest.cpp \
     mocksensor.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
+QMAKE_EXTRA_TARGETS += run-test
+run-test.commands = \
+   $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml
+
 
 # test dependencies
 include($$PWD/../../build/includes.pri)

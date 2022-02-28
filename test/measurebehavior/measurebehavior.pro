@@ -213,3 +213,6 @@ HEADERS += \
     testcontrollersensoractions.h \
     testmeasurebehaviorlogic.h
 
+QMAKE_EXTRA_TARGETS += run-test
+run-test.commands = \
+   $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml
