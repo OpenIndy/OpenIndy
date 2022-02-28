@@ -19,4 +19,4 @@ test.depends = app
 QMAKE_EXTRA_TARGETS += run-test
 run-test.commands = \
     cd $$test.subdir && $(MAKE) run-test
-
+#
