@@ -5,7 +5,7 @@ SUBDIRS = watchwindow stablepoint featuresorter measurebehavior
 QMAKE_EXTRA_TARGETS += run-test
 win32 {
 run-test.commands = \
-    if not exist "reports" (mkdir reports & echo create reports) else (echo reports exists) & \
+    (if not exist "reports" (mkdir reports & echo create reports) else (echo reports exists)) & \
     cd $$shell_path($$OUT_PWD/watchwindow) && $(MAKE) run-test & \
     cd $$shell_path($$OUT_PWD/stablepoint) && $(MAKE) run-test & \
     cd $$shell_path($$OUT_PWD/featuresorter) && $(MAKE) run-test & \
