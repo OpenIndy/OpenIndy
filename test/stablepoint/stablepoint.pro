@@ -28,7 +28,9 @@ CONFIG(debug, debug|release) {
 
 QMAKE_EXTRA_TARGETS += run-test
 run-test.commands = \
-   $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml
+    $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml \
+    && exit 0
+
 
 
 # test dependencies
