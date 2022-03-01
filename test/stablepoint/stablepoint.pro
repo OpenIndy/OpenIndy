@@ -20,6 +20,12 @@ SOURCES += stablepointtest.cpp \
     mocksensor.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
+CONFIG(debug, debug|release) {
+    BUILD_DIR=debug
+} else {
+    BUILD_DIR=release
+}
+
 QMAKE_EXTRA_TARGETS += run-test
 run-test.commands = \
    $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml
