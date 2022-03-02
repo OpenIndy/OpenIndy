@@ -12,7 +12,7 @@ run-test.commands = \
     cd $$shell_path($$OUT_PWD/measurebehavior) && $(MAKE) run-test
 } else:win32-g++ {
 run-test.commands = \
-    if not exist reports mkdir reports & if not exist reports exit 1 $$escape_expand(\n\t)\
+    [ -e "reports" ] || mkdir reports ; \
     $(MAKE) -C $$shell_path($$OUT_PWD/watchwindow) run-test & \
     $(MAKE) -C $$shell_path($$OUT_PWD/featuresorter) run-test & \
     $(MAKE) -C $$shell_path($$OUT_PWD/stablepoint) run-test & \
