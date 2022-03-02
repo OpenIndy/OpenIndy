@@ -135,5 +135,8 @@ HEADERS += \
     testmeasurebehaviorlogic.h
 
 QMAKE_EXTRA_TARGETS += run-test
-run-test.commands = \
-   $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xml
+win32{
+run-test.commands = $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml
+}else:linux{
+run-test.commands = $$shell_path($$OUT_PWD/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xunitxml
+}
