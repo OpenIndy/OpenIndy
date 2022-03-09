@@ -20,6 +20,20 @@ SOURCES += stablepointtest.cpp \
     mocksensor.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
+CONFIG(debug, debug|release) {
+    BUILD_DIR=debug
+} else {
+    BUILD_DIR=release
+}
+
+QMAKE_EXTRA_TARGETS += run-test
+win32{
+run-test.commands = $$shell_path($$OUT_PWD/$$BUILD_DIR/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xml
+}else:linux{
+run-test.commands = $$shell_path($$OUT_PWD/$$TARGET) -o $$shell_path(../reports/$${TARGET}.xml),xml
+}
+
+
 
 # test dependencies
 include($$PWD/../../build/includes.pri)
