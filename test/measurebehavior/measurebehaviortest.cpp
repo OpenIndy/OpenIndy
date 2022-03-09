@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QList>
 
-#include "ControllerSensorActions.h"
+#include "controllersensoractions.h"
 #include "featuretablemodel.h"
 
 #include "testcontrollersensoractions.h"
