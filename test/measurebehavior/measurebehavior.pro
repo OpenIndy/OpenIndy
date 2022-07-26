@@ -20,7 +20,7 @@ SOURCES += measurebehaviortest.cpp \
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-include($$PWD/../../build/includes.pri)
+include($$PWD/../../appui/includes.pri)
 include($$PWD/../../lib/OpenIndy-Core/build/includes.pri)
 include($$PWD/../../lib/OpenIndy-Core/lib/OpenIndy-Math/build/includes.pri)
 
