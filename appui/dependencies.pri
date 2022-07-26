@@ -114,9 +114,10 @@ win32 {
 win32 {
     DEPENDPATH += ../appui
     CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../bin/debug -lopenIndy22
-    } else {
-        LIBS += -L$$PWD/../bin/release -lopenIndy22
+        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy22
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L$$PWD/../appui/bin/release -lopenIndy22
     }
 }
 linux {

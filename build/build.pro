@@ -19,7 +19,7 @@ DEFINES -= QT_MAIN_LIB
 include($$PWD/../appui/version.pri)
 
 # general build configuration
-include($$PWD/../appui/config.pri)
+include($$PWD/config.pri)
 
 # external libraries
 # openIndy.dll
