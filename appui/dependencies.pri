@@ -1,9 +1,6 @@
 
 include($$PWD/../lib/OpenIndy-Core/include.pri)
 
-DEPENDPATH += ../appui
-LIBS += -L$$PWD/../bin/debug -lopenIndy22
-
 linux: LIBS = -lGLU
 
 # openIndy
@@ -114,29 +111,14 @@ win32 {
 
 }
 
-# splash screen
 win32 {
-
-    win32:CONFIG(release, debug|release): splash.path = $$PWD/../install/release
-    win32:CONFIG(debug, debug|release): splash.path = $$PWD/../install/debug
-
-    splash.files += $$PWD/../res/icons/splash.png
-
-    INSTALLS += splash
-
+    DEPENDPATH += ../appui
+    CONFIG(debug, debug|release) {
+        LIBS += -L$$PWD/../bin/debug -lopenIndy22
+    } else {
+        LIBS += -L$$PWD/../bin/release -lopenIndy22
+    }
 }
-
-linux {
-
-    linux:CONFIG(release, debug|release): splash.path = $$PWD/../install/release
-    linux:CONFIG(debug, debug|release): splash.path = $$PWD/../install/debug
-
-    splash.files += $$PWD/../res/icons/splash.png
-
-    INSTALLS += splash
-
-}
-
 linux {
     CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug -lopenIndyMath
