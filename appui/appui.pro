@@ -273,6 +273,3 @@ FORMS    += \
 RESOURCES += \
     $$PWD/../res/res.qrc
 
-# app icon
-win32:RC_FILE = $$PWD/../res/openIndy.rc
-linux:ICON = $$PWD/../res/openIndy.icns
