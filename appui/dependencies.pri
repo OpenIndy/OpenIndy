@@ -111,15 +111,6 @@ win32 {
 
 }
 
-win32 {
-    DEPENDPATH += ../appui
-    CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy22
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$$PWD/../appui/bin/release -lopenIndy22
-    }
-}
 linux {
     CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug -lopenIndyMath

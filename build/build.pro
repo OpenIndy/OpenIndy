@@ -13,7 +13,7 @@ TARGET = openIndy
 TEMPLATE = app
 
 DEFINES += OI_MAIN_PROGRAM
-DEFINES -= QT_MAIN_LIB
+#DEFINES -= QT_MAIN_LIB
 
 # version number from git
 include($$PWD/../appui/version.pri)

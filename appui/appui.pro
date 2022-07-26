@@ -9,6 +9,7 @@ QT       += core gui sql svg serialport network xml websockets multimedia
 greaterThan(QT_MAJOR_VERSION, 4):
 
 TARGET = openIndy
+
 TEMPLATE = lib
 
 DEFINES += OI_MAIN_LIB
