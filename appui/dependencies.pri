@@ -1,6 +1,9 @@
 
 include($$PWD/../lib/OpenIndy-Core/include.pri)
 
+DEPENDPATH += ../appui
+LIBS += -L$$PWD/../bin/debug -lopenIndy22
+
 linux: LIBS = -lGLU
 
 # openIndy
