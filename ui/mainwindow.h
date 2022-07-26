@@ -54,6 +54,13 @@
 #include "measurebehaviorlogic.h"
 
 #include <QSound>
+
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 namespace Ui {
@@ -63,7 +70,7 @@ class MainWindow;
 /*!
  * \brief The MainWindow class
  */
-class MainWindow : public QMainWindow
+class OI_MAIN_EXPORT MainWindow : public QMainWindow
 {
     Q_OBJECT
     
