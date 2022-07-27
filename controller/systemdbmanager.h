@@ -157,6 +157,8 @@ class OI_MAIN_EXPORT SystemDbManager
 {
 public:
 
+    static void initInMemoryDB(const QStringList initStatements);
+
     //#####################
     //add or remove plugins
     //#####################
