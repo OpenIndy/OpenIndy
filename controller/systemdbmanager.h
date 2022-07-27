@@ -15,6 +15,13 @@
 #include "types.h"
 #include "util.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+
 using namespace oi;
 
 //###############################################
@@ -146,7 +153,7 @@ public:
  * \brief The SystemDbManager class
  * System database interface class
  */
-class SystemDbManager
+class OI_MAIN_EXPORT SystemDbManager
 {
 public:
 
