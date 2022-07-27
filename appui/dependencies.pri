@@ -115,8 +115,7 @@ linux {
     CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/debug -lopenIndyMath
         LIBS += -L$$PWD/../lib/OpenIndy-Core/bin/debug -lopenIndyCore
-    }
-    CONFIG(release, debug|release) {
+    } else {
         LIBS += -L$$PWD/../lib/OpenIndy-Core/lib/OpenIndy-Math/bin/release -lopenIndyMath
         LIBS += -L$$PWD/../lib/OpenIndy-Core/bin/release -lopenIndyCore
     }
