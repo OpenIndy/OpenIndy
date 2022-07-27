@@ -65,7 +65,8 @@ private slots:
     void on_checkBox_nominal_toggled(bool checked);
     void on_checkBox_actual_toggled(bool checked);
 
-    void on_comboBox_entityType_currentIndexChanged(const QString &arg1);
+    void on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName);
+
 
 private:
 
@@ -79,6 +80,7 @@ private:
     void initModels();
 
     void initFunctionsModel();
+    void initMeasurementConfigModel();
 
     void toggleActualLabels(bool toggle);
 

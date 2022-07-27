@@ -345,6 +345,11 @@ void CreateFeatureDialog::initFunctionsModel(){
     this->ui->comboBox_function->setCurrentText(source_model->getDefaultFunction(this->typeOfFeature).first);
 
 }
+
+void CreateFeatureDialog::initMeasurementConfigModel(){
+
+}
+
 /*!
  * \brief CreateFeatureDialog::toggleActualLabels
  * \param toggle
@@ -425,11 +430,18 @@ void CreateFeatureDialog::setDialogName()
 
 /*!
  * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
- * \param arg1
+ * \param entityTypeName
  */
-void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &arg1)
+void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName)
 {
-    this-> typeOfFeature = getFeatureTypeEnum(arg1);
-    this->initModels();
-    this->initFunctionsModel();
+    qDebug() << "on_comboBox_entityType_currentIndexChanged: " << entityTypeName;
+    if(!entityTypeName.isEmpty()) {
+        this->typeOfFeature = getFeatureTypeEnum(entityTypeName);
+        this->initModels();
+        this->initFunctionsModel();
+        this->initMeasurementConfigModel();
+    }
+
 }
+
+
