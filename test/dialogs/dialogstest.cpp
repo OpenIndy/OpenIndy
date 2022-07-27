@@ -31,6 +31,6 @@ void DialogsTest::initial()
     qDebug() << "initial";
 }
 
-QTEST_APPLESS_MAIN(DialogsTest)
+QTEST_MAIN(DialogsTest)
 
 #include "dialogstest.moc"
