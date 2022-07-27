@@ -52,6 +52,12 @@
 #include "featuredifferencetablemodel.h"
 #include "featuredifferenceproxymodel.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 class Controller;
@@ -59,7 +65,7 @@ class Controller;
 /*!
  * \brief The ModelManager class
  */
-class ModelManager : public QObject
+class OI_MAIN_EXPORT ModelManager : public QObject
 {
     friend class Controller;
     Q_OBJECT

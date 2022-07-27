@@ -10,13 +10,19 @@
 #include "util.h"
 #include "measurementconfigmanager.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 /*!
  * \brief The MeasurementConfigurationModel class
  * Model that holds all available measurement configurations
  */
-class MeasurementConfigurationModel : public QAbstractListModel
+class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel
 {
     Q_OBJECT
 

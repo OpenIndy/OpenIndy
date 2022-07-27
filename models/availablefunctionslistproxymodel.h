@@ -11,13 +11,20 @@
 #include "oimetadata.h"
 #include "pluginloader.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+
 using namespace oi;
 
 /*!
  * \brief The AvailableFunctionsListProxyModel class
  * Model that holds all available functions filtered by feature type
  */
-class AvailableFunctionsListProxyModel : public QSortFilterProxyModel
+class OI_MAIN_EXPORT AvailableFunctionsListProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
