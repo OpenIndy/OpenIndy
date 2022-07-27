@@ -12,6 +12,12 @@
 #include "util.h"
 #include "uiutil.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 namespace Ui {
@@ -21,7 +27,7 @@ class CreateFeatureDialog;
 /*!
  * \brief The CreateFeatureDialog class
  */
-class CreateFeatureDialog : public QDialog
+class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog
 {
     Q_OBJECT
 
