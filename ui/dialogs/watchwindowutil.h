@@ -7,6 +7,15 @@
 #include "position.h"
 #include "radius.h"
 #include "geometry.h"
+
+
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+
 namespace oi {
 
 struct Result {
@@ -16,7 +25,7 @@ struct Result {
   double d3D;
 };
 
-class WatchWindowUtil
+class OI_MAIN_EXPORT WatchWindowUtil
 {
 
 public:

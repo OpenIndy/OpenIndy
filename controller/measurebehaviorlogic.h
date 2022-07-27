@@ -11,7 +11,13 @@
 #include "sensorworkermessage.h"
 #include "measurebehaviortypes.h"
 
-class MeasureBehaviorLogic : public QObject
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+class OI_MAIN_EXPORT MeasureBehaviorLogic : public QObject
 {
     Q_OBJECT
 public:
