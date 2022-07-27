@@ -444,4 +444,13 @@ void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QStri
 
 }
 
-
+void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
+{
+    qDebug() << "on_comboBox_function_currentIndexChanged: " << index;
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+    qDebug() << "function: " << function.name;
+    if(true) return;
+    this->initModels();
+    this->initFunctionsModel();
+    this->initMeasurementConfigModel();
+}

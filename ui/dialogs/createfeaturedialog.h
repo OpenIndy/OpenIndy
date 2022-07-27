@@ -67,6 +67,7 @@ private slots:
 
     void on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName);
 
+    void on_comboBox_function_currentIndexChanged(const int index);
 
 private:
 
