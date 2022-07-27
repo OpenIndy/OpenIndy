@@ -93,6 +93,19 @@ void ModelManager::init(){
 
 }
 
+void ModelManager::testInit(QStringList entityTypes,
+                            QPointer<MeasurementConfigManager> measurementConfigManager,
+                            QList<sdb::Plugin> plugins) {
+
+    ModelManager::plugins = plugins;
+    ModelManager::functionsListModel.setPlugins(ModelManager::plugins);
+
+    ModelManager::scalarEntityTypeNamesModel.setStringList(entityTypes);
+
+    ModelManager::setMeasurementConfigManager(measurementConfigManager);
+
+}
+
 /*!
  * \brief ModelManager::getCurrentJob
  * \return

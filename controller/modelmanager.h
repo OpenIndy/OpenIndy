@@ -95,6 +95,10 @@ public:
 
     static void init();
 
+    static void testInit(QStringList entityTypes,
+                         QPointer<MeasurementConfigManager> measurementConfigManager,
+                         QList<sdb::Plugin> plugins);
+
     //############################
     //get or set the current OiJob
     //############################
