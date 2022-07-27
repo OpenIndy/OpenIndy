@@ -104,7 +104,7 @@ void DialogsTest::initial()
     qDebug() << entityTypeCB->currentIndex();
     QVERIFY(0 == entityTypeCB->currentIndex());
     QTest::mouseClick(entityTypeCB, Qt::LeftButton);
-    QTest::qWait(500);
+    QTest::qWait(1000);
 
     QPointer<QListView> entityTypeLV = entityTypeCB->findChild<QListView *>();
     qDebug() << entityTypeLV;
@@ -118,10 +118,10 @@ void DialogsTest::initial()
     qDebug() << "clicking on" << str ;
 
     QTest::mouseClick(entityTypeLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(500);
+    QTest::qWait(1000);
     // Reopen the combobox
     QTest::mouseClick(entityTypeCB, Qt::LeftButton);
-    QTest::qWait(500);
+    QTest::qWait(1000);
 
     qDebug() << entityTypeCB->currentIndex();
     QVERIFY(1 == entityTypeCB->currentIndex());
