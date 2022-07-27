@@ -2,7 +2,7 @@
 #include <QtTest>
 #include <QPointer>
 #include <QList>
-
+#include "createfeaturedialog.h"
 
 class DialogsTest : public QObject
 {
@@ -25,6 +25,9 @@ DialogsTest::DialogsTest() {
 
 void DialogsTest::initial()
 {
+
+    CreateFeatureDialog dialog;
+
     qDebug() << "initial";
 }
 
