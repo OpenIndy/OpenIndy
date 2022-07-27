@@ -16,6 +16,9 @@ include($$PWD/../../build/dependencies.pri)
 # openIndyCore.dll
 include($$PWD/../../appui/dependencies.pri)
 
+# OpenIndy/db/oisystemdb.sql
+DEFINES += INIT_SQL=\\\"$$PWD/../../db/oisystemdb.sql\\\"
+DEFINES += ELEMENT_SQL=\\\"$$PWD/../../db/element.sql\\\"
 SOURCES += dialogstest.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

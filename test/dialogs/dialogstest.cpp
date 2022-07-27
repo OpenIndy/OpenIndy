@@ -6,6 +6,9 @@
 #include <QStringListModel>
 #include "createfeaturedialog.h"
 #include "availablefunctionslistproxymodel.h"
+
+using namespace oi;
+
 class DialogsTest : public QObject
 {
     Q_OBJECT
@@ -30,17 +33,72 @@ DialogsTest::DialogsTest() {
 void DialogsTest::initial()
 {
 
+
     QStringList entityTypes;
     entityTypes << "point" << "circle" << "plane" << "level" << "cylinder";
 
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
 
+    // create plugin with some functions
     QList<sdb::Plugin> plugins;
+    sdb::Plugin testPlugin;
+    testPlugin.name = "testplugin";
+    testPlugin.author = "esc";
 
+    QString iid = OiMetaData::iid_FitFunction;
+    sdb::Function point;
+    point.name = "fitpoint";
+    point.iid = iid;
+    point.applicableFor << FeatureTypes::ePointFeature;
+
+    sdb::Function plane;
+    plane.name = "fitplane";
+    point.iid = iid;
+    plane.applicableFor << FeatureTypes::ePlaneFeature;
+
+    sdb::Function level;
+    level.name = "fitlevel";
+    point.iid = iid;
+    level.applicableFor << FeatureTypes::ePlaneFeature;
+
+    sdb::Function circle;
+    circle.name = "fitcircle";
+    point.iid = iid;
+    circle.applicableFor << FeatureTypes::eCircleFeature;
+
+    testPlugin.functions << plane << point << level << circle;
+
+    plugins << testPlugin;
+
+    // create in memory database
+    QFile sqlFile1(INIT_SQL);
+    sqlFile1.open(QFile::ReadOnly | QFile::Text);
+    QTextStream in1(&sqlFile1);
+    QStringList statements = in1.readAll().split(";");
+
+    QFile sqlFile2(ELEMENT_SQL);
+    sqlFile2.open(QFile::ReadOnly | QFile::Text);
+    QTextStream in2(&sqlFile2);
+    statements.append(in2.readAll().split(";"));
+    SystemDbManager::initInMemoryDB(statements);
+
+    // add plugin to database
+    SystemDbManager::addPlugin(testPlugin);
+
+    // init ModelManager
     ModelManager::testInit(entityTypes, measurementConfigManager, plugins);
 
+    // create dialog
     CreateFeatureDialog dialog;
 
+    // check function
+
+    QPointer<QComboBox> functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    QPointer<QListView> functionLV = functionCB->findChild<QListView *>();
+    qDebug() << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+
+    // select circle
     QPointer<QComboBox> entityTypeCB = dialog.findChild<QComboBox *>("comboBox_entityType");
     qDebug() << entityTypeCB;
     qDebug() << entityTypeCB->currentIndex();
