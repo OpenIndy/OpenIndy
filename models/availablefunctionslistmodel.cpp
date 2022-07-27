@@ -19,9 +19,7 @@ int AvailableFunctionsListModel::rowCount(const QModelIndex &parent) const{
 
     //get the number of function plugins
     foreach(const sdb::Plugin &plugin, this->plugins){
-        foreach(const sdb::Function &function, plugin.functions){
-            rowCount++;
-        }
+        rowCount += plugin.functions.size();
     }
 
     return rowCount;
