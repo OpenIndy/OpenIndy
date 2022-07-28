@@ -22,7 +22,10 @@ public:
 
 private Q_SLOTS:
     void initTestCase();
-    void initial();
+    void createPoint();
+    void createCircle();
+    void createPlane();
+    void createLevel();
 
 private:
 
@@ -97,51 +100,75 @@ void DialogsTest::initTestCase() {
 
 }
 
-// https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
-// https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
-void DialogsTest::initial()
+void DialogsTest::createPoint()
 {
-
-    QStringList entityTypes = ModelManager::getScalarEntityTypeNamesModel().stringList();
 
     // create dialog
     CreateFeatureDialog dialog;
 
-    // check function
+    // comboBox_entityType currently not usesd, type is set directly
+    dialog.setFeatureType(FeatureTypes::ePointFeature);
+    dialog.show(); // to call: void showEvent(QShowEvent *event);
+    QTest::qWait(200); // ensure that all signals are processed
 
-    QPointer<QComboBox> functionCB = dialog.findChild<QComboBox *>("comboBox_function");
-    QPointer<QListView> functionLV = functionCB->findChild<QListView *>();
+    // check function
+    QPointer<QComboBox> functionCB;
+    QPointer<QListView> functionLV;
+
+    // check for default function
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
     qDebug() << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    QVERIFY("fitpoint" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
 
-    // select circle
-    QPointer<QComboBox> entityTypeCB = dialog.findChild<QComboBox *>("comboBox_entityType");
-    qDebug() << entityTypeCB;
-    qDebug() << entityTypeCB->currentIndex();
-    QVERIFY(0 == entityTypeCB->currentIndex());
-    QTest::mouseClick(entityTypeCB, Qt::LeftButton);
-    QTest::qWait(1000);
-
-    QPointer<QListView> entityTypeLV = entityTypeCB->findChild<QListView *>();
-    qDebug() << entityTypeLV;
-
-    int r = 1;
-    QModelIndex idx = entityTypeLV->model()->index(r,0);
-    entityTypeLV->scrollTo(idx);
-
-    QPoint itemPt = entityTypeLV->visualRect(idx).center();
-    QString str = entityTypeLV->model()->index(r,0).data( Qt::DisplayRole ).toString();
-    qDebug() << "clicking on" << str ;
-
-    QTest::mouseClick(entityTypeLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(1000);
-    // Reopen the combobox
-    QTest::mouseClick(entityTypeCB, Qt::LeftButton);
-    QTest::qWait(1000);
-
-    qDebug() << entityTypeCB->currentIndex();
-    QVERIFY(1 == entityTypeCB->currentIndex());
 }
+
+void DialogsTest::createCircle() {
+    // create dialog
+    CreateFeatureDialog dialog;
+
+    // comboBox_entityType currently not usesd, type is set directly
+    dialog.setFeatureType(FeatureTypes::eCircleFeature);
+    dialog.show(); // to call: void showEvent(QShowEvent *event);
+    QTest::qWait(200); // ensure that all signals are processed
+
+    // check function
+    QPointer<QComboBox> functionCB;
+    QPointer<QListView> functionLV;
+
+    // check for default function
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    QVERIFY("fitcircle" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+}
+
+void DialogsTest::createPlane() {
+    // create dialog
+    CreateFeatureDialog dialog;
+
+    // comboBox_entityType currently not usesd, type is set directly
+    dialog.setFeatureType(FeatureTypes::ePlaneFeature);
+    dialog.show(); // to call: void showEvent(QShowEvent *event);
+    QTest::qWait(200); // ensure that all signals are processed
+
+    // check function
+    QPointer<QComboBox> functionCB;
+    QPointer<QListView> functionLV;
+
+    // check for default function
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    QVERIFY("fitplane" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+}
+
+void DialogsTest::createLevel() {
+}
+
 
 QTEST_MAIN(DialogsTest)
 
