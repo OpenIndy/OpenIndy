@@ -119,8 +119,9 @@ void DialogsTest::createPoint()
     // check for default function
     functionCB = dialog.findChild<QComboBox *>("comboBox_function");
     functionLV = functionCB->findChild<QListView *>();
-    qDebug() << functionLV->model()->rowCount();
+    qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "currentIndex" << functionCB->currentIndex();
     QVERIFY("fitpoint" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
 
 }
@@ -142,8 +143,9 @@ void DialogsTest::createCircle() {
     // check for default function
     functionCB = dialog.findChild<QComboBox *>("comboBox_function");
     functionLV = functionCB->findChild<QListView *>();
-    qDebug() << functionLV->model()->rowCount();
+    qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "currentIndex" << functionCB->currentIndex();
     QVERIFY("fitcircle" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
 }
 
@@ -164,9 +166,12 @@ void DialogsTest::createPlane() {
     // check for default function
     functionCB = dialog.findChild<QComboBox *>("comboBox_function");
     functionLV = functionCB->findChild<QListView *>();
-    qDebug() << functionLV->model()->rowCount();
+    qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
-    QVERIFY("fitplane" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+    qDebug() << "currentIndex" << functionCB->currentIndex();
+    QVERIFY(3 == functionCB->currentIndex());
+    QVERIFY("fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+
 }
 
 void DialogsTest::createLevel() {
