@@ -19,8 +19,9 @@ public:
 private Q_SLOTS:
     void initial();
 
-private:
 
+private:
+    void initInMemoryDatabase();
 
 };
 
@@ -28,11 +29,28 @@ DialogsTest::DialogsTest() {
 
 }
 
+void DialogsTest::initInMemoryDatabase() {
+    // create in memory database
+    QFile sqlFile1(INIT_SQL);
+    sqlFile1.open(QFile::ReadOnly | QFile::Text);
+    QTextStream in1(&sqlFile1);
+    QStringList statements = in1.readAll().split(";");
+
+    QFile sqlFile2(ELEMENT_SQL);
+    sqlFile2.open(QFile::ReadOnly | QFile::Text);
+    QTextStream in2(&sqlFile2);
+    statements.append(in2.readAll().split(";"));
+
+    SystemDbManager::initInMemoryDB(statements);
+}
+
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
 // https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
 void DialogsTest::initial()
 {
 
+
+    initInMemoryDatabase();
 
     QStringList entityTypes;
     entityTypes << "point" << "circle" << "plane" << "level" << "cylinder";
@@ -69,18 +87,6 @@ void DialogsTest::initial()
     testPlugin.functions << plane << point << level << circle;
 
     plugins << testPlugin;
-
-    // create in memory database
-    QFile sqlFile1(INIT_SQL);
-    sqlFile1.open(QFile::ReadOnly | QFile::Text);
-    QTextStream in1(&sqlFile1);
-    QStringList statements = in1.readAll().split(";");
-
-    QFile sqlFile2(ELEMENT_SQL);
-    sqlFile2.open(QFile::ReadOnly | QFile::Text);
-    QTextStream in2(&sqlFile2);
-    statements.append(in2.readAll().split(";"));
-    SystemDbManager::initInMemoryDB(statements);
 
     // add plugin to database
     SystemDbManager::addPlugin(testPlugin);
