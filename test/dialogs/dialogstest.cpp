@@ -62,22 +62,22 @@ void DialogsTest::initTestCase() {
 
     sdb::Function plane;
     plane.name = "fitplane";
-    point.iid = OiMetaData::iid_FitFunction;
+    plane.iid = OiMetaData::iid_FitFunction;
     plane.applicableFor << FeatureTypes::ePlaneFeature;
 
     sdb::Function level;
     level.name = "fitlevel";
-    point.iid = OiMetaData::iid_FitFunction;
+    level.iid = OiMetaData::iid_FitFunction;
     level.applicableFor << FeatureTypes::ePlaneFeature;
 
     sdb::Function planefrompoints;
-    level.name = "planefrompoints";
-    point.iid = OiMetaData::iid_ConstructFunction;
-    level.applicableFor << FeatureTypes::ePlaneFeature;
+    planefrompoints.name = "planefrompoints";
+    planefrompoints.iid = OiMetaData::iid_ConstructFunction;
+    planefrompoints.applicableFor << FeatureTypes::ePlaneFeature;
 
     sdb::Function circle;
     circle.name = "fitcircle";
-    point.iid = OiMetaData::iid_FitFunction;
+    circle.iid = OiMetaData::iid_FitFunction;
     circle.applicableFor << FeatureTypes::eCircleFeature;
 
     testPlugin.functions << plane << point << level << circle << planefrompoints;
