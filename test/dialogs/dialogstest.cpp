@@ -53,7 +53,7 @@ void DialogsTest::initial()
     initInMemoryDatabase();
 
     QStringList entityTypes;
-    entityTypes << "point" << "circle" << "plane" << "level" << "cylinder";
+    entityTypes << "point" << "circle" << "plane" << "level" << "cylinder"; // comboBox_entityType order
 
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
 
@@ -63,33 +63,38 @@ void DialogsTest::initial()
     testPlugin.name = "testplugin";
     testPlugin.author = "esc";
 
-    QString iid = OiMetaData::iid_FitFunction;
     sdb::Function point;
     point.name = "fitpoint";
-    point.iid = iid;
+    point.iid = OiMetaData::iid_FitFunction;
     point.applicableFor << FeatureTypes::ePointFeature;
 
     sdb::Function plane;
     plane.name = "fitplane";
-    point.iid = iid;
+    point.iid = OiMetaData::iid_FitFunction;
     plane.applicableFor << FeatureTypes::ePlaneFeature;
 
     sdb::Function level;
     level.name = "fitlevel";
-    point.iid = iid;
+    point.iid = OiMetaData::iid_FitFunction;
+    level.applicableFor << FeatureTypes::ePlaneFeature;
+
+    sdb::Function planefrompoints;
+    level.name = "planefrompoints";
+    point.iid = OiMetaData::iid_ConstructFunction;
     level.applicableFor << FeatureTypes::ePlaneFeature;
 
     sdb::Function circle;
     circle.name = "fitcircle";
-    point.iid = iid;
+    point.iid = OiMetaData::iid_FitFunction;
     circle.applicableFor << FeatureTypes::eCircleFeature;
 
-    testPlugin.functions << plane << point << level << circle;
+    testPlugin.functions << plane << point << level << circle << planefrompoints;
 
     plugins << testPlugin;
 
     // add plugin to database
     SystemDbManager::addPlugin(testPlugin);
+
 
     // init ModelManager
     ModelManager::testInit(entityTypes, measurementConfigManager, plugins);
