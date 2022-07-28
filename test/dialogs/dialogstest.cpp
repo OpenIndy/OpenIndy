@@ -7,6 +7,10 @@
 #include "createfeaturedialog.h"
 #include "availablefunctionslistproxymodel.h"
 
+// recomended readings:
+// https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
+// https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
+
 using namespace oi;
 
 class DialogsTest : public QObject
