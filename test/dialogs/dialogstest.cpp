@@ -17,11 +17,11 @@ public:
     DialogsTest();
 
 private Q_SLOTS:
+    void initTestCase();
     void initial();
 
-
 private:
-    void initInMemoryDatabase();
+
 
 };
 
@@ -29,7 +29,7 @@ DialogsTest::DialogsTest() {
 
 }
 
-void DialogsTest::initInMemoryDatabase() {
+void DialogsTest::initTestCase() {
     // create in memory database
     QFile sqlFile1(INIT_SQL);
     sqlFile1.open(QFile::ReadOnly | QFile::Text);
@@ -42,18 +42,10 @@ void DialogsTest::initInMemoryDatabase() {
     statements.append(in2.readAll().split(";"));
 
     SystemDbManager::initInMemoryDB(statements);
-}
 
-// https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
-// https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
-void DialogsTest::initial()
-{
-
-
-    initInMemoryDatabase();
 
     QStringList entityTypes;
-    entityTypes << "point" << "circle" << "plane" << "level" << "cylinder"; // comboBox_entityType order
+    entityTypes << "point" << "circle" << "plane"; // comboBox_entityType order
 
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
 
@@ -98,6 +90,15 @@ void DialogsTest::initial()
 
     // init ModelManager
     ModelManager::testInit(entityTypes, measurementConfigManager, plugins);
+
+}
+
+// https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
+// https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
+void DialogsTest::initial()
+{
+
+    QStringList entityTypes = ModelManager::getScalarEntityTypeNamesModel().stringList();
 
     // create dialog
     CreateFeatureDialog dialog;
