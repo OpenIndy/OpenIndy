@@ -362,6 +362,8 @@ void MainWindow::currentJobChanged(){
  * \param name
  */
 void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
+    this->showStatusSensor(SensorStatus::eSensorActionInProgress, name);
+
     this->sensorTaskInfoDialog.setDisplayMessage(name);
     this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
     if(this->sensorTaskInfoDialog.isVisible()){
@@ -377,6 +379,8 @@ void MainWindow::sensorActionStarted(const QString &name, const bool enableFinis
  * \param msg
  */
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
+    this->showStatusSensor(SensorStatus::eClearStatus, "");
+
     this->sensorTaskInfoDialog.enableFinishButton(false);
     this->sensorTaskInfoDialog.close();
     emit this->log(msg, eInformationMessage, eConsoleMessage);
