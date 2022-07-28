@@ -172,7 +172,61 @@ void DialogsTest::createPlane() {
 void DialogsTest::createLevel() {
 }
 
+/*
 
+    // create dialog
+    CreateFeatureDialog dialog;
+
+    dialog.setFeatureType(FeatureTypes::ePointFeature);
+    // check function
+
+    QStringList entityTypes = ModelManager::getScalarEntityTypeNamesModel().stringList();
+
+    QPointer<QComboBox> functionCB;
+    QPointer<QListView> functionLV;
+
+    // default behavoir: create point
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    QVERIFY("fitpoint" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+
+
+    // create circle
+    QPointer<QComboBox> entityTypeCB = dialog.findChild<QComboBox *>("comboBox_entityType");
+    qDebug() << entityTypeCB;
+    qDebug() << entityTypeCB->currentIndex();
+    QVERIFY(0 == entityTypeCB->currentIndex());
+    QTest::mouseClick(entityTypeCB, Qt::LeftButton);
+    QTest::qWait(1000);
+
+    QPointer<QListView> entityTypeLV = entityTypeCB->findChild<QListView *>();
+    qDebug() << entityTypeLV;
+
+    int i = entityTypes.indexOf("circle");
+    QModelIndex idx = entityTypeLV->model()->index(i,0);
+    entityTypeLV->scrollTo(idx);
+
+    QPoint itemPt = entityTypeLV->visualRect(idx).center();
+    QString entityTypeName = entityTypeLV->model()->index(i,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "clicking on" << entityTypeName ;
+    QVERIFY("circle" == entityTypeName);
+
+    QTest::mouseClick(entityTypeLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::qWait(1000);
+    // Reopen the combobox
+    QTest::mouseClick(entityTypeCB, Qt::LeftButton);
+    QTest::qWait(1000);
+
+    qDebug() << entityTypeCB->currentIndex();
+    QVERIFY(1 == entityTypeCB->currentIndex());
+
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+ */
 QTEST_MAIN(DialogsTest)
 
 #include "dialogstest.moc"
