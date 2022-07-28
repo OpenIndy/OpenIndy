@@ -16,6 +16,9 @@
 #include <QList>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QGraphicsOpacityEffect>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -448,6 +451,7 @@ private:
     QLabel *label_statusUnitAngular;
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
+    QPropertyAnimation *animation_label_statusSensor;
     QLabel *label_statusStablePointMeasurement;
 
     //######
