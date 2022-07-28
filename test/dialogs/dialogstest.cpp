@@ -108,8 +108,9 @@ void DialogsTest::createPoint()
 
     // comboBox_entityType currently not usesd, type is set directly
     dialog.setFeatureType(FeatureTypes::ePointFeature);
-    dialog.show(); // to call: void showEvent(QShowEvent *event);
-    QTest::qWait(200); // ensure that all signals are processed
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -130,8 +131,9 @@ void DialogsTest::createCircle() {
 
     // comboBox_entityType currently not usesd, type is set directly
     dialog.setFeatureType(FeatureTypes::eCircleFeature);
-    dialog.show(); // to call: void showEvent(QShowEvent *event);
-    QTest::qWait(200); // ensure that all signals are processed
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -151,8 +153,9 @@ void DialogsTest::createPlane() {
 
     // comboBox_entityType currently not usesd, type is set directly
     dialog.setFeatureType(FeatureTypes::ePlaneFeature);
-    dialog.show(); // to call: void showEvent(QShowEvent *event);
-    QTest::qWait(200); // ensure that all signals are processed
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
 
     // check function
     QPointer<QComboBox> functionCB;
