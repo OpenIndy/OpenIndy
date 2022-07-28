@@ -53,6 +53,7 @@ signals:
     //#######################################
 
     void addFeatures(const FeatureAttributes &attributes);
+    void initialized(); // currently used for testing
 
 private slots:
 

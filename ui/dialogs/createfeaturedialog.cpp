@@ -151,6 +151,8 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
         this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
     }
 
+    emit initialized();
+
     event->accept();
 }
 
