@@ -128,8 +128,7 @@ void DialogsTest::initTestCase() {
 
 }
 
-void DialogsTest::createPoint()
-{
+void DialogsTest::createPoint() {
 
     // create dialog
     CreateFeatureDialog dialog;
@@ -150,7 +149,17 @@ void DialogsTest::createPoint()
     qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
-    QVERIFY("fitpoint" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitpoint" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+
+    // check applicable measurement configs
+    QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
+    QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
+    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
+        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
+    }
+    QVERIFY(2 == mConfigLV->model()->rowCount());
+    QVERIFY("*measconfig-fastpoint" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scantime" == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -174,7 +183,18 @@ void DialogsTest::createCircle() {
     qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
-    QVERIFY("fitcircle" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitcircle" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
+
+    // check applicable measurement configs
+    QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
+    QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
+    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
+        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
+    }
+    QVERIFY(3 == mConfigLV->model()->rowCount());
+    QVERIFY("*measconfig-fastpoint" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scantime" == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scandistance" == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
 }
 
 void DialogsTest::createPlane() {
@@ -197,10 +217,18 @@ void DialogsTest::createPlane() {
     qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
-    // QVERIFY(3 == functionCB->currentIndex());
-    QVERIFY("fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
 
-    // TODO verify measurement config
+    // check applicable measurement configs
+    QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
+    QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
+    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
+        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
+    }
+    QVERIFY(3 == mConfigLV->model()->rowCount());
+    QVERIFY("*measconfig-fastpoint" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scantime" == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scandistance" == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -225,17 +253,17 @@ void DialogsTest::createLevel() {
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
     QVERIFY(3 == functionLV->model()->rowCount());
-    QVERIFY("fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
 
 
     int i=0;
     for(i=0; i<functionLV->model()->rowCount(); i++) {
-        if("fitlevel" == functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString()) {
+        if("function-fitlevel" == functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString()) {
             break;
         }
     }
 
-    // select "fitlevel"
+    // select "function-fitlevel"
     QTest::mouseClick(functionCB, Qt::LeftButton);
     QTest::qWait(1000); // TODO spy
 
@@ -245,74 +273,23 @@ void DialogsTest::createLevel() {
 
     QPoint itemPt = functionLV->visualRect(idx).center();
     QString functionName = functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString();
-    qDebug() << "clicking on" << functionName;
-    QVERIFY("fitlevel" == functionName);
+    qDebug() << "clicking on function" << functionName;
+    QVERIFY("function-fitlevel" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
     QTest::qWait(1000);
-    // Reopen the combobox
-    // QTest::mouseClick(functionCB, Qt::LeftButton);
 
-    // QTest::qWait(60000);
-    // TODO verify measurement config
+    // check applicable measurement configs
+    QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
+    QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
+    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
+        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
+    }
+    QVERIFY(1 == mConfigLV->model()->rowCount());
+    QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+
 }
 
-
-/*
-
-    // create dialog
-    CreateFeatureDialog dialog;
-
-    dialog.setFeatureType(FeatureTypes::ePointFeature);
-    // check function
-
-    QStringList entityTypes = ModelManager::getScalarEntityTypeNamesModel().stringList();
-
-    QPointer<QComboBox> functionCB;
-    QPointer<QListView> functionLV;
-
-    // default behavoir: create point
-    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
-    functionLV = functionCB->findChild<QListView *>();
-    qDebug() << functionLV->model()->rowCount();
-    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
-    QVERIFY("fitpoint" == functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString());
-
-
-    // create circle
-    QPointer<QComboBox> entityTypeCB = dialog.findChild<QComboBox *>("comboBox_entityType");
-    qDebug() << entityTypeCB;
-    qDebug() << entityTypeCB->currentIndex();
-    QVERIFY(0 == entityTypeCB->currentIndex());
-    QTest::mouseClick(entityTypeCB, Qt::LeftButton);
-    QTest::qWait(1000);
-
-    QPointer<QListView> entityTypeLV = entityTypeCB->findChild<QListView *>();
-    qDebug() << entityTypeLV;
-
-    int i = entityTypes.indexOf("circle");
-    QModelIndex idx = entityTypeLV->model()->index(i,0);
-    entityTypeLV->scrollTo(idx);
-
-    QPoint itemPt = entityTypeLV->visualRect(idx).center();
-    QString entityTypeName = entityTypeLV->model()->index(i,0).data( Qt::DisplayRole ).toString();
-    qDebug() << "clicking on" << entityTypeName ;
-    QVERIFY("circle" == entityTypeName);
-
-    QTest::mouseClick(entityTypeLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(1000);
-    // Reopen the combobox
-    QTest::mouseClick(entityTypeCB, Qt::LeftButton);
-    QTest::qWait(1000);
-
-    qDebug() << entityTypeCB->currentIndex();
-    QVERIFY(1 == entityTypeCB->currentIndex());
-
-    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
-    functionLV = functionCB->findChild<QListView *>();
-    qDebug() << functionLV->model()->rowCount();
-    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
- */
 QTEST_MAIN(DialogsTest)
 
 #include "dialogstest.moc"
