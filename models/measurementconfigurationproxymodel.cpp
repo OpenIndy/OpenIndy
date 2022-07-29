@@ -16,8 +16,9 @@ void MeasurementConfigurationProxyModel::setFilter(const bool &showAll){
     this->showAll = showAll;
     this->invalidateFilter();
 }
-void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements) {
+void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature) {
     this->neededElements = neededElements;
+    this->typeOfFeature = typeOfFeature;
     this->showAll = neededElements.isEmpty();
     this->invalidateFilter();
 }
@@ -67,7 +68,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
 
     MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
     for (ElementTypes elementType : this->neededElements) {
-        if(mConfig.applicableFor(elementType)) {
+        if(mConfig.applicableFor(elementType, this->typeOfFeature)) {
             return true;
         }
     }

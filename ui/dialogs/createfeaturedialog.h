@@ -82,7 +82,7 @@ private:
     void initModels();
 
     void initFunctionsModel();
-    void initMeasurementConfigModel(QList<ElementTypes> neededElements);
+    void initMeasurementConfigModel();
 
     void toggleActualLabels(bool toggle);
 
@@ -104,6 +104,7 @@ private:
     //#################
 
     FeatureTypes typeOfFeature;
+    QList<ElementTypes> neededElements;
 
     QPointer<AvailableFunctionsListProxyModel> functionListModel;
     QPointer<MeasurementConfigurationProxyModel> measurementConfigurationModel;
