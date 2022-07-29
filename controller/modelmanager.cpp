@@ -103,6 +103,7 @@ void ModelManager::testInit(QStringList entityTypes,
     ModelManager::scalarEntityTypeNamesModel.setStringList(entityTypes);
 
     ModelManager::setMeasurementConfigManager(measurementConfigManager);
+    ModelManager::initMeasurementConfigModels();
 
 }
 
