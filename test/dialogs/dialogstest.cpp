@@ -57,23 +57,23 @@ void DialogsTest::initTestCase() {
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
 
     MeasurementConfig fastPointConfig;
-    fastPointConfig.setName("fastpoint");
+    fastPointConfig.setName("measconfig-fastpoint");
     fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     measurementConfigManager->addProjectMeasurementConfig(fastPointConfig); // add as project config ... seams ok
 
     MeasurementConfig levelConfig;
-    levelConfig.setName("level");
+    levelConfig.setName("measconfig-level");
     levelConfig.setTypeOfReading(ReadingTypes::eLevelReading);
     measurementConfigManager->addProjectMeasurementConfig(levelConfig); // add as project config ... seams ok
 
     MeasurementConfig scanTimeConfig;
-    scanTimeConfig.setName("scantime");
+    scanTimeConfig.setName("measconfig-scantime");
     scanTimeConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     scanTimeConfig.setTimeDependent(true);
     measurementConfigManager->addProjectMeasurementConfig(scanTimeConfig); // add as project config ... seams ok
 
     MeasurementConfig scanDistanceConfig;
-    scanDistanceConfig.setName("scandistance");
+    scanDistanceConfig.setName("measconfig-scandistance"); // not for point
     scanDistanceConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     scanDistanceConfig.setDistanceDependent(true);
     measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfig); // add as project config ... seams ok
@@ -86,33 +86,34 @@ void DialogsTest::initTestCase() {
 
 
     sdb::Function point;
-    point.name = "fitpoint";
+    point.name = "function-fitpoint";
     point.iid = OiMetaData::iid_FitFunction;
     point.applicableFor << FeatureTypes::ePointFeature;
     point.neededElements << ElementTypes::eObservationElement;
 
     sdb::Function plane;
-    plane.name = "fitplane";
+    plane.name = "function-fitplanet";
     plane.iid = OiMetaData::iid_FitFunction;
     plane.applicableFor << FeatureTypes::ePlaneFeature;
     plane.neededElements << ElementTypes::eObservationElement;
 
     sdb::Function level;
-    level.name = "fitlevel";
+    level.name = "function-fitlevel";
     level.iid = OiMetaData::iid_FitFunction;
     level.applicableFor << FeatureTypes::ePlaneFeature;
     level.neededElements << ElementTypes::eReadingLevelElement;
 
     sdb::Function planefrompoints;
-    planefrompoints.name = "planefrompoints";
+    planefrompoints.name = "function-planefrompoints";
     planefrompoints.iid = OiMetaData::iid_ConstructFunction;
     planefrompoints.applicableFor << FeatureTypes::ePlaneFeature;
     planefrompoints.neededElements << ElementTypes::eObservationElement;
 
     sdb::Function circle;
-    circle.name = "fitcircle";
+    circle.name = "function-fitcircle";
     circle.iid = OiMetaData::iid_FitFunction;
     circle.applicableFor << FeatureTypes::eCircleFeature;
+    circle.neededElements << ElementTypes::eObservationElement;
 
     testPlugin.functions << plane << point << level << circle << planefrompoints;
 
