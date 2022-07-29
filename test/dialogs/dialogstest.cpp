@@ -196,13 +196,66 @@ void DialogsTest::createPlane() {
     qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
-    QVERIFY(3 == functionCB->currentIndex());
+    // QVERIFY(3 == functionCB->currentIndex());
     QVERIFY("fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+
+    // TODO verify measurement config
 
 }
 
 void DialogsTest::createLevel() {
+    // create dialog
+    CreateFeatureDialog dialog;
+
+    // comboBox_entityType currently not usesd, type is set directly
+    dialog.setFeatureType(FeatureTypes::ePlaneFeature);
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
+
+    // check function
+    QPointer<QComboBox> functionCB;
+    QPointer<QListView> functionLV;
+
+    // check for default function
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << "rowCount" << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "currentIndex" << functionCB->currentIndex();
+    QVERIFY(3 == functionLV->model()->rowCount());
+    QVERIFY("fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+
+
+    int i=0;
+    for(i=0; i<functionLV->model()->rowCount(); i++) {
+        if("fitlevel" == functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString()) {
+            break;
+        }
+    }
+
+    // select "fitlevel"
+    QTest::mouseClick(functionCB, Qt::LeftButton);
+    QTest::qWait(1000); // TODO spy
+
+    QModelIndex idx = functionLV->model()->index(i,0);
+    functionLV->scrollTo(idx);
+
+
+    QPoint itemPt = functionLV->visualRect(idx).center();
+    QString functionName = functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "clicking on" << functionName;
+    QVERIFY("fitlevel" == functionName);
+
+    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::qWait(1000);
+    // Reopen the combobox
+    // QTest::mouseClick(functionCB, Qt::LeftButton);
+
+    // QTest::qWait(60000);
+    // TODO verify measurement config
 }
+
 
 /*
 
