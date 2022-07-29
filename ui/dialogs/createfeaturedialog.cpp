@@ -324,7 +324,9 @@ void CreateFeatureDialog::initModels(){
     this->ui->comboBox_entityType->setModel(&ModelManager::getScalarEntityTypeNamesModel());
 
     //set model for available measurement configs
-    this->ui->comboBox_mConfig->setModel(&ModelManager::getMeasurementConfigurationModel());
+    this->measurementConfigurationModel = &ModelManager::getMeasurementConfigurationProxyModel();
+    this->measurementConfigurationModel->setFilter(true); // show all
+    this->ui->comboBox_mConfig->setModel(measurementConfigurationModel);
 
 }
 
@@ -348,8 +350,8 @@ void CreateFeatureDialog::initFunctionsModel(){
 
 }
 
-void CreateFeatureDialog::initMeasurementConfigModel(){
-
+void CreateFeatureDialog::initMeasurementConfigModel(QList<ElementTypes> neededElements){
+    this->measurementConfigurationModel->setFilter(neededElements);
 }
 
 /*!
@@ -436,23 +438,18 @@ void CreateFeatureDialog::setDialogName()
  */
 void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName)
 {
-    qDebug() << "on_comboBox_entityType_currentIndexChanged: " << entityTypeName;
     if(!entityTypeName.isEmpty()) {
         this->typeOfFeature = getFeatureTypeEnum(entityTypeName);
         this->initModels();
         this->initFunctionsModel();
-        this->initMeasurementConfigModel();
+        QList<ElementTypes> neededElements;
+        this->initMeasurementConfigModel(neededElements);
     }
 
 }
 
 void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
 {
-    qDebug() << "on_comboBox_function_currentIndexChanged: " << index;
     sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-    qDebug() << "function: " << function.name;
-    if(true) return;
-    this->initModels();
-    this->initFunctionsModel();
-    this->initMeasurementConfigModel();
+    this->initMeasurementConfigModel(function.neededElements);
 }
