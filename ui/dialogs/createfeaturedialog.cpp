@@ -350,8 +350,8 @@ void CreateFeatureDialog::initFunctionsModel(){
 
 }
 
-void CreateFeatureDialog::initMeasurementConfigModel(QList<ElementTypes> neededElements){
-    this->measurementConfigurationModel->setFilter(neededElements);
+void CreateFeatureDialog::initMeasurementConfigModel(){
+    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature);
 }
 
 /*!
