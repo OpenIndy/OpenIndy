@@ -26,6 +26,7 @@ public:
     //##########
 
     void setFilter(const bool &showAll);
+    void setFilter(const QList<ElementTypes> neededElements);
 
     //###########################################
     //override methods of sort filter proxy model
@@ -53,6 +54,7 @@ private:
     //################
 
     bool showAll;
+    QList<ElementTypes> neededElements;
 
 };
 
