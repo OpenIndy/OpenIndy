@@ -313,6 +313,11 @@ void CreateFeatureDialog::initModels(){
     int sizeNominal = getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
     this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
+    //set model for available measurement configs
+    this->measurementConfigurationModel = &ModelManager::getMeasurementConfigurationProxyModel();
+    this->measurementConfigurationModel->setFilter(true); // show all
+    this->ui->comboBox_mConfig->setModel(measurementConfigurationModel);
+
     //set model for available functions
     this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
     this->ui->comboBox_function->setModel(this->functionListModel);
@@ -322,11 +327,6 @@ void CreateFeatureDialog::initModels(){
 
     //set model for available scalar entities
     this->ui->comboBox_entityType->setModel(&ModelManager::getScalarEntityTypeNamesModel());
-
-    //set model for available measurement configs
-    this->measurementConfigurationModel = &ModelManager::getMeasurementConfigurationProxyModel();
-    this->measurementConfigurationModel->setFilter(true); // show all
-    this->ui->comboBox_mConfig->setModel(measurementConfigurationModel);
 
 }
 
