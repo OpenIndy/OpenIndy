@@ -108,8 +108,8 @@ QVariant ReadingModel::data(const QModelIndex &index, int role) const{
             return reading->getDisplayType();
         case eReadingDisplayTime:
             return reading->getDisplayTime();
-        case eReadingDisplaySensor:
-            return reading->getDisplaySensor();
+        case eReadingDisplaySensorConfigName:
+            return reading->getDisplaySensorConfigName();
         case eReadingDisplaySide:
             return reading->getDisplaySide();
         case eReadingDisplayAzimuth:
