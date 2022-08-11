@@ -362,6 +362,8 @@ void MainWindow::currentJobChanged(){
  * \param name
  */
 void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
+    this->showStatusSensor(SensorStatus::eSensorActionInProgress, name);
+
     this->sensorTaskInfoDialog.setDisplayMessage(name);
     this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
     if(this->sensorTaskInfoDialog.isVisible()){
@@ -377,6 +379,8 @@ void MainWindow::sensorActionStarted(const QString &name, const bool enableFinis
  * \param msg
  */
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
+    this->showStatusSensor(SensorStatus::eClearStatus, "");
+
     this->sensorTaskInfoDialog.enableFinishButton(false);
     this->sensorTaskInfoDialog.close();
     emit this->log(msg, eInformationMessage, eConsoleMessage);
@@ -2420,6 +2424,17 @@ void MainWindow::initStatusBar(){
 
     //create GUI elements
     this->label_statusSensor = new QLabel();
+    // "blink" animation
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(this);
+    this->label_statusSensor->setGraphicsEffect(opacityEffect);
+    this->animation_label_statusSensor = new QPropertyAnimation(opacityEffect, "opacity", this);
+    this->animation_label_statusSensor->setStartValue(-1.0);
+    this->animation_label_statusSensor->setEndValue(2.0);
+    this->animation_label_statusSensor->setLoopCount(-1);
+    this->animation_label_statusSensor->setDuration(500);
+    this->animation_label_statusSensor->setEasingCurve(QEasingCurve::OutQuad);
+
+
     this->label_statusUnitMetric = new QLabel();
     this->label_statusUnitAngular = new QLabel();
     this->label_statusUnitTemperature = new QLabel();
@@ -3124,6 +3139,12 @@ void MainWindow::on_pushButton_showNextFoundFeature_clicked()
 }
 
 void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg) {
+
+    if(this->animation_label_statusSensor->state() == QVariantAnimation::Running) {
+        this->animation_label_statusSensor->stop();
+        this->label_statusSensor->setVisible(true);
+    }
+
     switch(status){
     case SensorStatus::eReadyForMeasurement:
         this->label_statusSensor->setStyleSheet("QLabel { background-color : lightgreen;}");
@@ -3131,7 +3152,15 @@ void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg
      case SensorStatus::eNotReadyForMeasurement:
         this->label_statusSensor->setStyleSheet("QLabel { background-color : red;}");
         break;
+     case SensorStatus::eSensorActionInProgress:
+       this->label_statusSensor->setStyleSheet("QLabel { background-color : yellow;}");
+       this->animation_label_statusSensor->start(); // start "blink" animation
+       break;
+     case SensorStatus::eClearStatus:
+        this->label_statusSensor->setStyleSheet("");
+        break;
      }
+
      this->label_statusSensor->setText(msg);
  }
 
