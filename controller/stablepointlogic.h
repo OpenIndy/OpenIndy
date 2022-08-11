@@ -16,6 +16,12 @@
 #include "measurementconfig.h"
 #include "float.h"  // DBL_MAX
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 namespace oi{
 
 struct ReadingData {
@@ -26,7 +32,7 @@ struct ReadingData {
     double distanceToPrevStable;
 };
 
-class StablePointLogic : public QObject
+class OI_MAIN_EXPORT StablePointLogic : public QObject
 {
     Q_OBJECT
 

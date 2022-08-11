@@ -6,7 +6,13 @@
 #include <QDebug>
 #include "plugincopier.h"
 
-class SimplePluginLoader : public QObject
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+class OI_MAIN_EXPORT SimplePluginLoader : public QObject
 {
     Q_OBJECT
 
