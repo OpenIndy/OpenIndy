@@ -1502,6 +1502,52 @@ bool SystemDbManager::setDefaultSensorConfig(const QString &name){
 
 }
 
+void SystemDbManager::initInMemoryDB(const QStringList initStatements) {
+
+    if(!SystemDbManager::isInit) {
+        SystemDbManager::db = QSqlDatabase::addDatabase("QSQLITE", "inMemory");
+
+        SystemDbManager::db.setDatabaseName(":memory:");
+
+        if (!SystemDbManager::db.open()) {
+            qFatal("unexpected: cannot connect database");
+        }
+
+        if(!initStatements.isEmpty()) {
+            if (!SystemDbManager::db.transaction()) {
+                qFatal("unexpected: cannot create transaction");
+            }
+            QSqlQuery query(SystemDbManager::db);
+
+            foreach (QString statment, initStatements) {
+                if (statment.trimmed().isEmpty()) {
+                    continue;
+                }
+                if (!query.exec(statment)) {
+                    qFatal(QString("unexpected: " + query.lastError().text()).toLocal8Bit());
+                }
+                query.finish();
+
+            }
+
+            if (!SystemDbManager::db.commit()) {
+                qFatal("unexpected: commit failed");
+            }
+        }
+
+        QSqlQuery query(SystemDbManager::db);
+        if (!query.exec("select * from plugin")) {
+            qFatal(QString("unexpected: " + query.lastError().text()).toLocal8Bit());
+        }
+        SystemDbManager::disconnect();
+        if (!query.exec("select * from plugin")) {
+            qFatal(QString("unexpected: " + query.lastError().text()).toLocal8Bit());
+        }
+
+        SystemDbManager::isInit = true;
+    }
+}
+
 /*!
  * \brief SystemDbManager::init
  */
@@ -1536,7 +1582,7 @@ bool SystemDbManager::connect(){
 
     QFileInfo checkFile(SystemDbManager::db.databaseName());
 
-    if(checkFile.isFile()){
+    if(SystemDbManager::db.connectionName() != "inMemory" || checkFile.isFile()){
         SystemDbManager::db.open();
     }
     return SystemDbManager::db.isOpen();
@@ -1547,7 +1593,7 @@ bool SystemDbManager::connect(){
  * \brief SystemDbManager::disconnect
  */
 void SystemDbManager::disconnect(){
-    if(SystemDbManager::db.isOpen()){
+    if(SystemDbManager::db.isOpen() && SystemDbManager::db.connectionName() != "inMemory"){
         SystemDbManager::db.close();
     }
 }

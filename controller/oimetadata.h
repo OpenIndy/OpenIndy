@@ -21,11 +21,17 @@
 #include "exchangesimpleascii.h"
 #include "exchangedefinedformat.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 /*!
  * \brief The OiMetaData class
  * Holds version information about OpenIndy
  */
-class OiMetaData
+class OI_MAIN_EXPORT OiMetaData
 {
 
 public:

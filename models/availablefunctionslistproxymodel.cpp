@@ -65,6 +65,9 @@ bool AvailableFunctionsListProxyModel::filterAcceptsRow(int source_row, const QM
     }
 
     //get a list of available first function for the specified feature type
+    if(this->filter < 0) {
+        return false;
+    }
     QList<sdb::Function> functions = SystemDbManager::getCreateFunctions(this->filter);
     if(functions.size() == 0){
         return false;

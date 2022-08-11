@@ -16,6 +16,12 @@ void MeasurementConfigurationProxyModel::setFilter(const bool &showAll){
     this->showAll = showAll;
     this->invalidateFilter();
 }
+void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature) {
+    this->neededElements = neededElements;
+    this->typeOfFeature = typeOfFeature;
+    this->showAll = neededElements.isEmpty();
+    this->invalidateFilter();
+}
 
 /*!
  * \brief MeasurementConfigurationProxyModel::headerData
@@ -56,8 +62,15 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     }
 
     //check if the index is a project sensor config
-    if(this->showAll == true){
+    if(this->showAll){
         return true;
+    }
+
+    MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
+    for (ElementTypes elementType : this->neededElements) {
+        if(mConfig.applicableFor(elementType, this->typeOfFeature)) {
+            return true;
+        }
     }
 
     return false;

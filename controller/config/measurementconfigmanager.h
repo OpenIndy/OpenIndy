@@ -11,13 +11,19 @@
 #include "measurementconfig.h"
 #include "console.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 /*!
  * \brief The MeasurementConfigManager class
  * Used to save and manage all available measurement configs
  */
-class MeasurementConfigManager : public QObject
+class OI_MAIN_EXPORT MeasurementConfigManager : public QObject
 {
     Q_OBJECT
 
