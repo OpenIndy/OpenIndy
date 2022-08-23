@@ -23,29 +23,6 @@ linux {
 INSTALLS += target
 }
 
-# splash screen
-win32 {
-
-    win32:CONFIG(release, debug|release): splash.path = $$PWD/../install/release
-    win32:CONFIG(debug, debug|release): splash.path = $$PWD/../install/debug
-
-    splash.files += $$PWD/../res/icons/splash.png
-
-    INSTALLS += splash
-
-}
-
-linux {
-
-    linux:CONFIG(release, debug|release): splash.path = $$PWD/../install/release
-    linux:CONFIG(debug, debug|release): splash.path = $$PWD/../install/debug
-
-    splash.files += $$PWD/../res/icons/splash.png
-
-    INSTALLS += splash
-
-}
-
 win32 {
     CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../appui/bin/debug -lopenIndy22
