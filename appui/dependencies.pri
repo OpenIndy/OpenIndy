@@ -82,14 +82,14 @@ INSTALLS += oisystemdb
 # res-rt
 CONFIG(release, debug|release) {
     res_rt.path = $$PWD/../install/release
-    res_rt.files += $$PWD/../res-rt/config
-    res_rt.files += $$PWD/../res-rt/example
-    res_rt.files += $$PWD/../res-rt/plugins
+    res_rt.files += $$PWD/../res-rt/config/*
+    res_rt.files += $$PWD/../res-rt/example/*
+    res_rt.files += $$PWD/../res-rt/plugins/*
 } else {
     res_rt.path = $$PWD/../install/debug
-    res_rt.files += $$PWD/../res-rt/config
-    res_rt.files += $$PWD/../res-rt/example
-    res_rt.files += $$PWD/../res-rt/plugins
+    res_rt.files += $$PWD/../res-rt/config/*
+    res_rt.files += $$PWD/../res-rt/example/*
+    res_rt.files += $$PWD/../res-rt/plugins/*
 }
 INSTALLS += res_rt
 
