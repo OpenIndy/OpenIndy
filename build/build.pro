@@ -18,9 +18,6 @@ DEFINES += OI_MAIN_PROGRAM
 # version number from git
 include($$PWD/../appui/version.pri)
 
-# general build configuration
-include($$PWD/config.pri)
-
 # external libraries
 # openIndy.dll
 include($$PWD/dependencies.pri)
