@@ -8,10 +8,6 @@ QT       += core gui sql svg serialport network xml websockets
 
 greaterThan(QT_MAJOR_VERSION, 4):
 
-qtHaveModule("multimedia") {
-ENABLE_MULTIMEDIA=1
-}
-
 TARGET = openIndy
 
 TEMPLATE = lib
