@@ -400,6 +400,7 @@ void MainWindow::measurementCompleted(){
  */
 void MainWindow::measurementDone(bool success)
 {
+    #if ENABLE_SOUND
     if(ModelManager::getParameterDisplayConfig().getUseSounds()){
         if(success){
             QSound::play(":/sounds/measure_success.wav");
@@ -407,7 +408,7 @@ void MainWindow::measurementDone(bool success)
             QSound::play(":/sounds/measure_fail.wav");
         }
     }
-    return;
+    #endif
 }
 
 /*!

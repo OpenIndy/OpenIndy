@@ -56,7 +56,9 @@
 
 #include "measurebehaviorlogic.h"
 
+#if ENABLE_SOUND
 #include <QSound>
+#endif
 
 #if defined(OI_MAIN_LIB)
 #  define OI_MAIN_EXPORT Q_DECL_EXPORT
