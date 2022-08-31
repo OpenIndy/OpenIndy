@@ -274,3 +274,8 @@ FORMS    += \
 RESOURCES += \
     $$PWD/../res/res.qrc
 
+
+contains( QT, multimedia ) {
+message("multimedia available")
+ENABLE_SOUND=1
+}
