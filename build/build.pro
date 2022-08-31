@@ -5,7 +5,7 @@
 #-------------------------------------------------
 CONFIG += c++11
 QT       += core gui widgets
-QT       += sql svg serialport network xml websockets
+QT       += sql serialport network xml websockets
 
 greaterThan(QT_MAJOR_VERSION, 4):
 
