@@ -9,7 +9,7 @@ run-test.commands = \
     cd $$shell_path($$OUT_PWD/watchwindow) && $(MAKE) run-test & \
     cd $$shell_path($$OUT_PWD/stablepoint) && $(MAKE) run-test & \
     cd $$shell_path($$OUT_PWD/featuresorter) && $(MAKE) run-test & \
-    cd $$shell_path($$OUT_PWD/measurebehavior) && $(MAKE) run-test & \
+    cd $$shell_path($$OUT_PWD/measurebehavior) && rem $(MAKE) run-test & \
     cd $$shell_path($$OUT_PWD/dialogs) && $(MAKE) run-test
 } else:win32-g++ {
 run-test.commands = \
