@@ -223,7 +223,9 @@ QPointer<BundleAdjustment> PluginLoader::loadBundleAdjustmentPlugin(const QStrin
         Plugin *bundleAdjustmentFactory = qobject_cast<Plugin *>(plugin);
         if(bundleAdjustmentFactory) {
             bundleAdjustment = bundleAdjustmentFactory->createBundleAdjustment(name);
-            if(!bundleAdjustment.isNull()){
+            if(bundleAdjustment.isNull()){
+                emit PluginLoader::getInstance()->sendMessage(QString("Cannot load selected bundle adjustment: %1: %2").arg(name).arg(pluginLoader.errorString()), eErrorMessage, eConsoleMessage);
+            } else {
                 bundleAdjustment->init();
             }
         } else {
