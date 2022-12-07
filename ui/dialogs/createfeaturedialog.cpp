@@ -467,6 +467,6 @@ void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QStri
 
 void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
 {
-    this->neededElements = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex()).neededElements;
+    this->neededElements = this->functionListModel->getFunctionAtIndex(index).neededElements;
     this->initMeasurementConfigModel();
 }

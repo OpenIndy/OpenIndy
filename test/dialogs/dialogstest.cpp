@@ -61,40 +61,48 @@ void DialogsTest::initTestCase() {
     fastPointConfig.setName("measconfig-fastpoint-cartesian");
     fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     measurementConfigManager->addProjectMeasurementConfig(fastPointConfig); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(fastPointConfig);
 
     MeasurementConfig fastPointConfigP;
     fastPointConfigP.setName("measconfig-fastpoint-polar");
     fastPointConfigP.setTypeOfReading(ReadingTypes::eCartesianReading);
     measurementConfigManager->addProjectMeasurementConfig(fastPointConfigP); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(fastPointConfigP);
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
     levelConfig.setTypeOfReading(ReadingTypes::eLevelReading);
     measurementConfigManager->addProjectMeasurementConfig(levelConfig); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
     scanTimeConfig.setName("measconfig-scantime-cartesian");
     scanTimeConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     scanTimeConfig.setTimeDependent(true);
     measurementConfigManager->addProjectMeasurementConfig(scanTimeConfig); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
 
     MeasurementConfig scanTimeConfigP;
     scanTimeConfigP.setName("measconfig-scantime-polar");
     scanTimeConfigP.setTypeOfReading(ReadingTypes::ePolarReading);
     scanTimeConfigP.setTimeDependent(true);
     measurementConfigManager->addProjectMeasurementConfig(scanTimeConfigP); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(scanTimeConfigP);
 
     MeasurementConfig scanDistanceConfig;
     scanDistanceConfig.setName("measconfig-scandistance-cartesian"); // not for point
     scanDistanceConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     scanDistanceConfig.setDistanceDependent(true);
     measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfig); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(scanDistanceConfig);
+
 
     MeasurementConfig scanDistanceConfigP;
     scanDistanceConfigP.setName("measconfig-scandistance-polar"); // not for point
     scanDistanceConfigP.setTypeOfReading(ReadingTypes::ePolarReading);
     scanDistanceConfigP.setDistanceDependent(true);
     measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfigP); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(scanDistanceConfigP);
 
     // create plugin with some functions
     QList<sdb::Plugin> plugins;
