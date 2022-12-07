@@ -26,6 +26,7 @@ private Q_SLOTS:
     void createCircle();
     void createPlane();
     void createLevel();
+    void reuseDialogInstance();
 
 private:
 
@@ -312,6 +313,93 @@ void DialogsTest::createLevel() {
     }
     QVERIFY(1 == mConfigLV->model()->rowCount());
     QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+
+}
+
+void DialogsTest::reuseDialogInstance() {
+    // create dialog
+    CreateFeatureDialog dialog;
+
+    // comboBox_entityType currently not usesd, type is set directly
+    dialog.setFeatureType(FeatureTypes::ePlaneFeature);
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    dialog.activateWindow();
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
+
+    // check function
+    QPointer<QComboBox> functionCB;
+    QPointer<QListView> functionLV;
+
+    // check for default function
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << "rowCount" << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "currentIndex" << functionCB->currentIndex();
+    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+
+    // check applicable measurement configs
+    QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
+    QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
+    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
+        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
+    }
+    QVERIFY(6 == mConfigLV->model()->rowCount());
+    QVERIFY("*measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+
+    dialog.close();
+    QTest::qWait(500);
+    dialog.show();
+    dialog.activateWindow();
+
+    // check for default function
+    functionCB = dialog.findChild<QComboBox *>("comboBox_function");
+    functionLV = functionCB->findChild<QListView *>();
+    qDebug() << "rowCount" << functionLV->model()->rowCount();
+    qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "currentIndex" << functionCB->currentIndex();
+    QVERIFY(3 == functionLV->model()->rowCount());
+    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+
+
+    int i=0;
+    for(i=0; i<functionLV->model()->rowCount(); i++) {
+        if("function-fitlevel" == functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString()) {
+            break;
+        }
+    }
+
+    // select "function-fitlevel"
+    QTest::mouseClick(functionCB, Qt::LeftButton);
+    QTest::qWait(1000); // TODO spy
+
+    QModelIndex idx = functionLV->model()->index(i,0);
+    functionLV->scrollTo(idx);
+
+
+    QPoint itemPt = functionLV->visualRect(idx).center();
+    QString functionName = functionLV->model()->index(i,0).data( Qt::DisplayRole ).toString();
+    qDebug() << "clicking on function" << functionName;
+    QVERIFY("function-fitlevel" == functionName);
+
+    QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::qWait(1000);
+
+    // check applicable measurement configs
+    mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
+    mConfigLV = mConfigCB->findChild<QListView *>();
+    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
+        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
+    }
+    QVERIFY(1 == mConfigLV->model()->rowCount());
+    QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+
 
 }
 
