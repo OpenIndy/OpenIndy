@@ -118,7 +118,7 @@ void DialogsTest::initTestCase() {
     point.neededElements << ElementTypes::eObservationElement;
 
     sdb::Function plane;
-    plane.name = "function-fitplanet";
+    plane.name = "function-fitplane";
     plane.iid = OiMetaData::iid_FitFunction;
     plane.applicableFor << FeatureTypes::ePlaneFeature;
     plane.neededElements << ElementTypes::eObservationElement;
@@ -248,7 +248,7 @@ void DialogsTest::createPlane() {
     qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
-    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
 
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
@@ -287,7 +287,7 @@ void DialogsTest::createLevel() {
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
     QVERIFY(3 == functionLV->model()->rowCount());
-    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
 
 
     int i=0;
@@ -345,7 +345,7 @@ void DialogsTest::reuseDialogInstance() {
     qDebug() << "rowCount" << functionLV->model()->rowCount();
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
-    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
 
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
@@ -373,7 +373,7 @@ void DialogsTest::reuseDialogInstance() {
     qDebug() << functionLV->model()->index(0,0).data( Qt::DisplayRole ).toString();
     qDebug() << "currentIndex" << functionCB->currentIndex();
     QVERIFY(3 == functionLV->model()->rowCount());
-    QVERIFY("function-fitplanet" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
+    QVERIFY("function-fitplane" == functionLV->model()->index(functionCB->currentIndex(),0).data( Qt::DisplayRole ).toString());
 
 
     int i=0;
