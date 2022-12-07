@@ -184,10 +184,10 @@ void DialogsTest::createPoint() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(4 == mConfigLV->model()->rowCount());
-    QVERIFY("*measconfig-fastpoint-cartesian"   == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-fastpoint-polar"       == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-cartesian"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-polar"        == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-cartesian"   == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-polar"       == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-cartesian"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-polar"        == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -220,12 +220,12 @@ void DialogsTest::createCircle() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("*measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 }
 
 void DialogsTest::createPlane() {
@@ -257,12 +257,12 @@ void DialogsTest::createPlane() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("*measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -320,7 +320,7 @@ void DialogsTest::createLevel() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(1 == mConfigLV->model()->rowCount());
-    QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -354,12 +354,12 @@ void DialogsTest::reuseDialogInstance() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("*measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("*measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 
     dialog.close();
     QTest::qWait(500);
@@ -406,7 +406,7 @@ void DialogsTest::reuseDialogInstance() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(1 == mConfigLV->model()->rowCount());
-    QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
 
 
 }
