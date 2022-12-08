@@ -143,12 +143,17 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
     //init function models based on the current feature type
     this->initFunctionsModel();
 
-    for(sdb::Function function: SystemDbManager::getFunctions()) {
-        if(this->ui->comboBox_function->currentText() == function.name) {
-            this->neededElements.clear();
-            this->neededElements.append(function.neededElements);
-            break;
-        }
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+    if(function.iid.startsWith("de.openIndy.plugin.function.constructFunction")) {
+        this->neededElements.clear();
+        this->neededElements.append(ElementTypes::eUndefinedElement);
+        this->ui->comboBox_mConfig->setVisible(false);
+        this->ui->label_mConfig->setVisible(false);
+    } else {
+        this->neededElements.clear();
+        this->neededElements.append(function.neededElements);
+        this->ui->comboBox_mConfig->setVisible(true);
+        this->ui->label_mConfig->setVisible(true);
     }
 
     this->initMeasurementConfigModel();
@@ -412,7 +417,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        attributes.mConfig = this->ui->comboBox_mConfig->currentText();
+        attributes.mConfig = this->neededElements.isEmpty() ? "" : this->ui->comboBox_mConfig->currentText();
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
@@ -421,7 +426,7 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        attributes.mConfig = this->ui->comboBox_mConfig->currentText();
+        attributes.mConfig = this->neededElements.isEmpty() ? "" : this->ui->comboBox_mConfig->currentText();
 
     }
 
@@ -467,6 +472,17 @@ void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QStri
 
 void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
 {
-    this->neededElements = this->functionListModel->getFunctionAtIndex(index).neededElements;
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(index);
+    if(function.iid.startsWith("de.openIndy.plugin.function.constructFunction")) {
+        this->neededElements.clear();
+        this->neededElements.append(ElementTypes::eUndefinedElement);
+        this->ui->comboBox_mConfig->setVisible(false);
+        this->ui->label_mConfig->setVisible(false);
+    } else {
+        this->neededElements.clear();
+        this->neededElements.append(function.neededElements);
+        this->ui->comboBox_mConfig->setVisible(true);
+        this->ui->label_mConfig->setVisible(true);
+    }
     this->initMeasurementConfigModel();
 }
