@@ -9,8 +9,8 @@ run-test.commands = \
     cd $$shell_quote($$OUT_PWD/watchwindow) && $(MAKE) run-test & \
     cd $$shell_quote($$OUT_PWD/stablepoint) && $(MAKE) run-test & \
     cd $$shell_quote($$OUT_PWD/featuresorter) && $(MAKE) run-test & \
-    cd $$shell_quote($$OUT_PWD/measurebehavior) && rem $(MAKE) run-test & \
-    cd $$shell_quote($$OUT_PWD/dialogs) && $(MAKE) run-test
+    cd $$shell_quote($$OUT_PWD/dialogs) && $(MAKE) run-test & \
+    rem cd $$shell_quote($$OUT_PWD/measurebehavior) && $(MAKE) run-test
 } else:win32-g++ {
 run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
