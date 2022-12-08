@@ -143,18 +143,7 @@ void CreateFeatureDialog::showEvent(QShowEvent *event){
     //init function models based on the current feature type
     this->initFunctionsModel();
 
-    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
-    if(function.iid.startsWith("de.openIndy.plugin.function.constructFunction")) {
-        this->neededElements.clear();
-        this->neededElements.append(ElementTypes::eUndefinedElement);
-        this->ui->comboBox_mConfig->setVisible(false);
-        this->ui->label_mConfig->setVisible(false);
-    } else {
-        this->neededElements.clear();
-        this->neededElements.append(function.neededElements);
-        this->ui->comboBox_mConfig->setVisible(true);
-        this->ui->label_mConfig->setVisible(true);
-    }
+    this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
 
     this->initMeasurementConfigModel();
 
@@ -472,7 +461,12 @@ void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QStri
 
 void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
 {
-    sdb::Function function = this->functionListModel->getFunctionAtIndex(index);
+    this->initMeasurementConfigUI(index);
+    this->initMeasurementConfigModel();
+}
+
+void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(functionIndex);
     if(function.iid.startsWith("de.openIndy.plugin.function.constructFunction")) {
         this->neededElements.clear();
         this->neededElements.append(ElementTypes::eUndefinedElement);
@@ -484,5 +478,4 @@ void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int ind
         this->ui->comboBox_mConfig->setVisible(true);
         this->ui->label_mConfig->setVisible(true);
     }
-    this->initMeasurementConfigModel();
 }

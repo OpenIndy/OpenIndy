@@ -94,7 +94,7 @@ private:
 
     void featureAttributesFromGUI(FeatureAttributes &attributes);
 
-    bool created;
+    void initMeasurementConfigUI(const int functionIndex);
 
 private:
     Ui::CreateFeatureDialog *ui;
@@ -113,6 +113,7 @@ private:
 
     QPointer<OiJob> currentJob;
 
+    bool created;
 };
 
 #endif // CREATEFEATUREDIALOG_H
