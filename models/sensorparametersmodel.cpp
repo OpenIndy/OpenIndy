@@ -58,7 +58,7 @@ QVariant SensorParametersModel::data(const QModelIndex &index, int role) const{
         }else{
             rowIndex = rowIndex - this->sConfig.getStringParameter().uniqueKeys().size()
                     - this->sConfig.getDoubleParameter().size();
-            return QString::number(this->sConfig.getIntegerParameter().values().at(rowIndex), 'f', 8);
+            return QString::number(this->sConfig.getIntegerParameter().values().at(rowIndex), 'g', 8);
         }
 
     }
