@@ -44,7 +44,6 @@ QVariant SensorParametersModel::data(const QModelIndex &index, int role) const{
         return QVariant();
     }
 
-    //get row and column indices
     int rowIndex = index.row();
 
     if(role == Qt::DisplayRole){
