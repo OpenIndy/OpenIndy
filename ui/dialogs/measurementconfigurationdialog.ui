@@ -256,9 +256,6 @@
                 </item>
                </layout>
               </widget>
-              <zorder></zorder>
-              <zorder></zorder>
-              <zorder>verticalLayoutWidget_4</zorder>
              </widget>
             </item>
             <item>
@@ -301,7 +298,23 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="comboBox"/>
+                   <widget class="QComboBox" name="comboBox">
+                    <item>
+                     <property name="text">
+                      <string>fast</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>standard</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>precise</string>
+                     </property>
+                    </item>
+                   </widget>
                   </item>
                  </layout>
                 </item>
@@ -318,8 +331,6 @@
                 </item>
                </layout>
               </widget>
-              <zorder>verticalLayoutWidget</zorder>
-              <zorder>verticalSpacer_6</zorder>
              </widget>
             </item>
             <item>
@@ -401,7 +412,7 @@
                     <property name="title">
                      <string>dependent</string>
                     </property>
-                    <widget class="QWidget" name="">
+                    <widget class="QWidget" name="layoutWidget">
                      <property name="geometry">
                       <rect>
                        <x>10</x>
@@ -502,9 +513,6 @@
                 </item>
                </layout>
               </widget>
-              <zorder>verticalLayoutWidget_2</zorder>
-              <zorder>horizontalSpacer_3</zorder>
-              <zorder>horizontalSpacer_3</zorder>
              </widget>
             </item>
             <item>
