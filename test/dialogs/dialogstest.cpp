@@ -6,6 +6,7 @@
 #include <QStringListModel>
 #include "createfeaturedialog.h"
 #include "availablefunctionslistproxymodel.h"
+#include "measurementconfigurationdialog.h"
 
 // recomended readings:
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
@@ -22,10 +23,13 @@ public:
 
 private Q_SLOTS:
     void initTestCase();
+
     void createPoint();
     void createCircle();
     void createPlane();
     void createLevel();
+
+    void measurementConfigDialog_init();
 
 private:
 
@@ -288,6 +292,21 @@ void DialogsTest::createLevel() {
     QVERIFY(1 == mConfigLV->model()->rowCount());
     QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
 
+}
+
+void DialogsTest::measurementConfigDialog_init() {
+    // create dialog
+    MeasurementConfigurationDialog dialog;
+
+    MeasurementConfig config = ModelManager::getMeasurementConfigManager()->getProjectMeasurementConfig("measconfig-fastpoint");
+    dialog.setMeasurementConfiguration(config);
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
+
+
+
+    QTest::qWait(100000);
 }
 
 QTEST_MAIN(DialogsTest)
