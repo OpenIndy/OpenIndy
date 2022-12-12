@@ -362,17 +362,13 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     //
     if(mConfig.getMeasurementType() == eSinglePoint) {
         this->ui->radioButton_singlePoint->setChecked(true);
-        //this->ui->radioButton_scan->setCheckable(false);
     } else { // scan
-        //this->ui->radioButton_singlePoint->setChecked(false);
-        this->ui->radioButton_scan->setCheckable(true);
+        this->ui->radioButton_scan->setChecked(true);
 
         if(mConfig.getMeasurementType() == eScanTimeDependent){
-            this->ui->radioButton_timeDependent->setCheckable(true);
-            //this->ui->radioButton_distanceDependent->setCheckable(false);
+            this->ui->radioButton_timeDependent->setChecked(true);
         } else { // distance
-            //this->ui->radioButton_timeDependent->setCheckable(false);
-            this->ui->radioButton_distanceDependent->setCheckable(true);
+            this->ui->radioButton_distanceDependent->setChecked(true);
         }
     }
 
