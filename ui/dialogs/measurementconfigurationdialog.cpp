@@ -471,6 +471,8 @@ void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
     QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
                         this, &MeasurementConfigurationDialog::measurementConfigNameChanged, Qt::AutoConnection);
 
+    emit initialized();
+
     event->accept();
 
 }

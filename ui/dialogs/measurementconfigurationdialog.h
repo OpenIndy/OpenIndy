@@ -23,6 +23,12 @@
 #include "modelmanager.h"
 #include "measurementconfigurationlistdelegate.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 namespace Ui {
@@ -32,7 +38,7 @@ class MeasurementConfigurationDialog;
 /*!
  * \brief The MeasurementConfigurationDialog class
  */
-class MeasurementConfigurationDialog : public QDialog
+class OI_MAIN_EXPORT MeasurementConfigurationDialog : public QDialog
 {
     Q_OBJECT
 
@@ -53,6 +59,7 @@ signals:
     //#############################################################################
 
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void initialized(); // currently used for testing
 
 private slots:
 
