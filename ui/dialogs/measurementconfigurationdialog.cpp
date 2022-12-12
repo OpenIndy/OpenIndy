@@ -387,38 +387,26 @@ void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
 void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const MeasurementConfig &mConfig){
 
     //do not trigger edits while setting up measurement config
-    //this->ui->comboBox_readingType->blockSignals(true);
     this->ui->lineEdit_distancInterval->blockSignals(true);
     this->ui->lineEdit_iterations->blockSignals(true);
-    //this->ui->lineEdit_numMeas->blockSignals(true);
     this->ui->lineEdit_timeInterval->blockSignals(true);
-    //this->ui->checkBox_distanceDependent->blockSignals(true);
-    //this->ui->checkBox_timeDependent->blockSignals(true);
     this->ui->checkBox_twoFace->blockSignals(true);
 
     //set up GUI elements
     this->ui->label_configName->setText(QString("%1%2").arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
                                         .arg(mConfig.getName()));
-    //this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(mConfig.getTypeOfReading()));
     this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
     this->ui->lineEdit_iterations->setText(QString::number(mConfig.getIterations()));
-    //this->ui->lineEdit_numMeas->setText(QString::number(mConfig.getCount()));
     this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
-    //this->ui->checkBox_distanceDependent->setChecked(mConfig.getDistanceDependent());
-    //this->ui->checkBox_timeDependent->setChecked(mConfig.getTimeDependent());
     this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
 
     //update selected measurement config
     this->selectedMeasurementConfig = mConfig;
 
     //from now on trigger edits
-    //this->ui->comboBox_readingType->blockSignals(false);
     this->ui->lineEdit_distancInterval->blockSignals(false);
     this->ui->lineEdit_iterations->blockSignals(false);
-    //this->ui->lineEdit_numMeas->blockSignals(false);
     this->ui->lineEdit_timeInterval->blockSignals(false);
-    //this->ui->checkBox_distanceDependent->blockSignals(false);
-   // this->ui->checkBox_timeDependent->blockSignals(false);
     this->ui->checkBox_twoFace->blockSignals(false);
 
 }
@@ -450,13 +438,9 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     //get measurement config from GUI selection
     MeasurementConfig mConfig;
     mConfig.setName(name);
-    //mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
     mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
-    //mConfig.setCount(this->ui->lineEdit_numMeas->text().toInt());
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
-    //mConfig.setDistanceDependent(this->ui->checkBox_distanceDependent->isChecked());
-    //mConfig.setTimeDependent(this->ui->checkBox_timeDependent->isChecked());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
 
     mConfig.setIsSaved(true);
@@ -498,9 +482,6 @@ void MeasurementConfigurationDialog::closeEvent(QCloseEvent *event){
  */
 void MeasurementConfigurationDialog::initGUI(){
 
-    //set default reading type
-    //this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(ePolarReading));
-
     //set visibility
     this->ui->widget_measurementConfigValues->setEnabled(false);
 
@@ -518,9 +499,6 @@ void MeasurementConfigurationDialog::initGUI(){
  * \brief MeasurementConfigurationDialog::initModels
  */
 void MeasurementConfigurationDialog::initModels(){
-
-    //init reading types model
-    //this->ui->comboBox_readingType->setModel(&ModelManager::getReadingTypeNamesModel());
 
     //init measurement config model
     this->ui->listView_measurementConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
