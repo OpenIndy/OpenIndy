@@ -221,7 +221,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>70</height>
+                <height>90</height>
                </size>
               </property>
               <property name="title">
@@ -233,7 +233,7 @@
                  <x>10</x>
                  <y>19</y>
                  <width>391</width>
-                 <height>41</height>
+                 <height>64</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -251,6 +251,13 @@
                  <widget class="QRadioButton" name="radioButton_scan">
                   <property name="text">
                    <string>Scan</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="radioButton_Level">
+                  <property name="text">
+                   <string>Level</string>
                   </property>
                  </widget>
                 </item>
@@ -281,7 +288,7 @@
                  <x>10</x>
                  <y>20</y>
                  <width>421</width>
-                 <height>101</height>
+                 <height>103</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_7">
