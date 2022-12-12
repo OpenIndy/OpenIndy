@@ -362,6 +362,8 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     //
     if(mConfig.getMeasurementType() == eSinglePoint) {
         this->ui->radioButton_singlePoint->setChecked(true);
+    } else if(mConfig.getMeasurementType() == eLevel) {
+        this->ui->radioButton_Level->setChecked(true);
     } else { // scan
         this->ui->radioButton_scan->setChecked(true);
 
@@ -430,6 +432,8 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     // set measurement mode
     if(this->ui->radioButton_singlePoint->isChecked()) {
         mConfig.setMeasurementType(eSinglePoint);
+    } else if(this->ui->radioButton_Level->isChecked()) {
+        mConfig.setMeasurementType(eLevel);
     } else {
         if(this->ui->radioButton_timeDependent->isChecked()) {
             mConfig.setMeasurementType(eScanTimeDependent);
@@ -536,11 +540,34 @@ void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textC
 
 void MeasurementConfigurationDialog::on_radioButton_scan_toggled(bool checked)
 {
-    this->ui->groupBox_Scan->setEnabled(checked);
-    this->ui->radioButton_distanceDependent->setEnabled(checked);
-    this->ui->radioButton_timeDependent->setEnabled(checked);
+    if(checked) {
+        this->ui->groupBox_Scan->setEnabled(true);
+        this->ui->radioButton_distanceDependent->setEnabled(true);
+        this->ui->radioButton_timeDependent->setEnabled(true);
 
-    this->ui->groupBox_Single_Point->setEnabled(!checked);
+        this->ui->groupBox_Single_Point->setEnabled(false);
+    }
+}
+void MeasurementConfigurationDialog::on_radioButton_Level_toggled(bool checked)
+{
+    if(checked) {
+        this->ui->groupBox_Scan->setEnabled(false);
+        this->ui->radioButton_distanceDependent->setEnabled(false);
+        this->ui->radioButton_timeDependent->setEnabled(false);
+
+        this->ui->groupBox_Single_Point->setEnabled(false);
+    }
+}
+
+void MeasurementConfigurationDialog::on_radioButton_singlePoint_toggled(bool checked)
+{
+    if(checked) {
+        this->ui->groupBox_Scan->setEnabled(false);
+        this->ui->radioButton_distanceDependent->setEnabled(false);
+        this->ui->radioButton_timeDependent->setEnabled(false);
+
+        this->ui->groupBox_Single_Point->setEnabled(true);
+    }
 }
 
 void MeasurementConfigurationDialog::on_radioButton_distanceDependent_toggled(bool checked)
