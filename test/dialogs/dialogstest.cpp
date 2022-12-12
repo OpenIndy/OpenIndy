@@ -29,6 +29,7 @@ private Q_SLOTS:
     void createPlane();
     void createLevel();
 
+    void measurementConfigXML_RW();
     void measurementConfigDialog_init();
 
 private:
@@ -306,6 +307,25 @@ void DialogsTest::createLevel() {
     }
     QVERIFY(1 == mConfigLV->model()->rowCount());
     QVERIFY("*measconfig-level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+
+}
+
+void DialogsTest::measurementConfigXML_RW() {
+    MeasurementConfig config = ModelManager::getMeasurementConfigManager()->getProjectMeasurementConfig("measconfig-scantime");
+
+    QDomDocument xml("measurementConfig");
+    QDomElement root = config.toOpenIndyXML(xml);
+    xml.appendChild(root);
+
+    MeasurementConfig fromXML;
+    fromXML.fromOpenIndyXML(xml.documentElement());
+
+    QVERIFY(config.getMeasurementMode() == fromXML.getMeasurementMode());
+    QVERIFY(config.getMeasurementType() == fromXML.getMeasurementType());
+    QVERIFY(config.getMeasureTwoSides() == fromXML.getMeasureTwoSides());
+    QVERIFY(config.getMaxObservations() == fromXML.getMaxObservations());
+    QVERIFY(config.getTimeInterval() == fromXML.getTimeInterval());
+    QVERIFY(config.getDistanceInterval() == fromXML.getDistanceInterval());
 
 }
 
