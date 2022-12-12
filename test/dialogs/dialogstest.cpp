@@ -80,8 +80,8 @@ void DialogsTest::initTestCase() {
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
-    levelConfig.setTypeOfReading(ReadingTypes::eLevelReading);
-    measurementConfigManager->addProjectMeasurementConfig(levelConfig); // add as project config ... seams ok
+    levelConfig.setMeasurementType(MeasurementTypes::eLevel);
+    measurementConfigManager->addSavedMeasurementConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
     scanTimeConfig.setName("measconfig-scantime");
