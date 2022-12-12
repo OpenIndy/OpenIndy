@@ -546,3 +546,9 @@ void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textC
 {
     this->updateMeasurementConfigFromSelection();
 }
+
+void MeasurementConfigurationDialog::on_scan_toggled(bool checked)
+{
+    this->ui->groupBox_Scan->setEnabled(checked);
+    this->ui->groupBox_Single_Point->setEnabled(!checked);
+}

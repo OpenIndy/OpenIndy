@@ -96,6 +96,8 @@ private slots:
 
     void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
 
+    void on_scan_toggled(bool checked);
+
 private:
     Ui::MeasurementConfigurationDialog *ui;
 
