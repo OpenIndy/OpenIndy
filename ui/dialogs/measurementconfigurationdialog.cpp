@@ -356,28 +356,50 @@ void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
  */
 void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const MeasurementConfig &mConfig){
 
+    //update selected measurement config
+    this->selectedMeasurementConfig = mConfig;
+
+    //
+    if(mConfig.getMeasurementType() == eSinglePoint) {
+        this->ui->radioButton_singlePoint->setChecked(true);
+        //this->ui->radioButton_scan->setCheckable(false);
+    } else { // scan
+        //this->ui->radioButton_singlePoint->setChecked(false);
+        this->ui->radioButton_scan->setCheckable(true);
+
+        if(mConfig.getMeasurementType() == eScanTimeDependent){
+            this->ui->radioButton_timeDependent->setCheckable(true);
+            //this->ui->radioButton_distanceDependent->setCheckable(false);
+        } else { // distance
+            //this->ui->radioButton_timeDependent->setCheckable(false);
+            this->ui->radioButton_distanceDependent->setCheckable(true);
+        }
+    }
+
     //do not trigger edits while setting up measurement config
     this->ui->lineEdit_distancInterval->blockSignals(true);
-    this->ui->lineEdit_iterations->blockSignals(true);
+    this->ui->lineEdit_maxObservations->blockSignals(true);
     this->ui->lineEdit_timeInterval->blockSignals(true);
     this->ui->checkBox_twoFace->blockSignals(true);
+    this->ui->comboBox_MeasurementMode->blockSignals(true);
 
     //set up GUI elements
     this->ui->label_configName->setText(QString("%1%2").arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
                                         .arg(mConfig.getName()));
-    this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
-    this->ui->lineEdit_iterations->setText(QString::number(mConfig.getIterations()));
-    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
+
+    this->ui->comboBox_MeasurementMode->setCurrentIndex(mConfig.getMeasurementMode());
     this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
 
-    //update selected measurement config
-    this->selectedMeasurementConfig = mConfig;
+    this->ui->lineEdit_maxObservations->setText(QString::number(mConfig.getMaxObservations()));
+    this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
+    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
 
     //from now on trigger edits
     this->ui->lineEdit_distancInterval->blockSignals(false);
-    this->ui->lineEdit_iterations->blockSignals(false);
+    this->ui->lineEdit_maxObservations->blockSignals(false);
     this->ui->lineEdit_timeInterval->blockSignals(false);
     this->ui->checkBox_twoFace->blockSignals(false);
+    this->ui->comboBox_MeasurementMode->blockSignals(false);
 
 }
 
@@ -408,10 +430,29 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     //get measurement config from GUI selection
     MeasurementConfig mConfig;
     mConfig.setName(name);
-    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
-    mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
-    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
+
+    // set measurement mode
+    if(this->ui->radioButton_singlePoint->isChecked()) {
+        mConfig.setMeasurementType(eSinglePoint);
+    } else {
+        if(this->ui->radioButton_timeDependent->isChecked()) {
+            mConfig.setMeasurementType(eScanTimeDependent);
+        } else {
+            mConfig.setMeasurementType(eScanDistanceDependent);
+        }
+    }
+
+    // set measurement type
+    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
+
+    // single point
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
+
+    // scan
+    mConfig.setMaxObservations(this->ui->lineEdit_maxObservations->text().toInt());
+    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
+    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
+
 
     mConfig.setIsSaved(true);
 
@@ -495,8 +536,26 @@ void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textC
     this->updateMeasurementConfigFromSelection();
 }
 
-void MeasurementConfigurationDialog::on_scan_toggled(bool checked)
+void MeasurementConfigurationDialog::on_radioButton_scan_toggled(bool checked)
 {
     this->ui->groupBox_Scan->setEnabled(checked);
+    this->ui->radioButton_distanceDependent->setEnabled(checked);
+    this->ui->radioButton_timeDependent->setEnabled(checked);
+
     this->ui->groupBox_Single_Point->setEnabled(!checked);
+}
+
+void MeasurementConfigurationDialog::on_radioButton_distanceDependent_toggled(bool checked)
+{
+    this->ui->lineEdit_distancInterval->setEnabled(checked);
+    this->ui->label_distanceInterval->setEnabled(checked);
+
+    this->ui->lineEdit_timeInterval->setEnabled(!checked);
+    this->ui->label_timeInterval->setEnabled(checked);
+}
+
+
+void MeasurementConfigurationDialog::on_comboBox_MeasurementMode_currentIndexChanged(int index)
+{
+    this->updateMeasurementConfigFromSelection();
 }
