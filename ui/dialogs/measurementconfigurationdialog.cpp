@@ -546,6 +546,8 @@ void MeasurementConfigurationDialog::on_radioButton_scan_toggled(bool checked)
         this->ui->radioButton_timeDependent->setEnabled(true);
 
         this->ui->groupBox_Single_Point->setEnabled(false);
+
+        this->updateMeasurementConfigFromSelection();
     }
 }
 void MeasurementConfigurationDialog::on_radioButton_Level_toggled(bool checked)
@@ -556,6 +558,8 @@ void MeasurementConfigurationDialog::on_radioButton_Level_toggled(bool checked)
         this->ui->radioButton_timeDependent->setEnabled(false);
 
         this->ui->groupBox_Single_Point->setEnabled(false);
+
+        this->updateMeasurementConfigFromSelection();
     }
 }
 
@@ -567,6 +571,8 @@ void MeasurementConfigurationDialog::on_radioButton_singlePoint_toggled(bool che
         this->ui->radioButton_timeDependent->setEnabled(false);
 
         this->ui->groupBox_Single_Point->setEnabled(true);
+
+        this->updateMeasurementConfigFromSelection();
     }
 }
 
@@ -577,6 +583,8 @@ void MeasurementConfigurationDialog::on_radioButton_distanceDependent_toggled(bo
 
     this->ui->lineEdit_timeInterval->setEnabled(!checked);
     this->ui->label_timeInterval->setEnabled(checked);
+
+    this->updateMeasurementConfigFromSelection();
 }
 
 
