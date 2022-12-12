@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>957</width>
-    <height>660</height>
+    <height>848</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -238,7 +238,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_10">
                 <item>
-                 <widget class="QRadioButton" name="singlePoint">
+                 <widget class="QRadioButton" name="radioButton_singlePoint">
                   <property name="text">
                    <string>Single Point</string>
                   </property>
@@ -248,7 +248,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QRadioButton" name="scan">
+                 <widget class="QRadioButton" name="radioButton_scan">
                   <property name="text">
                    <string>Scan</string>
                   </property>
@@ -292,13 +292,19 @@
                   </property>
                   <item>
                    <widget class="QLabel" name="label">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string>measure mode</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="comboBox">
+                   <widget class="QComboBox" name="comboBox_MeasurementMode">
                     <item>
                      <property name="text">
                       <string>fast</string>
@@ -379,7 +385,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="lineEdit_iterations">
+                   <widget class="QLineEdit" name="lineEdit_maxObservations">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -412,83 +418,75 @@
                     <property name="title">
                      <string>dependent</string>
                     </property>
-                    <widget class="QWidget" name="layoutWidget">
+                    <widget class="QWidget" name="verticalLayoutWidget_3">
                      <property name="geometry">
                       <rect>
                        <x>10</x>
-                       <y>22</y>
-                       <width>401</width>
-                       <height>201</height>
+                       <y>20</y>
+                       <width>391</width>
+                       <height>99</height>
                       </rect>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_3">
+                     <layout class="QVBoxLayout" name="verticalLayout_11">
                       <item>
-                       <layout class="QVBoxLayout" name="verticalLayout_2">
+                       <widget class="QRadioButton" name="radioButton_timeDependent">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="text">
+                         <string>time dependent measurement</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QRadioButton" name="radioButton_distanceDependent">
+                        <property name="text">
+                         <string>distance dependent measurement</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0">
                         <item>
-                         <widget class="QRadioButton" name="radioButton_timeDependent">
+                         <widget class="QLabel" name="label_timeInterval">
                           <property name="enabled">
                            <bool>false</bool>
                           </property>
                           <property name="text">
-                           <string>time dependent measurement</string>
+                           <string>time interval [sec]:</string>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0">
-                          <item>
-                           <widget class="QLabel" name="label_timeInterval">
-                            <property name="enabled">
-                             <bool>false</bool>
-                            </property>
-                            <property name="text">
-                             <string>time interval [sec]:</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="lineEdit_timeInterval">
-                            <property name="enabled">
-                             <bool>false</bool>
-                            </property>
-                            <property name="text">
-                             <string>1</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
+                         <widget class="QLineEdit" name="lineEdit_timeInterval">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                          <property name="text">
+                           <string>1</string>
+                          </property>
+                         </widget>
                         </item>
                        </layout>
                       </item>
                       <item>
-                       <layout class="QVBoxLayout" name="verticalLayout">
+                       <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="8,7">
                         <item>
-                         <widget class="QRadioButton" name="radioButton_distanceDependent">
+                         <widget class="QLabel" name="label_distanceInterval">
                           <property name="text">
-                           <string>distance dependent measurement</string>
-                          </property>
-                          <property name="checked">
-                           <bool>true</bool>
+                           <string>distance interval [mm]:</string>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="8,7">
-                          <item>
-                           <widget class="QLabel" name="label_distanceInterval">
-                            <property name="text">
-                             <string>distance interval [mm]:</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="lineEdit_distancInterval">
-                            <property name="text">
-                             <string>1</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
+                         <widget class="QLineEdit" name="lineEdit_distancInterval">
+                          <property name="text">
+                           <string>1</string>
+                          </property>
+                         </widget>
                         </item>
                        </layout>
                       </item>
