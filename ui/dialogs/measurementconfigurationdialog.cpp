@@ -264,26 +264,10 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_lineEdit_numMeas_textChanged
+ * \brief MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_numMeas_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
- * \brief MeasurementConfigurationDialog::on_lineEdit_iterations_textChanged
- * \param arg1
- */
-void MeasurementConfigurationDialog::on_lineEdit_iterations_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
- * \brief MeasurementConfigurationDialog::on_comboBox_readingType_currentIndexChanged
- * \param arg1
- */
-void MeasurementConfigurationDialog::on_comboBox_readingType_currentIndexChanged(const QString &arg1){
+void MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged(const QString &arg1){
     this->updateMeasurementConfigFromSelection();
 }
 
@@ -295,24 +279,10 @@ void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked(){
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_checkBox_timeDependent_clicked
- */
-void MeasurementConfigurationDialog::on_checkBox_timeDependent_clicked(){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
  * \brief MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged
  * \param arg1
  */
 void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
- * \brief MeasurementConfigurationDialog::on_checkBox_distanceDependent_clicked
- */
-void MeasurementConfigurationDialog::on_checkBox_distanceDependent_clicked(){
     this->updateMeasurementConfigFromSelection();
 }
 

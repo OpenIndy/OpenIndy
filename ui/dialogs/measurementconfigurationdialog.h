@@ -70,13 +70,9 @@ private slots:
     void on_pushButton_add_clicked();
 
     //measurement config attributes changed
-    void on_lineEdit_numMeas_textChanged(const QString &arg1);
-    void on_lineEdit_iterations_textChanged(const QString &arg1);
-    void on_comboBox_readingType_currentIndexChanged(const QString &arg1);
+    void on_lineEdit_maxObservations_textChanged(const QString &arg1);
     void on_checkBox_twoFace_clicked();
-    void on_checkBox_timeDependent_clicked();
     void on_lineEdit_timeInterval_textChanged(const QString &arg1);
-    void on_checkBox_distanceDependent_clicked();
     void on_lineEdit_distancInterval_textChanged(const QString &arg1);
 
     //set measurement config for the active feature
@@ -96,7 +92,11 @@ private slots:
 
     void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
 
-    void on_scan_toggled(bool checked);
+    void on_radioButton_scan_toggled(bool checked);
+
+    void on_radioButton_distanceDependent_toggled(bool checked);
+
+    void on_comboBox_MeasurementMode_currentIndexChanged(int index);
 
 private:
     Ui::MeasurementConfigurationDialog *ui;
