@@ -62,8 +62,20 @@ void DialogsTest::initTestCase() {
 
     MeasurementConfig fastPointConfig;
     fastPointConfig.setName("measconfig-fastpoint");
-    fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
+    //fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
+    fastPointConfig.setMeasurementMode(MeasurementModes::eFast);
+    fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint);
     measurementConfigManager->addProjectMeasurementConfig(fastPointConfig); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(fastPointConfig);
+
+    MeasurementConfig precisePointConfig;
+    precisePointConfig.setName("measconfig-precisepoint");
+    //fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
+    precisePointConfig.setMeasurementMode(MeasurementModes::ePrecise);
+    precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint);
+    precisePointConfig.setMeasureTwoSides(true);
+    //measurementConfigManager->addProjectMeasurementConfig(precisePointConfig); // add as project config ... seams ok
+    measurementConfigManager->addSavedMeasurementConfig(precisePointConfig);
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
@@ -72,9 +84,12 @@ void DialogsTest::initTestCase() {
 
     MeasurementConfig scanTimeConfig;
     scanTimeConfig.setName("measconfig-scantime");
-    scanTimeConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
-    scanTimeConfig.setTimeDependent(true);
-    measurementConfigManager->addProjectMeasurementConfig(scanTimeConfig); // add as project config ... seams ok
+    //scanTimeConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
+    //scanTimeConfig.setMeasurementMode(MeasurementModes::ePrecise);
+    scanTimeConfig.setMeasurementType(MeasurementTypes::eScanTimeDependent);
+    scanTimeConfig.setTimeInterval(123);
+    scanTimeConfig.setMaxObservations(321);
+    measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
 
     MeasurementConfig scanDistanceConfig;
     scanDistanceConfig.setName("measconfig-scandistance"); // not for point
