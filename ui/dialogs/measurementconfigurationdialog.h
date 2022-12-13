@@ -99,15 +99,11 @@ private slots:
 
     void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
 
-    void on_radioButton_scan_toggled(bool checked);
-
-    void on_radioButton_Level_toggled(bool checked);
-
-    void on_radioButton_singlePoint_toggled(bool checked);
-
-    void on_radioButton_distanceDependent_toggled(bool checked);
+    void enableUIElements(const MeasurementTypes &type);
 
     void on_comboBox_MeasurementMode_currentIndexChanged(int index);
+
+    void on_comboBox_MeasurementType_currentIndexChanged(int index);
 
 private:
     Ui::MeasurementConfigurationDialog *ui;

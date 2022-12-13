@@ -360,19 +360,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->selectedMeasurementConfig = mConfig;
 
     //
-    if(mConfig.getMeasurementType() == eSinglePoint) {
-        this->ui->radioButton_singlePoint->setChecked(true);
-    } else if(mConfig.getMeasurementType() == eLevel) {
-        this->ui->radioButton_Level->setChecked(true);
-    } else { // scan
-        this->ui->radioButton_scan->setChecked(true);
-
-        if(mConfig.getMeasurementType() == eScanTimeDependent){
-            this->ui->radioButton_timeDependent->setChecked(true);
-        } else { // distance
-            this->ui->radioButton_distanceDependent->setChecked(true);
-        }
-    }
+    this->enableUIElements(mConfig.getMeasurementType());
 
     //do not trigger edits while setting up measurement config
     this->ui->lineEdit_distancInterval->blockSignals(true);
@@ -429,20 +417,10 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     MeasurementConfig mConfig;
     mConfig.setName(name);
 
-    // set measurement mode
-    if(this->ui->radioButton_singlePoint->isChecked()) {
-        mConfig.setMeasurementType(eSinglePoint);
-    } else if(this->ui->radioButton_Level->isChecked()) {
-        mConfig.setMeasurementType(eLevel);
-    } else {
-        if(this->ui->radioButton_timeDependent->isChecked()) {
-            mConfig.setMeasurementType(eScanTimeDependent);
-        } else {
-            mConfig.setMeasurementType(eScanDistanceDependent);
-        }
-    }
-
     // set measurement type
+    mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
+
+    // set measurement mode
     mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
 
     // single point
@@ -538,57 +516,45 @@ void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textC
     this->updateMeasurementConfigFromSelection();
 }
 
-void MeasurementConfigurationDialog::on_radioButton_scan_toggled(bool checked)
-{
-    if(checked) {
-        this->ui->groupBox_Scan->setEnabled(true);
-        this->ui->radioButton_distanceDependent->setEnabled(true);
-        this->ui->radioButton_timeDependent->setEnabled(true);
-
-        this->ui->groupBox_Single_Point->setEnabled(false);
-
-        this->updateMeasurementConfigFromSelection();
-    }
-}
-void MeasurementConfigurationDialog::on_radioButton_Level_toggled(bool checked)
-{
-    if(checked) {
-        this->ui->groupBox_Scan->setEnabled(false);
-        this->ui->radioButton_distanceDependent->setEnabled(false);
-        this->ui->radioButton_timeDependent->setEnabled(false);
-
-        this->ui->groupBox_Single_Point->setEnabled(false);
-
-        this->updateMeasurementConfigFromSelection();
-    }
-}
-
-void MeasurementConfigurationDialog::on_radioButton_singlePoint_toggled(bool checked)
-{
-    if(checked) {
-        this->ui->groupBox_Scan->setEnabled(false);
-        this->ui->radioButton_distanceDependent->setEnabled(false);
-        this->ui->radioButton_timeDependent->setEnabled(false);
-
-        this->ui->groupBox_Single_Point->setEnabled(true);
-
-        this->updateMeasurementConfigFromSelection();
-    }
-}
-
-void MeasurementConfigurationDialog::on_radioButton_distanceDependent_toggled(bool checked)
-{
-    this->ui->lineEdit_distancInterval->setEnabled(checked);
-    this->ui->label_distanceInterval->setEnabled(checked);
-
-    this->ui->lineEdit_timeInterval->setEnabled(!checked);
-    this->ui->label_timeInterval->setEnabled(checked);
-
-    this->updateMeasurementConfigFromSelection();
-}
-
 
 void MeasurementConfigurationDialog::on_comboBox_MeasurementMode_currentIndexChanged(int index)
 {
     this->updateMeasurementConfigFromSelection();
 }
+
+void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexChanged(int index)
+{
+    this->enableUIElements((MeasurementTypes)index);
+
+    this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &type) {
+    switch(type) {
+    case eSinglePoint_MeasurementType:
+        this->ui->groupBox_Single_Point->setEnabled(true);
+        this->ui->groupBox_Scan->setEnabled(false);
+        break;
+    case eScanTimeDependent_MeasurementType:
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        this->ui->groupBox_Scan->setEnabled(true);
+        this->ui->lineEdit_timeInterval->setEnabled(true);
+        this->ui->lineEdit_distancInterval->setEnabled(false);
+        this->ui->lineEdit_maxObservations->setEnabled(true);
+        break;
+    case eScanDistanceDependent_MeasurementType:
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        this->ui->groupBox_Scan->setEnabled(true);
+        this->ui->lineEdit_timeInterval->setEnabled(false);
+        this->ui->lineEdit_distancInterval->setEnabled(true);
+        this->ui->lineEdit_maxObservations->setEnabled(true);
+        break;
+    case eLevel_MeasurementType:
+    case eDistance_MeasurementType:
+    case eDirection_MeasurementType:
+        this->ui->groupBox_Scan->setEnabled(false);
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        break;
+    }
+}
+
