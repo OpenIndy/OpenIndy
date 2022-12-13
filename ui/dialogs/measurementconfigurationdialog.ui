@@ -278,14 +278,17 @@
                       <string>Distance</string>
                      </property>
                     </item>
+                    <item>
+                     <property name="text">
+                      <string>Temperature</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
                 </item>
                </layout>
               </widget>
-              <zorder>verticalLayoutWidget_4</zorder>
-              <zorder>horizontalLayoutWidget</zorder>
              </widget>
             </item>
             <item>
