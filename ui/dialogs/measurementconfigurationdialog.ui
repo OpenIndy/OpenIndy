@@ -238,31 +238,54 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_10">
                 <item>
-                 <widget class="QRadioButton" name="radioButton_singlePoint">
-                  <property name="text">
-                   <string>Single Point</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="radioButton_scan">
-                  <property name="text">
-                   <string>Scan</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="radioButton_Level">
-                  <property name="text">
-                   <string>Level</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>measure type</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBox_MeasurementType">
+                    <item>
+                     <property name="text">
+                      <string>Single Point</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Scan Time Dependent</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Scan Distance Dependent</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Level</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Direction</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Distance</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
+              <zorder>verticalLayoutWidget_4</zorder>
+              <zorder>horizontalLayoutWidget</zorder>
              </widget>
             </item>
             <item>
@@ -287,7 +310,7 @@
                 <rect>
                  <x>10</x>
                  <y>20</y>
-                 <width>421</width>
+                 <width>411</width>
                  <height>103</height>
                 </rect>
                </property>
@@ -435,26 +458,6 @@
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_11">
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_timeDependent">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="text">
-                         <string>time dependent measurement</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QRadioButton" name="radioButton_distanceDependent">
-                        <property name="text">
-                         <string>distance dependent measurement</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0">
                         <item>
