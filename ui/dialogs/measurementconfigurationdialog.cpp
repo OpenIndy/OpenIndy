@@ -368,11 +368,14 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->lineEdit_timeInterval->blockSignals(true);
     this->ui->checkBox_twoFace->blockSignals(true);
     this->ui->comboBox_MeasurementMode->blockSignals(true);
+    this->ui->comboBox_MeasurementType->blockSignals(true);
 
     //set up GUI elements
-    this->ui->label_configName->setText(QString("%1%2").arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
+    this->ui->label_configName->setText(QString("%1%2")
+                                        .arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
                                         .arg(mConfig.getName()));
 
+    this->ui->comboBox_MeasurementType->setCurrentIndex(mConfig.getMeasurementType());
     this->ui->comboBox_MeasurementMode->setCurrentIndex(mConfig.getMeasurementMode());
     this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
 
@@ -386,6 +389,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->lineEdit_timeInterval->blockSignals(false);
     this->ui->checkBox_twoFace->blockSignals(false);
     this->ui->comboBox_MeasurementMode->blockSignals(false);
+    this->ui->comboBox_MeasurementType->blockSignals(false);
 
 }
 
