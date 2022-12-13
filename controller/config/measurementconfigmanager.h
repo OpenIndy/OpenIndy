@@ -111,9 +111,6 @@ private:
     void connectJob();
     void disconnectJob();
 
-    //compare two configs
-    bool equals(const MeasurementConfig &mConfigA, const MeasurementConfig &mConfigB);
-
     //########################
     //save measurement configs
     //########################
