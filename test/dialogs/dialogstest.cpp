@@ -64,38 +64,39 @@ void DialogsTest::initTestCase() {
     MeasurementConfig fastPointConfig;
     fastPointConfig.setName("measconfig-fastpoint");
     //fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
-    fastPointConfig.setMeasurementMode(MeasurementModes::eFast);
-    fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint);
+    fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     measurementConfigManager->addProjectMeasurementConfig(fastPointConfig); // add as project config ... seams ok
     measurementConfigManager->addSavedMeasurementConfig(fastPointConfig);
 
     MeasurementConfig precisePointConfig;
     precisePointConfig.setName("measconfig-precisepoint");
     //fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
-    precisePointConfig.setMeasurementMode(MeasurementModes::ePrecise);
-    precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint);
+    precisePointConfig.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
+    precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     precisePointConfig.setMeasureTwoSides(true);
     //measurementConfigManager->addProjectMeasurementConfig(precisePointConfig); // add as project config ... seams ok
     measurementConfigManager->addSavedMeasurementConfig(precisePointConfig);
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
-    levelConfig.setMeasurementType(MeasurementTypes::eLevel);
+    levelConfig.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
     measurementConfigManager->addSavedMeasurementConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
     scanTimeConfig.setName("measconfig-scantime");
     //scanTimeConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     //scanTimeConfig.setMeasurementMode(MeasurementModes::ePrecise);
-    scanTimeConfig.setMeasurementType(MeasurementTypes::eScanTimeDependent);
+    scanTimeConfig.setMeasurementType(MeasurementTypes::eScanTimeDependent_MeasurementType);
     scanTimeConfig.setTimeInterval(123);
     scanTimeConfig.setMaxObservations(321);
     measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
 
     MeasurementConfig scanDistanceConfig;
     scanDistanceConfig.setName("measconfig-scandistance"); // not for point
-    scanDistanceConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
-    scanDistanceConfig.setDistanceDependent(true);
+    scanTimeConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
+    scanTimeConfig.setDistanceInterval(456);
+    scanTimeConfig.setMaxObservations(654);
     measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfig); // add as project config ... seams ok
 
     // create plugin with some functions
