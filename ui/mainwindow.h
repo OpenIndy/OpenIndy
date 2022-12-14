@@ -189,7 +189,7 @@ private slots:
     void measurementDone(bool success);
 
     //display messages
-    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
 
