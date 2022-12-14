@@ -957,25 +957,36 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
         return;
     }
 
-    //set project meta data
-    newJob->setJobDevice(device);
-    newJob->setJobName(projectName);
-
-    //delete old job
-    if(!this->job.isNull()){
-        delete this->job;
+    bool useJob = true;
+    if(!newJob->checkCompatibilty()) {
+        useJob = emit this->showMessageBox("This OpenIndy project is not compatible with this OpenIndy version. Continue opening project?", eQuestionMessage) == QMessageBox::Yes;
     }
 
-    //set new job
-    this->setJob(newJob);
+    if(useJob) {
 
-    //switch to active coordinate system
-    this->featureUpdater.switchCoordinateSystem();
+        //set project meta data
+        newJob->setJobDevice(device);
+        newJob->setJobName(projectName);
 
-    //connect active station
-    this->activeStationChangedCallback();
+        //delete old job
+        if(!this->job.isNull()){
+            delete this->job;
+        }
 
-    this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
+        //set new job
+        this->setJob(newJob);
+
+        //switch to active coordinate system
+        this->featureUpdater.switchCoordinateSystem();
+
+        //connect active station
+        this->activeStationChangedCallback();
+
+        this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
+    } else {
+        this->log(QString("OpenIndy project \"%1\" was not loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
+    }
+
 
 }
 
