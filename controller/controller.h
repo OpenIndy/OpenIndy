@@ -260,7 +260,7 @@ signals:
     //#############
 
     //messaging
-    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showClientMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
