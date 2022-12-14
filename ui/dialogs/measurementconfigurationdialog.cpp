@@ -556,6 +556,7 @@ void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &ty
     case eLevel_MeasurementType:
     case eDistance_MeasurementType:
     case eDirection_MeasurementType:
+    case eTemperature_MeasurementType:
         this->ui->groupBox_Scan->setEnabled(false);
         this->ui->groupBox_Single_Point->setEnabled(false);
         break;
