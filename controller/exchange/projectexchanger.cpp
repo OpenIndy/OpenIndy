@@ -134,7 +134,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     QDomElement configs = project.createElement("configs");
     QDomElement measurementConfigs = project.createElement("measurementConfigs");
-    QDomElement sensorConfigs = project.createElement("sensorConfigs");
+    // QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
     QList<MeasurementConfig> mConfigs;
@@ -192,8 +192,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
  */
 const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project){
 
-    QPointer<OiJob> job(NULL);
-    job = new OiJob();
+    QPointer<OiJob> job = new OiJob();
 
     //load all elements from xml into helper lists
     if(!ProjectExchanger::loadObservations(project)
