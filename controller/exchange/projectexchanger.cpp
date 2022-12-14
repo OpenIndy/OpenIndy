@@ -249,6 +249,10 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
         ProjectExchanger::saveProject(job);
     }
 
+    if(project.documentElement().hasAttribute("version")) {
+        job->setLoadedProjectVersion(project.documentElement().attribute("version"));
+    }
+
     //add project measurement configs to config manager
     if(!ProjectExchanger::mConfigManager.isNull()){
         foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
