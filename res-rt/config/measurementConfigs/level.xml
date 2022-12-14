@@ -1,2 +1,2 @@
-<!DOCTYPE measurementConfig>
-<measurementConfig isSaved="1" measureTwoSides="0" name="level" distanceDependent="0" iterations="1" distanceInterval="0" timeDependent="0" timeInterval="0" typeOfReading="5" count="500"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<measurementConfig isSaved="1" measureTwoSides="0" name="level" maxObservations="1" distanceInterval="0" timeInterval="0" measurementType="3" measurementMode="0"/>

@@ -1,2 +1,2 @@
-<!DOCTYPE measurementConfig>
-<measurementConfig measureTwoSides="0" distanceInterval="20" distanceDependent="1" typeOfReading="2" count="10" iterations="125" name="Achsverlauf" timeInterval="0" isSaved="1" timeDependent="0"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<measurementConfig measureTwoSides="0" distanceInterval="20" measurementType="2" measurementMode="0" maxObservations="125" name="Achsverlauf" timeInterval="0" isSaved="1"/>
