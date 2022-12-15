@@ -268,21 +268,6 @@
                       <string>Level</string>
                      </property>
                     </item>
-                    <item>
-                     <property name="text">
-                      <string>Direction</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Distance</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Temperature</string>
-                     </property>
-                    </item>
                    </widget>
                   </item>
                  </layout>
