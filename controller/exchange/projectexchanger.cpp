@@ -134,7 +134,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     QDomElement configs = project.createElement("configs");
     QDomElement measurementConfigs = project.createElement("measurementConfigs");
-    QDomElement sensorConfigs = project.createElement("sensorConfigs");
+    // QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
     QList<MeasurementConfig> mConfigs;
@@ -192,8 +192,7 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
  */
 const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project){
 
-    QPointer<OiJob> job(NULL);
-    job = new OiJob();
+    QPointer<OiJob> job = new OiJob();
 
     //load all elements from xml into helper lists
     if(!ProjectExchanger::loadObservations(project)
@@ -247,6 +246,10 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
     } else { // not available, then compute
         // compute digest and store digest in job
         ProjectExchanger::saveProject(job);
+    }
+
+    if(project.documentElement().hasAttribute("version")) {
+        job->setLoadedProjectVersion(project.documentElement().attribute("version"));
     }
 
     //add project measurement configs to config manager
