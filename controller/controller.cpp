@@ -960,7 +960,8 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
     bool compatible = false;
     QString msg;
     switch(newJob->checkCompatibilty()) {
-    case eCheckResult_ok:
+    case eCheckResult_match:
+    case eCheckResult_oi_gt_job:
         compatible = true;
         break;
     case eCheckResult_job_wo_valid_version:
@@ -973,12 +974,11 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
         break;
     case eCheckResult_oi_lt_job:
         compatible = false;
-        msg = "This OpenIndy version is older than OpenIndy project version. Continue opening project?";
+        msg = "This OpenIndy version is older than OpenIndy project version. Please use newer OpenIndy version. Continue opening project?";
         break;
-    case eCheckResult_oi_gt_job:
+    case eCheckResult_job_lt_oi_22_1:
         compatible = false;
-        msg = "This OpenIndy version is newer than OpenIndy project version. Continue opening project?";
-        break;
+        msg = "This OpenIndy version is newer than OpenIndy project version. Please migrate Project to MeasurementConfig. Continue opening project?";
     default:
         compatible = false;
         msg = "This OpenIndy version is not compatible with OpenIndy project version. Continue opening project?";
