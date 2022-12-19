@@ -25,11 +25,10 @@ run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
     $(MAKE) -C $$shell_quote($$OUT_PWD/watchwindow) run-test & \
     $(MAKE) -C $$shell_quote($$OUT_PWD/featuresorter) run-test & \
-    $(MAKE) -C $$shell_quote($$OUT_PWD/stablepoint) run-test & \
-    rem $(MAKE) -C $$shell_quote($$OUT_PWD/measurebehavior) run-test & \
+    $(MAKE) -C $$shell_quote($$OUT_PWD/stablepoint) run-test
 
 contains( DEFINES, ENABLE_GUI_TEST ) {
-    run-test.commands +=  & \
+    run-test.commands += & \
     $(MAKE) -C $$shell_quote($$OUT_PWD/dialogs) run-test
 }
 
