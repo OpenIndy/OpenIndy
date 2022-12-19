@@ -64,28 +64,24 @@ void DialogsTest::initTestCase() {
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
 
     MeasurementConfig fastPointConfig;
-    fastPointConfig.setName("measconfig-fastpoint-cartesian");
-    //fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
+    fastPointConfig.setName("measconfig-fastpoint");
     fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addProjectMeasurementConfig(fastPointConfig); // add as project config ... seams ok
     measurementConfigManager->addSavedMeasurementConfig(fastPointConfig);
 
     MeasurementConfig precisePointConfig;
     precisePointConfig.setName("measconfig-precisepoint");
-    //fastPointConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
     precisePointConfig.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     precisePointConfig.setMeasureTwoSides(true);
-    //measurementConfigManager->addProjectMeasurementConfig(precisePointConfig); // add as project config ... seams ok
     measurementConfigManager->addSavedMeasurementConfig(precisePointConfig);
 
 
     MeasurementConfig fastPointConfigP;
-    fastPointConfigP.setName("measconfig-fastpoint-polar");
+    fastPointConfigP.setName("measconfig-fastpoint");
     precisePointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addProjectMeasurementConfig(fastPointConfigP); // add as project config ... seams ok
+    measurementConfigManager->addProjectMeasurementConfig(fastPointConfigP);
     measurementConfigManager->addSavedMeasurementConfig(fastPointConfigP);
 
     MeasurementConfig levelConfig;
@@ -95,39 +91,20 @@ void DialogsTest::initTestCase() {
     measurementConfigManager->addSavedMeasurementConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
-    scanTimeConfig.setName("measconfig-scantime-cartesian");
-    //scanTimeConfig.setTypeOfReading(ReadingTypes::eCartesianReading);
-    //scanTimeConfig.setMeasurementMode(MeasurementModes::ePrecise);
+    scanTimeConfig.setName("measconfig-scantime");
     scanTimeConfig.setMeasurementType(MeasurementTypes::eScanTimeDependent_MeasurementType);
     scanTimeConfig.setTimeInterval(123);
     scanTimeConfig.setMaxObservations(321);
     measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
     measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
 
-    MeasurementConfig scanTimeConfigP;
-    scanTimeConfigP.setName("measconfig-scantime-polar");
-//   scanTimeConfigP.setTypeOfReading(ReadingTypes::ePolarReading);
-    scanTimeConfigP.setMeasurementType(MeasurementTypes::eScanTimeDependent_MeasurementType);
-    //scanTimeConfigP.setTimeDependent(true);
-    measurementConfigManager->addProjectMeasurementConfig(scanTimeConfigP); // add as project config ... seams ok
-    measurementConfigManager->addSavedMeasurementConfig(scanTimeConfigP);
-
     MeasurementConfig scanDistanceConfig;
-    scanDistanceConfig.setName("measconfig-scandistance-cartesian"); // not for point
+    scanDistanceConfig.setName("measconfig-scandistance"); // not for point
     scanTimeConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
     scanTimeConfig.setDistanceInterval(456);
     scanTimeConfig.setMaxObservations(654);
-    measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfig); // add as project config ... seams ok
+    measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfig);
     measurementConfigManager->addSavedMeasurementConfig(scanDistanceConfig);
-
-
-    MeasurementConfig scanDistanceConfigP;
-    scanDistanceConfigP.setName("measconfig-scandistance-polar"); // not for point
-//    scanDistanceConfigP.setTypeOfReading(ReadingTypes::ePolarReading);
-    scanDistanceConfigP.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
-//    scanDistanceConfigP.setDistanceDependent(true);
-    measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfigP); // add as project config ... seams ok
-    measurementConfigManager->addSavedMeasurementConfig(scanDistanceConfigP);
 
     // create plugin with some functions
     QList<sdb::Plugin> plugins;
@@ -209,10 +186,10 @@ void DialogsTest::createPoint() {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
     QVERIFY(4 == mConfigLV->model()->rowCount());
-    QVERIFY("measconfig-fastpoint-cartesian"   == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint-polar"       == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-cartesian"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-polar"        == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint"      == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-precisepoint"   == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime"       == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance"   == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -244,13 +221,11 @@ void DialogsTest::createCircle() {
     for(int i=0; i<mConfigLV->model()->rowCount();i++) {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(4 == mConfigLV->model()->rowCount());
+    QVERIFY("measconfig-fastpoint"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-precisepoint"    == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
 }
 
 void DialogsTest::createPlane() {
@@ -281,13 +256,11 @@ void DialogsTest::createPlane() {
     for(int i=0; i<mConfigLV->model()->rowCount();i++) {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(4 == mConfigLV->model()->rowCount());
+    QVERIFY("measconfig-fastpoint"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-precisepoint"    == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -434,13 +407,11 @@ void DialogsTest::reuseDialogInstance() {
     for(int i=0; i<mConfigLV->model()->rowCount();i++) {
         qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
     }
-    QVERIFY(6 == mConfigLV->model()->rowCount());
-    QVERIFY("measconfig-fastpoint-cartesian"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint-polar"           == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-cartesian"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scantime-polar"            == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance-cartesian"    == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance-polar"        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(4 == mConfigLV->model()->rowCount());
+    QVERIFY("measconfig-fastpoint"       == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-precisepoint"    == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scantime"        == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
 
     dialog.close();
     QTest::qWait(500);
@@ -512,6 +483,8 @@ void DialogsTest::measurementConfigXML_RW() {
 }
 
 void DialogsTest::measurementConfigDialog_init() {
+    QSKIP("manual test");
+
     // create dialog
     MeasurementConfigurationDialog dialog;
 
@@ -521,9 +494,7 @@ void DialogsTest::measurementConfigDialog_init() {
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
     spy_initialized.wait(500);
 
-
-
-    QTest::qWait(100000);
+    // QTest::qWait(100000);
 }
 
 QTEST_MAIN(DialogsTest)
