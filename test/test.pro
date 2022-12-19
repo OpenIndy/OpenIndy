@@ -9,8 +9,13 @@ run-test.commands = \
     cd $$shell_quote($$OUT_PWD/watchwindow) && $(MAKE) run-test & \
     cd $$shell_quote($$OUT_PWD/stablepoint) && $(MAKE) run-test & \
     cd $$shell_quote($$OUT_PWD/featuresorter) && $(MAKE) run-test & \
-    rem cannot run head less ? cd $$shell_quote($$OUT_PWD/dialogs) && $(MAKE) run-test & \
-    rem TODO cd $$shell_quote($$OUT_PWD/measurebehavior) && $(MAKE) run-test
+    rem cd $$shell_quote($$OUT_PWD/measurebehavior) && $(MAKE) run-test
+
+contains( DEFINES, ENABLE_GUI_TEST ) {
+run-test.commangs += & \
+    cd $$shell_quote($$OUT_PWD/dialogs) && $(MAKE) run-test
+}
+
 } else:win32-g++ {
 run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
@@ -18,13 +23,22 @@ run-test.commands = \
     $(MAKE) -C $$shell_quote($$OUT_PWD/featuresorter) run-test & \
     $(MAKE) -C $$shell_quote($$OUT_PWD/stablepoint) run-test & \
     rem $(MAKE) -C $$shell_quote($$OUT_PWD/measurebehavior) run-test & \
-    rem $(MAKE) -C $$shell_quote($$OUT_PWD/dialogs) run-test
+
+contains( DEFINES, ENABLE_GUI_TEST ) {
+    run-test.commands +=  & \
+    $(MAKE) -C $$shell_quote($$OUT_PWD/dialogs) run-test
+}
+
 } else:linux {
 run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
     $(MAKE) -C watchwindow run-test ; \
     $(MAKE) -C stablepoint run-test ; \
     $(MAKE) -C featuresorter run-test ; \
-    rem $(MAKE) -C measurebehavior run-test ; \
-    rem $(MAKE) -C dialogs run-test
+    rem $(MAKE) -C measurebehavior run-test
+
+contains( DEFINES, ENABLE_GUI_TEST ) {
+    run-test.commands = ; \
+    $(MAKE) -C dialogs run-test
+}
 }
