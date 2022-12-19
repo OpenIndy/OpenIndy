@@ -43,8 +43,7 @@ run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
     $(MAKE) -C watchwindow run-test ; \
     $(MAKE) -C stablepoint run-test ; \
-    $(MAKE) -C featuresorter run-test ; \
-    rem $(MAKE) -C measurebehavior run-test
+    $(MAKE) -C featuresorter run-test
 
 contains( DEFINES, ENABLE_GUI_TEST ) {
     run-test.commands = ; \
