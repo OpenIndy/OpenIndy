@@ -416,7 +416,11 @@ void MainWindow::measurementDone(bool success)
  * \param msg
  * \param msgType
  */
-void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+int MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+
+    commonMessageBox.setModal(false);
+    commonMessageBox.setStandardButtons(QMessageBox::Ok);
+    commonMessageBox.setText(msg);
 
     switch(msgType){
     case eInformationMessage:
@@ -431,12 +435,15 @@ void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType)
     case eCriticalMessage:
         commonMessageBox.setIcon(QMessageBox::Critical);
         break;
+    case eQuestionMessage:
+        commonMessageBox.setIcon(QMessageBox::Question);
+        commonMessageBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+        commonMessageBox.setDefaultButton(QMessageBox::No);
+        commonMessageBox.setModal(true);
+        break;
     }
 
-    commonMessageBox.setText(msg);
-    commonMessageBox.setStandardButtons(QMessageBox::Ok);
-
-    commonMessageBox.exec();
+    return commonMessageBox.exec();
 
 }
 

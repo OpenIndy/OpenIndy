@@ -57,19 +57,18 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     }
 
     //check if the index is a saved config
-    if(source_row < sourceModel->getMeasurementConfigurationManager()->getSavedMeasurementConfigs().size()){
-        return true;
-    }
+    if(source_row >= 0 && source_row < sourceModel->getMeasurementConfigurationManager()->getSavedMeasurementConfigs().size()){
 
-    //check if the index is a project sensor config
-    if(this->showAll){
-        return true;
-    }
-
-    MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
-    for (ElementTypes elementType : this->neededElements) {
-        if(mConfig.applicableFor(elementType, this->typeOfFeature)) {
+        //check if the index is a project sensor config
+        if(this->showAll){ // this->neededElements.isEmpty()
             return true;
+        }
+
+        MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
+        for (ElementTypes elementType : this->neededElements) {
+            if(mConfig.applicableFor(elementType, this->typeOfFeature)) {
+                return true;
+            }
         }
     }
 

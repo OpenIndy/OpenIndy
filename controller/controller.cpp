@@ -957,25 +957,58 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
         return;
     }
 
-    //set project meta data
-    newJob->setJobDevice(device);
-    newJob->setJobName(projectName);
-
-    //delete old job
-    if(!this->job.isNull()){
-        delete this->job;
+    bool compatible = false;
+    QString msg;
+    switch(newJob->checkCompatibilty()) {
+    case eCheckResult_match:
+    case eCheckResult_oi_gt_job:
+        compatible = true;
+        break;
+    case eCheckResult_job_wo_valid_version:
+        compatible = false;
+        msg = "This OpenIndy project has no vaild version. Continue opening project?";
+        break;
+    case eCheckResult_oi_wo_valid_version:
+        compatible = false;
+        msg = "This OpenIndy has no vaild version. Continue opening project?";
+        break;
+    case eCheckResult_oi_lt_job:
+        compatible = false;
+        msg = "This OpenIndy version is older than OpenIndy project version. Please use newer OpenIndy version. Continue opening project?";
+        break;
+    case eCheckResult_job_lt_oi_22_1:
+        compatible = false;
+        msg = "This OpenIndy version is newer than OpenIndy project version. Please migrate Project to MeasurementConfig. Continue opening project?";
+    default:
+        compatible = false;
+        msg = "This OpenIndy version is not compatible with OpenIndy project version. Continue opening project?";
     }
 
-    //set new job
-    this->setJob(newJob);
+    if(compatible || (emit this->showMessageBox(msg, eQuestionMessage) == QMessageBox::Yes) ) {
 
-    //switch to active coordinate system
-    this->featureUpdater.switchCoordinateSystem();
+        //set project meta data
+        newJob->setJobDevice(device);
+        newJob->setJobName(projectName);
 
-    //connect active station
-    this->activeStationChangedCallback();
+        //delete old job
+        if(!this->job.isNull()){
+            delete this->job;
+        }
 
-    this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
+        //set new job
+        this->setJob(newJob);
+
+        //switch to active coordinate system
+        this->featureUpdater.switchCoordinateSystem();
+
+        //connect active station
+        this->activeStationChangedCallback();
+
+        this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
+    } else {
+        this->log(QString("OpenIndy project \"%1\" was not loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
+    }
+
 
 }
 
