@@ -467,7 +467,10 @@ void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int ind
 
 void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
     sdb::Function function = this->functionListModel->getFunctionAtIndex(functionIndex);
-    if(function.iid.startsWith("de.openIndy.plugin.function.constructFunction")) {
+    if( function.iid.startsWith("de.openIndy.plugin.function.constructFunction")
+        || function.iid.startsWith("de.openIndy.plugin.function.objectTransformation")
+        || function.iid.startsWith("de.openIndy.plugin.function.specialFunction")
+        ) {
         this->neededElements.clear();
         this->neededElements.append(ElementTypes::eUndefinedElement);
         this->ui->comboBox_mConfig->setVisible(false);

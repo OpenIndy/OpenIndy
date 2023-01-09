@@ -160,6 +160,8 @@ private:
     //set up watch window data
     bool buildWatchWindowMessage(QDomElement &wwTag, const QVariantMap &streamData);
 
+    QDomElement toXML(const MeasurementConfig &config, const bool saved, QDomDocument &response);
+
 private slots:
 
     //##################################

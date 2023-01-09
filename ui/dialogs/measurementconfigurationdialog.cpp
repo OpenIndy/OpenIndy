@@ -264,26 +264,10 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_lineEdit_numMeas_textChanged
+ * \brief MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_numMeas_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
- * \brief MeasurementConfigurationDialog::on_lineEdit_iterations_textChanged
- * \param arg1
- */
-void MeasurementConfigurationDialog::on_lineEdit_iterations_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
- * \brief MeasurementConfigurationDialog::on_comboBox_readingType_currentIndexChanged
- * \param arg1
- */
-void MeasurementConfigurationDialog::on_comboBox_readingType_currentIndexChanged(const QString &arg1){
+void MeasurementConfigurationDialog::on_lineEdit_maxObservations_textChanged(const QString &arg1){
     this->updateMeasurementConfigFromSelection();
 }
 
@@ -295,24 +279,10 @@ void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked(){
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_checkBox_timeDependent_clicked
- */
-void MeasurementConfigurationDialog::on_checkBox_timeDependent_clicked(){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
  * \brief MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged
  * \param arg1
  */
 void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
-}
-
-/*!
- * \brief MeasurementConfigurationDialog::on_checkBox_distanceDependent_clicked
- */
-void MeasurementConfigurationDialog::on_checkBox_distanceDependent_clicked(){
     this->updateMeasurementConfigFromSelection();
 }
 
@@ -386,40 +356,40 @@ void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
  */
 void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const MeasurementConfig &mConfig){
 
-    //do not trigger edits while setting up measurement config
-    this->ui->comboBox_readingType->blockSignals(true);
-    this->ui->lineEdit_distancInterval->blockSignals(true);
-    this->ui->lineEdit_iterations->blockSignals(true);
-    this->ui->lineEdit_numMeas->blockSignals(true);
-    this->ui->lineEdit_timeInterval->blockSignals(true);
-    this->ui->checkBox_distanceDependent->blockSignals(true);
-    this->ui->checkBox_timeDependent->blockSignals(true);
-    this->ui->checkBox_twoFace->blockSignals(true);
-
-    //set up GUI elements
-    this->ui->label_configName->setText(QString("%1%2").arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
-                                        .arg(mConfig.getName()));
-    this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(mConfig.getTypeOfReading()));
-    this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
-    this->ui->lineEdit_iterations->setText(QString::number(mConfig.getIterations()));
-    this->ui->lineEdit_numMeas->setText(QString::number(mConfig.getCount()));
-    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
-    this->ui->checkBox_distanceDependent->setChecked(mConfig.getDistanceDependent());
-    this->ui->checkBox_timeDependent->setChecked(mConfig.getTimeDependent());
-    this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
-
     //update selected measurement config
     this->selectedMeasurementConfig = mConfig;
 
+    //
+    this->enableUIElements(mConfig.getMeasurementType());
+
+    //do not trigger edits while setting up measurement config
+    this->ui->lineEdit_distancInterval->blockSignals(true);
+    this->ui->lineEdit_maxObservations->blockSignals(true);
+    this->ui->lineEdit_timeInterval->blockSignals(true);
+    this->ui->checkBox_twoFace->blockSignals(true);
+    this->ui->comboBox_MeasurementMode->blockSignals(true);
+    this->ui->comboBox_MeasurementType->blockSignals(true);
+
+    //set up GUI elements
+    this->ui->label_configName->setText(QString("%1%2")
+                                        .arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
+                                        .arg(mConfig.getName()));
+
+    this->ui->comboBox_MeasurementType->setCurrentIndex(mConfig.getMeasurementType());
+    this->ui->comboBox_MeasurementMode->setCurrentIndex(mConfig.getMeasurementMode());
+    this->ui->checkBox_twoFace->setChecked(mConfig.getMeasureTwoSides());
+
+    this->ui->lineEdit_maxObservations->setText(QString::number(mConfig.getMaxObservations()));
+    this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
+    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
+
     //from now on trigger edits
-    this->ui->comboBox_readingType->blockSignals(false);
     this->ui->lineEdit_distancInterval->blockSignals(false);
-    this->ui->lineEdit_iterations->blockSignals(false);
-    this->ui->lineEdit_numMeas->blockSignals(false);
+    this->ui->lineEdit_maxObservations->blockSignals(false);
     this->ui->lineEdit_timeInterval->blockSignals(false);
-    this->ui->checkBox_distanceDependent->blockSignals(false);
-    this->ui->checkBox_timeDependent->blockSignals(false);
     this->ui->checkBox_twoFace->blockSignals(false);
+    this->ui->comboBox_MeasurementMode->blockSignals(false);
+    this->ui->comboBox_MeasurementType->blockSignals(false);
 
 }
 
@@ -450,14 +420,21 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     //get measurement config from GUI selection
     MeasurementConfig mConfig;
     mConfig.setName(name);
-    mConfig.setTypeOfReading(getReadingTypeEnum(this->ui->comboBox_readingType->currentText()));
-    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
-    mConfig.setIterations(this->ui->lineEdit_iterations->text().toInt());
-    mConfig.setCount(this->ui->lineEdit_numMeas->text().toInt());
-    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
-    mConfig.setDistanceDependent(this->ui->checkBox_distanceDependent->isChecked());
-    mConfig.setTimeDependent(this->ui->checkBox_timeDependent->isChecked());
+
+    // set measurement type
+    mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
+
+    // set measurement mode
+    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
+
+    // single point
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
+
+    // scan
+    mConfig.setMaxObservations(this->ui->lineEdit_maxObservations->text().toInt());
+    mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
+    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
+
 
     mConfig.setIsSaved(true);
 
@@ -475,6 +452,8 @@ void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
 
     QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
                         this, &MeasurementConfigurationDialog::measurementConfigNameChanged, Qt::AutoConnection);
+
+    emit initialized();
 
     event->accept();
 
@@ -498,9 +477,6 @@ void MeasurementConfigurationDialog::closeEvent(QCloseEvent *event){
  */
 void MeasurementConfigurationDialog::initGUI(){
 
-    //set default reading type
-    this->ui->comboBox_readingType->setCurrentText(getReadingTypeName(ePolarReading));
-
     //set visibility
     this->ui->widget_measurementConfigValues->setEnabled(false);
 
@@ -518,9 +494,6 @@ void MeasurementConfigurationDialog::initGUI(){
  * \brief MeasurementConfigurationDialog::initModels
  */
 void MeasurementConfigurationDialog::initModels(){
-
-    //init reading types model
-    this->ui->comboBox_readingType->setModel(&ModelManager::getReadingTypeNamesModel());
 
     //init measurement config model
     this->ui->listView_measurementConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
@@ -546,3 +519,47 @@ void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textC
 {
     this->updateMeasurementConfigFromSelection();
 }
+
+
+void MeasurementConfigurationDialog::on_comboBox_MeasurementMode_currentIndexChanged(int index)
+{
+    this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexChanged(int index)
+{
+    this->enableUIElements((MeasurementTypes)index);
+
+    this->updateMeasurementConfigFromSelection();
+}
+
+void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &type) {
+    switch(type) {
+    case eSinglePoint_MeasurementType:
+        this->ui->groupBox_Single_Point->setEnabled(true);
+        this->ui->groupBox_Scan->setEnabled(false);
+        break;
+    case eScanTimeDependent_MeasurementType:
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        this->ui->groupBox_Scan->setEnabled(true);
+        this->ui->lineEdit_timeInterval->setEnabled(true);
+        this->ui->lineEdit_distancInterval->setEnabled(false);
+        this->ui->lineEdit_maxObservations->setEnabled(true);
+        break;
+    case eScanDistanceDependent_MeasurementType:
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        this->ui->groupBox_Scan->setEnabled(true);
+        this->ui->lineEdit_timeInterval->setEnabled(false);
+        this->ui->lineEdit_distancInterval->setEnabled(true);
+        this->ui->lineEdit_maxObservations->setEnabled(true);
+        break;
+    case eLevel_MeasurementType:
+    case eDistance_MeasurementType:
+    case eDirection_MeasurementType:
+    case eTemperature_MeasurementType:
+        this->ui->groupBox_Scan->setEnabled(false);
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        break;
+    }
+}
+

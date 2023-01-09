@@ -97,11 +97,7 @@ bool MeasurementConfigManager::hasSavedMeasurementConfig(const MeasurementConfig
 
     //get saved config and compare it to the given one
     MeasurementConfig savedConfig = this->savedMeasurementConfigMap.value(mConfig.getName());
-    if(this->equals(savedConfig, mConfig)){
-        return true;
-    }
-
-    return false;
+    return savedConfig.equals(mConfig);
 
 }
 
@@ -119,11 +115,7 @@ bool MeasurementConfigManager::hasProjectMeasurementConfig(const MeasurementConf
 
     //get project config and compare it to the given one
     MeasurementConfig projectConfig = this->projectMeasurementConfigMap.value(mConfig.getName());
-    if(this->equals(projectConfig, mConfig)){
-        return true;
-    }
-
-    return false;
+    return projectConfig.equals(mConfig);
 
 }
 
@@ -653,31 +645,3 @@ void MeasurementConfigManager::disconnectJob(){
 
 }
 
-/*!
- * \brief MeasurementConfigManager::equals
- * \param mConfigA
- * \param mConfigB
- * \return
- */
-bool MeasurementConfigManager::equals(const MeasurementConfig &mConfigA, const MeasurementConfig &mConfigB){
-
-    //compare general attributes
-    if(mConfigA.getName().compare(mConfigB.getName()) != 0){
-        return false;
-    }
-
-    //compare measurement config values
-    if(mConfigA.getCount() != mConfigB.getCount()
-            || mConfigA.getIterations() != mConfigB.getIterations()
-            || mConfigA.getMeasureTwoSides() != mConfigB.getMeasureTwoSides()
-            || mConfigA.getTimeDependent() != mConfigB.getTimeDependent()
-            || mConfigA.getDistanceDependent() != mConfigB.getDistanceDependent()
-            || mConfigA.getTimeInterval() != mConfigB.getTimeInterval()
-            || !almostEqual(mConfigA.getDistanceInterval(), mConfigB.getDistanceInterval(), 8)
-            || mConfigA.getTypeOfReading() != mConfigB.getTypeOfReading()){
-        return false;
-    }
-
-    return true;
-
-}

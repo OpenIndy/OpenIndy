@@ -1144,6 +1144,52 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
 
 }
 
+QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool saved, QDomDocument &response){
+    QDomElement config = response.createElement("measurementConfig");
+
+    QDomElement name = response.createElement("name");
+    QDomText nameText = response.createTextNode(mConfig.getName());
+    name.appendChild(nameText);
+    config.appendChild(name);
+
+    QDomElement isSaved = response.createElement("isSaved");
+    QDomText isSavedText = response.createTextNode(saved ? "1" : "0");
+    isSaved.appendChild(isSavedText);
+    config.appendChild(isSaved);
+
+    QDomElement measurementType = response.createElement("measurementType");
+    QDomText measurementTypeText = response.createTextNode(QString::number(mConfig.getMeasurementType()));
+    measurementType.appendChild(measurementTypeText);
+    config.appendChild(measurementType);
+
+    QDomElement measurementMode = response.createElement("measurementMode");
+    QDomText measurementModeText = response.createTextNode(QString::number(mConfig.getMeasurementMode()));
+    measurementMode.appendChild(measurementModeText);
+    config.appendChild(measurementMode);
+
+    QDomElement maxObservations = response.createElement("maxObservations");
+    QDomText maxObservationsText = response.createTextNode(QString::number(mConfig.getMaxObservations()));
+    maxObservations.appendChild(maxObservationsText);
+    config.appendChild(maxObservations);
+
+    QDomElement measureTwoSides = response.createElement("measureTwoSides");
+    QDomText measureTwoSidesText = response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
+    measureTwoSides.appendChild(measureTwoSidesText);
+    config.appendChild(measureTwoSides);
+
+    QDomElement timeInterval = response.createElement("timeInterval");
+    QDomText timeIntervalText = response.createTextNode(QString::number(mConfig.getTimeInterval()));
+    timeInterval.appendChild(timeIntervalText);
+    config.appendChild(timeInterval);
+
+    QDomElement distanceInterval = response.createElement("distanceInterval");
+    QDomText distanceIntervalText = response.createTextNode(QString::number(mConfig.getDistanceInterval()));
+    distanceInterval.appendChild(distanceIntervalText);
+    config.appendChild(distanceInterval);
+
+    return config;
+}
+
 /*!
  * \brief OiRequestHandler::getMeasurementConfigs
  * \param request
@@ -1167,92 +1213,10 @@ void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
     //add configs
     QDomElement configs = request.response.createElement("measurementConfigs");
     foreach(const MeasurementConfig &mConfig, savedConfigs){
-        QDomElement config = request.response.createElement("measurementConfig");
-        QDomElement name = request.response.createElement("name");
-        QDomText nameText = request.response.createTextNode(mConfig.getName());
-        name.appendChild(nameText);
-        config.appendChild(name);
-        QDomElement isSaved = request.response.createElement("isSaved");
-        QDomText isSavedText = request.response.createTextNode("1");
-        isSaved.appendChild(isSavedText);
-        config.appendChild(isSaved);
-        QDomElement count = request.response.createElement("count");
-        QDomText countText = request.response.createTextNode(QString::number(mConfig.getCount()));
-        count.appendChild(countText);
-        config.appendChild(count);
-        QDomElement iterations = request.response.createElement("iterations");
-        QDomText iterationsText = request.response.createTextNode(QString::number(mConfig.getIterations()));
-        iterations.appendChild(iterationsText);
-        config.appendChild(iterations);
-        QDomElement measureTwoSides = request.response.createElement("measureTwoSides");
-        QDomText measureTwoSidesText = request.response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
-        measureTwoSides.appendChild(measureTwoSidesText);
-        config.appendChild(measureTwoSides);
-        QDomElement timeDependent = request.response.createElement("timeDependent");
-        QDomText timeDependentText = request.response.createTextNode(mConfig.getTimeDependent()?"1":"0");
-        timeDependent.appendChild(timeDependentText);
-        config.appendChild(timeDependent);
-        QDomElement distanceDependent = request.response.createElement("distanceDependent");
-        QDomText distanceDependentText = request.response.createTextNode(mConfig.getDistanceDependent()?"1":"0");
-        distanceDependent.appendChild(distanceDependentText);
-        config.appendChild(distanceDependent);
-        QDomElement timeInterval = request.response.createElement("timeInterval");
-        QDomText timeIntervalText = request.response.createTextNode(QString::number(mConfig.getTimeInterval()));
-        timeInterval.appendChild(timeIntervalText);
-        config.appendChild(timeInterval);
-        QDomElement distanceInterval = request.response.createElement("distanceInterval");
-        QDomText distanceIntervalText = request.response.createTextNode(QString::number(mConfig.getDistanceInterval()));
-        distanceInterval.appendChild(distanceIntervalText);
-        config.appendChild(distanceInterval);
-        QDomElement typeOfReading = request.response.createElement("typeOfReading");
-        QDomText typeOfReadingText = request.response.createTextNode(QString::number(mConfig.getTypeOfReading()));
-        typeOfReading.appendChild(typeOfReadingText);
-        config.appendChild(typeOfReading);
-        configs.appendChild(config);
+        configs.appendChild(toXML(mConfig, true, request.response));
     }
     foreach(const MeasurementConfig &mConfig, projectConfigs){
-        QDomElement config = request.response.createElement("measurementConfig");
-        QDomElement name = request.response.createElement("name");
-        QDomText nameText = request.response.createTextNode(mConfig.getName());
-        name.appendChild(nameText);
-        config.appendChild(name);
-        QDomElement isSaved = request.response.createElement("isSaved");
-        QDomText isSavedText = request.response.createTextNode("0");
-        isSaved.appendChild(isSavedText);
-        config.appendChild(isSaved);
-        QDomElement count = request.response.createElement("count");
-        QDomText countText = request.response.createTextNode(QString::number(mConfig.getCount()));
-        count.appendChild(countText);
-        config.appendChild(count);
-        QDomElement iterations = request.response.createElement("iterations");
-        QDomText iterationsText = request.response.createTextNode(QString::number(mConfig.getIterations()));
-        iterations.appendChild(iterationsText);
-        config.appendChild(iterations);
-        QDomElement measureTwoSides = request.response.createElement("measureTwoSides");
-        QDomText measureTwoSidesText = request.response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
-        measureTwoSides.appendChild(measureTwoSidesText);
-        config.appendChild(measureTwoSides);
-        QDomElement timeDependent = request.response.createElement("timeDependent");
-        QDomText timeDependentText = request.response.createTextNode(mConfig.getTimeDependent()?"1":"0");
-        timeDependent.appendChild(timeDependentText);
-        config.appendChild(timeDependent);
-        QDomElement distanceDependent = request.response.createElement("distanceDependent");
-        QDomText distanceDependentText = request.response.createTextNode(mConfig.getDistanceDependent()?"1":"0");
-        distanceDependent.appendChild(distanceDependentText);
-        config.appendChild(distanceDependent);
-        QDomElement timeInterval = request.response.createElement("timeInterval");
-        QDomText timeIntervalText = request.response.createTextNode(QString::number(mConfig.getTimeInterval()));
-        timeInterval.appendChild(timeIntervalText);
-        config.appendChild(timeInterval);
-        QDomElement distanceInterval = request.response.createElement("distanceInterval");
-        QDomText distanceIntervalText = request.response.createTextNode(QString::number(mConfig.getDistanceInterval()));
-        distanceInterval.appendChild(distanceIntervalText);
-        config.appendChild(distanceInterval);
-        QDomElement typeOfReading = request.response.createElement("typeOfReading");
-        QDomText typeOfReadingText = request.response.createTextNode(QString::number(mConfig.getTypeOfReading()));
-        typeOfReading.appendChild(typeOfReadingText);
-        config.appendChild(typeOfReading);
-        configs.appendChild(config);
+        configs.appendChild(toXML(mConfig, false, request.response));
     }
     request.response.documentElement().appendChild(configs);
 
@@ -1289,48 +1253,8 @@ void OiRequestHandler::getMeasurementConfig(OiRequestResponse &request){
 
     //add config
     MeasurementConfig mConfig = feature->getGeometry()->getMeasurementConfig();
-    QDomElement config = request.response.createElement("measurementConfig");
-    QDomElement name = request.response.createElement("name");
-    QDomText nameText = request.response.createTextNode(mConfig.getName());
-    name.appendChild(nameText);
-    config.appendChild(name);
-    QDomElement isSaved = request.response.createElement("isSaved");
-    QDomText isSavedText = request.response.createTextNode("0");
-    isSaved.appendChild(isSavedText);
-    config.appendChild(isSaved);
-    QDomElement count = request.response.createElement("count");
-    QDomText countText = request.response.createTextNode(QString::number(mConfig.getCount()));
-    count.appendChild(countText);
-    config.appendChild(count);
-    QDomElement iterations = request.response.createElement("iterations");
-    QDomText iterationsText = request.response.createTextNode(QString::number(mConfig.getIterations()));
-    iterations.appendChild(iterationsText);
-    config.appendChild(iterations);
-    QDomElement measureTwoSides = request.response.createElement("measureTwoSides");
-    QDomText measureTwoSidesText = request.response.createTextNode(mConfig.getMeasureTwoSides()?"1":"0");
-    measureTwoSides.appendChild(measureTwoSidesText);
-    config.appendChild(measureTwoSides);
-    QDomElement timeDependent = request.response.createElement("timeDependent");
-    QDomText timeDependentText = request.response.createTextNode(mConfig.getTimeDependent()?"1":"0");
-    timeDependent.appendChild(timeDependentText);
-    config.appendChild(timeDependent);
-    QDomElement distanceDependent = request.response.createElement("distanceDependent");
-    QDomText distanceDependentText = request.response.createTextNode(mConfig.getDistanceDependent()?"1":"0");
-    distanceDependent.appendChild(distanceDependentText);
-    config.appendChild(distanceDependent);
-    QDomElement timeInterval = request.response.createElement("timeInterval");
-    QDomText timeIntervalText = request.response.createTextNode(QString::number(mConfig.getTimeInterval()));
-    timeInterval.appendChild(timeIntervalText);
-    config.appendChild(timeInterval);
-    QDomElement distanceInterval = request.response.createElement("distanceInterval");
-    QDomText distanceIntervalText = request.response.createTextNode(QString::number(mConfig.getDistanceInterval()));
-    distanceInterval.appendChild(distanceIntervalText);
-    config.appendChild(distanceInterval);
-    QDomElement typeOfReading = request.response.createElement("typeOfReading");
-    QDomText typeOfReadingText = request.response.createTextNode(QString::number(mConfig.getTypeOfReading()));
-    typeOfReading.appendChild(typeOfReadingText);
-    config.appendChild(typeOfReading);
-    request.response.documentElement().appendChild(config);
+
+    request.response.documentElement().appendChild(toXML(mConfig, false, request.response));
 
     emit this->sendResponse(request);
 
