@@ -470,6 +470,7 @@ void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
     if( function.iid.startsWith("de.openIndy.plugin.function.constructFunction")
         || function.iid.startsWith("de.openIndy.plugin.function.objectTransformation")
         || function.iid.startsWith("de.openIndy.plugin.function.specialFunction")
+        || function.name.endsWith("FromPoints") // fitfunction
         ) {
         this->neededElements.clear();
         this->neededElements.append(ElementTypes::eUndefinedElement);
