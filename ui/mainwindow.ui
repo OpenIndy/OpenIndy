@@ -657,7 +657,6 @@ background-position: center center;</string>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
-    <addaction name="actionSensor_real_time_data"/>
     <addaction name="actionMagnify"/>
     <addaction name="actiondifferences"/>
    </widget>
@@ -999,15 +998,6 @@ background-position: center center;</string>
     <string>close</string>
    </property>
   </action>
-  <action name="actionShow_help">
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/icons/icons/toolbars/standard/help.png</normaloff>:/icons/icons/toolbars/standard/help.png</iconset>
-   </property>
-   <property name="text">
-    <string>Show Help</string>
-   </property>
-  </action>
   <action name="actionControl_pad">
    <property name="icon">
     <iconset resource="../res/res.qrc">
@@ -1321,18 +1311,6 @@ background-position: center center;</string>
    </property>
    <property name="text">
     <string>simulation</string>
-   </property>
-  </action>
-  <action name="actionSensor_real_time_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/streamingLogo.png</normaloff>:/Images/icons/streamingLogo.png</iconset>
-   </property>
-   <property name="text">
-    <string>sensor_real_time_data</string>
    </property>
   </action>
   <action name="action_importMeasurementConfigs">
