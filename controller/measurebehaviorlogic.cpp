@@ -44,9 +44,9 @@ bool MeasureBehaviorLogic::next() {
         this->activeFeatureId = this->measureFeatures[0];
         this->measureFeatures.removeAt(0);
         return true;
-
     } else {
         this->activeFeatureId = -1;
+        emit measurementsFinished();
         return false;
     }
 

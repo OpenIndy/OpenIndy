@@ -37,6 +37,9 @@ protected slots:
 private slots:
     void abortMeasurement();
 
+signals:
+    void measurementsFinished();
+
 protected:
     virtual void showCentered(QDialog &dialog);
 
