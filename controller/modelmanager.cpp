@@ -1372,6 +1372,7 @@ void ModelManager::initReadingTypesModels(){
 
     QStringList readingTypes;
     readingTypes.append(getReadingTypeName(eCartesianReading));
+    readingTypes.append(getReadingTypeName(eCartesianReading6D));
     readingTypes.append(getReadingTypeName(eDistanceReading));
     readingTypes.append(getReadingTypeName(ePolarReading));
     readingTypes.append(getReadingTypeName(eDirectionReading));
