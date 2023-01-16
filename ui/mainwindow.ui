@@ -729,8 +729,6 @@ background-position: center center;</string>
    <addaction name="actionMeasurement_Configuration"/>
    <addaction name="actionSet_function"/>
    <addaction name="actionWatch_window"/>
-   <addaction name="actionShow_help"/>
-   <addaction name="actionSensor_real_time_data"/>
    <addaction name="actionConsole"/>
    <addaction name="actionRemoveObservations"/>
    <addaction name="actiongo_to_next_feature"/>
