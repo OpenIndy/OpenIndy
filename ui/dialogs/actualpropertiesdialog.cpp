@@ -263,26 +263,18 @@ void ActualPropertiesDialog::on_tabWidget_selectedFeature_customContextMenuReque
  */
 void ActualPropertiesDialog::unUseObservations()
 {
-    //init variables
-    QModelIndexList selection;
-
-    //get selected indexes
-    selection = this->getSelection();
-    if(selection.size() > 0){
-        ObservationProxyModel *model = static_cast<ObservationProxyModel *>(this->ui->tableView_observation->model());
-        if(model == NULL){
-            return;
-        }
-        foreach (QModelIndex idx, selection) {
-            emit this->useObservation(false, model->mapToSource(idx));
-        }
-    }
+    this->useObservations(false);
 }
 
 /*!
  * \brief ActualPropertiesDialog::useObservations
  */
 void ActualPropertiesDialog::useObservations()
+{
+    this->useObservations(true);
+}
+
+void ActualPropertiesDialog::useObservations(bool use)
 {
     //init variables
     QModelIndexList selection;
@@ -294,12 +286,15 @@ void ActualPropertiesDialog::useObservations()
         if(model == NULL){
             return;
         }
+        QModelIndexList s;
         foreach (QModelIndex idx, selection) {
-            emit this->useObservation(true, model->mapToSource(idx));
+            s.append(model->mapToSource(idx));
+        }
+        foreach (QModelIndex idx, s) {
+            emit this->useObservation(use, idx);
         }
     }
 }
-
 /*!
  * \brief ActualPropertiesDialog::deleteObservations
  */
