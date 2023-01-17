@@ -276,7 +276,6 @@ private slots:
     void resizeTableView();
 
     //remove observations
-    void on_actionRemoveObservations_triggered();
     void on_actionShow_Licenses_triggered();
     void removeObservationOfActiveFeature();
 
