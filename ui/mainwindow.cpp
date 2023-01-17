@@ -807,6 +807,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
+    delete menu;
 }
 
 /*!
