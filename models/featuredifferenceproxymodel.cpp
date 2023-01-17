@@ -25,6 +25,7 @@ const QPointer<OiJob> &FeatureDifferenceProxyModel::getCurrentJob() const{
 void FeatureDifferenceProxyModel::setCurrentJob(const QPointer<OiJob> &job){
     if(!job.isNull()){
         this->job = job;
+        this->sorter.setCurrentJob(job);
     }
 }
 
@@ -92,4 +93,38 @@ bool FeatureDifferenceProxyModel::filterAcceptsRow(int source_row, const QModelI
 bool FeatureDifferenceProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
 
     return true;
+}
+
+void FeatureDifferenceProxyModel::setSortingMode(FeatureSorter::SortingMode mode)
+{
+    this->sorter.setSortingMode(mode);
+    this->invalidate();
+}
+
+bool FeatureDifferenceProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
+
+    //get and cast source model
+    FeatureDifferenceTableModel *source_model = dynamic_cast<FeatureDifferenceTableModel *>(this->sourceModel());
+    if(source_model == NULL || source_model->getCurrentJob().isNull()){
+        return false;
+    }
+
+    //check indexes
+    if(!left.isValid() || !right.isValid()){
+        return false;
+    }
+
+    //get and check row index for each model index
+    int leftIndex = left.row();
+    int rightIndex = right.row();
+    if(source_model->getCurrentJob()->getFeaturesList().size() <= leftIndex || source_model->getCurrentJob()->getFeaturesList().size() <= rightIndex){
+        return false;
+    }
+
+    //get features
+    QPointer<FeatureWrapper> leftFeature = source_model->getCurrentJob()->getFeaturesList().at(leftIndex);
+    QPointer<FeatureWrapper> rightFeature = source_model->getCurrentJob()->getFeaturesList().at(rightIndex);
+
+    return this->sorter.lessThan(leftFeature, rightFeature);
+
 }
