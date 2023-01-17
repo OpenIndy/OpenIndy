@@ -731,10 +731,8 @@ void MainWindow::tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &
  * \param pos
  */
 void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &pos){
-
     //create menu and add delete action
     QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
 
     //get feature table models
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
@@ -747,6 +745,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         delete menu;
         return;
     }
+
+    QItemSelectionModel *selectionModel = this->ui->tableView_features->selectionModel();
+    QModelIndexList selection = selectionModel->selectedIndexes();;
+    const bool multipleFeaturesSelected = selection.size() > 1;
 
     //get the selected index (where the right click was done)
     QModelIndex selectedIndex = this->ui->tableView_features->indexAt(pos);
@@ -764,46 +766,103 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         return;
     }
 
+    QString featureName = selectedFeature->getFeature()->getFeatureName();
+    QString labelSuffix = multipleFeaturesSelected ? "ALL selected features" : featureName;
+
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
         if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
-            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
+                            QString("set function for %1").arg(featureName),
                             this, SLOT(on_actionSet_function_triggered()));
-        }
-        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
-            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"), QString("edit measurement config for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        } else if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"),
+                            QString("edit measurement config for %1").arg(featureName),
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
         }
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/Images/icons/info.png"),
+                        QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
-        // TODO show if feature has observations
-        menu->addAction(QIcon(), QString("enable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(enableObservationsOfActiveFeature()));
-        // TODO show if feature has observations
-        menu->addAction(QIcon(), QString("disable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(disableObservationsOfActiveFeature()));
-
-        menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/Images/icons/button_ok.png"),
+                        QString("recalc %1").arg(featureName),
                         &this->control, SLOT(recalcActiveFeature()));
 
         //if the active feature is a geometry
         if(!selectedFeature->getGeometry().isNull()){
 
-            menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                                 this, SLOT(removeObservationOfActiveFeature()));
-            menu->addAction(QIcon(""), QString("aim to feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            if(!selectedFeature->getGeometry()->getObservations().isEmpty()) {
+                menu->addAction(QString("enable all observations of %1").arg(featureName),
+                                this, SLOT(enableObservationsOfActiveFeature()));
+
+                menu->addAction(QString("disable all observations of %1").arg(featureName),
+                                this, SLOT(disableObservationsOfActiveFeature()));
+
+                menu->addAction(QIcon(":/Images/icons/cancel.png"),
+                                QString("remove observations of %1").arg(featureName),
+                                this, SLOT(removeObservationOfActiveFeature()));
+            }
+
+            menu->addAction(QString("aim to feature %1").arg(featureName),
                             &this->control, SLOT(startAim()));
-        }
+        } else if(!selectedFeature->getStation().isNull()){
 
-        if(!selectedFeature->getStation().isNull()){
-
-            menu->addAction(QString("activate station %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QString("activate station %1").arg(featureName),
                             this, SLOT(on_actionActivate_station_triggered()));
         }
 
     }
+
+    QList<int> ids;
+    if(multipleFeaturesSelected) {
+        for(QModelIndex idx : selection) {
+            ids.append(sourceModel->getFeatureIdAtIndex(model->mapToSource(idx)));
+        }
+
+        menu->addSeparator();
+
+        QAction *enableObservationssAction = menu->addAction(
+                    QString("enable all observations of %1").arg(labelSuffix));
+        connect(enableObservationssAction, &QAction::triggered,
+                        this, [=]() {
+                            for(int id : ids) {
+                                emit this->enableObservations(id);
+                            }
+                        });
+
+        QAction *disableObservationsAction = menu->addAction(
+                    QString("disable all observations of %1").arg(labelSuffix));
+        connect(disableObservationsAction, &QAction::triggered,
+                        this, [=]() {
+                            for(int id : ids) {
+                                emit this->disableObservations(id);
+                            }
+                        });
+
+        QAction *removeObservationsAction = menu->addAction(QIcon(":/Images/icons/cancel.png"),
+                        QString("remove observations of %1").arg(labelSuffix));
+        connect(removeObservationsAction, &QAction::triggered,
+                        this, [=]() {
+                            QMessageBox msgBox;
+                            msgBox.setText(QString("Remove observations of %1?").arg(labelSuffix));
+                            msgBox.setInformativeText("");
+                            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                            msgBox.setDefaultButton(QMessageBox::Yes);
+                            switch (msgBox.exec()) {
+                            case QMessageBox::Yes:
+                                for(int id : ids) {
+                                    emit this->removeObservations(id);
+                                }
+                              break;
+                            }
+                        });
+    }
+
+    menu->addSeparator();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                    QString("delete %1").arg(labelSuffix),
+                    this, SLOT(deleteFeatures(bool)));
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
