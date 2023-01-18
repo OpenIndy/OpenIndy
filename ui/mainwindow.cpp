@@ -1224,6 +1224,10 @@ void MainWindow::on_actionSave_as_triggered(){
     this->saveProjectAs();
 }
 
+void MainWindow::on_actionSave_as_template_triggered(){
+    this->saveProjectAs(true);
+}
+
 /*!
  * \brief MainWindow::on_actionClose_triggered
  */
@@ -2744,7 +2748,7 @@ void MainWindow::resetBundleView(){
  * \brief MainWindow::saveAsProject
  * creates a file name for save path and emits the signal to save
  */
-void MainWindow::saveProjectAs()
+void MainWindow::saveProjectAs(bool asTemplate)
 {
     QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
 

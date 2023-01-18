@@ -618,6 +618,7 @@ background-position: center center;</string>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="actionSave_as_template"/>
     <addaction name="actionimport"/>
     <addaction name="actionexport"/>
     <addaction name="actionClose"/>
@@ -1511,6 +1512,14 @@ background-position: center center;</string>
   <action name="actionShow_Licenses">
    <property name="text">
     <string>Show Licenses</string>
+   </property>
+  </action>
+  <action name="actionSave_as_template">
+   <property name="text">
+    <string>save as template</string>
+   </property>
+   <property name="toolTip">
+    <string>save current project as template with out observations</string>
    </property>
   </action>
  </widget>
