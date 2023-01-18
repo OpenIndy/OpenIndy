@@ -2751,21 +2751,31 @@ void MainWindow::resetBundleView(){
  */
 void MainWindow::saveProjectAs(bool asTemplate)
 {
-    if(asTemplate && (emit showMessageBox("all observations will removed", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
-        this->log("save as template: remove all observations", eInformationMessage, eConsoleMessage);
+    QString caption;
+    QString preferedName = ProjectConfig::getProjectPath();
+    if(asTemplate) {
+        caption = "Save template as";
+        preferedName += QDir::separator();
+        preferedName += "_template";
 
-        emit this->createTemplateFromJob();
-
+        if ((emit showMessageBox("save current project", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
+            emit this->saveProject();
+        } else {
+            this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
+            return;
+        }
     } else {
-        this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
-        return;
+        caption = "Save project as";
     }
 
-    QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
+    QString filename = QFileDialog::getSaveFileName(this, caption, preferedName, tr("xml (*.xml)"));
 
     if(!filename.isEmpty()){
         QFileInfo info(filename);
         ProjectConfig::setProjectPath(info.absolutePath());
+        if(asTemplate) {
+            emit this->createTemplateFromJob();
+        }
         emit this->saveProject(filename);
     }
 }
