@@ -2072,6 +2072,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -2752,7 +2753,9 @@ void MainWindow::saveProjectAs(bool asTemplate)
 {
     if(asTemplate && (emit showMessageBox("all observations will removed", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
         this->log("save as template: remove all observations", eInformationMessage, eConsoleMessage);
-        emit this->removeAllObservations();
+
+        emit this->createTemplateFromJob();
+
     } else {
         this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
         return;

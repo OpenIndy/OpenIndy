@@ -2253,3 +2253,9 @@ void Controller::startSearch(){
 
     activeStation->search();
 }
+
+void Controller::createTemplateFromJob(){
+    this->removeAllObservations(); // from features
+}
+
+

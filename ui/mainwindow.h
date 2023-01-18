@@ -145,6 +145,8 @@ signals:
     //load sensorconfigs and measurementconfigs from folders and store in databas
     void loadAndSaveConfigs();
 
+    void createTemplateFromJob();
+
 private slots:
 
     //#############################
