@@ -2750,6 +2750,14 @@ void MainWindow::resetBundleView(){
  */
 void MainWindow::saveProjectAs(bool asTemplate)
 {
+    if(asTemplate && (emit showMessageBox("all observations will removed", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
+        this->log("save as template: remove all observations", eInformationMessage, eConsoleMessage);
+        emit this->removeAllObservations();
+    } else {
+        this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
+        return;
+    }
+
     QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
 
     if(!filename.isEmpty()){
