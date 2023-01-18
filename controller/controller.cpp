@@ -2255,7 +2255,15 @@ void Controller::startSearch(){
 }
 
 void Controller::createTemplateFromJob(){
-    this->removeAllObservations(); // from features
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->createTemplateFromJob();
+
 }
 
 
