@@ -48,15 +48,15 @@ linux {
 
 win32 {
     CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy22
+        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy23
     } else {
-        LIBS += -L$$PWD/../appui/bin/release -lopenIndy22
+        LIBS += -L$$PWD/../appui/bin/release -lopenIndy23
     }
 }
 linux {
     CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy22
+        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy23
     } else {
-        LIBS += -L$$PWD/../appui/bin/release -lopenIndy22
+        LIBS += -L$$PWD/../appui/bin/release -lopenIndy23
     }
 }
