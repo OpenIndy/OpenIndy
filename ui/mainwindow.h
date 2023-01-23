@@ -145,6 +145,8 @@ signals:
     //load sensorconfigs and measurementconfigs from folders and store in databas
     void loadAndSaveConfigs();
 
+    void createTemplateFromJob();
+
 private slots:
 
     //#############################
@@ -258,6 +260,7 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
     void on_actionSave_as_triggered();
+    void on_actionSave_as_template_triggered();
 
     //close OpenIndy
     void on_actionClose_triggered();
@@ -276,7 +279,6 @@ private slots:
     void resizeTableView();
 
     //remove observations
-    void on_actionRemoveObservations_triggered();
     void on_actionShow_Licenses_triggered();
     void removeObservationOfActiveFeature();
 
@@ -392,7 +394,7 @@ private:
     void resetBundleView();
 
     //save project help function
-    void saveProjectAs();
+    void saveProjectAs(bool asTemplate = false);
 
     //load default bundle plugin
     void loadDefaultBundlePlugIn(int bundleID);

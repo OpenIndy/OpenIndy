@@ -2253,3 +2253,17 @@ void Controller::startSearch(){
 
     activeStation->search();
 }
+
+void Controller::createTemplateFromJob(){
+
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    this->job->createTemplateFromJob();
+
+}
+
+

@@ -1224,6 +1224,10 @@ void MainWindow::on_actionSave_as_triggered(){
     this->saveProjectAs();
 }
 
+void MainWindow::on_actionSave_as_template_triggered(){
+    this->saveProjectAs(true);
+}
+
 /*!
  * \brief MainWindow::on_actionClose_triggered
  */
@@ -1350,22 +1354,6 @@ void MainWindow::resizeTableView(){
     this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_FeatureDifferences->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
-}
-
-/*!
- * \brief MainWindow::on_actionRemoveObservations_triggered
- */
-void MainWindow::on_actionRemoveObservations_triggered(){
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("clear observations");
-    msgBox.setText("This action will clear all observations.");
-    msgBox.setInformativeText("Continue?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::No);
-
-    if(msgBox.exec() == QMessageBox::Yes){
-      emit this->removeAllObservations();
-    }
 }
 
 /*!
@@ -2084,6 +2072,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -2760,13 +2749,33 @@ void MainWindow::resetBundleView(){
  * \brief MainWindow::saveAsProject
  * creates a file name for save path and emits the signal to save
  */
-void MainWindow::saveProjectAs()
+void MainWindow::saveProjectAs(bool asTemplate)
 {
-    QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
+    QString caption;
+    QString preferedName = ProjectConfig::getProjectPath();
+    if(asTemplate) {
+        caption = "Save template as";
+        preferedName += QDir::separator();
+        preferedName += "_template";
+
+        if ((emit showMessageBox("save current project", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
+            emit this->saveProject();
+        } else {
+            this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
+            return;
+        }
+    } else {
+        caption = "Save project as";
+    }
+
+    QString filename = QFileDialog::getSaveFileName(this, caption, preferedName, tr("xml (*.xml)"));
 
     if(!filename.isEmpty()){
         QFileInfo info(filename);
         ProjectConfig::setProjectPath(info.absolutePath());
+        if(asTemplate) {
+            emit this->createTemplateFromJob();
+        }
         emit this->saveProject(filename);
     }
 }
