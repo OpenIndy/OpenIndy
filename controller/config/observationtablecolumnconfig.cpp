@@ -76,7 +76,7 @@ void ObservationTableColumnConfig::init(){
     this->displayColumns.append(eObservationDisplaySigmaI);
     this->displayColumns.append(eObservationDisplaySigmaJ);
     this->displayColumns.append(eObservationDisplaySigmaK);*/
-    this->displayColumns.append(eObservationDisplayIsValid);
+    //this->displayColumns.append(eObservationDisplayIsValid);
     this->displayColumns.append(eObservationDisplayIsSolved);
     this->displayColumns.append(eObservationDisplayVX);
     this->displayColumns.append(eObservationDisplayVY);

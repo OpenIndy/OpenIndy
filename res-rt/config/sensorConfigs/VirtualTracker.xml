@@ -26,12 +26,19 @@
     </doubleParameters>
     <stringParameters>
         <parameter name="active probe" value="1.5''"/>
+        <parameter name="reading type" value="polar"/>
     </stringParameters>
     <availableStringParameters>
         <parameter name="active probe">
             <option value="0.5''"/>
             <option value="1.0''"/>
             <option value="1.5''"/>
+        </parameter>
+        <parameter name="reading type">
+            <option value="cartesian"/>
+            <option value="polar"/>
+            <option value="direction"/>
+            <option value="distance"/>
         </parameter>
     </availableStringParameters>
 </sensorConfig>
