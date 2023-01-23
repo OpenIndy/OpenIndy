@@ -346,6 +346,8 @@ private slots:
 
     void on_comboBox_sortBy_currentIndexChanged(int index);
 
+    void measureBehaviorLogicFinished();
+
 private:
     Ui::MainWindow *ui;
 
@@ -490,6 +492,8 @@ private:
 
     MeasureBehaviorLogic measureBehaviorLogic;
     QMessageBox commonMessageBox;
+
+    void measureBehaviorLogicStarted();
 };
 
 #endif // MAINWINDOW_H

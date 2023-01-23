@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
+    QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -1663,6 +1664,7 @@ void MainWindow::aimAndMeasureFeatures(){
         }
     }
 
+    this->measureBehaviorLogicStarted();
     QList<QPointer<QDialog>> dialogsToClose;
     dialogsToClose.append(&this->sensorTaskInfoDialog);
     dialogsToClose.append(&this->commonMessageBox);
@@ -2864,7 +2866,8 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
 void MainWindow::autoSwitchToNextFeature(bool sucessMeasure)
 {
     if(sucessMeasure){
-        if(!this->ui->actiongo_to_next_feature->isChecked()){
+        if(!this->ui->actiongo_to_next_feature->isChecked()
+                && !this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE").isValid()){
             this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
         }
     }
@@ -3254,4 +3257,18 @@ void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
         fdmodel->setSortingMode((FeatureSorter::SortingMode)index);
     }
 
+}
+
+void MainWindow::measureBehaviorLogicStarted() {
+    // disable "go to next feautre"
+    this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", this->ui->actiongo_to_next_feature->isChecked());
+    this->ui->actiongo_to_next_feature->setChecked(false);
+}
+
+void MainWindow::measureBehaviorLogicFinished() {
+    QVariant value = this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE");
+    this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", QVariant::Invalid);
+    if(value.isValid()) {
+        this->ui->actiongo_to_next_feature->setChecked(value.toBool());
+    }
 }
