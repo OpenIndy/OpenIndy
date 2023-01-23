@@ -101,6 +101,8 @@ void FeatureFunctionsDialog::on_tableView_functionPlugins_doubleClicked(const QM
     this->ui->tabWidget_functionParameter->setTabEnabled(2,false);
     this->ui->tabWidget_functionSetter->setCurrentIndex(0);
 
+    // activate current selected function
+    on_treeView_functions_clicked(model->index(model->rowCount()-1, 0));
 }
 
 /*!
