@@ -812,9 +812,6 @@ void ModelManager::featureSetChanged(){
         return;
     }
 
-    //resort table model
-    ModelManager::featureTableProxyModel.sort(0);
-
 }
 
 /*!
@@ -883,10 +880,6 @@ void ModelManager::featureNameChanged(const int &featureId, const QString &oldNa
         ModelManager::updateCoordinateSystemsModel();
         ModelManager::updateNominalSystemsModel();
     }
-
-    //resort table model
-    //ModelManager::featureTableProxyModel.sort(0);
-
 }
 
 /*!

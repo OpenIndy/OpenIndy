@@ -3175,11 +3175,14 @@ void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg
 void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
 {
 
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
+    FeatureTableProxyModel *ftmodel = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(ftmodel != NULL){
+        ftmodel->setSortingMode((FeatureSorter::SortingMode)index);
     }
 
-    model->setSortingMode((FeatureSorter::SortingMode)index);
+    FeatureDifferenceProxyModel *fdmodel = static_cast<FeatureDifferenceProxyModel *>(this->ui->tableView_FeatureDifferences->model());
+    if(fdmodel != NULL){
+        fdmodel->setSortingMode((FeatureSorter::SortingMode)index);
+    }
 
 }

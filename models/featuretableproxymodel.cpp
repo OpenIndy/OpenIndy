@@ -3,6 +3,7 @@
 FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
+    this->sort(0);
 }
 
 /*!
