@@ -428,11 +428,7 @@ void ObservationModel::setObservationUseStateByContextmenu(bool use, const QMode
     if(observation.isNull()){
         return;
     }
-    if(use){
-        emit this->setShouldBeUsed(this->currentJob->getActiveFeature(), 0, 0, observation->getId(), true, true);
-    }else{
-        emit this->setShouldBeUsed(this->currentJob->getActiveFeature(), 0, 0, observation->getId(), false, true);
-    }
+    emit this->setShouldBeUsed(this->currentJob->getActiveFeature(), 0, 0, observation->getId(), use, true);
 }
 /*!
  * \brief ObservationModel::getObservationIdByIndex
