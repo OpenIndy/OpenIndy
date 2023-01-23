@@ -618,6 +618,7 @@ background-position: center center;</string>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="actionSave_as_template"/>
     <addaction name="actionimport"/>
     <addaction name="actionexport"/>
     <addaction name="actionClose"/>
@@ -657,7 +658,6 @@ background-position: center center;</string>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
-    <addaction name="actionSensor_real_time_data"/>
     <addaction name="actionMagnify"/>
     <addaction name="actiondifferences"/>
    </widget>
@@ -729,10 +729,7 @@ background-position: center center;</string>
    <addaction name="actionMeasurement_Configuration"/>
    <addaction name="actionSet_function"/>
    <addaction name="actionWatch_window"/>
-   <addaction name="actionShow_help"/>
-   <addaction name="actionSensor_real_time_data"/>
    <addaction name="actionConsole"/>
-   <addaction name="actionRemoveObservations"/>
    <addaction name="actiongo_to_next_feature"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -999,15 +996,6 @@ background-position: center center;</string>
    </property>
    <property name="text">
     <string>close</string>
-   </property>
-  </action>
-  <action name="actionShow_help">
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/icons/icons/toolbars/standard/help.png</normaloff>:/icons/icons/toolbars/standard/help.png</iconset>
-   </property>
-   <property name="text">
-    <string>Show Help</string>
    </property>
   </action>
   <action name="actionControl_pad">
@@ -1325,18 +1313,6 @@ background-position: center center;</string>
     <string>simulation</string>
    </property>
   </action>
-  <action name="actionSensor_real_time_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/streamingLogo.png</normaloff>:/Images/icons/streamingLogo.png</iconset>
-   </property>
-   <property name="text">
-    <string>sensor_real_time_data</string>
-   </property>
-  </action>
   <action name="action_importMeasurementConfigs">
    <property name="text">
     <string>measurement configs</string>
@@ -1401,15 +1377,6 @@ background-position: center center;</string>
    </property>
    <property name="toolTip">
     <string>create ellipse</string>
-   </property>
-  </action>
-  <action name="actionRemoveObservations">
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
-   </property>
-   <property name="text">
-    <string>removeObservations</string>
    </property>
   </action>
   <action name="actionAbout_OpenIndy">
@@ -1521,6 +1488,14 @@ background-position: center center;</string>
   <action name="actionShow_Licenses">
    <property name="text">
     <string>Show Licenses</string>
+   </property>
+  </action>
+  <action name="actionSave_as_template">
+   <property name="text">
+    <string>save as template</string>
+   </property>
+   <property name="toolTip">
+    <string>save current project as template with out observations</string>
    </property>
   </action>
  </widget>

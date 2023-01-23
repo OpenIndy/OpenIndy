@@ -160,6 +160,8 @@ public slots:
     //show tool widget
     void showToolWidget(const QString &pluginName, const QString &toolName);
 
+    void createTemplateFromJob();
+
 signals:
 
     void sensorStatus(const SensorStatus &status, const QString &msg);

@@ -99,6 +99,7 @@ private:
     void initGUI();
     void initModels();
     QModelIndexList getSelection();
+    void useObservations(bool use);
 
     //#################
     //helper attributes

@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
     QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
+    QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -731,10 +732,8 @@ void MainWindow::tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &
  * \param pos
  */
 void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &pos){
-
     //create menu and add delete action
     QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
 
     //get feature table models
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
@@ -747,6 +746,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         delete menu;
         return;
     }
+
+    QItemSelectionModel *selectionModel = this->ui->tableView_features->selectionModel();
+    QModelIndexList selection = selectionModel->selectedIndexes();;
+    const bool multipleFeaturesSelected = selection.size() > 1;
 
     //get the selected index (where the right click was done)
     QModelIndex selectedIndex = this->ui->tableView_features->indexAt(pos);
@@ -764,49 +767,107 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         return;
     }
 
+    QString featureName = selectedFeature->getFeature()->getFeatureName();
+    QString labelSuffix = multipleFeaturesSelected ? "ALL selected features" : featureName;
+
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
         if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
-            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
+                            QString("set function for %1").arg(featureName),
                             this, SLOT(on_actionSet_function_triggered()));
-        }
-        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
-            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"), QString("edit measurement config for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        } else if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"),
+                            QString("edit measurement config for %1").arg(featureName),
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
         }
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/Images/icons/info.png"),
+                        QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
-        // TODO show if feature has observations
-        menu->addAction(QIcon(), QString("enable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(enableObservationsOfActiveFeature()));
-        // TODO show if feature has observations
-        menu->addAction(QIcon(), QString("disable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(disableObservationsOfActiveFeature()));
-
-        menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/Images/icons/button_ok.png"),
+                        QString("recalc %1").arg(featureName),
                         &this->control, SLOT(recalcActiveFeature()));
 
         //if the active feature is a geometry
         if(!selectedFeature->getGeometry().isNull()){
 
-            menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                                 this, SLOT(removeObservationOfActiveFeature()));
-            menu->addAction(QIcon(""), QString("aim to feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            if(!selectedFeature->getGeometry()->getObservations().isEmpty()) {
+                menu->addAction(QString("enable all observations of %1").arg(featureName),
+                                this, SLOT(enableObservationsOfActiveFeature()));
+
+                menu->addAction(QString("disable all observations of %1").arg(featureName),
+                                this, SLOT(disableObservationsOfActiveFeature()));
+
+                menu->addAction(QIcon(":/Images/icons/cancel.png"),
+                                QString("remove observations of %1").arg(featureName),
+                                this, SLOT(removeObservationOfActiveFeature()));
+            }
+
+            menu->addAction(QString("aim to feature %1").arg(featureName),
                             &this->control, SLOT(startAim()));
-        }
+        } else if(!selectedFeature->getStation().isNull()){
 
-        if(!selectedFeature->getStation().isNull()){
-
-            menu->addAction(QString("activate station %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QString("activate station %1").arg(featureName),
                             this, SLOT(on_actionActivate_station_triggered()));
         }
 
     }
 
+    QList<int> ids;
+    if(multipleFeaturesSelected) {
+        for(QModelIndex idx : selection) {
+            ids.append(sourceModel->getFeatureIdAtIndex(model->mapToSource(idx)));
+        }
+
+        menu->addSeparator();
+
+        QAction *enableObservationssAction = menu->addAction(
+                    QString("enable all observations of %1").arg(labelSuffix));
+        connect(enableObservationssAction, &QAction::triggered,
+                        this, [=]() {
+                            for(int id : ids) {
+                                emit this->enableObservations(id);
+                            }
+                        });
+
+        QAction *disableObservationsAction = menu->addAction(
+                    QString("disable all observations of %1").arg(labelSuffix));
+        connect(disableObservationsAction, &QAction::triggered,
+                        this, [=]() {
+                            for(int id : ids) {
+                                emit this->disableObservations(id);
+                            }
+                        });
+
+        QAction *removeObservationsAction = menu->addAction(QIcon(":/Images/icons/cancel.png"),
+                        QString("remove observations of %1").arg(labelSuffix));
+        connect(removeObservationsAction, &QAction::triggered,
+                        this, [=]() {
+                            QMessageBox msgBox;
+                            msgBox.setText(QString("Remove observations of %1?").arg(labelSuffix));
+                            msgBox.setInformativeText("");
+                            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                            msgBox.setDefaultButton(QMessageBox::Yes);
+                            switch (msgBox.exec()) {
+                            case QMessageBox::Yes:
+                                for(int id : ids) {
+                                    emit this->removeObservations(id);
+                                }
+                              break;
+                            }
+                        });
+    }
+
+    menu->addSeparator();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                    QString("delete %1").arg(labelSuffix),
+                    this, SLOT(deleteFeatures(bool)));
+
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
+    delete menu;
 }
 
 /*!
@@ -1224,6 +1285,10 @@ void MainWindow::on_actionSave_as_triggered(){
     this->saveProjectAs();
 }
 
+void MainWindow::on_actionSave_as_template_triggered(){
+    this->saveProjectAs(true);
+}
+
 /*!
  * \brief MainWindow::on_actionClose_triggered
  */
@@ -1350,22 +1415,6 @@ void MainWindow::resizeTableView(){
     this->ui->tableView_trafoParams->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_bundleParameter->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
     this->ui->tableView_FeatureDifferences->verticalHeader()->resizeSections(QHeaderView::ResizeToContents);
-}
-
-/*!
- * \brief MainWindow::on_actionRemoveObservations_triggered
- */
-void MainWindow::on_actionRemoveObservations_triggered(){
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("clear observations");
-    msgBox.setText("This action will clear all observations.");
-    msgBox.setInformativeText("Continue?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::No);
-
-    if(msgBox.exec() == QMessageBox::Yes){
-      emit this->removeAllObservations();
-    }
 }
 
 /*!
@@ -1615,6 +1664,7 @@ void MainWindow::aimAndMeasureFeatures(){
         }
     }
 
+    this->measureBehaviorLogicStarted();
     QList<QPointer<QDialog>> dialogsToClose;
     dialogsToClose.append(&this->sensorTaskInfoDialog);
     dialogsToClose.append(&this->commonMessageBox);
@@ -2084,6 +2134,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -2760,13 +2811,33 @@ void MainWindow::resetBundleView(){
  * \brief MainWindow::saveAsProject
  * creates a file name for save path and emits the signal to save
  */
-void MainWindow::saveProjectAs()
+void MainWindow::saveProjectAs(bool asTemplate)
 {
-    QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
+    QString caption;
+    QString preferedName = ProjectConfig::getProjectPath();
+    if(asTemplate) {
+        caption = "Save template as";
+        preferedName += QDir::separator();
+        preferedName += "_template";
+
+        if ((emit showMessageBox("save current project", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
+            emit this->saveProject();
+        } else {
+            this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
+            return;
+        }
+    } else {
+        caption = "Save project as";
+    }
+
+    QString filename = QFileDialog::getSaveFileName(this, caption, preferedName, tr("xml (*.xml)"));
 
     if(!filename.isEmpty()){
         QFileInfo info(filename);
         ProjectConfig::setProjectPath(info.absolutePath());
+        if(asTemplate) {
+            emit this->createTemplateFromJob();
+        }
         emit this->saveProject(filename);
     }
 }
@@ -2795,7 +2866,8 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
 void MainWindow::autoSwitchToNextFeature(bool sucessMeasure)
 {
     if(sucessMeasure){
-        if(!this->ui->actiongo_to_next_feature->isChecked()){
+        if(!this->ui->actiongo_to_next_feature->isChecked()
+                && !this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE").isValid()){
             this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
         }
     }
@@ -3175,11 +3247,28 @@ void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg
 void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
 {
 
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
+    FeatureTableProxyModel *ftmodel = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(ftmodel != NULL){
+        ftmodel->setSortingMode((FeatureSorter::SortingMode)index);
     }
 
-    model->setSortingMode((FeatureSorter::SortingMode)index);
+    FeatureDifferenceProxyModel *fdmodel = static_cast<FeatureDifferenceProxyModel *>(this->ui->tableView_FeatureDifferences->model());
+    if(fdmodel != NULL){
+        fdmodel->setSortingMode((FeatureSorter::SortingMode)index);
+    }
 
+}
+
+void MainWindow::measureBehaviorLogicStarted() {
+    // disable "go to next feautre"
+    this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", this->ui->actiongo_to_next_feature->isChecked());
+    this->ui->actiongo_to_next_feature->setChecked(false);
+}
+
+void MainWindow::measureBehaviorLogicFinished() {
+    QVariant value = this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE");
+    this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", QVariant::Invalid);
+    if(value.isValid()) {
+        this->ui->actiongo_to_next_feature->setChecked(value.toBool());
+    }
 }

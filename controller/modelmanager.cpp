@@ -812,9 +812,6 @@ void ModelManager::featureSetChanged(){
         return;
     }
 
-    //resort table model
-    ModelManager::featureTableProxyModel.sort(0);
-
 }
 
 /*!
@@ -883,10 +880,6 @@ void ModelManager::featureNameChanged(const int &featureId, const QString &oldNa
         ModelManager::updateCoordinateSystemsModel();
         ModelManager::updateNominalSystemsModel();
     }
-
-    //resort table model
-    //ModelManager::featureTableProxyModel.sort(0);
-
 }
 
 /*!
@@ -1372,6 +1365,7 @@ void ModelManager::initReadingTypesModels(){
 
     QStringList readingTypes;
     readingTypes.append(getReadingTypeName(eCartesianReading));
+    readingTypes.append(getReadingTypeName(eCartesianReading6D));
     readingTypes.append(getReadingTypeName(eDistanceReading));
     readingTypes.append(getReadingTypeName(ePolarReading));
     readingTypes.append(getReadingTypeName(eDirectionReading));
