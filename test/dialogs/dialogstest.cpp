@@ -129,7 +129,7 @@ void DialogsTest::initTestCase() {
     level.name = "function-fitlevel";
     level.iid = OiMetaData::iid_FitFunction;
     level.applicableFor << FeatureTypes::ePlaneFeature;
-    level.neededElements << ElementTypes::eReadingLevelElement;
+    level.neededElements << ElementTypes::eObservationElement;
 
     sdb::Function planefrompoints;
     planefrompoints.name = "function-planefrompoints";
