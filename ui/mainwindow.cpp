@@ -777,7 +777,6 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
                             QString("set function for %1").arg(featureName),
                             this, SLOT(on_actionSet_function_triggered()));
-        } else if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"),
                             QString("edit measurement config for %1").arg(featureName),
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
