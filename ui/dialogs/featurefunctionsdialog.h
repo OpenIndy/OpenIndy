@@ -25,7 +25,13 @@ using namespace oi;
 //#include "customparameterwidget.h"
 //#include "oimultiselectionmodel.h"
 
+enum Row {
+    First = 0,
+    Last
+};
+
 namespace Ui {
+
 class FeatureFunctionsDialog;
 }
 
@@ -124,6 +130,7 @@ private:
     void setFunctionParameters(const QModelIndex &index);
     void setFunctionElements(const QModelIndex &index);
 
+    void selectFunctionItem(Row row);
 };
 
 #endif // FEATUREFUNCTIONSDIALOG_H
