@@ -102,7 +102,10 @@ void FeatureFunctionsDialog::on_tableView_functionPlugins_doubleClicked(const QM
     this->ui->tabWidget_functionSetter->setCurrentIndex(0);
 
     // activate current selected function
-    on_treeView_functions_clicked(model->index(model->rowCount()-1, 0));
+    ActiveFeatureFunctionsModel *actFeatModel = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
+    if(actFeatModel != NULL){
+        emit this->ui->treeView_functions->clicked(actFeatModel->index(actFeatModel->rowCount()-1, 0));
+    }
 }
 
 /*!
@@ -411,6 +414,11 @@ void FeatureFunctionsDialog::showEvent(QShowEvent *event){
     this->ui->comboBox_groups->setCurrentIndex(0);
     this->ui->comboBox_features->setCurrentIndex(0);
     this->ui->lineEdit_searchByFeatureName->setText("");
+
+    ActiveFeatureFunctionsModel *actFeatModel = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
+    if(actFeatModel != NULL){
+        emit this->ui->treeView_functions->clicked(actFeatModel->index(0, 0));
+    }
 
     event->accept();
 
