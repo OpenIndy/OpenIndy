@@ -50,11 +50,6 @@ void DialogsTest::initTestCase() {
     QTextStream in1(&sqlFile1);
     QStringList statements = in1.readAll().split(";");
 
-    QFile sqlFile2(ELEMENT_SQL);
-    sqlFile2.open(QFile::ReadOnly | QFile::Text);
-    QTextStream in2(&sqlFile2);
-    statements.append(in2.readAll().split(";"));
-
     SystemDbManager::initInMemoryDB(statements);
 
 
