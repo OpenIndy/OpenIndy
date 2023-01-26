@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<measurementConfig name="StdTwoSide" maxObservations="1" timeInterval="0" measurementType="0" isSaved="1" measurementMode="2" distanceInterval="0" measureTwoSides="1"/>
+<measurementConfig name="StdTwoSide" maxObservations="1" timeInterval="0" measurementType="0" isSaved="1" measurementMode="1" distanceInterval="0" measureTwoSides="1"/>

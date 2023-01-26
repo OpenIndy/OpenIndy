@@ -770,18 +770,21 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
     QString featureName = selectedFeature->getFeature()->getFeatureName();
     QString labelSuffix = multipleFeaturesSelected ? "ALL selected features" : featureName;
 
+    const bool isStation = !selectedFeature->getStation().isNull();
+    const bool isGeometry = !selectedFeature->getGeometry().isNull();
+
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
-        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
+        if(isGeometry){
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
                             QString("set function for %1").arg(featureName),
                             this, SLOT(on_actionSet_function_triggered()));
-        } else if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"),
                             QString("edit measurement config for %1").arg(featureName),
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
         }
+
         menu->addAction(QIcon(":/Images/icons/info.png"),
                         QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
@@ -791,7 +794,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         &this->control, SLOT(recalcActiveFeature()));
 
         //if the active feature is a geometry
-        if(!selectedFeature->getGeometry().isNull()){
+        if(isGeometry){
 
             if(!selectedFeature->getGeometry()->getObservations().isEmpty()) {
                 menu->addAction(QString("enable all observations of %1").arg(featureName),
@@ -807,7 +810,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
             menu->addAction(QString("aim to feature %1").arg(featureName),
                             &this->control, SLOT(startAim()));
-        } else if(!selectedFeature->getStation().isNull()){
+        } else if(isStation){
 
             menu->addAction(QString("activate station %1").arg(featureName),
                             this, SLOT(on_actionActivate_station_triggered()));

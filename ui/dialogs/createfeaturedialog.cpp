@@ -133,21 +133,22 @@ void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
  */
 void CreateFeatureDialog::showEvent(QShowEvent *event){
 
-    //init GUI elements based on the current feature type
-    this->initGUI();
-
     this->setDialogName();
 
     this->ui->comboBox_entityType->setCurrentText(getFeatureTypeName(this->typeOfFeature));
 
-    //init function models based on the current feature type
+    // init function models based on the current feature type
     this->initFunctionsModel();
 
+    // init initial GUI elements based on the current function, may changed by initGUI() !
     this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
+
+    // init GUI elements based on the current feature type
+    this->initGUI();
 
     this->initMeasurementConfigModel();
 
-    //get default mConfig in combobox
+    // get default mConfig in combobox
     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(this->typeOfFeature)));
     if(!elementConfigName.isEmpty()){
         this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
@@ -353,7 +354,13 @@ void CreateFeatureDialog::initFunctionsModel(){
 }
 
 void CreateFeatureDialog::initMeasurementConfigModel(){
-    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature);
+    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
+    if(source_model == NULL){
+        return;
+    }
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+
+    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor);
 }
 
 /*!
