@@ -102,10 +102,8 @@ void FeatureFunctionsDialog::on_tableView_functionPlugins_doubleClicked(const QM
     this->ui->tabWidget_functionSetter->setCurrentIndex(0);
 
     // activate current selected function
-    ActiveFeatureFunctionsModel *actFeatModel = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
-    if(actFeatModel != NULL){
-        emit this->ui->treeView_functions->clicked(actFeatModel->index(actFeatModel->rowCount()-1, 0));
-    }
+    this->selectFunctionItem(Row::Last);
+
 }
 
 /*!
@@ -415,10 +413,7 @@ void FeatureFunctionsDialog::showEvent(QShowEvent *event){
     this->ui->comboBox_features->setCurrentIndex(0);
     this->ui->lineEdit_searchByFeatureName->setText("");
 
-    ActiveFeatureFunctionsModel *actFeatModel = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
-    if(actFeatModel != NULL){
-        emit this->ui->treeView_functions->clicked(actFeatModel->index(0, 0));
-    }
+    this->selectFunctionItem(Row::First);
 
     event->accept();
 
@@ -600,4 +595,22 @@ void FeatureFunctionsDialog::on_lineEdit_searchByFeatureName_textChanged(const Q
 
     model->filterByFeatureName(text);
 
+}
+
+void FeatureFunctionsDialog::selectFunctionItem(Row row) {
+    ActiveFeatureFunctionsModel *actFeatModel = static_cast<ActiveFeatureFunctionsModel *>(this->ui->treeView_functions->model());
+    if(actFeatModel != NULL){
+        QModelIndex index;
+        switch(row){
+        case Last:
+            index = actFeatModel->index(actFeatModel->rowCount()-1, 0);
+            break;
+        case First:
+        default:
+            index = actFeatModel->index(0, 0);
+        }
+
+        this->ui->treeView_functions->selectionModel()->select(index, QItemSelectionModel::SelectionFlag::Select); // mark item as selected
+        emit this->ui->treeView_functions->clicked(index);
+    }
 }
