@@ -1785,27 +1785,40 @@ int SystemDbManager::getLastId(const QString &table){
 
 /*!
  * \brief SystemDbManager::getElementIds
- * Returns a list of the element id's
+ * Returns a list of the element id's and inserts element names if they not exisits
  * \param elements
  * \return
  */
 QList<int> SystemDbManager::getElementIds(const QStringList &elements){
 
     QList<int> result;
-    if(elements.length() > 0){
-        QString query = QString("SELECT id FROM element WHERE element_type = '%1'").arg(elements.at(0));
-        for(int i = 1; i < elements.length(); i++){
-            query.append( QString(" OR element_type = '%1'").arg(elements.at(i)) );
-        }
+    QString selectStatement = QString("SELECT id FROM element WHERE element_type = '%1'");
+    QString insertStatement = QString("INSERT INTO element (element_type) values ('%1')");
+    for(QString name : elements) {
+        QString selectQuery = selectStatement.arg(name);
         QSqlQuery command(SystemDbManager::db);
-        command.exec(query);
-        while(command.next()){
+        command.exec(selectQuery);
+        if(command.next()) { // entry found
             QVariant val = command.value(0);
             if(val.isValid()){
                 result.append(val.toInt());
             }
+        } else {
+            QString insertQuery = insertStatement.arg(name);
+            // QSqlQuery command(SystemDbManager::db);
+            command.exec(insertQuery);
+
+            command.exec(selectQuery);
+            if(command.next()) { // entry found
+                QVariant val = command.value(0);
+                if(val.isValid()){
+                    result.append(val.toInt());
+                }
+            }
+
         }
     }
+
     return result;
 
 }
