@@ -354,7 +354,13 @@ void CreateFeatureDialog::initFunctionsModel(){
 }
 
 void CreateFeatureDialog::initMeasurementConfigModel(){
-    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature);
+    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
+    if(source_model == NULL){
+        return;
+    }
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+
+    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor);
 }
 
 /*!
