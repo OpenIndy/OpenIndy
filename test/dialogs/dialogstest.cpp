@@ -128,12 +128,12 @@ void DialogsTest::initTestCase() {
     sdb::Function level;
     level.name = "function-fitlevel";
     level.iid = OiMetaData::iid_FitFunction;
-    level.applicableFor << FeatureTypes::ePlaneFeature;
+    level.applicableFor << FeatureTypes::ePlaneFeature << FeatureTypes::eLevelFeature;
     level.neededElements << ElementTypes::eObservationElement;
 
     sdb::Function planefrompoints;
     planefrompoints.name = "function-planefrompoints";
-    planefrompoints.iid = OiMetaData::iid_ConstructFunction;
+    planefrompoints.iid = OiMetaData::iid_ConstructFunction; // set measurement config combox to visible = false
     planefrompoints.applicableFor << FeatureTypes::ePlaneFeature;
     planefrompoints.neededElements << ElementTypes::eObservationElement;
 
