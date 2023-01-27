@@ -424,9 +424,6 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     // set measurement type
     mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
 
-    // set measurement mode
-    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
-
     // single point
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
 
