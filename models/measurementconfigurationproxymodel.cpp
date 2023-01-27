@@ -68,10 +68,6 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     //check if the index is a saved config
     if(source_row >= 0 && source_row < sourceModel->getMeasurementConfigurationManager()->getSavedMeasurementConfigs().size()){
 
-        if(this->showAll){
-            return true;
-        }
-
         if(this->neededElements.isEmpty()) {
             return true;
         }
