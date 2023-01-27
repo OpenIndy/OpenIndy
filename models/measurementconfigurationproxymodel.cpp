@@ -20,7 +20,15 @@ void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> nee
     this->neededElements = neededElements;
     this->typeOfFeature = typeOfFeature;
     this->functionIsApplicableFor = applicableFor;
-    this->showAll = neededElements.isEmpty();
+    this->invalidateFilter();
+}
+void MeasurementConfigurationProxyModel::resetFilter() {
+    this->showAll = false;
+
+    this->neededElements.clear();
+    this->typeOfFeature = FeatureTypes::eUndefinedFeature;
+    this->functionIsApplicableFor.clear();
+
     this->invalidateFilter();
 }
 
