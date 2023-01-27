@@ -453,6 +453,11 @@ void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
     QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
                         this, &MeasurementConfigurationDialog::measurementConfigNameChanged, Qt::AutoConnection);
 
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
+    if(mConfigProxyModel != NULL){
+        mConfigProxyModel->resetFilter();
+    }
+
     emit initialized();
 
     event->accept();
