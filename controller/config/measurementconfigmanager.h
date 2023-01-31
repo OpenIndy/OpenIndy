@@ -55,8 +55,8 @@ public:
     //get configs
     MeasurementConfig getSavedMeasurementConfig(const QString &name) const;
     MeasurementConfig getProjectMeasurementConfig(const QString &name) const;
-    const QList<MeasurementConfig> &getSavedMeasurementConfigs() const;
-    const QList<MeasurementConfig> &getProjectMeasurementConfigs() const;
+    const QList<MeasurementConfig> getSavedMeasurementConfigs() const;
+    const QList<MeasurementConfig> getProjectMeasurementConfigs() const;
 
     //active config
     MeasurementConfig getActiveMeasurementConfig(const GeometryTypes &type) const;
@@ -118,9 +118,6 @@ private:
 
     QMap<QString, MeasurementConfig> savedMeasurementConfigMap;
     QMap<QString, MeasurementConfig> projectMeasurementConfigMap;
-
-    QList<MeasurementConfig> savedMeasurementConfigList;
-    QList<MeasurementConfig> projectMeasurementConfigList;
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 
