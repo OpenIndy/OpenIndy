@@ -46,27 +46,27 @@ public:
     //##############################
 
     //check presence of a config
-    bool hasSavedMeasurementConfig(const QString &name);
-    bool hasProjectMeasurementConfig(const QString &name);
-    bool hasSavedMeasurementConfig(const MeasurementConfig &mConfig);
-    bool hasProjectMeasurementConfig(const MeasurementConfig &mConfig);
+    bool isUserConfig(const QString &name);
+    bool isProjectConfig(const QString &name);
+    bool isUserConfig(const MeasurementConfig &mConfig);
+    bool isProjectConfig(const MeasurementConfig &mConfig);
 
     //get configs
-    MeasurementConfig getSavedMeasurementConfig(const QString &name) const;
-    MeasurementConfig getProjectMeasurementConfig(const QString &name) const;
-    const QList<MeasurementConfig> getSavedMeasurementConfigs() const;
-    const QList<MeasurementConfig> getProjectMeasurementConfigs() const;
+    MeasurementConfig getUserConfig(const QString &name) const;
+    MeasurementConfig getProjectConfig(const QString &name) const;
+    const QList<MeasurementConfig> getUserConfigs() const;
+    const QList<MeasurementConfig> getProjectConfigs() const;
 
     //active config
-    MeasurementConfig getActiveMeasurementConfig(const GeometryTypes &type) const;
+    MeasurementConfig getActiveConfig(const GeometryTypes &type) const;
 
     //add or remove configs
-    void addSavedMeasurementConfig(const MeasurementConfig &mConfig);
-    void addProjectMeasurementConfig(const MeasurementConfig &mConfig);
-    void removeSavedMeasurementConfig(const QString &name);
-    void removeProjectMeasurementConfig(const QString &name);
-    void removeAllSavedMeasurementConfigs();
-    void removeAllProjectMeasurementConfigs();
+    void addUserConfig(const MeasurementConfig &mConfig);
+    void addProjectConfig(const MeasurementConfig &mConfig);
+    void removeUserConfig(const QString &name);
+    void removeProjectConfig(const QString &name);
+    void removeAllUserConfigs();
+    void removeAllProjectConfigs();
 
     //replace a config
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
@@ -100,7 +100,7 @@ private:
     //##############
 
     //save or remove configs
-    void saveMeasurementConfig(const MeasurementConfig &mConfig);
+    void saveConfig(const MeasurementConfig &mConfig);
     void deleteMeasurementConfig(const QString &name);
 
     //update geometries when measurement configs change
@@ -115,8 +115,8 @@ private:
     //save measurement configs
     //########################
 
-    QMap<QString, MeasurementConfig> savedMeasurementConfigMap;
-    QMap<QString, MeasurementConfig> projectMeasurementConfigMap;
+    QMap<QString, MeasurementConfig> userConfigs;
+    QMap<QString, MeasurementConfig> projectConfigs;
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 
