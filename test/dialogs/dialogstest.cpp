@@ -34,6 +34,8 @@ private Q_SLOTS:
     void measurementConfigXML_RW();
     void measurementConfigDialog_init();
 
+    void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+
 private:
 
 
@@ -41,6 +43,10 @@ private:
 
 DialogsTest::DialogsTest() {
 
+}
+
+void DialogsTest::printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest) {
+    qDebug() << msg;
 }
 
 void DialogsTest::initTestCase() {
@@ -57,6 +63,13 @@ void DialogsTest::initTestCase() {
     entityTypes << "point" << "circle" << "plane"; // comboBox_entityType order
 
     QPointer<MeasurementConfigManager> measurementConfigManager = new MeasurementConfigManager();
+
+    QObject::connect(measurementConfigManager.data(), &MeasurementConfigManager::sendMessage,
+                     this, &DialogsTest::printMessage);
+/*    QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::sendMessage,
+                     this, &DialogsTest::printMessage);
+    QObject::connect(&ModelManager::getMeasurementConfigurationProxyModel(), &MeasurementConfigurationProxyModel::sendMessage,
+                     this, &DialogsTest::printMessage);*/
 
     MeasurementConfig fastPointConfig;
     fastPointConfig.setName("measconfig-fastpoint");
