@@ -139,8 +139,8 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     //add measurement configs
     QList<MeasurementConfig> mConfigs;
     if(!ProjectExchanger::mConfigManager.isNull()){
-        mConfigs = ProjectExchanger::mConfigManager->getSavedMeasurementConfigs();
-        mConfigs.append(ProjectExchanger::mConfigManager->getProjectMeasurementConfigs());
+        mConfigs = ProjectExchanger::mConfigManager->getUserConfigs();
+        mConfigs.append(ProjectExchanger::mConfigManager->getProjectConfigs());
     }
     foreach(const MeasurementConfig &mConfig, mConfigs){
         QDomElement config = mConfig.toOpenIndyXML(project);
@@ -256,10 +256,10 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
     if(!ProjectExchanger::mConfigManager.isNull()){
         foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
             if( mConfig.getIsValid()
-                && !mConfig.getIsSaved()
+                && mConfig.isProjectConfig()
                 && !ProjectExchanger::mConfigManager->isStandardConfig(mConfig.getName())
                 ){
-                ProjectExchanger::mConfigManager->addProjectMeasurementConfig(mConfig);
+                ProjectExchanger::mConfigManager->addProjectConfig(mConfig);
             }
         }
     }
@@ -704,11 +704,7 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement mConfigElement = mConfigList.at(i).toElement();
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
-                    if(!mConfigManager.isNull() && mConfigManager->hasSavedMeasurementConfig(mConfig)){
-                        mConfig.setIsSaved(true);
-                    }else{
-                        mConfig.setIsSaved(false);
-                    }
+                    mConfig.isUserConfig(!mConfigManager.isNull() && mConfigManager->isUserConfig(mConfig));
                     ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
                 }
             }

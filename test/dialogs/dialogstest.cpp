@@ -75,43 +75,43 @@ void DialogsTest::initTestCase() {
     fastPointConfig.setName("measconfig-fastpoint");
     fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addSavedMeasurementConfig(fastPointConfig);
+    measurementConfigManager->addUserConfig(fastPointConfig);
 
     MeasurementConfig precisePointConfig;
     precisePointConfig.setName("measconfig-precisepoint");
     precisePointConfig.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     precisePointConfig.setMeasureTwoSides(true);
-    measurementConfigManager->addSavedMeasurementConfig(precisePointConfig);
+    measurementConfigManager->addUserConfig(precisePointConfig);
 
 
     MeasurementConfig fastPointConfigProject;
     fastPointConfigProject.setName("measconfig-fastpoint");
     fastPointConfigProject.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfigProject.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addProjectMeasurementConfig(fastPointConfigProject);
-    measurementConfigManager->addSavedMeasurementConfig(fastPointConfigProject); // creates log message
+    measurementConfigManager->addProjectConfig(fastPointConfigProject);
+    measurementConfigManager->addUserConfig(fastPointConfigProject); // creates log message
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
     levelConfig.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
-    measurementConfigManager->addSavedMeasurementConfig(levelConfig);
-    measurementConfigManager->addSavedMeasurementConfig(levelConfig);
+    measurementConfigManager->addUserConfig(levelConfig);
+    measurementConfigManager->addUserConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
     scanTimeConfig.setName("measconfig-scantime");
     scanTimeConfig.setMeasurementType(MeasurementTypes::eScanTimeDependent_MeasurementType);
     scanTimeConfig.setTimeInterval(123);
     scanTimeConfig.setMaxObservations(321);
-    measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
+    measurementConfigManager->addUserConfig(scanTimeConfig);
 
     MeasurementConfig scanDistanceConfig;
     scanDistanceConfig.setName("measconfig-scandistance"); // not for point
     scanDistanceConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
     scanDistanceConfig.setDistanceInterval(456);
     scanDistanceConfig.setMaxObservations(654);
-    scanDistanceConfig.setIsSaved(true);
-    measurementConfigManager->addSavedMeasurementConfig(scanDistanceConfig);
+    scanDistanceConfig.isUserConfig(true);
+    measurementConfigManager->addUserConfig(scanDistanceConfig);
 
     // create plugin with some functions
     QList<sdb::Plugin> plugins;
@@ -471,7 +471,7 @@ void DialogsTest::reuseDialogInstance() {
 }
 
 void DialogsTest::measurementConfigXML_RW() {
-    MeasurementConfig config = ModelManager::getMeasurementConfigManager()->getProjectMeasurementConfig("measconfig-scantime");
+    MeasurementConfig config = ModelManager::getMeasurementConfigManager()->getProjectConfig("measconfig-scantime");
 
     QDomDocument xml("measurementConfig");
     QDomElement root = config.toOpenIndyXML(xml);
@@ -490,12 +490,12 @@ void DialogsTest::measurementConfigXML_RW() {
 }
 
 void DialogsTest::measurementConfigDialog_init() {
-    MeasurementConfig projectFastPointConfig = ModelManager::getMeasurementConfigManager()->getProjectMeasurementConfig("measconfig-fastpoint");
+    MeasurementConfig projectFastPointConfig = ModelManager::getMeasurementConfigManager()->getProjectConfig("measconfig-fastpoint");
 
     // create dialog
     MeasurementConfigurationDialog dialog;
 
-    //MeasurementConfig config = measurementConfigManager->getProjectMeasurementConfig(projectFastPointConfig.getName());
+    //MeasurementConfig config = measurementConfigManager->getProjectConfig(projectFastPointConfig.getName());
     dialog.setMeasurementConfiguration(projectFastPointConfig);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));

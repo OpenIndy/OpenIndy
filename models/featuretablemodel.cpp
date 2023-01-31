@@ -426,7 +426,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             if(this->measurementConfigManager.isNull()){
                 return false;
             }
-            MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(mConfigName);
+            MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(mConfigName);
 
             //update feature's measurement config
             if(mConfig.getIsValid()){

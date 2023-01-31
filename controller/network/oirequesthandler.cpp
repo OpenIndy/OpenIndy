@@ -877,9 +877,9 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     QList<QPointer<FeatureWrapper> > features = this->currentJob->addFeatures(attr);
 
     //get and check measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attr.mConfig);
+    MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(attr.mConfig);
     if(!mConfig.getIsValid()){
-        mConfig = this->measurementConfigManager->getProjectMeasurementConfig(attr.mConfig);
+        mConfig = this->measurementConfigManager->getProjectConfig(attr.mConfig);
     }
 
     //pass measurement config to features
@@ -1207,8 +1207,8 @@ void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
     }
 
     //get all measurement configs
-    QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getSavedMeasurementConfigs();
-    QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectMeasurementConfigs();
+    QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getUserConfigs();
+    QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectConfigs();
 
     //add configs
     QDomElement configs = request.response.createElement("measurementConfigs");
@@ -1296,9 +1296,9 @@ void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
     MeasurementConfig mConfig;
     bool savedConfig = (bool)isSaved.text().toInt();
     if(savedConfig){
-        mConfig = this->measurementConfigManager->getSavedMeasurementConfig(measurementConfig.text());
+        mConfig = this->measurementConfigManager->getUserConfig(measurementConfig.text());
     }else{
-        mConfig = this->measurementConfigManager->getProjectMeasurementConfig(measurementConfig.text());
+        mConfig = this->measurementConfigManager->getProjectConfig(measurementConfig.text());
     }
     if(!mConfig.getIsValid()){
         this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eNoMeasurementConfig);

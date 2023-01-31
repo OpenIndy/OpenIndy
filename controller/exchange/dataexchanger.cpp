@@ -438,7 +438,7 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
 
             //function
             if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
-                mConfig = mConfigManager->getSavedMeasurementConfig("level");
+                mConfig = mConfigManager->getUserConfig("level");
                 if(!mConfig.getIsValid()) {
                     emit this->sendMessage("No measurement config \"level\" found.", eErrorMessage, eConsoleMessage);
                     continue;
@@ -466,25 +466,25 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
                 //mconfig and function from default
                 if(!this->mConfigManager.isNull()){
                     //TODO fix that all measurement configs are saved in the database OI-373
-                    //mConfig = this->mConfigManager->getActiveMeasurementConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
-                    //mConfig = this->mConfigManager->getSavedMeasurementConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
+                    //mConfig = this->mConfigManager->getActiveConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
+                    //mConfig = this->mConfigManager->getUserConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
 
                     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
 
-                    mConfig = mConfigManager->getSavedMeasurementConfig(elementConfigName);
+                    mConfig = mConfigManager->getUserConfig(elementConfigName);
 
                     /*//Workaround until bug is fixed
-                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getSavedMeasurementConfigs();
+                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getUserConfigs();
                     if(mConfigs.size() > 0){
                         bool fpExists = false;
                         foreach (MeasurementConfig mC, mConfigs) {
                             if(mC.getName().compare("FastPoint") == 0){
-                                mConfig = this->mConfigManager->getSavedMeasurementConfig("FastPoint");
+                                mConfig = this->mConfigManager->getUserConfig("FastPoint");
                                 fpExists = true;
                             }
                         }
                         if(!fpExists){
-                            mConfig = this->mConfigManager->getSavedMeasurementConfig(mConfigs.at(0).getName());
+                            mConfig = this->mConfigManager->getUserConfig(mConfigs.at(0).getName());
                         }
                     }
                     fAttr.mConfig = mConfig.getName();*/
