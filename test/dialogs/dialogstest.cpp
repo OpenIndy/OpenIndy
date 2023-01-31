@@ -85,12 +85,12 @@ void DialogsTest::initTestCase() {
     measurementConfigManager->addSavedMeasurementConfig(precisePointConfig);
 
 
-    MeasurementConfig fastPointConfigP;
-    fastPointConfigP.setName("measconfig-fastpoint");
-    precisePointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
-    precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addProjectMeasurementConfig(fastPointConfigP);
-    measurementConfigManager->addSavedMeasurementConfig(fastPointConfigP);
+    MeasurementConfig fastPointConfigProject;
+    fastPointConfigProject.setName("measconfig-fastpoint");
+    fastPointConfigProject.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    fastPointConfigProject.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    measurementConfigManager->addProjectMeasurementConfig(fastPointConfigProject);
+    measurementConfigManager->addSavedMeasurementConfig(fastPointConfigProject); // creates log message
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
@@ -104,14 +104,13 @@ void DialogsTest::initTestCase() {
     scanTimeConfig.setTimeInterval(123);
     scanTimeConfig.setMaxObservations(321);
     measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
-    measurementConfigManager->addSavedMeasurementConfig(scanTimeConfig);
 
     MeasurementConfig scanDistanceConfig;
     scanDistanceConfig.setName("measconfig-scandistance"); // not for point
-    scanTimeConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
-    scanTimeConfig.setDistanceInterval(456);
-    scanTimeConfig.setMaxObservations(654);
-    measurementConfigManager->addProjectMeasurementConfig(scanDistanceConfig);
+    scanDistanceConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
+    scanDistanceConfig.setDistanceInterval(456);
+    scanDistanceConfig.setMaxObservations(654);
+    scanDistanceConfig.setIsSaved(true);
     measurementConfigManager->addSavedMeasurementConfig(scanDistanceConfig);
 
     // create plugin with some functions
@@ -491,18 +490,20 @@ void DialogsTest::measurementConfigXML_RW() {
 }
 
 void DialogsTest::measurementConfigDialog_init() {
-    QSKIP("manual test");
+    MeasurementConfig projectFastPointConfig = ModelManager::getMeasurementConfigManager()->getProjectMeasurementConfig("measconfig-fastpoint");
 
     // create dialog
     MeasurementConfigurationDialog dialog;
 
-    MeasurementConfig config = ModelManager::getMeasurementConfigManager()->getProjectMeasurementConfig("measconfig-fastpoint");
-    dialog.setMeasurementConfiguration(config);
+    //MeasurementConfig config = measurementConfigManager->getProjectMeasurementConfig(projectFastPointConfig.getName());
+    dialog.setMeasurementConfiguration(projectFastPointConfig);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
     spy_initialized.wait(500);
 
-    // QTest::qWait(100000);
+    // QPointer<QCheckBox> showAllCB = dialog.findChild<QCheckBox *>("checkBox_showAll");
+
+    QTest::qWait(100000);
 }
 
 QTEST_MAIN(DialogsTest)
