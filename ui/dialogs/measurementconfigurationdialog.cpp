@@ -124,19 +124,19 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
     }
 
     //check if the selected config is a saved config
-    bool isSaved = mConfigModel->isUserConfig(mConfigProxyModel->mapToSource(index));
+    const bool isUserConfig = mConfigModel->isUserConfig(mConfigProxyModel->mapToSource(index));
 
     //set selected index
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index)));
-    if(isSaved){
+    if(isUserConfig){
         this->ui->widget_measurementConfigValues->setEnabled(true);
     }else{
         this->ui->widget_measurementConfigValues->setEnabled(false);
     }
     this->selectedMeasurementConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    if(isSaved){
+    if(isUserConfig){
         QMenu *menu = new QMenu();
         menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
         menu->exec(ui->listView_measurementConfigs->mapToGlobal(point));
