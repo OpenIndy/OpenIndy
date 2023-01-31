@@ -15,10 +15,10 @@ SensorConfigurationModel::SensorConfigurationModel(QObject *parent) : QAbstractL
  */
 int SensorConfigurationModel::rowCount(const QModelIndex &parent) const{
 
-    int numSavedConfigs = this->sensorConfigManager.getSavedSensorConfigs().size();
+    int numUserConfigs = this->sensorConfigManager.getSavedSensorConfigs().size();
     int numProjectConfigs = this->sensorConfigManager.getProjectSensorConfigs().size();
 
-    return numSavedConfigs + numProjectConfigs;
+    return numUserConfigs + numProjectConfigs;
 
 }
 
