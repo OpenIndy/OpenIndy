@@ -51,7 +51,7 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
     this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfig);
-    if(mConfig.getIsSaved()){
+    if(mConfig.isUserConfig()){
         this->ui->widget_measurementConfigValues->setEnabled(true);
     }else{
         this->ui->widget_measurementConfigValues->setEnabled(false);
@@ -93,7 +93,7 @@ void MeasurementConfigurationDialog::on_listView_measurementConfigs_clicked(cons
     this->updateGuiFromMeasurementConfig(mConfig);
 
     //toggle enabled state depending on what mConfig has been selected (project vs. saved)
-    if(mConfig.getIsSaved()){
+    if(mConfig.isUserConfig()){
         this->ui->widget_measurementConfigValues->setEnabled(true);
     }else{
         this->ui->widget_measurementConfigValues->setEnabled(false);
@@ -128,7 +128,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
     }
 
     //check if the selected config is a saved config
-    bool isSaved = mConfigModel->getIsSaved(mConfigProxyModel->mapToSource(index));
+    bool isSaved = mConfigModel->isUserConfig(mConfigProxyModel->mapToSource(index));
 
     //set selected index
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
@@ -232,7 +232,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
     MeasurementConfig mConfig;
     mConfig.setName("new config");
-    mConfig.setIsSaved(true);
+    mConfig.isUserConfig(true);
 
     //get and check measurement config proxy model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_measurementConfigs->model());
@@ -338,7 +338,7 @@ void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
     if(index.isValid()){
         this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
         this->updateGuiFromMeasurementConfig(mConfig);
-        if(mConfig.getIsSaved()){
+        if(mConfig.isUserConfig()){
             this->ui->widget_measurementConfigValues->setEnabled(true);
         }else{
             this->ui->widget_measurementConfigValues->setEnabled(false);
@@ -372,7 +372,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
 
     //set up GUI elements
     this->ui->label_configName->setText(QString("%1%2")
-                                        .arg((!mConfig.getIsValid() || mConfig.getIsSaved())?"":"*")
+                                        .arg((!mConfig.getIsValid() || mConfig.isUserConfig())?"":"*")
                                         .arg(mConfig.getName()));
 
     this->ui->comboBox_MeasurementType->setCurrentIndex(mConfig.getMeasurementType());
@@ -433,7 +433,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
 
 
-    mConfig.setIsSaved(true);
+    mConfig.isUserConfig(true);
 
     //replace the selected measurement config
     mConfigModel->replaceMeasurementConfig(name, mConfig);
