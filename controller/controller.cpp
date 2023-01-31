@@ -9,6 +9,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //register meta types
     this->registerMetaTypes();
 
+    //load and restore project unit settings
+    ProjectConfig::loadProjectPathConfigFile();
+
     //load config from file
     ProjectConfig::loadProjectSettingsConfigFile();
 
