@@ -13,10 +13,12 @@ MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel(QObject *
  * \param showAll
  */
 void MeasurementConfigurationProxyModel::setFilter(const bool &showAll){
+    this->resetFilter();
     this->showAll = showAll;
     this->invalidateFilter();
 }
 void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor) {
+    this->resetFilter();
     this->neededElements = neededElements;
     this->typeOfFeature = typeOfFeature;
     this->functionIsApplicableFor = applicableFor;
@@ -28,8 +30,6 @@ void MeasurementConfigurationProxyModel::resetFilter() {
     this->neededElements.clear();
     this->typeOfFeature = FeatureTypes::eUndefinedFeature;
     this->functionIsApplicableFor.clear();
-
-    this->invalidateFilter();
 }
 
 /*!
