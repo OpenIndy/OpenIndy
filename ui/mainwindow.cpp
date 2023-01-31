@@ -384,7 +384,9 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
 
     this->sensorTaskInfoDialog.enableFinishButton(false);
     this->sensorTaskInfoDialog.close();
-    emit this->log(msg, eInformationMessage, eConsoleMessage);
+    emit this->log(msg,
+                   success ? eInformationMessage : eErrorMessage,
+                   success ? eConsoleMessage     : eMessageBoxMessage);
 }
 
 /*!
