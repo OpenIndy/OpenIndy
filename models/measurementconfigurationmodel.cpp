@@ -20,10 +20,10 @@ int MeasurementConfigurationModel::rowCount(const QModelIndex &parent) const{
         return 0;
     }
 
-    int numSavedConfigs = this->measurementConfigManager->getUserConfigs().size();
+    int numUserConfigs = this->measurementConfigManager->getUserConfigs().size();
     int numProjectConfigs = this->measurementConfigManager->getProjectConfigs().size();
 
-    return numSavedConfigs + numProjectConfigs;
+    return numUserConfigs + numProjectConfigs;
 
 }
 
@@ -162,9 +162,9 @@ QModelIndex MeasurementConfigurationModel::getIndex(const MeasurementConfig &mCo
 
     //get all saved configs and check names
     if(mConfig.isUserConfig()){
-        QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getUserConfigs();
-        for(int i = 0; i < savedConfigs.size(); i++){
-            if(savedConfigs.at(i).getName().compare(mConfig.getName()) == 0){
+        QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getUserConfigs();
+        for(int i = 0; i < userConfigs.size(); i++){
+            if(userConfigs.at(i).getName().compare(mConfig.getName()) == 0){
                 return this->createIndex(i, 0);
             }
         }
@@ -333,8 +333,8 @@ void MeasurementConfigurationModel::cloneMeasurementConfig(const MeasurementConf
     }
 
     //add the measurement config
-    MeasurementConfig savedConfig = mConfig;
-    savedConfig.isUserConfig(true);
+    MeasurementConfig userConfig = mConfig;
+    userConfig.isUserConfig(true);
     this->measurementConfigManager->addUserConfig(mConfig);
 
     this->updateModel();

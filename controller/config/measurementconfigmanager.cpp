@@ -181,9 +181,9 @@ void MeasurementConfigManager::addUserConfig(const MeasurementConfig &mConfig){
     }
 
     //save mConfig
-    MeasurementConfig savedConfig = mConfig;
-    savedConfig.isUserConfig(true);
-    this->saveConfig(savedConfig);
+    MeasurementConfig userConfig = mConfig;
+    userConfig.isUserConfig(true);
+    this->saveConfig(userConfig);
 
 }
 
@@ -387,27 +387,27 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         }
 
         //try to parse the file to a MeasurementConfig object
-        MeasurementConfig savedConfig;
+        MeasurementConfig userConfig;
         QDomElement mConfigTag = mConfigXml.documentElement();
-        if(!savedConfig.fromOpenIndyXML(mConfigTag)){
+        if(!userConfig.fromOpenIndyXML(mConfigTag)){
             continue;
         }
-        savedConfig.isUserConfig(true);
+        userConfig.isUserConfig(true);
 
         //check if a measurement config with the same name has been loaded before
-        if(mConfigNames.contains(savedConfig.getName())){
+        if(mConfigNames.contains(userConfig.getName())){
 
             //delete the config file permanently
             mConfigFile.remove();
             continue;
         }
-        mConfigNames.append(savedConfig.getName());
+        mConfigNames.append(userConfig.getName());
 
-        this->addUserConfig(savedConfig);
+        this->addUserConfig(userConfig);
 
         //add the loaded measurement config to the list of saved configs
-        if(!this->userConfigs.contains(savedConfig.getName())){
-            this->userConfigs.insert(savedConfig.getName(), savedConfig);
+        if(!this->userConfigs.contains(userConfig.getName())){
+            this->userConfigs.insert(userConfig.getName(), userConfig);
         }
     }
 
@@ -429,9 +429,9 @@ void MeasurementConfigManager::synchronize(const MeasurementConfigManager &other
     this->removeAllProjectConfigs();
 
     //add new configs
-    QList<MeasurementConfig> savedConfigs = other.getUserConfigs();
+    QList<MeasurementConfig> userConfigs = other.getUserConfigs();
     QList<MeasurementConfig> projectConfigs = other.getProjectConfigs();
-    foreach(const MeasurementConfig &mConfig, savedConfigs){
+    foreach(const MeasurementConfig &mConfig, userConfigs){
         this->addUserConfig(mConfig);
     }
     foreach(const MeasurementConfig &mConfig, projectConfigs){

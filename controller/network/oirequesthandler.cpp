@@ -1207,12 +1207,12 @@ void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
     }
 
     //get all measurement configs
-    QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getUserConfigs();
+    QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getUserConfigs();
     QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectConfigs();
 
     //add configs
     QDomElement configs = request.response.createElement("measurementConfigs");
-    foreach(const MeasurementConfig &mConfig, savedConfigs){
+    foreach(const MeasurementConfig &mConfig, userConfigs){
         configs.appendChild(toXML(mConfig, true, request.response));
     }
     foreach(const MeasurementConfig &mConfig, projectConfigs){
@@ -1294,8 +1294,8 @@ void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
 
     //get and check measurement config
     MeasurementConfig mConfig;
-    bool savedConfig = (bool)isSaved.text().toInt();
-    if(savedConfig){
+    bool userConfig = (bool)isSaved.text().toInt();
+    if(userConfig){
         mConfig = this->measurementConfigManager->getUserConfig(measurementConfig.text());
     }else{
         mConfig = this->measurementConfigManager->getProjectConfig(measurementConfig.text());
