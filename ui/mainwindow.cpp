@@ -2139,7 +2139,6 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
-    QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
