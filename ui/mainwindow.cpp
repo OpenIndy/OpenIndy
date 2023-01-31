@@ -420,6 +420,7 @@ void MainWindow::measurementDone(bool success)
  * \param msgType
  */
 int MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+    QMessageBox commonMessageBox;
 
     commonMessageBox.setModal(false);
     commonMessageBox.setStandardButtons(QMessageBox::Ok);
@@ -1672,7 +1673,7 @@ void MainWindow::aimAndMeasureFeatures(){
     this->measureBehaviorLogicStarted();
     QList<QPointer<QDialog>> dialogsToClose;
     dialogsToClose.append(&this->sensorTaskInfoDialog);
-    dialogsToClose.append(&this->commonMessageBox);
+    //dialogsToClose.append(&this->commonMessageBox);
     this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();
