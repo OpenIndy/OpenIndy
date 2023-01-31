@@ -21,7 +21,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
  */
 MeasurementConfigManager::MeasurementConfigManager(const MeasurementConfigManager &copy, QObject *parent){
     this->savedMeasurementConfigMap = copy.savedMeasurementConfigMap;
-    this->savedMeasurementConfigList = copy.savedMeasurementConfigList;
+    this->projectMeasurementConfigMap = copy.projectMeasurementConfigMap;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
 }
 
@@ -32,7 +32,7 @@ MeasurementConfigManager::MeasurementConfigManager(const MeasurementConfigManage
  */
 MeasurementConfigManager &MeasurementConfigManager::operator=(const MeasurementConfigManager &copy){
     this->savedMeasurementConfigMap = copy.savedMeasurementConfigMap;
-    this->savedMeasurementConfigList = copy.savedMeasurementConfigList;
+    this->projectMeasurementConfigMap = copy.projectMeasurementConfigMap;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
     return *this;
 }
@@ -97,7 +97,7 @@ bool MeasurementConfigManager::hasSavedMeasurementConfig(const MeasurementConfig
 
     //get saved config and compare it to the given one
     MeasurementConfig savedConfig = this->savedMeasurementConfigMap.value(mConfig.getName());
-    return savedConfig.equals(mConfig);
+    return savedConfig == mConfig;
 
 }
 
@@ -115,7 +115,7 @@ bool MeasurementConfigManager::hasProjectMeasurementConfig(const MeasurementConf
 
     //get project config and compare it to the given one
     MeasurementConfig projectConfig = this->projectMeasurementConfigMap.value(mConfig.getName());
-    return projectConfig.equals(mConfig);
+    return projectConfig == mConfig;
 
 }
 
@@ -141,16 +141,16 @@ MeasurementConfig MeasurementConfigManager::getProjectMeasurementConfig(const QS
  * \brief MeasurementConfigManager::getSavedMeasurementConfigs
  * \return
  */
-const QList<MeasurementConfig> &MeasurementConfigManager::getSavedMeasurementConfigs() const{
-    return this->savedMeasurementConfigList;
+const QList<MeasurementConfig> MeasurementConfigManager::getSavedMeasurementConfigs() const{
+    return this->savedMeasurementConfigMap.values();
 }
 
 /*!
  * \brief MeasurementConfigManager::getProjectMeasurementConfigs
  * \return
  */
-const QList<MeasurementConfig> &MeasurementConfigManager::getProjectMeasurementConfigs() const{
-    return this->projectMeasurementConfigList;
+const QList<MeasurementConfig> MeasurementConfigManager::getProjectMeasurementConfigs() const{
+    return this->projectMeasurementConfigMap.values();
 }
 
 /*!
@@ -206,7 +206,6 @@ void MeasurementConfigManager::addProjectMeasurementConfig(const MeasurementConf
     }
 
     //save mConfig
-    this->projectMeasurementConfigList.append(mConfig);
     this->projectMeasurementConfigMap.insert(mConfig.getName(), mConfig);
 
     emit this->measurementConfigurationsChanged();
@@ -244,8 +243,7 @@ void MeasurementConfigManager::removeProjectMeasurementConfig(const QString &nam
 
     if(this->projectMeasurementConfigMap.contains(name)){
 
-        MeasurementConfig mConfig = this->projectMeasurementConfigMap.take(name);
-        this->projectMeasurementConfigList.removeOne(mConfig);
+        this->projectMeasurementConfigMap.remove(name);
 
         emit this->measurementConfigurationsChanged();
 
@@ -273,7 +271,6 @@ void MeasurementConfigManager::removeAllSavedMeasurementConfigs(){
  */
 void MeasurementConfigManager::removeAllProjectMeasurementConfigs(){
 
-    this->projectMeasurementConfigList.clear();
     this->projectMeasurementConfigMap.clear();
 
     emit this->measurementConfigurationsChanged();
@@ -341,12 +338,6 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     //replace mConfig in map
     this->savedMeasurementConfigMap.remove(name);
     this->savedMeasurementConfigMap.insert(mConfig.getName(), mConfig);
-
-    //replace mConfig in list
-    int index = this->savedMeasurementConfigList.indexOf(oldConfig, 0);
-    if(index != -1){
-        this->savedMeasurementConfigList.replace(index, mConfig);
-    }
 
     emit this->measurementConfigurationReplaced(oldConfig, mConfig);
 
@@ -417,7 +408,6 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         //add the loaded measurement config to the list of saved configs
         if(!this->savedMeasurementConfigMap.contains(savedConfig.getName())){
             this->savedMeasurementConfigMap.insert(savedConfig.getName(), savedConfig);
-            this->savedMeasurementConfigList.append(savedConfig);
         }
     }
 
@@ -501,7 +491,6 @@ void MeasurementConfigManager::saveMeasurementConfig(const MeasurementConfig &mC
 
     if(!this->savedMeasurementConfigMap.contains(mConfig.getName())){
         this->savedMeasurementConfigMap.insert(mConfig.getName(), mConfig);
-        this->savedMeasurementConfigList.append(mConfig);
     }
 
     //############
@@ -545,8 +534,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //remove mConfig from the list of saved configs
     //#############################################
 
-    MeasurementConfig mConfig = this->savedMeasurementConfigMap.take(name);
-    this->savedMeasurementConfigList.removeOne(mConfig);
+    this->savedMeasurementConfigMap.remove(name);
 
     //############
     //emit signals
