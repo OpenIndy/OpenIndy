@@ -384,7 +384,9 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
 
     this->sensorTaskInfoDialog.enableFinishButton(false);
     this->sensorTaskInfoDialog.close();
-    emit this->log(msg, eInformationMessage, eConsoleMessage);
+    emit this->log(msg,
+                   success ? eInformationMessage : eErrorMessage,
+                   success ? eConsoleMessage     : eMessageBoxMessage);
 }
 
 /*!
@@ -418,6 +420,7 @@ void MainWindow::measurementDone(bool success)
  * \param msgType
  */
 int MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+    QMessageBox commonMessageBox;
 
     commonMessageBox.setModal(false);
     commonMessageBox.setStandardButtons(QMessageBox::Ok);
@@ -1670,7 +1673,7 @@ void MainWindow::aimAndMeasureFeatures(){
     this->measureBehaviorLogicStarted();
     QList<QPointer<QDialog>> dialogsToClose;
     dialogsToClose.append(&this->sensorTaskInfoDialog);
-    dialogsToClose.append(&this->commonMessageBox);
+    //dialogsToClose.append(&this->commonMessageBox);
     this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();

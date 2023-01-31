@@ -491,7 +491,6 @@ private:
     ClipBoardUtil clipBoardUtil;
 
     MeasureBehaviorLogic measureBehaviorLogic;
-    QMessageBox commonMessageBox;
 
     void measureBehaviorLogicStarted();
 };
