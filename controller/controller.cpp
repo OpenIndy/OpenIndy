@@ -1853,28 +1853,30 @@ void Controller::initDisplayConfigs(){
  */
 void Controller::initConfigManager(){
 
-    //load configs from config folder
-    this->sensorConfigManager = new SensorConfigurationManager();
-    this->sensorConfigManager->loadFromConfigFolder();
-    this->measurementConfigManager = new MeasurementConfigManager();
-    this->measurementConfigManager->loadFromConfigFolder();
+    if(this->sensorConfigManager.isNull()) {
+        //load configs from config folder
+        this->sensorConfigManager = new SensorConfigurationManager();
+        this->sensorConfigManager->loadFromConfigFolder();
+        this->measurementConfigManager = new MeasurementConfigManager();
+        this->measurementConfigManager->loadFromConfigFolder();
 
-    //pass config managers to model manager
-    ModelManager::setSensorConfigManager(this->sensorConfigManager);
-    ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
+        //pass config managers to model manager
+        ModelManager::setSensorConfigManager(this->sensorConfigManager);
+        ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
 
-    //pass config manager to project exchanger
-    ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
+        //pass config manager to project exchanger
+        ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
 
-    //pass config manager to request handler
-    this->requestHandler.setMeasurementConfigManager(this->measurementConfigManager);
-    this->requestHandler.setSensorConfigManager(this->sensorConfigManager);
+        //pass config manager to request handler
+        this->requestHandler.setMeasurementConfigManager(this->measurementConfigManager);
+        this->requestHandler.setSensorConfigManager(this->sensorConfigManager);
 
-    //connect config manager
-    QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
-    QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+        //connect config manager
+        QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
+        QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
 
-    this->exchanger.setMesaurementConfigManager(this->measurementConfigManager);
+        this->exchanger.setMesaurementConfigManager(this->measurementConfigManager);
+    }
 }
 
 /*!
