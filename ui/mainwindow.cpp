@@ -2136,7 +2136,6 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
-    QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
@@ -2965,22 +2964,6 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
 
     menu->addAction("copy to clipboard", this, SLOT(copyDifferencesToClipboard()));
     menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
-}
-
-/*!
- * \brief MainWindow::showEvent
- * \param e
- */
-void MainWindow::showEvent(QShowEvent *e)
-{
-    //load and restore project unit settings
-    ProjectConfig::loadProjectPathConfigFile();
-    //parse them to the model, to display all values in correct unit
-    this->settingsDialog.updateDisplayConfigFromSelection();
-
-    emit loadAndSaveConfigs();
-
-    e->accept();
 }
 
 void MainWindow::startAutoSave() {

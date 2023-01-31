@@ -142,9 +142,6 @@ signals:
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
-    //load sensorconfigs and measurementconfigs from folders and store in databas
-    void loadAndSaveConfigs();
-
     void createTemplateFromJob();
 
 private slots:
@@ -326,8 +323,6 @@ private slots:
     void on_lineEdit_tolerance_returnPressed();
 
     void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
-
-    void showEvent(QShowEvent *e);
 
     void enableObservationsOfActiveFeature();
     void disableObservationsOfActiveFeature();
