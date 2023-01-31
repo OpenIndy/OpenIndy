@@ -168,10 +168,7 @@ QModelIndex MeasurementConfigurationModel::getIndex(const MeasurementConfig &mCo
                 return this->createIndex(i, 0);
             }
         }
-    }
-
-    //get all project configs and check names
-    if(!mConfig.getIsSaved()){
+    } else { //get all project configs and check names
         QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectMeasurementConfigs();
         for(int i = 0; i < projectConfigs.size(); i++){
             if(projectConfigs.at(i).getName().compare(mConfig.getName()) == 0){
