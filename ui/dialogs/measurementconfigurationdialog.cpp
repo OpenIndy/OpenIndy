@@ -92,7 +92,7 @@ void MeasurementConfigurationDialog::on_listView_measurementConfigs_clicked(cons
     //update GUI from selected measurement config
     this->updateGuiFromMeasurementConfig(mConfig);
 
-    //toggle enabled state depending on what mConfig has been selected (project vs. saved)
+    //toggle enabled state depending on what mConfig has been selected (project vs. user)
     if(mConfig.isUserConfig()){
         this->ui->widget_measurementConfigValues->setEnabled(true);
     }else{
