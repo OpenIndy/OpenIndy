@@ -33,11 +33,12 @@ private Q_SLOTS:
 
     void measurementConfigXML_RW();
     void measurementConfigDialog_init();
-
-    void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+    void measurementConfigFilter();
 
 private:
 
+    void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+    QStringList getNames(QSortFilterProxyModel *model);
 
 };
 
@@ -71,6 +72,7 @@ void DialogsTest::initTestCase() {
     QObject::connect(&ModelManager::getMeasurementConfigurationProxyModel(), &MeasurementConfigurationProxyModel::sendMessage,
                      this, &DialogsTest::printMessage);*/
 
+    // user config
     MeasurementConfig fastPointConfig;
     fastPointConfig.setName("measconfig-fastpoint");
     fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
@@ -84,18 +86,9 @@ void DialogsTest::initTestCase() {
     precisePointConfig.setMeasureTwoSides(true);
     measurementConfigManager->addUserConfig(precisePointConfig);
 
-
-    MeasurementConfig fastPointConfigProject;
-    fastPointConfigProject.setName("measconfig-fastpoint");
-    fastPointConfigProject.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
-    fastPointConfigProject.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addProjectConfig(fastPointConfigProject);
-    measurementConfigManager->addUserConfig(fastPointConfigProject); // creates log message
-
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
     levelConfig.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
-    measurementConfigManager->addUserConfig(levelConfig);
     measurementConfigManager->addUserConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
@@ -112,6 +105,20 @@ void DialogsTest::initTestCase() {
     scanDistanceConfig.setMaxObservations(654);
     scanDistanceConfig.isUserConfig(true);
     measurementConfigManager->addUserConfig(scanDistanceConfig);
+
+    // project config
+    MeasurementConfig fastPointConfigProject1;
+    fastPointConfigProject1.setName("measconfig-fastpoint"); // same name exists as user config
+    fastPointConfigProject1.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    fastPointConfigProject1.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    measurementConfigManager->addProjectConfig(fastPointConfigProject1);
+
+    MeasurementConfig fastPointConfigProject2;
+    fastPointConfigProject2.setName("measconfig-fastpoint_project");
+    fastPointConfigProject2.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    fastPointConfigProject2.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    measurementConfigManager->addProjectConfig(fastPointConfigProject2);
+
 
     // create plugin with some functions
     QList<sdb::Plugin> plugins;
@@ -505,6 +512,33 @@ void DialogsTest::measurementConfigDialog_init() {
 
     QTest::qWait(100000);
 }
+
+QStringList DialogsTest::getNames(QSortFilterProxyModel *model) {
+
+    QStringList names;
+    for(int row=0; row<model->rowCount(); row++) {
+        names <<  model->index(row, 0).data( Qt::DisplayRole ).toString();
+    }
+    return names;
+}
+
+void DialogsTest::measurementConfigFilter() {
+    MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel();
+
+    QStringList names = getNames(proxy);
+    qDebug() << names;
+
+    qDebug() << "project config";
+    proxy->setFilterProjectConfig();
+    names = getNames(proxy);
+    qDebug() << names;
+
+    qDebug() << "user config";
+    proxy->setFilterUserConfig();
+    names = getNames(proxy);
+    qDebug() << names;
+}
+
 
 QTEST_MAIN(DialogsTest)
 
