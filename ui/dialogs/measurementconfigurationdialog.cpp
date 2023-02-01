@@ -353,9 +353,6 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     //update selected measurement config
     this->selectedMeasurementConfig = mConfig;
 
-    //
-    this->enableUIElements(mConfig.getMeasurementType());
-
     //do not trigger edits while setting up measurement config
     this->ui->lineEdit_distancInterval->blockSignals(true);
     this->ui->lineEdit_maxObservations->blockSignals(true);
@@ -376,6 +373,12 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->lineEdit_maxObservations->setText(QString::number(mConfig.getMaxObservations()));
     this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
     this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
+
+    if(this->selectedMeasurementConfig.isEditable()) {
+        this->enableUIElements(mConfig.getMeasurementType());
+    } else {
+        this->enableUIElements(eUnknown_MeasurementType);
+    }
 
     //from now on trigger edits
     this->ui->lineEdit_distancInterval->blockSignals(false);
@@ -530,24 +533,25 @@ void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexCha
 }
 
 void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &type) {
+    // enable all
+    this->ui->groupBox_Single_Point->setEnabled(true);
+    this->ui->groupBox_Scan->setEnabled(true);
+    this->ui->checkBox_twoFace->setEnabled(true);
+    this->ui->lineEdit_timeInterval->setEnabled(true);
+    this->ui->lineEdit_distancInterval->setEnabled(true);
+    this->ui->lineEdit_maxObservations->setEnabled(true);
+
     switch(type) {
     case eSinglePoint_MeasurementType:
-        this->ui->groupBox_Single_Point->setEnabled(true);
         this->ui->groupBox_Scan->setEnabled(false);
         break;
     case eScanTimeDependent_MeasurementType:
         this->ui->groupBox_Single_Point->setEnabled(false);
-        this->ui->groupBox_Scan->setEnabled(true);
-        this->ui->lineEdit_timeInterval->setEnabled(true);
         this->ui->lineEdit_distancInterval->setEnabled(false);
-        this->ui->lineEdit_maxObservations->setEnabled(true);
         break;
     case eScanDistanceDependent_MeasurementType:
         this->ui->groupBox_Single_Point->setEnabled(false);
-        this->ui->groupBox_Scan->setEnabled(true);
         this->ui->lineEdit_timeInterval->setEnabled(false);
-        this->ui->lineEdit_distancInterval->setEnabled(true);
-        this->ui->lineEdit_maxObservations->setEnabled(true);
         break;
     case eLevel_MeasurementType:
     case eDistance_MeasurementType:
@@ -555,6 +559,14 @@ void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &ty
     case eTemperature_MeasurementType:
         this->ui->groupBox_Scan->setEnabled(false);
         this->ui->groupBox_Single_Point->setEnabled(false);
+        break;
+    case eUnknown_MeasurementType: // disable all
+        this->ui->groupBox_Single_Point->setEnabled(false);
+        this->ui->groupBox_Scan->setEnabled(false);
+        this->ui->checkBox_twoFace->setEnabled(false);
+        this->ui->lineEdit_timeInterval->setEnabled(false);
+        this->ui->lineEdit_distancInterval->setEnabled(false);
+        this->ui->lineEdit_maxObservations->setEnabled(false);
         break;
     }
 }
