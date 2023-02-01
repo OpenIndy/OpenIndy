@@ -28,7 +28,7 @@ enum MeasurementConfigurationFilterTypes{
  * \brief The MeasurementConfigurationProxyModel class
  * Model that holds all available measurement configurations filtered by saved and project property
  */
-class MeasurementConfigurationProxyModel : public QSortFilterProxyModel
+class OI_MAIN_EXPORT MeasurementConfigurationProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
