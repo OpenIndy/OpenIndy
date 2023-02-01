@@ -14,18 +14,38 @@ MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel(QObject *
  */
 void MeasurementConfigurationProxyModel::setFilter(const bool &showAll){
     this->resetFilter();
-    this->showAll = showAll;
+
+    this->filterType = showAll ? eAll_MeasurementConfigurationFilter : eNo_MeasurementConfigurationFilter;
+
     this->invalidateFilter();
 }
 void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor) {
     this->resetFilter();
+
+    this->filterType = eCreateFeature_MeasurementConfigurationFilter;
     this->neededElements = neededElements;
     this->typeOfFeature = typeOfFeature;
     this->functionIsApplicableFor = applicableFor;
+
     this->invalidateFilter();
 }
+void MeasurementConfigurationProxyModel::setFilterProjectConfig() {
+    this->resetFilter();
+
+    this->filterType = eProject_MeasurementConfigurationFilter;
+
+    this->invalidateFilter();
+}
+void MeasurementConfigurationProxyModel::setFilterUserConfig(){
+    this->resetFilter();
+
+    this->filterType = eUser_MeasurementConfigurationFilter;
+
+    this->invalidateFilter();
+}
+
 void MeasurementConfigurationProxyModel::resetFilter() {
-    this->showAll = false;
+    this->filterType = eNo_MeasurementConfigurationFilter;
 
     this->neededElements.clear();
     this->typeOfFeature = FeatureTypes::eUndefinedFeature;
