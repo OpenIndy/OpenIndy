@@ -4,8 +4,8 @@
  * \brief MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel
  * \param parent
  */
-MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel(QObject *parent) : QSortFilterProxyModel(parent){
-    this->showAll = false;
+MeasurementConfigurationProxyModel::MeasurementConfigurationProxyModel(QObject *parent) : QSortFilterProxyModel(parent), filterType(eNo_MeasurementConfigurationFilter){
+
 }
 
 /*!
