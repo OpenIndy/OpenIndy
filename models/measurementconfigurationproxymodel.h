@@ -41,6 +41,8 @@ public:
 
     void setFilter(const bool &showAll);
     void setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor);
+    void setFilterProjectConfig();
+    void setFilterUserConfig();
     void resetFilter();
 
     //###########################################
