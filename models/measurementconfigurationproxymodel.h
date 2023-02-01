@@ -16,6 +16,14 @@
 
 using namespace oi;
 
+enum MeasurementConfigurationFilterTypes{
+    eNo_MeasurementConfigurationFilter= 0,
+    eAll_MeasurementConfigurationFilter,
+    eProject_MeasurementConfigurationFilter,
+    eUser_MeasurementConfigurationFilter,
+    eCreateFeature_MeasurementConfigurationFilter,
+};
+
 /*!
  * \brief The MeasurementConfigurationProxyModel class
  * Model that holds all available measurement configurations filtered by saved and project property
@@ -60,7 +68,7 @@ private:
     //filter attribute
     //################
 
-    bool showAll;
+    MeasurementConfigurationFilterTypes filterType;
     QList<ElementTypes> neededElements;
     FeatureTypes typeOfFeature;
     QList<FeatureTypes> functionIsApplicableFor;
