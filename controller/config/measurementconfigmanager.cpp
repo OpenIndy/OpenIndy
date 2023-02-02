@@ -12,6 +12,54 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
                      this, static_cast<void (MeasurementConfigManager::*)(const MeasurementConfig&, const MeasurementConfig &newMConfig)>
                      (&MeasurementConfigManager::updateGeometries), Qt::AutoConnection);
 
+    // initial read only standard configs
+    MeasurementConfig fastPoint;
+    fastPoint.setName("FastPoint");
+    fastPoint.setMaxObservations(1);
+    fastPoint.setTimeInterval(0);
+    fastPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    fastPoint.setIsSaved(true);
+    fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    fastPoint.setDistanceInterval(0);
+    fastPoint.setMeasureTwoSides(false);
+    this->savedMeasurementConfigMap.insert(fastPoint.getName(), fastPoint);
+    this->savedMeasurementConfigList.append(fastPoint);
+
+    MeasurementConfig stdPoint;
+    stdPoint.setName("StdPoint");
+    stdPoint.setMaxObservations(1);
+    stdPoint.setTimeInterval(0);
+    stdPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    stdPoint.setIsSaved(true);
+    stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
+    stdPoint.setDistanceInterval(0);
+    stdPoint.setMeasureTwoSides(false);
+    this->savedMeasurementConfigMap.insert(stdPoint.getName(), stdPoint);
+    this->savedMeasurementConfigList.append(stdPoint);
+
+    MeasurementConfig precisePoint;
+    precisePoint.setName("PrecisePoint");
+    precisePoint.setMaxObservations(1);
+    precisePoint.setTimeInterval(0);
+    precisePoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    precisePoint.setIsSaved(true);
+    precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
+    precisePoint.setDistanceInterval(0);
+    precisePoint.setMeasureTwoSides(false);
+    this->savedMeasurementConfigMap.insert(precisePoint.getName(), precisePoint);
+    this->savedMeasurementConfigList.append(precisePoint);
+
+    MeasurementConfig stdTwoSide;
+    stdTwoSide.setName("StdTwoSide");
+    stdTwoSide.setMaxObservations(1);
+    stdTwoSide.setTimeInterval(0);
+    stdTwoSide.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    stdTwoSide.setIsSaved(true);
+    stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
+    stdTwoSide.setDistanceInterval(0);
+    stdTwoSide.setMeasureTwoSides(true);
+    this->savedMeasurementConfigMap.insert(stdTwoSide.getName(), stdTwoSide);
+    this->savedMeasurementConfigList.append(stdTwoSide);
 }
 
 /*!
