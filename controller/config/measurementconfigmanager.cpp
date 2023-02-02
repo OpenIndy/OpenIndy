@@ -12,6 +12,66 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
                      this, static_cast<void (MeasurementConfigManager::*)(const MeasurementConfig&, const MeasurementConfig &newMConfig)>
                      (&MeasurementConfigManager::updateGeometries), Qt::AutoConnection);
 
+    // initial read only standard configs
+    MeasurementConfig fastPoint;
+    fastPoint.setName("FastPoint");
+    fastPoint.setMaxObservations(1);
+    fastPoint.setTimeInterval(0);
+    fastPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    fastPoint.setDistanceInterval(0);
+    fastPoint.setMeasureTwoSides(false);
+    fastPoint.setIsSaved(true);
+    this->savedMeasurementConfigMap.insert(fastPoint.getName(), fastPoint);
+    this->savedMeasurementConfigList.append(fastPoint);
+
+    MeasurementConfig stdPoint;
+    stdPoint.setName("StdPoint");
+    stdPoint.setMaxObservations(1);
+    stdPoint.setTimeInterval(0);
+    stdPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
+    stdPoint.setDistanceInterval(0);
+    stdPoint.setMeasureTwoSides(false);
+    stdPoint.setIsSaved(true);
+    this->savedMeasurementConfigMap.insert(stdPoint.getName(), stdPoint);
+    this->savedMeasurementConfigList.append(stdPoint);
+
+    MeasurementConfig precisePoint;
+    precisePoint.setName("PrecisePoint");
+    precisePoint.setMaxObservations(1);
+    precisePoint.setTimeInterval(0);
+    precisePoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
+    precisePoint.setDistanceInterval(0);
+    precisePoint.setMeasureTwoSides(false);
+    precisePoint.setIsSaved(true);
+    this->savedMeasurementConfigMap.insert(precisePoint.getName(), precisePoint);
+    this->savedMeasurementConfigList.append(precisePoint);
+
+    MeasurementConfig stdTwoSide;
+    stdTwoSide.setName("StdTwoSide");
+    stdTwoSide.setMaxObservations(1);
+    stdTwoSide.setTimeInterval(0);
+    stdTwoSide.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
+    stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
+    stdTwoSide.setDistanceInterval(0);
+    stdTwoSide.setMeasureTwoSides(true);
+    stdTwoSide.setIsSaved(true);
+    this->savedMeasurementConfigMap.insert(stdTwoSide.getName(), stdTwoSide);
+    this->savedMeasurementConfigList.append(stdTwoSide);
+
+    MeasurementConfig level;
+    level.setName("level"); /* lower case */
+    level.setMaxObservations(1);
+    level.setTimeInterval(0);
+    level.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
+    level.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    level.setDistanceInterval(0);
+    level.setMeasureTwoSides(false);
+    level.setIsSaved(true);
+    this->savedMeasurementConfigMap.insert(level.getName(), level);
+    this->savedMeasurementConfigList.append(level);
 }
 
 /*!
@@ -61,6 +121,14 @@ void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob> &job){
         this->connectJob();
 
     }
+}
+
+bool MeasurementConfigManager::isStandardConfig(const QString &name) {
+    return QString("FastPoint").compare(name) == 0
+            || QString("StdPoint").compare(name) == 0
+            || QString("PrecisePoint").compare(name) == 0
+            || QString("StdTwoSide").compare(name) == 0
+            || QString("level").compare(name) /* lower case */ == 0;
 }
 
 /*!
@@ -399,6 +467,9 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         MeasurementConfig savedConfig;
         QDomElement mConfigTag = mConfigXml.documentElement();
         if(!savedConfig.fromOpenIndyXML(mConfigTag)){
+            continue;
+        }
+        if(this->isStandardConfig(savedConfig.getName())) { // skip standard config from xml
             continue;
         }
         savedConfig.setIsSaved(true);

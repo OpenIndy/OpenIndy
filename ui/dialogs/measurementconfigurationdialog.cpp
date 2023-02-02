@@ -51,11 +51,9 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
     this->ui->listView_measurementConfigs->selectionModel()->clearSelection();
     this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfig);
-    if(mConfig.getIsSaved()){
-        this->ui->widget_measurementConfigValues->setEnabled(true);
-    }else{
-        this->ui->widget_measurementConfigValues->setEnabled(false);
-    }
+    this->ui->widget_measurementConfigValues->setEnabled(mConfig.getIsSaved()
+                                                         ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+                                                         : false);
     this->selectedMeasurementConfig = mConfig;
 
 }
@@ -93,11 +91,9 @@ void MeasurementConfigurationDialog::on_listView_measurementConfigs_clicked(cons
     this->updateGuiFromMeasurementConfig(mConfig);
 
     //toggle enabled state depending on what mConfig has been selected (project vs. saved)
-    if(mConfig.getIsSaved()){
-        this->ui->widget_measurementConfigValues->setEnabled(true);
-    }else{
-        this->ui->widget_measurementConfigValues->setEnabled(false);
-    }
+    this->ui->widget_measurementConfigValues->setEnabled(mConfig.getIsSaved()
+                                                         ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+                                                         : false);
 
     this->selectedMeasurementConfig = mConfig;
 
@@ -338,11 +334,9 @@ void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
     if(index.isValid()){
         this->ui->listView_measurementConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
         this->updateGuiFromMeasurementConfig(mConfig);
-        if(mConfig.getIsSaved()){
-            this->ui->widget_measurementConfigValues->setEnabled(true);
-        }else{
-            this->ui->widget_measurementConfigValues->setEnabled(false);
-        }
+        this->ui->widget_measurementConfigValues->setEnabled(mConfig.getIsSaved()
+                                                             ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+                                                             : false);
     }else{
         this->updateGuiFromMeasurementConfig(MeasurementConfig());
         this->ui->widget_measurementConfigValues->setEnabled(false);

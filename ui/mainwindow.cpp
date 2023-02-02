@@ -2970,22 +2970,6 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
     menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
 }
 
-/*!
- * \brief MainWindow::showEvent
- * \param e
- */
-void MainWindow::showEvent(QShowEvent *e)
-{
-    //load and restore project unit settings
-    ProjectConfig::loadProjectPathConfigFile();
-    //parse them to the model, to display all values in correct unit
-    this->settingsDialog.updateDisplayConfigFromSelection();
-
-    emit loadAndSaveConfigs();
-
-    e->accept();
-}
-
 void MainWindow::startAutoSave() {
     int i = ProjectConfig::getAutoSaveInterval();
     qDebug() << "auto save interval: " << i << "minutes" << (i>0 ? "" : ": disabled");
