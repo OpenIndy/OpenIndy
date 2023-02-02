@@ -21,9 +21,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPoint.setDistanceInterval(0);
     fastPoint.setMeasureTwoSides(false);
-    fastPoint.setIsSaved(true);
-    this->savedMeasurementConfigMap.insert(fastPoint.getName(), fastPoint);
-    this->savedMeasurementConfigList.append(fastPoint);
+    fastPoint.isUserConfig(true);
+    fastPoint.isEditable(false);
+    this->userConfigs.insert(fastPoint.getName(), fastPoint);
 
     MeasurementConfig stdPoint;
     stdPoint.setName("StdPoint");
@@ -33,9 +33,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdPoint.setDistanceInterval(0);
     stdPoint.setMeasureTwoSides(false);
-    stdPoint.setIsSaved(true);
-    this->savedMeasurementConfigMap.insert(stdPoint.getName(), stdPoint);
-    this->savedMeasurementConfigList.append(stdPoint);
+    stdPoint.isUserConfig(true);
+    stdPoint.isEditable(false);
+    this->userConfigs.insert(stdPoint.getName(), stdPoint);
 
     MeasurementConfig precisePoint;
     precisePoint.setName("PrecisePoint");
@@ -45,9 +45,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePoint.setDistanceInterval(0);
     precisePoint.setMeasureTwoSides(false);
-    precisePoint.setIsSaved(true);
-    this->savedMeasurementConfigMap.insert(precisePoint.getName(), precisePoint);
-    this->savedMeasurementConfigList.append(precisePoint);
+    precisePoint.isUserConfig(true);
+    precisePoint.isEditable(false);
+    this->userConfigs.insert(precisePoint.getName(), precisePoint);
 
     MeasurementConfig stdTwoSide;
     stdTwoSide.setName("StdTwoSide");
@@ -57,9 +57,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdTwoSide.setDistanceInterval(0);
     stdTwoSide.setMeasureTwoSides(true);
-    stdTwoSide.setIsSaved(true);
-    this->savedMeasurementConfigMap.insert(stdTwoSide.getName(), stdTwoSide);
-    this->savedMeasurementConfigList.append(stdTwoSide);
+    stdTwoSide.isUserConfig(true);
+    stdTwoSide.isEditable(false);
+    this->userConfigs.insert(stdTwoSide.getName(), stdTwoSide);
 
     MeasurementConfig level;
     level.setName("level"); /* lower case */
@@ -69,9 +69,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     level.setDistanceInterval(0);
     level.setMeasureTwoSides(false);
-    level.setIsSaved(true);
-    this->savedMeasurementConfigMap.insert(level.getName(), level);
-    this->savedMeasurementConfigList.append(level);
+    level.isUserConfig(true);
+    level.isEditable(true);
+    this->userConfigs.insert(level.getName(), level);
 }
 
 /*!
