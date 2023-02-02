@@ -388,7 +388,9 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
         this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    measurementConfigManager->addSavedMeasurementConfig(mConfig);
+    if(!ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())) {
+        measurementConfigManager->addSavedMeasurementConfig(mConfig);
+    }
     //set measurement config for the active feature
     activeFeature->getGeometry()->setMeasurementConfig(mConfig);
     SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(activeFeature->getFeatureTypeEnum()));
