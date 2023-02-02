@@ -54,13 +54,24 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdTwoSide.setMaxObservations(1);
     stdTwoSide.setTimeInterval(0);
     stdTwoSide.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    stdTwoSide.setIsSaved(true);
     stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdTwoSide.setDistanceInterval(0);
     stdTwoSide.setMeasureTwoSides(true);
     stdTwoSide.setIsSaved(true);
     this->savedMeasurementConfigMap.insert(stdTwoSide.getName(), stdTwoSide);
     this->savedMeasurementConfigList.append(stdTwoSide);
+
+    MeasurementConfig level;
+    level.setName("level"); /* lower case */
+    level.setMaxObservations(1);
+    level.setTimeInterval(0);
+    level.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
+    level.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
+    level.setDistanceInterval(0);
+    level.setMeasureTwoSides(false);
+    level.setIsSaved(true);
+    this->savedMeasurementConfigMap.insert(level.getName(), level);
+    this->savedMeasurementConfigList.append(level);
 }
 
 /*!
@@ -116,7 +127,8 @@ bool MeasurementConfigManager::isStandardConfig(const QString &name) {
     return QString("FastPoint").compare(name) == 0
             || QString("StdPoint").compare(name) == 0
             || QString("PrecisePoint").compare(name) == 0
-            || QString("StdTwoSide").compare(name) == 0;
+            || QString("StdTwoSide").compare(name) == 0
+            || QString("level").compare(name) /* lower case */ == 0;
 }
 
 /*!
