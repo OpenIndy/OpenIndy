@@ -976,14 +976,19 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
         break;
     case eCheckResult_oi_lt_job:
         compatible = false;
-        msg = "This OpenIndy version is older than OpenIndy project version. Please use newer OpenIndy version. Continue opening project?";
+        msg = "This OpenIndy version is older than OpenIndy project version. "
+              "Please use newer OpenIndy version. Continue opening project?";
         break;
     case eCheckResult_job_lt_oi_22_1:
         compatible = false;
-        msg = "This OpenIndy version is newer than OpenIndy project version. Please migrate Project to MeasurementConfig. Continue opening project?";
+        msg = "This OpenIndy version is newer than OpenIndy project version. "
+              "Please migrate project otherwise project measurement config will not work propperly. "
+              "Continue opening project?";
+        break;
     default:
         compatible = false;
         msg = "This OpenIndy version is not compatible with OpenIndy project version. Continue opening project?";
+        break;
     }
 
     if(compatible || (emit this->showMessageBox(msg, eQuestionMessage) == QMessageBox::Yes) ) {
