@@ -327,8 +327,6 @@ private slots:
 
     void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
 
-    void showEvent(QShowEvent *e);
-
     void enableObservationsOfActiveFeature();
     void disableObservationsOfActiveFeature();
 
