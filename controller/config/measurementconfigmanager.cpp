@@ -63,6 +63,13 @@ void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob> &job){
     }
 }
 
+bool MeasurementConfigManager::isStandardConfig(const QString &name) {
+    return QString("FastPoint").compare(name) == 0
+            || QString("StdPoint").compare(name) == 0
+            || QString("PrecisePoint").compare(name) == 0
+            || QString("StdTwoSide").compare(name) == 0;
+}
+
 /*!
  * \brief MeasurementConfigManager::hasSavedMeasurementConfig
  * Checks wether there is a saved measurement config with the given name

@@ -46,6 +46,7 @@ public:
     //##############################
 
     //check presence of a config
+    bool isStandardConfig(const QString &name);
     bool hasSavedMeasurementConfig(const QString &name);
     bool hasProjectMeasurementConfig(const QString &name);
     bool hasSavedMeasurementConfig(const MeasurementConfig &mConfig);
