@@ -1199,9 +1199,17 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
             //set measurement configs
             QDomElement mConfigElement = geometry.firstChildElement("measurementConfig");
-            if(!mConfigElement.isNull() && mConfigElement.hasAttribute("name") && ProjectExchanger::myMConfigs.contains(mConfigElement.attribute("name"))){
-                MeasurementConfig mConfig = ProjectExchanger::myMConfigs.value(mConfigElement.attribute("name"));
-                myGeometry->getGeometry()->setMeasurementConfig(mConfig);
+            const QVariant name = mConfigElement.attribute("name");
+            if(!mConfigElement.isNull()&& mConfigElement.hasAttribute("name")){
+                MeasurementConfig savedConfig = ProjectExchanger::mConfigManager->getSavedMeasurementConfig(name.toString());
+                if(ProjectExchanger::mConfigManager->isStandardConfig(name.toString()) && savedConfig.getIsValid()) {
+                    myGeometry->getGeometry()->setMeasurementConfig(savedConfig);
+                } else if(ProjectExchanger::myMConfigs.contains(name.toString())) {// is not saved / user measurement config
+                    MeasurementConfig mConfig = ProjectExchanger::myMConfigs.value(name.toString());
+                    myGeometry->getGeometry()->setMeasurementConfig(mConfig);
+                } else if(savedConfig.getIsValid()) {
+                    myGeometry->getGeometry()->setMeasurementConfig(savedConfig);
+                }
             }
 
         }
