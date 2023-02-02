@@ -251,7 +251,6 @@ void MeasurementConfigManager::addUserConfig(const MeasurementConfig &mConfig){
     //save mConfig
     MeasurementConfig userConfig = mConfig;
     userConfig.isUserConfig(true);
-    userConfig.isEditable(true);
     this->saveConfig(userConfig);
 
 }
@@ -275,7 +274,9 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
     }
 
     //save mConfig
-    this->projectConfigs.insert(mConfig.getName(), mConfig);
+    MeasurementConfig projectConfig = mConfig;
+    projectConfig.isUserConfig(false);
+    this->projectConfigs.insert(projectConfig.getName(), projectConfig);
 
     emit this->measurementConfigurationsChanged();
 

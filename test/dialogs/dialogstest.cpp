@@ -103,7 +103,6 @@ void DialogsTest::initTestCase() {
     scanDistanceConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
     scanDistanceConfig.setDistanceInterval(456);
     scanDistanceConfig.setMaxObservations(654);
-    scanDistanceConfig.isUserConfig(true);
     measurementConfigManager->addUserConfig(scanDistanceConfig);
 
     // project config
@@ -528,15 +527,31 @@ void DialogsTest::measurementConfigFilter() {
     QStringList names = getNames(proxy);
     qDebug() << names;
 
-    qDebug() << "project config";
+    QList<ElementTypes> neededElements;
+    QList<FeatureTypes> applicableFor;
+    neededElements.append(ElementTypes::eObservationElement);
+    applicableFor.append(FeatureTypes::eLevelFeature);
+    proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
+    names = getNames(proxy);
+    qDebug() << "plane: " << names;
+
+    applicableFor.clear();
+    applicableFor.append(FeatureTypes::eLevelFeature);
+    proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
+    names = getNames(proxy);
+    qDebug() << "level: " << names;
+
     proxy->setFilterProjectConfig();
     names = getNames(proxy);
-    qDebug() << names;
+    qDebug() << "project config: " << names;
 
-    qDebug() << "user config";
     proxy->setFilterUserConfig();
     names = getNames(proxy);
-    qDebug() << names;
+    qDebug() << "user config: " << names;
+
+    proxy->setFilter(true);
+    names = getNames(proxy);
+    qDebug() << "all : " << names;
 }
 
 
