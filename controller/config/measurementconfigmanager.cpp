@@ -18,10 +18,10 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     fastPoint.setMaxObservations(1);
     fastPoint.setTimeInterval(0);
     fastPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    fastPoint.setIsSaved(true);
     fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPoint.setDistanceInterval(0);
     fastPoint.setMeasureTwoSides(false);
+    fastPoint.setIsSaved(true);
     this->savedMeasurementConfigMap.insert(fastPoint.getName(), fastPoint);
     this->savedMeasurementConfigList.append(fastPoint);
 
@@ -30,10 +30,10 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdPoint.setMaxObservations(1);
     stdPoint.setTimeInterval(0);
     stdPoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    stdPoint.setIsSaved(true);
     stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdPoint.setDistanceInterval(0);
     stdPoint.setMeasureTwoSides(false);
+    stdPoint.setIsSaved(true);
     this->savedMeasurementConfigMap.insert(stdPoint.getName(), stdPoint);
     this->savedMeasurementConfigList.append(stdPoint);
 
@@ -42,10 +42,10 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     precisePoint.setMaxObservations(1);
     precisePoint.setTimeInterval(0);
     precisePoint.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    precisePoint.setIsSaved(true);
     precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePoint.setDistanceInterval(0);
     precisePoint.setMeasureTwoSides(false);
+    precisePoint.setIsSaved(true);
     this->savedMeasurementConfigMap.insert(precisePoint.getName(), precisePoint);
     this->savedMeasurementConfigList.append(precisePoint);
 
@@ -58,6 +58,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdTwoSide.setDistanceInterval(0);
     stdTwoSide.setMeasureTwoSides(true);
+    stdTwoSide.setIsSaved(true);
     this->savedMeasurementConfigMap.insert(stdTwoSide.getName(), stdTwoSide);
     this->savedMeasurementConfigList.append(stdTwoSide);
 }
