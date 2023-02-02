@@ -456,6 +456,9 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         if(!savedConfig.fromOpenIndyXML(mConfigTag)){
             continue;
         }
+        if(this->isStandardConfig(savedConfig.getName())) { // skip standard config from xml
+            continue;
+        }
         savedConfig.setIsSaved(true);
 
         //check if a measurement config with the same name has been loaded before
