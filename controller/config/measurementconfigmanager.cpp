@@ -460,10 +460,9 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         if(!userConfig.fromOpenIndyXML(mConfigTag)){
             continue;
         }
-        if(this->isStandardConfig(savedConfig.getName())) { // skip standard config from xml
+        if(this->isStandardConfig(userConfig.getName())) { // skip standard config from xml
             continue;
         }
-        userConfig.isUserConfig(true);
 
         //check if a measurement config with the same name has been loaded before
         if(mConfigNames.contains(userConfig.getName())){
