@@ -103,6 +103,7 @@ void DialogsTest::initTestCase() {
     scanDistanceConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
     scanDistanceConfig.setDistanceInterval(456);
     scanDistanceConfig.setMaxObservations(654);
+    scanDistanceConfig.isUserConfig(true);
     measurementConfigManager->addUserConfig(scanDistanceConfig);
 
     // project config
@@ -117,6 +118,7 @@ void DialogsTest::initTestCase() {
     fastPointConfigProject2.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfigProject2.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     measurementConfigManager->addProjectConfig(fastPointConfigProject2);
+
 
 
     // create plugin with some functions
@@ -519,6 +521,23 @@ QStringList DialogsTest::getNames(QSortFilterProxyModel *model) {
         names <<  model->index(row, 0).data( Qt::DisplayRole ).toString();
     }
     return names;
+}
+
+void DialogsTest::measurementConfigFilter() {
+    MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel();
+
+    QStringList names = getNames(proxy);
+    qDebug() << names;
+
+    qDebug() << "project config";
+    proxy->setFilterProjectConfig();
+    names = getNames(proxy);
+    qDebug() << names;
+
+    qDebug() << "user config";
+    proxy->setFilterUserConfig();
+    names = getNames(proxy);
+    qDebug() << names;
 }
 
 void DialogsTest::measurementConfigFilter() {
