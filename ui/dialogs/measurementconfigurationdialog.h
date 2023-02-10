@@ -68,7 +68,7 @@ private slots:
     //#########################
 
     //measurement configs list view
-    void on_listView_measurementConfigs_clicked(const QModelIndex &index);
+    void on_listView_userConfigs_clicked(const QModelIndex &index);
     void measurementConfigContextMenuRequested(const QPoint &point);
     void removeSelectedMeasurementConfig();
     void cloneSelectedMeasurementConfig();
