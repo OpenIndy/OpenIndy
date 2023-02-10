@@ -45,7 +45,17 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_set">
+      <widget class="QPushButton" name="pushButton_save_user_config">
+       <property name="toolTip">
+        <string>save user config to local file system</string>
+       </property>
+       <property name="text">
+        <string>save user config</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_set_to_feature">
        <property name="toolTip">
         <string>set the selected config for the active feature</string>
        </property>
