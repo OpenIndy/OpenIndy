@@ -114,6 +114,7 @@ signals:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();

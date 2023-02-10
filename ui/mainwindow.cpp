@@ -2122,6 +2122,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::saveUserConfig, &this->control, &Controller::saveUserConfig, Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)(const QString&)>(&MainWindow::saveProject),
@@ -2201,6 +2202,7 @@ void MainWindow::connectDialogs(){
 
     //connect measurement config dialog
     QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::saveUserConfig, this, &MainWindow::saveUserConfig, Qt::AutoConnection);
 
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);

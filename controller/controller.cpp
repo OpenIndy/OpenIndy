@@ -391,14 +391,20 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
         this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    if(!ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())) {
-        measurementConfigManager->addUserConfig(mConfig);
-    }
+
     //set measurement config for the active feature
     activeFeature->getGeometry()->setMeasurementConfig(mConfig);
     SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(activeFeature->getFeatureTypeEnum()));
 }
-
+void Controller::saveUserConfig(const MeasurementConfig &mConfig){
+    if( mConfig.isUserConfig()
+        && !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+        ) {
+        measurementConfigManager->addUserConfig(mConfig); // "add" to config/measurementConfigs folder
+    } else {
+        this->log(QString("Cannot save a measurement configuration \"%1\" because is it not vaild user config").arg(mConfig.getName()), eErrorMessage, eMessageBoxMessage);
+    }
+}
 /*!
  * \brief Controller::setActiveStation
  * \param featureId

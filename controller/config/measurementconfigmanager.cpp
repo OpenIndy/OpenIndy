@@ -70,7 +70,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setDistanceInterval(0);
     level.setMeasureTwoSides(false);
     level.isUserConfig(true);
-    level.isEditable(true);
+    level.isEditable(false);
     this->userConfigs.insert(level.getName(), level);
 }
 
@@ -231,7 +231,7 @@ MeasurementConfig MeasurementConfigManager::getActiveConfig(const GeometryTypes 
 }
 
 /*!
- * \brief MeasurementConfigManager::addMeasurementConfig
+ * \brief MeasurementConfigManager::addUserConfig
  * \param mConfig
  */
 void MeasurementConfigManager::addUserConfig(const MeasurementConfig &mConfig){
@@ -251,6 +251,7 @@ void MeasurementConfigManager::addUserConfig(const MeasurementConfig &mConfig){
     //save mConfig
     MeasurementConfig userConfig = mConfig;
     userConfig.isUserConfig(true);
+    userConfig.isEditable(true);
     this->saveConfig(userConfig);
 
 }

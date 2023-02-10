@@ -97,6 +97,7 @@ public slots:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //import or export features
     void importNominals(const ExchangeParams &params);
