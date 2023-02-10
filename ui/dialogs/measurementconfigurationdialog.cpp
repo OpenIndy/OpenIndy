@@ -298,7 +298,7 @@ void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(con
 /*!
  * \brief MeasurementConfigurationDialog::on_pushButton_set_clicked
  */
-void MeasurementConfigurationDialog::on_pushButton_set_clicked(){
+void MeasurementConfigurationDialog::on_pushButton_set_to_feature_clicked(){
 
     //get selected measurement config
     MeasurementConfig mConfig = this->selectedMeasurementConfig;
@@ -361,6 +361,8 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->checkBox_twoFace->blockSignals(false);
     this->ui->comboBox_MeasurementMode->blockSignals(false);
     this->ui->comboBox_MeasurementType->blockSignals(false);
+
+   this->enableUIElements(mConfig);
 
 }
 
@@ -479,6 +481,12 @@ void MeasurementConfigurationDialog::initModels(){
     this->ui->listView_projectConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
     this->ui->listView_userConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
 
+    this->ui->tabWidget->setCurrentIndex(0);
+    MeasurementConfigurationProxyModel *model = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_projectConfigs->model());
+    this->isProjectConfigSelected = true;
+    model->setFilterProjectConfig();
+    this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
+
 }
 
 void MeasurementConfigurationDialog::on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1)
@@ -514,7 +522,9 @@ void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexCha
     this->updateMeasurementConfigFromSelection();
 }
 
-void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &type) {
+void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
+    type = this->isProjectConfigSelected ? eUnknown_MeasurementType : type;
+
     // enable all
     this->ui->groupBox_Single_Point->setEnabled(true);
     this->ui->groupBox_Scan->setEnabled(true);
@@ -551,5 +561,45 @@ void MeasurementConfigurationDialog::enableUIElements(const MeasurementTypes &ty
         this->ui->lineEdit_maxObservations->setEnabled(false);
         break;
     }
+
 }
 
+void MeasurementConfigurationDialog::enableUIElements(const MeasurementConfig &mConfig) {
+    this->ui->pushButton_save_user_config->setEnabled(
+            mConfig.isUserConfig()
+            && !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+        );
+}
+
+QPointer<QListView> MeasurementConfigurationDialog::currentListView() {
+
+    if(this->ui->tabWidget->currentIndex() == 0) {
+        return this->ui->listView_projectConfigs;
+    } else {
+        return this->ui->listView_userConfigs;
+    }
+}
+
+void MeasurementConfigurationDialog::on_tabWidget_currentChanged(int index)
+{
+    MeasurementConfigurationProxyModel *model = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_projectConfigs->model());
+
+    if(index == 0) {    // project
+        model->setFilterProjectConfig();
+        this->isProjectConfigSelected = true;
+    } else {            // user
+        model->setFilterUserConfig();
+        this->isProjectConfigSelected = false;
+    }
+
+    this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
+}
+
+void MeasurementConfigurationDialog::on_pushButton_save_user_config_clicked()
+{
+    //get selected measurement config
+    MeasurementConfig mConfig = this->selectedMeasurementConfig;
+
+    emit this->saveUserConfig(mConfig);
+
+}

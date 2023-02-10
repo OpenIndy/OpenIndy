@@ -59,6 +59,7 @@ signals:
     //#############################################################################
 
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
     void initialized(); // currently used for testing
 
 private slots:
@@ -85,7 +86,8 @@ private slots:
     void on_lineEdit_distancInterval_textChanged(const QString &arg1);
 
     //set measurement config for the active feature
-    void on_pushButton_set_clicked();
+    void on_pushButton_set_to_feature_clicked();
+    void on_pushButton_save_user_config_clicked();
 
     //triggered when measurement config name has been edited
     void measurementConfigNameChanged(const MeasurementConfig &mConfig);
