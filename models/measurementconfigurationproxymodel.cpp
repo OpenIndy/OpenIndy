@@ -85,23 +85,36 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
         return false;
     }
 
-    //check if the index is a saved config
-    if(source_row >= 0 && source_row < sourceModel->getMeasurementConfigurationManager()->getUserConfigs().size()){
+    const int userConfigsSize = sourceModel->getMeasurementConfigurationManager()->getUserConfigs().size();
+    const int projectConfigsSize = sourceModel->getMeasurementConfigurationManager()->getProjectConfigs().size();
 
-        if(this->neededElements.isEmpty()) {
-            return true;
-        }
+    switch(this->filterType) {
+    case eProject_MeasurementConfigurationFilter:
+        return source_row >= 0 && source_row >= userConfigsSize && source_row < (userConfigsSize + projectConfigsSize);
+    case eUser_MeasurementConfigurationFilter:
+        return source_row >= 0 && source_row < userConfigsSize;
+    case eCreateFeature_MeasurementConfigurationFilter:
+    case eNo_MeasurementConfigurationFilter:
+    case eAll_MeasurementConfigurationFilter:
+    default:
+        //check if the index is a saved config
+        if(source_row >= 0 && source_row < userConfigsSize){
 
-        MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
-        for (ElementTypes elementType : this->neededElements) {
-            if(mConfig.applicableFor(elementType, this->functionIsApplicableFor)) {
+            if(this->neededElements.isEmpty()) {
                 return true;
             }
+
+            MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
+            for (ElementTypes elementType : this->neededElements) {
+                if(mConfig.applicableFor(elementType, this->functionIsApplicableFor)) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     return false;
-
 }
 
 /*!
