@@ -215,13 +215,15 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
         return;
     }
 
-    mConfigModel->cloneMeasurementConfig(mConfig);
-
-    //select the new item
-    QModelIndex index = mConfigModel->getIndex(mConfig);
-    currentListView()->selectionModel()->clearSelection();
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
-
+    const MeasurementConfig clone = mConfigModel->cloneMeasurementConfig(mConfig);
+    if(clone.getIsValid()) {
+        //select the new item
+        QModelIndex index = mConfigModel->getIndex(clone);
+        this->ui->tabWidget->setCurrentIndex(1);
+        this->on_tabWidget_currentChanged(1);
+        currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+        this->on_listView_configs_clicked(mConfigProxyModel->mapFromSource(index));
+    }
 }
 
 /*!
