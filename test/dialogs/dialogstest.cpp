@@ -39,6 +39,7 @@ private:
 
     void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     QStringList getNames(QSortFilterProxyModel *model);
+    QStringList getNames(QAbstractListModel *model);
 
 };
 
@@ -525,54 +526,75 @@ QStringList DialogsTest::getNames(QSortFilterProxyModel *model) {
     return names;
 }
 
-void DialogsTest::measurementConfigFilter() {
-    MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel();
+QStringList DialogsTest::getNames(QAbstractListModel *model) {
 
-    QStringList names = getNames(proxy);
-    qDebug() << names;
-
-    qDebug() << "project config";
-    proxy->setFilterProjectConfig();
-    names = getNames(proxy);
-    qDebug() << names;
-
-    qDebug() << "user config";
-    proxy->setFilterUserConfig();
-    names = getNames(proxy);
-    qDebug() << names;
+    QStringList names;
+    for(int row=0; row<model->rowCount(); row++) {
+        names <<  model->index(row, 0).data( Qt::DisplayRole ).toString();
+    }
+    return names;
 }
 
+// TODO remove * prefix
+// TODO filter user / project
 void DialogsTest::measurementConfigFilter() {
-    MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel();
+    MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
+    MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(proxy->sourceModel());
 
-    QStringList names = getNames(proxy);
-    qDebug() << names;
+    QStringList names;
+
+    names = getNames(sourceModel);
+    qDebug() << "source model:   " << names;
+
+    names = getNames(proxy);
+    qDebug() << "current:        " << names;
+    proxy->setFilter(true);
+    names = getNames(proxy);
+    qDebug() << "all:            " << names;
 
     QList<ElementTypes> neededElements;
     QList<FeatureTypes> applicableFor;
     neededElements.append(ElementTypes::eObservationElement);
-    applicableFor.append(FeatureTypes::eLevelFeature);
+    applicableFor.append(FeatureTypes::ePointFeature);
     proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
     names = getNames(proxy);
-    qDebug() << "plane: " << names;
+    qDebug() << "point:          " << names;
+
+    neededElements.clear();
+    applicableFor.clear();
+    neededElements.append(ElementTypes::eObservationElement);
+    applicableFor.append(FeatureTypes::ePlaneFeature);
+    proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
+    names = getNames(proxy);
+    qDebug() << "plane:          " << names;
 
     applicableFor.clear();
     applicableFor.append(FeatureTypes::eLevelFeature);
     proxy->setFilter(neededElements, FeatureTypes::ePlaneFeature, applicableFor);
     names = getNames(proxy);
-    qDebug() << "level: " << names;
+    qDebug() << "level:          " << names;
 
     proxy->setFilterProjectConfig();
     names = getNames(proxy);
     qDebug() << "project config: " << names;
+    QVERIFY(2 == proxy->rowCount());
+    QVERIFY("*measconfig-fastpoint"      == proxy->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("*measconfig-fastpoint_project"   == proxy->index(1, 0).data( Qt::DisplayRole ).toString());
 
     proxy->setFilterUserConfig();
     names = getNames(proxy);
-    qDebug() << "user config: " << names;
+    qDebug() << "user config:    " << names;
+    QVERIFY(5 == proxy->rowCount());
+    QVERIFY("FastPoint"      == proxy->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("PrecisePoint"   == proxy->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdPoint"       == proxy->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdTwoSide"     == proxy->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("level"          == proxy->index(4, 0).data( Qt::DisplayRole ).toString());
+
 
     proxy->setFilter(true);
     names = getNames(proxy);
-    qDebug() << "all : " << names;
+    qDebug() << "all:            " << names;
 }
 
 
