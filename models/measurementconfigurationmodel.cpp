@@ -319,25 +319,29 @@ void MeasurementConfigurationModel::replaceMeasurementConfig(const QString &name
 /*!
  * \brief MeasurementConfigurationModel::cloneMeasurementConfig
  * \param mConfig
+ * \return clone or invalid config
  */
-void MeasurementConfigurationModel::cloneMeasurementConfig(const MeasurementConfig &mConfig){
-
+MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const MeasurementConfig &mConfig){
+    MeasurementConfig invalid;
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
-        return;
+        return invalid;
     }
 
     //check mConfig
     if(!mConfig.getIsValid() || mConfig.isUserConfig()){
-        return;
+        return invalid;
     }
 
     //add the measurement config
     MeasurementConfig userConfig = mConfig;
     userConfig.isUserConfig(true);
+    userConfig.isEditable(true);
     this->measurementConfigManager->addUserConfig(mConfig);
 
     this->updateModel();
+
+    return userConfig;
 
 }
 

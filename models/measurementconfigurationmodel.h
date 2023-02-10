@@ -63,7 +63,7 @@ public:
 
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
 
-    void cloneMeasurementConfig(const MeasurementConfig &mConfig);
+    MeasurementConfig cloneMeasurementConfig(const MeasurementConfig &mConfig);
 
     //#######################################
     //get or set sensor configuration manager
