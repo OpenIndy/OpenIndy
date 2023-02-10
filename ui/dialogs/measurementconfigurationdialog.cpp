@@ -33,7 +33,7 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
 
     //check if name is empty
     if(!mConfig.getIsValid()){
-        this->ui->listView_userConfigs->selectionModel()->clearSelection();
+        currentListView()->selectionModel()->clearSelection();
         this->updateGuiFromMeasurementConfig(MeasurementConfig());
         this->ui->widget_measurementConfigValues->setEnabled(false);
     }
@@ -48,8 +48,8 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
     }
 
     //update selected measurement config
-    this->ui->listView_userConfigs->selectionModel()->clearSelection();
-    this->ui->listView_userConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    currentListView()->selectionModel()->clearSelection();
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfig);
     this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
                                                          ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
@@ -63,7 +63,12 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
  * \param index
  */
 void MeasurementConfigurationDialog::on_listView_userConfigs_clicked(const QModelIndex &index){
-
+    on_listView_configs_clicked(index);
+}
+void MeasurementConfigurationDialog::on_listView_projectConfigs_clicked(const QModelIndex &index){
+    on_listView_configs_clicked(index);
+}
+void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelIndex &index) {
     //check index
     if(!index.isValid()){
         return;
@@ -73,7 +78,7 @@ void MeasurementConfigurationDialog::on_listView_userConfigs_clicked(const QMode
     this->ui->widget_measurementConfigValues->setEnabled(true);
 
     //get and check model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
         return;
     }
@@ -106,13 +111,13 @@ void MeasurementConfigurationDialog::on_listView_userConfigs_clicked(const QMode
 void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const QPoint &point){
 
     //get and check index
-    QModelIndex index = this->ui->listView_userConfigs->indexAt(point);
+    QModelIndex index = currentListView()->indexAt(point);
     if(!index.isValid() || index.parent().isValid()){
         return;
     }
 
     //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
         return;
     }
@@ -154,7 +159,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
 void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
 
     //get and check index
-    QModelIndexList selection = this->ui->listView_userConfigs->selectionModel()->selectedIndexes();
+    QModelIndexList selection = currentListView()->selectionModel()->selectedIndexes();
     if(selection.size() != 1){
         return;
     }
@@ -164,7 +169,7 @@ void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
     }
 
     //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
         return;
     }
@@ -185,7 +190,7 @@ void MeasurementConfigurationDialog::removeSelectedMeasurementConfig(){
     mConfigModel->removeMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
     //deselect measurement configs and disable widget
-    this->ui->listView_userConfigs->selectionModel()->clearSelection();
+    currentListView()->selectionModel()->clearSelection();
     this->updateGuiFromMeasurementConfig(MeasurementConfig());
     this->ui->widget_measurementConfigValues->setEnabled(false);
     this->selectedMeasurementConfig = MeasurementConfig();
@@ -201,7 +206,7 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
     MeasurementConfig mConfig = this->selectedMeasurementConfig;
 
     //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
         return;
     }
@@ -216,8 +221,8 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
 
     //select the new item
     QModelIndex index = mConfigModel->getIndex(mConfig);
-    this->ui->listView_userConfigs->selectionModel()->clearSelection();
-    this->ui->listView_userConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    currentListView()->selectionModel()->clearSelection();
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
 
 }
 
@@ -231,7 +236,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     mConfig.isUserConfig(true);
 
     //get and check measurement config proxy model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
         return;
     }
@@ -251,10 +256,10 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     }
 
     //select the new item
-    this->ui->listView_userConfigs->selectionModel()->clearSelection();
-    this->ui->listView_userConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    currentListView()->selectionModel()->clearSelection();
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
     this->updateGuiFromMeasurementConfig(mConfig);
-    this->ui->listView_userConfigs->edit(mConfigProxyModel->mapFromSource(index));
+    currentListView()->edit(mConfigProxyModel->mapFromSource(index));
     this->selectedMeasurementConfig = mConfig;
 
 }
@@ -365,7 +370,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
 void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
 
     //get and check model
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
         return;
     }
@@ -377,7 +382,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     }
 
     //get selected measurement config name
-    QModelIndexList selection = this->ui->listView_userConfigs->selectionModel()->selectedIndexes();
+    QModelIndexList selection = currentListView()->selectionModel()->selectedIndexes();
     if(selection.size() != 1){
         return;
     }
@@ -416,7 +421,7 @@ void MeasurementConfigurationDialog::showEvent(QShowEvent *event){
     QObject::connect(&ModelManager::getMeasurementConfigurationModel(), &MeasurementConfigurationModel::measurementConfigNameChanged,
                         this, &MeasurementConfigurationDialog::measurementConfigNameChanged, Qt::AutoConnection);
 
-    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_userConfigs->model());
+    MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel != NULL){
         mConfigProxyModel->resetFilter();
     }
@@ -449,13 +454,19 @@ void MeasurementConfigurationDialog::initGUI(){
     //set visibility
     this->ui->widget_measurementConfigValues->setEnabled(false);
 
+    MeasurementConfigurationListDelegate *delegate = new MeasurementConfigurationListDelegate();
+
     //allow context menu for measurement config model
     this->ui->listView_userConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(this->ui->listView_userConfigs, &QListView::customContextMenuRequested, this, &MeasurementConfigurationDialog::measurementConfigContextMenuRequested, Qt::AutoConnection);
-
     //assign delegate to measurement configs list view
-    MeasurementConfigurationListDelegate *delegate = new MeasurementConfigurationListDelegate();
     this->ui->listView_userConfigs->setItemDelegate(delegate);
+
+    this->ui->listView_projectConfigs->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(this->ui->listView_projectConfigs, &QListView::customContextMenuRequested, this, &MeasurementConfigurationDialog::measurementConfigContextMenuRequested, Qt::AutoConnection);
+    //assign delegate to measurement configs list view
+    this->ui->listView_projectConfigs->setItemDelegate(delegate);
+
 
 }
 
@@ -465,6 +476,7 @@ void MeasurementConfigurationDialog::initGUI(){
 void MeasurementConfigurationDialog::initModels(){
 
     //init measurement config model
+    this->ui->listView_projectConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
     this->ui->listView_userConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
 
 }

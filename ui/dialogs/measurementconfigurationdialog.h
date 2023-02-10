@@ -69,6 +69,8 @@ private slots:
 
     //measurement configs list view
     void on_listView_userConfigs_clicked(const QModelIndex &index);
+    void on_listView_projectConfigs_clicked(const QModelIndex &index);
+
     void measurementConfigContextMenuRequested(const QPoint &point);
     void removeSelectedMeasurementConfig();
     void cloneSelectedMeasurementConfig();
@@ -96,11 +98,14 @@ private slots:
 
     void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
 
-    void enableUIElements(const MeasurementTypes &type);
-
     void on_comboBox_MeasurementMode_currentIndexChanged(int index);
 
     void on_comboBox_MeasurementType_currentIndexChanged(int index);
+
+    void on_tabWidget_currentChanged(int index);
+
+    void enableUIElements(MeasurementTypes type);
+    void enableUIElements(const MeasurementConfig &mConfig);
 
 private:
     Ui::MeasurementConfigurationDialog *ui;
@@ -130,6 +135,10 @@ private:
     //################
 
     MeasurementConfig selectedMeasurementConfig;
+
+    QPointer<QListView> currentListView();
+    bool isProjectConfigSelected;
+    void on_listView_configs_clicked(const QModelIndex &index);
 
 };
 
