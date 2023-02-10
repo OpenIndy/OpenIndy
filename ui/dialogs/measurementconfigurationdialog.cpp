@@ -347,11 +347,8 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
     this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
 
-    if(this->selectedMeasurementConfig.isEditable()) {
-        this->enableUIElements(mConfig.getMeasurementType());
-    } else {
-        this->enableUIElements(eUnknown_MeasurementType);
-    }
+    this->enableUIElements(this->selectedMeasurementConfig.isEditable()
+                           ? mConfig.getMeasurementType() : eUnknown_MeasurementType);
 
     //from now on trigger edits
     this->ui->lineEdit_distancInterval->blockSignals(false);
