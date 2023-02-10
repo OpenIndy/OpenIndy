@@ -231,10 +231,10 @@ MeasurementConfig MeasurementConfigManager::getActiveConfig(const GeometryTypes 
 }
 
 /*!
- * \brief MeasurementConfigManager::addUserConfig
+ * \brief MeasurementConfigManager::saveUserConfig
  * \param mConfig
  */
-void MeasurementConfigManager::addUserConfig(const MeasurementConfig &mConfig){
+void MeasurementConfigManager::saveUserConfig(const MeasurementConfig &mConfig){
 
     //check if mConfig is valid
     if(!mConfig.getIsValid()){
@@ -477,7 +477,7 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         }
         mConfigNames.append(userConfig.getName());
 
-        this->addUserConfig(userConfig);
+        this->saveUserConfig(userConfig);
 
         //add the loaded measurement config to the list of saved configs
         if(!this->userConfigs.contains(userConfig.getName())){
@@ -506,7 +506,7 @@ void MeasurementConfigManager::synchronize(const MeasurementConfigManager &other
     QList<MeasurementConfig> userConfigs = other.getUserConfigs();
     QList<MeasurementConfig> projectConfigs = other.getProjectConfigs();
     foreach(const MeasurementConfig &mConfig, userConfigs){
-        this->addUserConfig(mConfig);
+        this->saveUserConfig(mConfig);
     }
     foreach(const MeasurementConfig &mConfig, projectConfigs){
         this->addProjectConfig(mConfig);

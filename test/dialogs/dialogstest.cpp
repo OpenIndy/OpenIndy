@@ -79,26 +79,26 @@ void DialogsTest::initTestCase() {
     fastPointConfig.setName("measconfig-fastpoint");
     fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    measurementConfigManager->addUserConfig(fastPointConfig);
+    measurementConfigManager->saveUserConfig(fastPointConfig);
 
     MeasurementConfig precisePointConfig;
     precisePointConfig.setName("measconfig-precisepoint");
     precisePointConfig.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     precisePointConfig.setMeasureTwoSides(true);
-    measurementConfigManager->addUserConfig(precisePointConfig);
+    measurementConfigManager->saveUserConfig(precisePointConfig);
 
     MeasurementConfig levelConfig;
     levelConfig.setName("measconfig-level");
     levelConfig.setMeasurementType(MeasurementTypes::eLevel_MeasurementType);
-    measurementConfigManager->addUserConfig(levelConfig);
+    measurementConfigManager->saveUserConfig(levelConfig);
 
     MeasurementConfig scanTimeConfig;
     scanTimeConfig.setName("measconfig-scantime");
     scanTimeConfig.setMeasurementType(MeasurementTypes::eScanTimeDependent_MeasurementType);
     scanTimeConfig.setTimeInterval(123);
     scanTimeConfig.setMaxObservations(321);
-    measurementConfigManager->addUserConfig(scanTimeConfig);
+    measurementConfigManager->saveUserConfig(scanTimeConfig);
 
     MeasurementConfig scanDistanceConfig;
     scanDistanceConfig.setName("measconfig-scandistance"); // not for point
@@ -106,7 +106,7 @@ void DialogsTest::initTestCase() {
     scanDistanceConfig.setDistanceInterval(456);
     scanDistanceConfig.setMaxObservations(654);
     scanDistanceConfig.isUserConfig(true);
-    measurementConfigManager->addUserConfig(scanDistanceConfig);
+    measurementConfigManager->saveUserConfig(scanDistanceConfig);
     */
 
     // project config

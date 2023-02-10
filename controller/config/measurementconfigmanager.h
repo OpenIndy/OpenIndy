@@ -62,7 +62,7 @@ public:
     MeasurementConfig getActiveConfig(const GeometryTypes &type) const;
 
     //add or remove configs
-    void addUserConfig(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
     void addProjectConfig(const MeasurementConfig &mConfig);
     void removeUserConfig(const QString &name);
     void removeProjectConfig(const QString &name);

@@ -253,7 +253,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const Measuremen
     }
 
     //add the measurement config
-    this->measurementConfigManager->addUserConfig(mConfig);
+    this->measurementConfigManager->saveUserConfig(mConfig);
 
     //get all saved measurement configs
     QList<MeasurementConfig> savedMeasurementConfigs = this->measurementConfigManager->getUserConfigs();
@@ -337,7 +337,7 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
     MeasurementConfig userConfig = mConfig;
     userConfig.isUserConfig(true);
     userConfig.isEditable(true);
-    this->measurementConfigManager->addUserConfig(mConfig);
+    this->measurementConfigManager->saveUserConfig(mConfig);
 
     this->updateModel();
 

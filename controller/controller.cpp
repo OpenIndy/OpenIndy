@@ -400,7 +400,7 @@ void Controller::saveUserConfig(const MeasurementConfig &mConfig){
     if( mConfig.isUserConfig()
         && !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
         ) {
-        measurementConfigManager->addUserConfig(mConfig); // "add" to config/measurementConfigs folder
+        measurementConfigManager->saveUserConfig(mConfig); // "add" to config/measurementConfigs folder
     } else {
         this->log(QString("Cannot save a measurement configuration \"%1\" because is it not vaild user config").arg(mConfig.getName()), eErrorMessage, eMessageBoxMessage);
     }
