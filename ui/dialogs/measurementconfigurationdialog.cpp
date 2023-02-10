@@ -314,37 +314,6 @@ void MeasurementConfigurationDialog::measurementConfigNameChanged(const Measurem
 }
 
 /*!
- * \brief MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged
- * \param arg1
- */
-void MeasurementConfigurationDialog::on_checkBox_showAll_stateChanged(int arg1){
-
-    //get measurement config model
-    const MeasurementConfigurationModel &model = ModelManager::getMeasurementConfigurationModel();
-
-    //get selected measurement config
-    MeasurementConfig mConfig = this->selectedMeasurementConfig;
-
-    //set filter
-    ModelManager::getMeasurementConfigurationProxyModel().setFilter(this->ui->checkBox_showAll->isChecked());
-
-    //set selected index
-    this->ui->listView_userConfigs->clearSelection();
-    QModelIndex index = model.getIndex(mConfig);
-    if(index.isValid()){
-        this->ui->listView_userConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
-        this->updateGuiFromMeasurementConfig(mConfig);
-        this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
-                                                             ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
-                                                             : false);
-    }else{
-        this->updateGuiFromMeasurementConfig(MeasurementConfig());
-        this->ui->widget_measurementConfigValues->setEnabled(false);
-    }
-
-}
-
-/*!
  * \brief MeasurementConfigurationDialog::updateGuiFromMeasurementConfig
  * \param mConfig
  */

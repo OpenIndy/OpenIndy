@@ -88,9 +88,6 @@ private slots:
     //triggered when measurement config name has been edited
     void measurementConfigNameChanged(const MeasurementConfig &mConfig);
 
-    //set measurement config filter
-    void on_checkBox_showAll_stateChanged(int arg1);
-
     void on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1);
 
     void on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1);
