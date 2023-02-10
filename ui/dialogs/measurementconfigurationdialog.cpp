@@ -128,24 +128,22 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
         return;
     }
 
-    //check if the selected config is a saved config
-    const bool isUserConfig = mConfigModel->isUserConfig(mConfigProxyModel->mapToSource(index));
-
     //set selected index
-    this->ui->listView_userConfigs->selectionModel()->select(index, QItemSelectionModel::Select);
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
+    this->selectedMeasurementConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
+
     this->updateGuiFromMeasurementConfig(mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index)));
-    if(isUserConfig){
+    if(this->selectedMeasurementConfig.isUserConfig()){
         this->ui->widget_measurementConfigValues->setEnabled(true);
     }else{
         this->ui->widget_measurementConfigValues->setEnabled(false);
     }
-    this->selectedMeasurementConfig = mConfigModel->getMeasurementConfig(mConfigProxyModel->mapToSource(index));
 
-    if(isUserConfig){
+    if(this->selectedMeasurementConfig.isUserConfig() && this->selectedMeasurementConfig.isEditable()) {
         QMenu *menu = new QMenu();
         menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
         menu->exec(ui->listView_userConfigs->mapToGlobal(point));
-    }else{
+    }else if(this->selectedMeasurementConfig.isProjectConfig()){
         QMenu *menu = new QMenu();
         menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
         menu->exec(ui->listView_userConfigs->mapToGlobal(point));
@@ -234,6 +232,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     MeasurementConfig mConfig;
     mConfig.setName("new config");
     mConfig.isUserConfig(true);
+    mConfig.isEditable(true);
 
     //get and check measurement config proxy model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
