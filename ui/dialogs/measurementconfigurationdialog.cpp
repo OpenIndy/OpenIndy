@@ -475,6 +475,7 @@ void MeasurementConfigurationDialog::closeEvent(QCloseEvent *event){
  * \brief MeasurementConfigurationDialog::initGUI
  */
 void MeasurementConfigurationDialog::initGUI(){
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     //set visibility
     this->ui->widget_measurementConfigValues->setEnabled(false);
