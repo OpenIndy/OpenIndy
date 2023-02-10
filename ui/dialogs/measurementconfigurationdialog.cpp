@@ -48,8 +48,7 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
     }
 
     //update selected measurement config
-    currentListView()->selectionModel()->clearSelection();
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     this->updateGuiFromMeasurementConfig(mConfig);
     this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
                                                          ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
@@ -257,8 +256,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     }
 
     //select the new item
-    currentListView()->selectionModel()->clearSelection();
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::Select);
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     this->updateGuiFromMeasurementConfig(mConfig);
     currentListView()->edit(mConfigProxyModel->mapFromSource(index));
     this->selectedMeasurementConfig = mConfig;
