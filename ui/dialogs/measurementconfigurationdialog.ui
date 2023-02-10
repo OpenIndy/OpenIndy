@@ -111,16 +111,49 @@
         </layout>
        </item>
        <item>
-        <widget class="QListView" name="listView_measurementConfigs">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
          </property>
-         <property name="editTriggers">
-          <set>QAbstractItemView::DoubleClicked</set>
-         </property>
+         <widget class="QWidget" name="tab_projectConfigs">
+          <attribute name="title">
+           <string>project configs</string>
+          </attribute>
+          <widget class="QListView" name="listView_projectConfigs">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>461</width>
+             <height>691</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="tab_userConfigs">
+          <attribute name="title">
+           <string>user configs</string>
+          </attribute>
+          <widget class="QListView" name="listView_userConfigs">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>461</width>
+             <height>701</height>
+            </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::DoubleClicked</set>
+           </property>
+          </widget>
+         </widget>
         </widget>
        </item>
        <item>
