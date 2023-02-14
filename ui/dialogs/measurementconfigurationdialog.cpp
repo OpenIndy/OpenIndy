@@ -570,9 +570,13 @@ void MeasurementConfigurationDialog::enableUIElements(const MeasurementConfig &m
 
 QPointer<QListView> MeasurementConfigurationDialog::currentListView() {
 
+    MeasurementConfigurationProxyModel *model = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_projectConfigs->model());
+
     if(this->ui->tabWidget->currentIndex() == 0) {
+        model->setFilterProjectConfig(); // TODO wird zu häufig aufgerufen
         return this->ui->listView_projectConfigs;
     } else {
+        model->setFilterUserConfig(); // TODO wird zu häufig aufgerufen
         return this->ui->listView_userConfigs;
     }
 }
