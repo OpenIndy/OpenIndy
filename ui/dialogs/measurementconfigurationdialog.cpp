@@ -474,12 +474,14 @@ void MeasurementConfigurationDialog::initGUI(){
  */
 void MeasurementConfigurationDialog::initModels(){
 
+    MeasurementConfigurationProxyModel *model = &ModelManager::getMeasurementConfigurationProxyModel();
+
     //init measurement config model
-    this->ui->listView_projectConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
-    this->ui->listView_userConfigs->setModel(&ModelManager::getMeasurementConfigurationProxyModel());
+    this->ui->listView_projectConfigs->setModel(model);
+    this->ui->listView_userConfigs->setModel(model);
 
     this->ui->tabWidget->setCurrentIndex(0);
-    MeasurementConfigurationProxyModel *model = static_cast<MeasurementConfigurationProxyModel *>(this->ui->listView_projectConfigs->model());
+
     this->isProjectConfigSelected = true;
     model->setFilterProjectConfig();
     this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
