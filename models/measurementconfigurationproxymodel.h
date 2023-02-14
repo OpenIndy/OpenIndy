@@ -64,6 +64,7 @@ protected:
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent) const;
     bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent) const;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
 private:
 

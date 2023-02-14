@@ -92,18 +92,20 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
 
     const int userConfigsSize = sourceModel->getMeasurementConfigurationManager()->getUserConfigs().size();
     const int projectConfigsSize = sourceModel->getMeasurementConfigurationManager()->getProjectConfigs().size();
+    const bool isProject = source_row >= 0 && source_row >= userConfigsSize && source_row < (userConfigsSize + projectConfigsSize);
+    const bool isUser = source_row >= 0 && source_row < userConfigsSize;
 
     switch(this->filterType) {
     case eProject_MeasurementConfigurationFilter:
-        return source_row >= 0 && source_row >= userConfigsSize && source_row < (userConfigsSize + projectConfigsSize);
+        return isProject;
     case eUser_MeasurementConfigurationFilter:
-        return source_row >= 0 && source_row < userConfigsSize;
+        return isUser;
     case eCreateFeature_MeasurementConfigurationFilter:
     case eNo_MeasurementConfigurationFilter:
     case eAll_MeasurementConfigurationFilter:
     default:
         //check if the index is a saved config
-        if(source_row >= 0 && source_row < userConfigsSize){
+        if(isUser || isProject){
 
             if(this->neededElements.isEmpty()) {
                 return true;
@@ -141,4 +143,24 @@ bool MeasurementConfigurationProxyModel::lessThan(const QModelIndex &left, const
     QVariant rightData = sourceModel->data(right);
 
     return leftData.toString().compare(rightData.toString(), Qt::CaseInsensitive) <0;
+}
+
+QVariant MeasurementConfigurationProxyModel::data(const QModelIndex &index, int role) const{
+    MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(this->sourceModel());
+    if(sourceModel == NULL){
+        return QVariant();
+    }
+    QVariant data = sourceModel->data(this->mapToSource(index), role);
+
+    if(role != Qt::DisplayRole){
+        return data;
+    }
+
+    if( this->filterType == eCreateFeature_MeasurementConfigurationFilter
+        && sourceModel->isUserConfig(this->mapToSource(index))
+        ){
+        return QString("%1 [user]").arg(data.toString());
+    }
+
+    return data;
 }
