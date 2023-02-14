@@ -336,8 +336,9 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
 
     //set up GUI elements
     this->ui->label_configName->setText(QString("%1%2")
-                                        .arg((!mConfig.getIsValid() || mConfig.isUserConfig())?"":"*")
-                                        .arg(mConfig.getName()));
+                                        .arg(mConfig.getName())
+                                        .arg((!mConfig.getIsValid() || mConfig.isUserConfig())?" [user]":"")
+                                        );
 
     this->ui->comboBox_MeasurementType->setCurrentIndex(mConfig.getMeasurementType());
     this->ui->comboBox_MeasurementMode->setCurrentIndex(mConfig.getMeasurementMode());

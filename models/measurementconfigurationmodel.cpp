@@ -66,8 +66,7 @@ QVariant MeasurementConfigurationModel::data(const QModelIndex &index, int role)
 
     //check if the index is a project measurement config
     if(index.row() < this->rowCount(index.parent())){
-        return QString("*%1").arg(this->measurementConfigManager->getProjectConfigs()
-                                  .at(index.row() - this->measurementConfigManager->getUserConfigs().size()).getName());
+        return this->measurementConfigManager->getProjectConfigs().at(index.row() - this->measurementConfigManager->getUserConfigs().size()).getName();
     }
 
     return QVariant();
