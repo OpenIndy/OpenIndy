@@ -18,6 +18,7 @@ void MeasurementConfigurationProxyModel::setFilter(const bool &showAll){
     this->filterType = showAll ? eAll_MeasurementConfigurationFilter : eNo_MeasurementConfigurationFilter;
 
     this->invalidateFilter();
+    this->sort(0);
 }
 void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> neededElements, FeatureTypes typeOfFeature, QList<FeatureTypes> applicableFor) {
     this->resetFilter();
@@ -28,6 +29,7 @@ void MeasurementConfigurationProxyModel::setFilter(const QList<ElementTypes> nee
     this->functionIsApplicableFor = applicableFor;
 
     this->invalidateFilter();
+    this->sort(0);
 }
 void MeasurementConfigurationProxyModel::setFilterProjectConfig() {
     this->resetFilter();
@@ -35,6 +37,7 @@ void MeasurementConfigurationProxyModel::setFilterProjectConfig() {
     this->filterType = eProject_MeasurementConfigurationFilter;
 
     this->invalidateFilter();
+    this->sort(0);
 }
 void MeasurementConfigurationProxyModel::setFilterUserConfig(){
     this->resetFilter();
@@ -42,6 +45,7 @@ void MeasurementConfigurationProxyModel::setFilterUserConfig(){
     this->filterType = eUser_MeasurementConfigurationFilter;
 
     this->invalidateFilter();
+    this->sort(0);
 }
 
 void MeasurementConfigurationProxyModel::resetFilter() {
@@ -50,6 +54,7 @@ void MeasurementConfigurationProxyModel::resetFilter() {
     this->neededElements.clear();
     this->typeOfFeature = FeatureTypes::eUndefinedFeature;
     this->functionIsApplicableFor.clear();
+    this->sort(0);
 }
 
 /*!
@@ -125,4 +130,15 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
  */
 bool MeasurementConfigurationProxyModel::filterAcceptsColumn(int source_row, const QModelIndex &source_parent) const{
     return true;
+}
+
+bool MeasurementConfigurationProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const {
+    MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(this->sourceModel());
+    if(sourceModel == NULL){
+        return false;
+    }
+    QVariant leftData = sourceModel->data(left);
+    QVariant rightData = sourceModel->data(right);
+
+    return leftData.toString().compare(rightData.toString(), Qt::CaseInsensitive) <0;
 }
