@@ -21,9 +21,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPoint.setDistanceInterval(0);
     fastPoint.setMeasureTwoSides(false);
-    fastPoint.isUserConfig(true);
+    fastPoint.isUserConfig(false);
     fastPoint.isEditable(false);
-    this->userConfigs.insert(fastPoint.getName(), fastPoint);
+    this->projectConfigs.insert(fastPoint.getName(), fastPoint);
 
     MeasurementConfig stdPoint;
     stdPoint.setName("StdPoint");
@@ -33,9 +33,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdPoint.setDistanceInterval(0);
     stdPoint.setMeasureTwoSides(false);
-    stdPoint.isUserConfig(true);
+    stdPoint.isUserConfig(false);
     stdPoint.isEditable(false);
-    this->userConfigs.insert(stdPoint.getName(), stdPoint);
+    this->projectConfigs.insert(stdPoint.getName(), stdPoint);
 
     MeasurementConfig precisePoint;
     precisePoint.setName("PrecisePoint");
@@ -45,9 +45,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePoint.setDistanceInterval(0);
     precisePoint.setMeasureTwoSides(false);
-    precisePoint.isUserConfig(true);
+    precisePoint.isUserConfig(false);
     precisePoint.isEditable(false);
-    this->userConfigs.insert(precisePoint.getName(), precisePoint);
+    this->projectConfigs.insert(precisePoint.getName(), precisePoint);
 
     MeasurementConfig stdTwoSide;
     stdTwoSide.setName("StdTwoSide");
@@ -57,9 +57,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdTwoSide.setDistanceInterval(0);
     stdTwoSide.setMeasureTwoSides(true);
-    stdTwoSide.isUserConfig(true);
+    stdTwoSide.isUserConfig(false);
     stdTwoSide.isEditable(false);
-    this->userConfigs.insert(stdTwoSide.getName(), stdTwoSide);
+    this->projectConfigs.insert(stdTwoSide.getName(), stdTwoSide);
 
     MeasurementConfig level;
     level.setName("level"); /* lower case */
@@ -69,9 +69,9 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     level.setDistanceInterval(0);
     level.setMeasureTwoSides(false);
-    level.isUserConfig(true);
+    level.isUserConfig(false);
     level.isEditable(false);
-    this->userConfigs.insert(level.getName(), level);
+    this->projectConfigs.insert(level.getName(), level);
 }
 
 /*!
