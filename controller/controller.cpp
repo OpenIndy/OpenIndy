@@ -134,7 +134,7 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     }
 
     //get saved measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(attributes.mConfig);
+    MeasurementConfig mConfig = this->measurementConfigManager->getProjectConfig(attributes.mConfig);
 
     //check if there is at least a function or a measurement config that shall be set
     if(!mConfig.getIsValid() && (attributes.functionPlugin.first.compare("") == 0

@@ -105,7 +105,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     case eAll_MeasurementConfigurationFilter:
     default:
         //check if the index is a saved config
-        if(isUser || isProject){
+        if(/*isUser || */ isProject){
 
             if(this->neededElements.isEmpty()) {
                 return true;

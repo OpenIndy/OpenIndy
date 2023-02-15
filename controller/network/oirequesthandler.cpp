@@ -877,9 +877,9 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     QList<QPointer<FeatureWrapper> > features = this->currentJob->addFeatures(attr);
 
     //get and check measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(attr.mConfig);
+    MeasurementConfig mConfig = this->measurementConfigManager->getProjectConfig(attr.mConfig);
     if(!mConfig.getIsValid()){
-        mConfig = this->measurementConfigManager->getProjectConfig(attr.mConfig);
+        mConfig = this->measurementConfigManager->getUserConfig(attr.mConfig);
     }
 
     //pass measurement config to features
