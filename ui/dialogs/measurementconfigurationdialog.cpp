@@ -230,6 +230,9 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
  */
 void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
+    this->ui->tabWidget->setCurrentIndex(1);
+    this->on_tabWidget_currentChanged(1);
+
     MeasurementConfig mConfig;
     mConfig.setName("new config");
     mConfig.isUserConfig(true);
