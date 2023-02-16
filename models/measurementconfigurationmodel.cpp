@@ -124,7 +124,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
         //check if there already is a measurement config with the new name
         MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(value.toString());
         if(!mConfig.getIsValid()){
-            mConfig = this->getMeasurementConfig(index);
+            mConfig = configs.at(index.row());
             QString oldName = mConfig.getName();
             mConfig.setName(value.toString());
             this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
@@ -260,8 +260,8 @@ void MeasurementConfigurationModel::removeMeasurementConfig(const QModelIndex &i
     }
 
     //check if the index is a saved config
-    if(index.row() < this->measurementConfigManager->getUserConfigs().size()){
-        this->measurementConfigManager->removeUserConfig(this->measurementConfigManager->getUserConfigs().at(index.row()).getName());
+    if(index.row() < this->measurementConfigManager->getConfigs().size()){
+        this->measurementConfigManager->removeUserConfig(getMeasurementConfig(index).getName());
     }
 
     this->updateModel();

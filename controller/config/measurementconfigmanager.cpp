@@ -617,7 +617,8 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //remove mConfig from the list of saved configs
     //#############################################
 
-    this->configs.remove(this->getUserConfig(name).getKey());
+    QPair<QString, ConfigTypes> key(name, eUserConfig);
+    this->configs.remove(key);
 
     //############
     //emit signals
