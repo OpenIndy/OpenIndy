@@ -310,8 +310,7 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
 
     //add the measurement config
     MeasurementConfig userConfig = mConfig;
-    userConfig.isUserConfig(true);
-    userConfig.isEditable(true);
+    userConfig.makeUserConfig();
     this->measurementConfigManager->saveUserConfig(mConfig);
 
     this->updateModel();

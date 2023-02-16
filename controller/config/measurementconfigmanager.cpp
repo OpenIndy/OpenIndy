@@ -285,8 +285,7 @@ void MeasurementConfigManager::saveUserConfig(const MeasurementConfig &mConfig){
 
     //save mConfig
     MeasurementConfig userConfig = mConfig;
-    userConfig.isUserConfig(true);
-    userConfig.isEditable(true);
+    userConfig.makeUserConfig();
     this->saveConfig(userConfig);
 
 }
