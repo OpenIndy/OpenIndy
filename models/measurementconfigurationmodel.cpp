@@ -124,10 +124,9 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
         //check if there already is a measurement config with the new name
         MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(value.toString());
         if(!mConfig.getIsValid()){
-            mConfig = configs.at(index.row());
+            mConfig = this->getMeasurementConfig(index);
             QString oldName = mConfig.getName();
             mConfig.setName(value.toString());
-            mConfig.isUserConfig(true);
             this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
             emit this->measurementConfigNameChanged(mConfig);
             return true;
