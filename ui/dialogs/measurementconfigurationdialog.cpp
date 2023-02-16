@@ -145,7 +145,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
     }else if(this->selectedMeasurementConfig.isProjectConfig()){
         QMenu *menu = new QMenu();
         menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
-        menu->exec(ui->listView_userConfigs->mapToGlobal(point));
+        menu->exec(ui->listView_projectConfigs->mapToGlobal(point));
     }
 
 }
