@@ -365,7 +365,8 @@ void MeasurementConfigManager::removeProjectConfig(const QString &name){
 void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
 
     //get the old measurement config
-    MeasurementConfig oldConfig = this->configs.value(mConfig.getKey(), MeasurementConfig());
+    QPair<QString, ConfigTypes> oldKey(name, eUserConfig);
+    MeasurementConfig oldConfig = this->configs.value(oldKey, MeasurementConfig());
     if(!oldConfig.getIsValid()){
         return;
     }
@@ -416,7 +417,7 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     //###############################
 
     //replace mConfig in map
-    this->configs.remove(mConfig.getKey());
+    this->configs.remove(oldKey);
     this->configs.insert(mConfig.getKey(), mConfig);
 
     emit this->measurementConfigurationReplaced(oldConfig, mConfig);
