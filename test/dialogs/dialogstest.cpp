@@ -24,6 +24,8 @@ public:
 private Q_SLOTS:
     void initTestCase();
 
+    void measurementConfigurationModel();
+
     void createPoint();
     void createCircle();
     void createPlane();
@@ -635,6 +637,25 @@ void DialogsTest::measurementConfigDialog() {
 
 
 }
+
+void DialogsTest::measurementConfigurationModel() {
+    MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
+
+    proxy->setFilterUserConfig();
+
+    qDebug() << getNames(proxy);
+
+    QString value("new_name");
+    QModelIndex index = proxy->index(0,0);
+    proxy->setData(index, value, Qt::EditRole);
+
+    qDebug() << getNames(proxy);
+    qDebug() << getNames(proxy).join(", ");
+    QVERIFY("new_name" == getNames(proxy).join(", "));
+
+    ModelManager::getMeasurementConfigManager()->removeUserConfig("new_name"); // clean up
+}
+
 
 QTEST_MAIN(DialogsTest)
 
