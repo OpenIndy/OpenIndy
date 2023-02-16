@@ -235,8 +235,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
     MeasurementConfig mConfig;
     mConfig.setName("new config");
-    mConfig.isUserConfig(true);
-    mConfig.isEditable(true);
+    mConfig.makeUserConfig();
 
     //get and check measurement config proxy model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
