@@ -32,15 +32,16 @@ private Q_SLOTS:
     void reuseDialogInstance();
 
     void measurementConfigXML_RW();
-    void measurementConfigDialog_init();
     void measurementConfigFilter();
+
+    void measurementConfigDialog();
 
 private:
 
     void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     QStringList getNames(QSortFilterProxyModel *model);
     QStringList getNames(QAbstractListModel *model);
-
+    QStringList getNames(QAbstractItemModel *model);
 };
 
 DialogsTest::DialogsTest() {
@@ -173,9 +174,7 @@ void DialogsTest::createPoint() {
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
     QVERIFY(6 == mConfigLV->model()->rowCount());
     QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
     QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
@@ -211,9 +210,7 @@ void DialogsTest::createCircle() {
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
     QVERIFY(6 == mConfigLV->model()->rowCount());
     QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
     QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
@@ -248,9 +245,7 @@ void DialogsTest::createPlane() {
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
     QVERIFY(6 == mConfigLV->model()->rowCount());
     QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
     QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
@@ -292,7 +287,7 @@ void DialogsTest::createPlaneFromPoints() {
 
     // select "function-planefrompoints"
     QTest::mouseClick(functionCB, Qt::LeftButton);
-    QTest::qWait(1000); // TODO spy
+    QTest::qWait(500); // TODO spy
 
     QModelIndex idx = functionLV->model()->index(i,0);
     functionLV->scrollTo(idx);
@@ -304,14 +299,12 @@ void DialogsTest::createPlaneFromPoints() {
     QVERIFY("function-planefrompoints" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(1000);
+    QTest::qWait(500);
 
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
 
     QVERIFY(0 == mConfigLV->model()->rowCount());
 
@@ -350,7 +343,7 @@ void DialogsTest::createLevel() {
 
     // select "function-fitlevel"
     QTest::mouseClick(functionCB, Qt::LeftButton);
-    QTest::qWait(1000); // TODO spy
+    QTest::qWait(500); // TODO spy
 
     QModelIndex idx = functionLV->model()->index(i,0);
     functionLV->scrollTo(idx);
@@ -362,14 +355,12 @@ void DialogsTest::createLevel() {
     QVERIFY("function-fitlevel" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(1000);
+    QTest::qWait(500);
 
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
     QVERIFY(1 == mConfigLV->model()->rowCount());
     QVERIFY("level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
 
@@ -401,9 +392,7 @@ void DialogsTest::reuseDialogInstance() {
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
     QVERIFY(6 == mConfigLV->model()->rowCount());
     QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
     QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
@@ -436,7 +425,7 @@ void DialogsTest::reuseDialogInstance() {
 
     // select "function-fitlevel"
     QTest::mouseClick(functionCB, Qt::LeftButton);
-    QTest::qWait(1000); // TODO spy
+    QTest::qWait(500); // TODO spy
 
     QModelIndex idx = functionLV->model()->index(i,0);
     functionLV->scrollTo(idx);
@@ -448,14 +437,12 @@ void DialogsTest::reuseDialogInstance() {
     QVERIFY("function-fitlevel" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(1000);
+    QTest::qWait(500);
 
     // check applicable measurement configs
     mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     mConfigLV = mConfigCB->findChild<QListView *>();
-    for(int i=0; i<mConfigLV->model()->rowCount();i++) {
-        qDebug() <<  mConfigLV->model()->index(i, 0).data( Qt::DisplayRole ).toString();
-    }
+    qDebug() << getNames(mConfigLV->model());
     QVERIFY(1 == mConfigLV->model()->rowCount());
     QVERIFY("level" == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
 
@@ -481,24 +468,6 @@ void DialogsTest::measurementConfigXML_RW() {
 
 }
 
-void DialogsTest::measurementConfigDialog_init() {
-QSKIP("skip");
-    MeasurementConfig projectFastPointConfig = ModelManager::getMeasurementConfigManager()->getProjectConfig("measconfig-fastpoint");
-
-    // create dialog
-    MeasurementConfigurationDialog dialog;
-
-    //MeasurementConfig config = measurementConfigManager->getProjectConfig(projectFastPointConfig.getName());
-    dialog.setMeasurementConfiguration(projectFastPointConfig);
-    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
-    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
-
-    // QPointer<QCheckBox> showAllCB = dialog.findChild<QCheckBox *>("checkBox_showAll");
-
-    QTest::qWait(100000);
-}
-
 QStringList DialogsTest::getNames(QSortFilterProxyModel *model) {
 
     QStringList names;
@@ -509,6 +478,15 @@ QStringList DialogsTest::getNames(QSortFilterProxyModel *model) {
 }
 
 QStringList DialogsTest::getNames(QAbstractListModel *model) {
+
+    QStringList names;
+    for(int row=0; row<model->rowCount(); row++) {
+        names <<  model->index(row, 0).data( Qt::DisplayRole ).toString();
+    }
+    return names;
+}
+
+QStringList DialogsTest::getNames(QAbstractItemModel *model) {
 
     QStringList names;
     for(int row=0; row<model->rowCount(); row++) {
@@ -586,6 +564,77 @@ void DialogsTest::measurementConfigFilter() {
     QVERIFY("StdTwoSide"                        == proxy->index(6, 0).data( Qt::DisplayRole ).toString());
 }
 
+void DialogsTest::measurementConfigDialog() {
+
+    MeasurementConfig projectFastPointConfig = ModelManager::getMeasurementConfigManager()->getProjectConfig("measconfig-fastpoint");
+
+    // create dialog
+    MeasurementConfigurationDialog dialog;
+
+    //MeasurementConfig config = measurementConfigManager->getProjectConfig(projectFastPointConfig.getName());
+    dialog.setMeasurementConfiguration(projectFastPointConfig);
+    dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
+    QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
+    spy_initialized.wait(500);
+
+    // add new config
+    QPointer<QWidget> addPB = dialog.findChild<QWidget*>("pushButton_add");
+
+    QTest::mouseClick(addPB, Qt::LeftButton);
+    QTest::qWait(500); // TODO spy
+
+    QPointer<QListView> userConfigsLV = dialog.findChild<QListView*>("listView_userConfigs");
+    qDebug() <<  getNames(userConfigsLV->model());
+
+    QVERIFY(2 == userConfigsLV->model()->rowCount());
+    QVERIFY("measconfig-scandistance" == userConfigsLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("new config" == userConfigsLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+
+    // select project config: "PrecisePoint"
+    QPointer<QTabWidget> tabW = dialog.findChild<QTabWidget*>("tabWidget");
+    tabW->setCurrentIndex(0); // TODO change tab by mouseClick ???
+
+    QPointer<QListView> projectConfigsLV = dialog.findChild<QListView*>("listView_projectConfigs");
+    qDebug() <<  getNames(projectConfigsLV->model());
+
+    QVERIFY(6 == userConfigsLV->model()->rowCount());
+    QVERIFY("FastPoint"                     == userConfigsLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("level"                         == userConfigsLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint_project"  == userConfigsLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("PrecisePoint"                  == userConfigsLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdPoint"                      == userConfigsLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdTwoSide"                    == userConfigsLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
+
+
+    // find index for "PrecisePoint"
+    int i=0;
+    for(i=0; i<projectConfigsLV->model()->rowCount(); i++) {
+        if("PrecisePoint" == projectConfigsLV->model()->index(i,0).data( Qt::DisplayRole ).toString()) {
+            break;
+        }
+    }
+
+    // right click "PrecisePoint"
+    QModelIndex idx = projectConfigsLV->model()->index(i,0);
+    projectConfigsLV->scrollTo(idx);
+    QPoint itemPt = projectConfigsLV->visualRect(idx).center();
+    QTest::mouseClick(projectConfigsLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::qWait(500);
+    QPointer<QLabel> configNameL = dialog.findChild<QLabel*>("label_configName");
+    QVERIFY("PrecisePoint" == configNameL->text());
+
+    /*QTest::qWait(500);
+    QTest::mouseClick(projectConfigsLV->viewport(), Qt::RightButton, 0, itemPt);
+    QTest::qWait(500);
+    QTest::mouseClick(projectConfigsLV->viewport(), Qt::LeftButton, 0, itemPt);
+    QTest::qWait(500);
+
+    QTest::qWait(10000);
+    QVERIFY(1 == tabW->currentIndex());
+    */
+
+
+}
 
 QTEST_MAIN(DialogsTest)
 
