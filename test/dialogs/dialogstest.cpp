@@ -497,8 +497,6 @@ QStringList DialogsTest::getNames(QAbstractItemModel *model) {
     return names;
 }
 
-// TODO remove * prefix
-// TODO filter user / project
 void DialogsTest::measurementConfigFilter() {
     MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
     MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(proxy->sourceModel());
@@ -624,18 +622,6 @@ void DialogsTest::measurementConfigDialog() {
     QTest::qWait(500);
     QPointer<QLabel> configNameL = dialog.findChild<QLabel*>("label_configName");
     QVERIFY("PrecisePoint" == configNameL->text());
-
-    /*QTest::qWait(500);
-    QTest::mouseClick(projectConfigsLV->viewport(), Qt::RightButton, 0, itemPt);
-    QTest::qWait(500);
-    QTest::mouseClick(projectConfigsLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(500);
-
-    QTest::qWait(10000);
-    QVERIFY(1 == tabW->currentIndex());
-    */
-
-
 }
 
 void DialogsTest::measurementConfigurationModel() {
