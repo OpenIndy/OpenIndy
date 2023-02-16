@@ -79,14 +79,14 @@ void DialogsTest::initTestCase() {
     scanDistanceConfig.setMeasurementType(MeasurementTypes::eScanDistanceDependent_MeasurementType);
     scanDistanceConfig.setDistanceInterval(456);
     scanDistanceConfig.setMaxObservations(654);
-    scanDistanceConfig.isUserConfig(true);
+    scanDistanceConfig.makeUserConfig();
     measurementConfigManager->saveUserConfig(scanDistanceConfig);
 
     MeasurementConfig fastPointConfig;
     fastPointConfig.setName("FastPoint"); // same name exists as user config
     fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    fastPointConfig.isUserConfig(true);
+    fastPointConfig.makeUserConfig();
     measurementConfigManager->addProjectConfig(fastPointConfig);
 
     // project config
