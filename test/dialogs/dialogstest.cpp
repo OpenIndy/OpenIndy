@@ -640,20 +640,34 @@ void DialogsTest::measurementConfigDialog() {
 
 void DialogsTest::measurementConfigurationModel() {
     MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
+    MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(proxy->sourceModel());
 
     proxy->setFilterUserConfig();
 
     qDebug() << getNames(proxy);
 
+    // rename
     QString value("new_name");
     QModelIndex index = proxy->index(0,0);
+    MeasurementConfig backup = sourceModel->getMeasurementConfig(proxy->mapToSource(index));
     proxy->setData(index, value, Qt::EditRole);
 
     qDebug() << getNames(proxy);
     qDebug() << getNames(proxy).join(", ");
     QVERIFY("new_name" == getNames(proxy).join(", "));
 
-    ModelManager::getMeasurementConfigManager()->removeUserConfig("new_name"); // clean up
+    // remove
+    sourceModel->removeMeasurementConfig(proxy->mapToSource(index));
+
+    qDebug() << getNames(proxy).join(", ");
+    QVERIFY("" == getNames(proxy).join(", "));
+
+
+    // clean up / previouse content
+    ModelManager::getMeasurementConfigManager()->saveUserConfig(backup);
+    qDebug() << getNames(proxy).join(", ");
+    QVERIFY(backup.getName() == getNames(proxy).join(", "));
+
 }
 
 
