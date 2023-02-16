@@ -398,7 +398,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
 }
 void Controller::saveUserConfig(const MeasurementConfig &mConfig){
     if( mConfig.isUserConfig()
-        && !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+        && !mConfig.isStandardConfig()
         ) {
         measurementConfigManager->saveUserConfig(mConfig); // "add" to config/measurementConfigs folder
     } else {

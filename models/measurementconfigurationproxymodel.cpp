@@ -90,10 +90,10 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
         return false;
     }
 
-    const int userConfigsSize = sourceModel->getMeasurementConfigurationManager()->getUserConfigs().size();
-    const int projectConfigsSize = sourceModel->getMeasurementConfigurationManager()->getProjectConfigs().size();
-    const bool isProject = source_row >= 0 && source_row >= userConfigsSize && source_row < (userConfigsSize + projectConfigsSize);
-    const bool isUser = source_row >= 0 && source_row < userConfigsSize;
+    const QList<MeasurementConfig> configs = sourceModel->getMeasurementConfigurationManager()->getConfigs();
+    MeasurementConfig mc = configs.at(source_row);
+    const bool isProject = mc.getIsValid() && mc.isProjectConfig();
+    const bool isUser = mc.getIsValid() && mc.isUserConfig();
 
     switch(this->filterType) {
     case eProject_MeasurementConfigurationFilter:
@@ -105,15 +105,14 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     case eAll_MeasurementConfigurationFilter:
     default:
         //check if the index is a saved config
-        if(/*isUser || */ isProject){
+        if(isUser || isProject){
 
             if(this->neededElements.isEmpty()) {
                 return true;
             }
 
-            MeasurementConfig mConfig = sourceModel->getMeasurementConfig(sourceModel->index(source_row, 0));
             for (ElementTypes elementType : this->neededElements) {
-                if(mConfig.applicableFor(elementType, this->functionIsApplicableFor)) {
+                if(mc.applicableFor(elementType, this->functionIsApplicableFor)) {
                     return true;
                 }
             }

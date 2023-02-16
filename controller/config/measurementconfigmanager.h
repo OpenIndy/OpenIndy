@@ -46,7 +46,6 @@ public:
     //##############################
 
     //check presence of a config
-    bool isStandardConfig(const QString &name);
     bool isUserConfig(const QString &name);
     bool isProjectConfig(const QString &name);
     bool isUserConfig(const MeasurementConfig &mConfig);
@@ -55,8 +54,11 @@ public:
     //get configs
     MeasurementConfig getUserConfig(const QString &name) const;
     MeasurementConfig getProjectConfig(const QString &name) const;
+    const QList<MeasurementConfig> MeasurementConfigManager::getConfigs() const;
     const QList<MeasurementConfig> getUserConfigs() const;
     const QList<MeasurementConfig> getProjectConfigs() const;
+    const QList<QString> getUserConfigNames() const;
+    const QList<QString> getProjectConfigNames() const;
 
     //active config
     MeasurementConfig getActiveConfig(const GeometryTypes &type) const;
@@ -66,8 +68,6 @@ public:
     void addProjectConfig(const MeasurementConfig &mConfig);
     void removeUserConfig(const QString &name);
     void removeProjectConfig(const QString &name);
-    void removeAllUserConfigs();
-    void removeAllProjectConfigs();
 
     //replace a config
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
@@ -116,8 +116,7 @@ private:
     //save measurement configs
     //########################
 
-    QMap<QString, MeasurementConfig> userConfigs;
-    QMap<QString, MeasurementConfig> projectConfigs;
+    QMap<QPair<QString, bool>, MeasurementConfig> configs;
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 

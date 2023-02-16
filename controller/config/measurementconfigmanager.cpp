@@ -23,7 +23,8 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     fastPoint.setMeasureTwoSides(false);
     fastPoint.isUserConfig(false);
     fastPoint.isEditable(false);
-    this->projectConfigs.insert(fastPoint.getName(), fastPoint);
+    fastPoint.isStandardConfig(true);
+    this->configs.insert(fastPoint.getKey(), fastPoint);
 
     MeasurementConfig stdPoint;
     stdPoint.setName("StdPoint");
@@ -35,7 +36,8 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdPoint.setMeasureTwoSides(false);
     stdPoint.isUserConfig(false);
     stdPoint.isEditable(false);
-    this->projectConfigs.insert(stdPoint.getName(), stdPoint);
+    stdPoint.isStandardConfig(true);
+    this->configs.insert(stdPoint.getKey(), stdPoint);
 
     MeasurementConfig precisePoint;
     precisePoint.setName("PrecisePoint");
@@ -47,7 +49,8 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     precisePoint.setMeasureTwoSides(false);
     precisePoint.isUserConfig(false);
     precisePoint.isEditable(false);
-    this->projectConfigs.insert(precisePoint.getName(), precisePoint);
+    precisePoint.isStandardConfig(true);
+    this->configs.insert(precisePoint.getKey(), precisePoint);
 
     MeasurementConfig stdTwoSide;
     stdTwoSide.setName("StdTwoSide");
@@ -59,7 +62,8 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdTwoSide.setMeasureTwoSides(true);
     stdTwoSide.isUserConfig(false);
     stdTwoSide.isEditable(false);
-    this->projectConfigs.insert(stdTwoSide.getName(), stdTwoSide);
+    stdTwoSide.isStandardConfig(true);
+    this->configs.insert(stdTwoSide.getKey(), stdTwoSide);
 
     MeasurementConfig level;
     level.setName("level"); /* lower case */
@@ -71,7 +75,8 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setMeasureTwoSides(false);
     level.isUserConfig(false);
     level.isEditable(false);
-    this->projectConfigs.insert(level.getName(), level);
+    level.isStandardConfig(true);
+    this->configs.insert(level.getKey(), level);
 }
 
 /*!
@@ -80,8 +85,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
  * \param parent
  */
 MeasurementConfigManager::MeasurementConfigManager(const MeasurementConfigManager &copy, QObject *parent){
-    this->userConfigs = copy.userConfigs;
-    this->projectConfigs = copy.projectConfigs;
+    this->configs = copy.configs;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
 }
 
@@ -91,8 +95,7 @@ MeasurementConfigManager::MeasurementConfigManager(const MeasurementConfigManage
  * \return
  */
 MeasurementConfigManager &MeasurementConfigManager::operator=(const MeasurementConfigManager &copy){
-    this->userConfigs = copy.userConfigs;
-    this->projectConfigs = copy.projectConfigs;
+    this->configs = copy.configs;
     this->activeMeasurementConfigs = copy.activeMeasurementConfigs;
     return *this;
 }
@@ -123,14 +126,6 @@ void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob> &job){
     }
 }
 
-bool MeasurementConfigManager::isStandardConfig(const QString &name) {
-    return QString("FastPoint").compare(name) == 0
-            || QString("StdPoint").compare(name) == 0
-            || QString("PrecisePoint").compare(name) == 0
-            || QString("StdTwoSide").compare(name) == 0
-            || QString("level").compare(name) /* lower case */ == 0;
-}
-
 /*!
  * \brief MeasurementConfigManager::isUserConfig
  * Checks wether there is a saved measurement config with the given name
@@ -138,7 +133,7 @@ bool MeasurementConfigManager::isStandardConfig(const QString &name) {
  * \return
  */
 bool MeasurementConfigManager::isUserConfig(const QString &name){
-    return this->userConfigs.contains(name);
+    return getUserConfigNames().contains(name);
 }
 
 /*!
@@ -148,7 +143,7 @@ bool MeasurementConfigManager::isUserConfig(const QString &name){
  * \return
  */
 bool MeasurementConfigManager::isProjectConfig(const QString &name){
-    return this->projectConfigs.contains(name);
+    return getProjectConfigNames().contains(name);
 }
 
 /*!
@@ -159,13 +154,13 @@ bool MeasurementConfigManager::isProjectConfig(const QString &name){
  */
 bool MeasurementConfigManager::isUserConfig(const MeasurementConfig &mConfig){
 
-    if(!this->userConfigs.contains(mConfig.getName())){
+    if(!this->configs.contains(mConfig.getKey())){
         return false;
     }
 
     //get saved config and compare it to the given one
-    MeasurementConfig userConfig = this->userConfigs.value(mConfig.getName()); // TODO OI-948
-    return userConfig == mConfig;
+    MeasurementConfig userConfig = this->configs.value(mConfig.getKey()); // TODO OI-948
+    return userConfig.isUserConfig();
 
 }
 
@@ -177,13 +172,13 @@ bool MeasurementConfigManager::isUserConfig(const MeasurementConfig &mConfig){
  */
 bool MeasurementConfigManager::isProjectConfig(const MeasurementConfig &mConfig){
 
-    if(!this->projectConfigs.contains(mConfig.getName())){
+    if(!this->configs.contains(mConfig.getKey())){
         return false;
     }
 
     //get project config and compare it to the given one
-    MeasurementConfig projectConfig = this->projectConfigs.value(mConfig.getName()); // TODO OI-948
-    return projectConfig == mConfig;
+    MeasurementConfig projectConfig = this->configs.value(mConfig.getKey()); // TODO OI-948
+    return projectConfig.isProjectConfig();
 
 }
 
@@ -193,7 +188,8 @@ bool MeasurementConfigManager::isProjectConfig(const MeasurementConfig &mConfig)
  * \return
  */
 MeasurementConfig MeasurementConfigManager::getUserConfig(const QString &name) const{
-    return this->userConfigs.value(name, MeasurementConfig());
+    QPair<QString, bool> key(name, true);
+    return configs.value(key, MeasurementConfig());
 }
 
 /*!
@@ -202,7 +198,8 @@ MeasurementConfig MeasurementConfigManager::getUserConfig(const QString &name) c
  * \return
  */
 MeasurementConfig MeasurementConfigManager::getProjectConfig(const QString &name) const{
-    return this->projectConfigs.value(name, MeasurementConfig());
+    QPair<QString, bool> key(name, false);
+    return configs.value(key, MeasurementConfig());
 }
 
 /*!
@@ -210,7 +207,17 @@ MeasurementConfig MeasurementConfigManager::getProjectConfig(const QString &name
  * \return
  */
 const QList<MeasurementConfig> MeasurementConfigManager::getUserConfigs() const{
-    return this->userConfigs.values();
+    QList<MeasurementConfig> l;
+    for(const MeasurementConfig c : configs) {
+        if(c.isUserConfig()) {
+            l.append(c);
+        }
+    }
+    return l;
+}
+
+const QList<MeasurementConfig> MeasurementConfigManager::getConfigs() const{
+    return configs.values();
 }
 
 /*!
@@ -218,9 +225,37 @@ const QList<MeasurementConfig> MeasurementConfigManager::getUserConfigs() const{
  * \return
  */
 const QList<MeasurementConfig> MeasurementConfigManager::getProjectConfigs() const{
-    return this->projectConfigs.values();
+    QList<MeasurementConfig> l;
+    for(const MeasurementConfig c : configs) {
+        if(c.isProjectConfig()) {
+            l.append(c);
+        }
+    }
+    return l;
+}
+const QList<QString> MeasurementConfigManager::getUserConfigNames() const{
+    QList<QString> l;
+    foreach(const MeasurementConfig c, configs) {
+        if(c.isUserConfig()) {
+            l.append(c.getName());
+        }
+    }
+    return l;
 }
 
+/*!
+ * \brief MeasurementConfigManager::getProjectConfigs
+ * \return
+ */
+const QList<QString> MeasurementConfigManager::getProjectConfigNames() const{
+    QList<QString> l;
+    foreach(const MeasurementConfig c, configs) {
+        if(c.isProjectConfig()) {
+            l.append(c.getName());
+        }
+    }
+    return l;
+}
 /*!
  * \brief MeasurementConfigManager::getActiveConfig
  * \param type
@@ -243,7 +278,7 @@ void MeasurementConfigManager::saveUserConfig(const MeasurementConfig &mConfig){
     }
 
     //check if mConfig already exists
-    if(this->userConfigs.contains(mConfig.getName())){
+    if(this->isUserConfig(mConfig.getName())){
         emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
@@ -269,7 +304,7 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
     }
 
     //check if mConfig already exists
-    if(this->projectConfigs.contains(mConfig.getName())){
+    if(this->configs.contains(mConfig.getKey())){
         emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
@@ -277,7 +312,7 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
     //save mConfig
     MeasurementConfig projectConfig = mConfig;
     projectConfig.isUserConfig(false);
-    this->projectConfigs.insert(projectConfig.getName(), projectConfig);
+    this->configs.insert(projectConfig.getKey(), projectConfig);
 
     emit this->measurementConfigurationsChanged();
 
@@ -296,7 +331,7 @@ void MeasurementConfigManager::removeUserConfig(const QString &name){
     }
 
     //check if the measurement config exists
-    if(!this->userConfigs.contains(name)){
+    if(!getUserConfigNames().contains(name)){
         emit this->sendMessage(QString("A measurement configuration with the name %1 does not exist").arg(name), eErrorMessage);
         return;
     }
@@ -312,39 +347,14 @@ void MeasurementConfigManager::removeUserConfig(const QString &name){
  */
 void MeasurementConfigManager::removeProjectConfig(const QString &name){
 
-    if(this->projectConfigs.contains(name)){
+    QPair<QString, bool> key(name, false);
+    if(this->configs.contains(key)){
 
-        this->projectConfigs.remove(name);
+        this->configs.remove(key);
 
         emit this->measurementConfigurationsChanged();
 
     }
-
-}
-
-/*!
- * \brief MeasurementConfigManager::removeAllUserConfigs
- */
-void MeasurementConfigManager::removeAllUserConfigs(){
-
-    //get a list of saved measurement configs
-    QList<MeasurementConfig> configs = this->getUserConfigs();
-
-    //remove measurement configs
-    foreach(const MeasurementConfig &mConfig, configs){
-        this->deleteMeasurementConfig(mConfig.getName());
-    }
-
-}
-
-/*!
- * \brief MeasurementConfigManager::removeAllProjectConfigs
- */
-void MeasurementConfigManager::removeAllProjectConfigs(){
-
-    this->projectConfigs.clear();
-
-    emit this->measurementConfigurationsChanged();
 
 }
 
@@ -356,10 +366,10 @@ void MeasurementConfigManager::removeAllProjectConfigs(){
 void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
 
     //get the old measurement config
-    if(!this->userConfigs.contains(name)){
+    MeasurementConfig oldConfig = this->configs.value(mConfig.getKey(), MeasurementConfig());
+    if(!oldConfig.getIsValid()){
         return;
     }
-    MeasurementConfig oldConfig = this->userConfigs.value(name);
 
     //###########################
     //replace mConfig in database
@@ -407,8 +417,8 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     //###############################
 
     //replace mConfig in map
-    this->userConfigs.remove(name);
-    this->userConfigs.insert(mConfig.getName(), mConfig);
+    this->configs.remove(mConfig.getKey());
+    this->configs.insert(mConfig.getKey(), mConfig);
 
     emit this->measurementConfigurationReplaced(oldConfig, mConfig);
 
@@ -463,7 +473,7 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         if(!userConfig.fromOpenIndyXML(mConfigTag)){
             continue;
         }
-        if(this->isStandardConfig(userConfig.getName())) { // skip standard config from xml
+        if(userConfig.isStandardConfig()) { // skip standard config from xml
             continue;
         }
         userConfig.isUserConfig(true);
@@ -480,8 +490,8 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         this->saveUserConfig(userConfig);
 
         //add the loaded measurement config to the list of saved configs
-        if(!this->userConfigs.contains(userConfig.getName())){
-            this->userConfigs.insert(userConfig.getName(), userConfig);
+        if(!this->configs.contains(userConfig.getKey())){
+            this->configs.insert(userConfig.getKey(), userConfig);
         }
     }
 
@@ -499,8 +509,7 @@ void MeasurementConfigManager::synchronize(const MeasurementConfigManager &other
     this->blockSignals(true);
 
     //remove measurement configs
-    this->removeAllUserConfigs();
-    this->removeAllProjectConfigs();
+    this->configs.clear();
 
     //add new configs
     QList<MeasurementConfig> userConfigs = other.getUserConfigs();
@@ -563,8 +572,8 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig &mConfig){
     //add mConfig to the list of saved configs
     //########################################
 
-    if(!this->userConfigs.contains(mConfig.getName())){
-        this->userConfigs.insert(mConfig.getName(), mConfig);
+    if(!this->configs.contains(mConfig.getKey())){
+        this->configs.insert(mConfig.getKey(), mConfig);
     }
 
     //############
@@ -608,7 +617,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //remove mConfig from the list of saved configs
     //#############################################
 
-    this->userConfigs.remove(name);
+    this->configs.remove(this->getUserConfig(name).getKey());
 
     //############
     //emit signals
@@ -636,9 +645,7 @@ void MeasurementConfigManager::updateGeometries(){
     QList<QPair<QString, bool> > removedConfigs;
     QPair<QString, bool> key;
     foreach(key, usedConfigs){
-        if(key.second && !this->userConfigs.contains(key.first)){
-            removedConfigs.append(key);
-        }else if(!key.second && !this->projectConfigs.contains(key.first)){
+        if(!this->configs.contains(key)){
             removedConfigs.append(key);
         }
     }
@@ -679,10 +686,8 @@ void MeasurementConfigManager::updateGeometries(const MeasurementConfig &oldMCon
     }
 
     //get a list of geometries which are using the old config
-    QPair<QString, bool> mConfig;
-    mConfig.first = oldMConfig.getName();
-    mConfig.second = oldMConfig.isUserConfig();
-    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(mConfig);
+    QPair<QString, bool> key(oldMConfig.getName(), oldMConfig.isUserConfig());
+    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(key);
 
     //pass the new config to the geometries
     foreach(const QPointer<Geometry> &geom, geometries){

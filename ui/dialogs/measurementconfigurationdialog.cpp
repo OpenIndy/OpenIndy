@@ -51,7 +51,7 @@ void MeasurementConfigurationDialog::setMeasurementConfiguration(const Measureme
     currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     this->updateGuiFromMeasurementConfig(mConfig);
     this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
-                                                         ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+                                                         ? !mConfig.isStandardConfig()
                                                          : false);
     this->selectedMeasurementConfig = mConfig;
 
@@ -96,7 +96,7 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelInd
 
     //toggle enabled state depending on what mConfig has been selected (project vs. user)
     this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
-                                                         ? !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+                                                         ? !mConfig.isStandardConfig()
                                                          : false);
 
     this->selectedMeasurementConfig = mConfig;
@@ -566,7 +566,7 @@ void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
 void MeasurementConfigurationDialog::enableUIElements(const MeasurementConfig &mConfig) {
     this->ui->pushButton_save_user_config->setEnabled(
             mConfig.isUserConfig()
-            && !ModelManager::getMeasurementConfigManager()->isStandardConfig(mConfig.getName())
+            && !mConfig.isStandardConfig()
         );
 }
 
