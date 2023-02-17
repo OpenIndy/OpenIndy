@@ -7,7 +7,7 @@ QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myCoordinateSystems;
 QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myTransformationParameters;
 QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myGeometries;
 QList<int> ProjectExchanger::stationPoints;
-QMap<QString, MeasurementConfig> ProjectExchanger::myMConfigs;
+QMap<QString, MeasurementConfig> ProjectExchanger::measurementConfigs;
 QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
 QPointer<MeasurementConfigManager> ProjectExchanger::mConfigManager;
 

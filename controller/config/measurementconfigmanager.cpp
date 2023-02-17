@@ -172,23 +172,18 @@ bool MeasurementConfigManager::isProjectConfig(const MeasurementConfig &mConfig)
 
 }
 
-/*!
- * \brief MeasurementConfigManager::getUserConfig
- * \param name
- * \return
- */
 MeasurementConfig MeasurementConfigManager::getUserConfig(const QString &name) const{
-    QPair<QString, bool> key(name, true);
+    Key key(name, eUserConfig);
     return configs.value(key, MeasurementConfig());
 }
 
-/*!
- * \brief MeasurementConfigManager::getProjectConfig
- * \param name
- * \return
- */
 MeasurementConfig MeasurementConfigManager::getProjectConfig(const QString &name) const{
-    QPair<QString, bool> key(name, false);
+    Key key(name, eProjectConfig);
+    return configs.value(key, MeasurementConfig());
+}
+
+MeasurementConfig MeasurementConfigManager::getStandardConfig(const QString &name) const{
+    Key key(name, eStandardConfig);
     return configs.value(key, MeasurementConfig());
 }
 
@@ -337,7 +332,7 @@ void MeasurementConfigManager::removeUserConfig(const QString &name){
  */
 void MeasurementConfigManager::removeProjectConfig(const QString &name){
 
-    QPair<QString, bool> key(name, false);
+    Key key(name, eProjectConfig);
     if(this->configs.contains(key)){
 
         this->configs.remove(key);
@@ -356,7 +351,7 @@ void MeasurementConfigManager::removeProjectConfig(const QString &name){
 void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
 
     //get the old measurement config
-    QPair<QString, ConfigTypes> oldKey(name, eUserConfig);
+    Key oldKey(name, eUserConfig);
     MeasurementConfig oldConfig = this->configs.value(oldKey, MeasurementConfig());
     if(!oldConfig.isValid()){
         return;
@@ -608,7 +603,7 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //remove mConfig from the list of saved configs
     //#############################################
 
-    QPair<QString, ConfigTypes> key(name, eUserConfig);
+    Key key(name, eUserConfig);
     this->configs.remove(key);
 
     //############
@@ -631,11 +626,11 @@ void MeasurementConfigManager::updateGeometries(){
     }
 
     //get a list of used measurement configs
-    const QList<QPair<QString, bool> > &usedConfigs = this->currentJob->getUsedMeasurementConfigs();
+    const QList<Key> &usedConfigs = this->currentJob->getUsedMeasurementConfigs();
 
     //check each used measurement config (wether it still exists)
-    QList<QPair<QString, bool> > removedConfigs;
-    QPair<QString, bool> key;
+    QList<Key> removedConfigs;
+    Key key;
     foreach(key, usedConfigs){
         if(!this->configs.contains(key)){
             removedConfigs.append(key);
@@ -678,8 +673,7 @@ void MeasurementConfigManager::updateGeometries(const MeasurementConfig &oldMCon
     }
 
     //get a list of geometries which are using the old config
-    QPair<QString, bool> key(oldMConfig.getName(), oldMConfig.isUserConfig());
-    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(key);
+    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(oldMConfig.getKey());
 
     //pass the new config to the geometries
     foreach(const QPointer<Geometry> &geom, geometries){

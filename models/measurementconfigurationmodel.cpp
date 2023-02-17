@@ -307,6 +307,10 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
         return invalid;
     }
 
+    if(this->measurementConfigManager->isUserConfig(mConfig)) {
+        return invalid; // already exists
+    }
+
     //add the measurement config
     MeasurementConfig userConfig = mConfig;
     userConfig.makeUserConfig();
