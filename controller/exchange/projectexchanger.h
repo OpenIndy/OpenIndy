@@ -77,8 +77,8 @@ private:
     static QMap<int, QPointer<FeatureWrapper> > myTransformationParameters;
     static QMap<int, QPointer<FeatureWrapper> > myGeometries;
 
-    //helper maps to load configs (QString is the name)
-    static QMap<QString, MeasurementConfig> myMConfigs;
+    // all loaded MeasurementConfigs from project file
+    static QMap<QString, MeasurementConfig> measurementConfigs;
     static QMap<QString, SensorConfiguration> mySConfigs;
 
     static void clearHelperMaps(bool deleteOnClear);

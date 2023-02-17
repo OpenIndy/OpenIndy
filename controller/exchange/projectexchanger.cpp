@@ -137,17 +137,15 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
     // QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
-    QList<MeasurementConfig> mConfigs;
     if(!ProjectExchanger::mConfigManager.isNull()){
-        mConfigs = ProjectExchanger::mConfigManager->getUserConfigs();
-        mConfigs.append(ProjectExchanger::mConfigManager->getProjectConfigs());
-    }
-    foreach(const MeasurementConfig &mConfig, mConfigs){
-        QDomElement config = mConfig.toOpenIndyXML(project);
-        if(!config.isNull()){
-            measurementConfigs.appendChild(config);
+        foreach(const MeasurementConfig &mConfig, ProjectExchanger::mConfigManager->getConfigs()){
+            QDomElement config = mConfig.toOpenIndyXML(project);
+            if(!config.isNull()){
+                measurementConfigs.appendChild(config);
+            }
         }
     }
+
     configs.appendChild(measurementConfigs);
 
     //add sensor configs
@@ -254,10 +252,9 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
 
     //add project measurement configs to config manager
     if(!ProjectExchanger::mConfigManager.isNull()){
-        foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
+        foreach(const MeasurementConfig &mConfig, ProjectExchanger::measurementConfigs.values()){
             if( mConfig.isValid()
                 && mConfig.isProjectConfig()
-                && !mConfig.isStandardConfig()
                 ){
                 ProjectExchanger::mConfigManager->addProjectConfig(mConfig);
             }
@@ -704,10 +701,8 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement mConfigElement = mConfigList.at(i).toElement();
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
-                    if(!mConfigManager.isNull() && mConfigManager->isUserConfig(mConfig)) {
-                        mConfig.makeUserConfig();
-                    }
-                    ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
+                    mConfig.makeProjectConfig();
+                    ProjectExchanger::measurementConfigs.insert(mConfig.getName(), mConfig);
                 }
             }
         }
@@ -1202,11 +1197,11 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                 MeasurementConfig projectConfig = ProjectExchanger::mConfigManager->getProjectConfig(name.toString());
 
                 if( projectConfig.isValid()
-                        && ProjectExchanger::mConfigManager->getProjectConfig(name.toString()).isStandardConfig()) {
+                        && ProjectExchanger::mConfigManager->getStandardConfig(name.toString()).isValid()) {
                     myGeometry->getGeometry()->setMeasurementConfig(projectConfig);
 
-                } else if(ProjectExchanger::myMConfigs.contains(name.toString())) {// is not saved / user measurement config
-                    MeasurementConfig mConfig = ProjectExchanger::myMConfigs.value(name.toString());
+                } else if(ProjectExchanger::measurementConfigs.contains(name.toString())) {// is not saved / user measurement config
+                    MeasurementConfig mConfig = ProjectExchanger::measurementConfigs.value(name.toString());
                     myGeometry->getGeometry()->setMeasurementConfig(mConfig);
 
                 } else if(projectConfig.isValid()) {
@@ -1651,7 +1646,7 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     ProjectExchanger::myReadings.clear();
     ProjectExchanger::myTransformationParameters.clear();
     ProjectExchanger::myGeometries.clear();
-    ProjectExchanger::myMConfigs.clear();
+    ProjectExchanger::measurementConfigs.clear();
     ProjectExchanger::mySConfigs.clear();
     ProjectExchanger::stationPoints.clear();
 
