@@ -86,11 +86,11 @@ void DialogsTest::initTestCase() {
     measurementConfigManager->saveUserConfig(scanDistanceConfig);
 
     MeasurementConfig fastPointConfig;
-    fastPointConfig.setName("FastPoint"); // same name exists as user config
+    fastPointConfig.setName("FastPoint");
     fastPointConfig.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfig.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
     fastPointConfig.makeUserConfig();
-    measurementConfigManager->addProjectConfig(fastPointConfig);
+    measurementConfigManager->saveUserConfig(fastPointConfig);
 
     // project config
     MeasurementConfig fastPointConfigProject2;
@@ -630,37 +630,41 @@ void DialogsTest::measurementConfigurationModel() {
 
     proxy->setFilter(true);
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY("FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
+    QVERIFY("FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
 
     proxy->setFilterUserConfig();
 
     qDebug() << getNames(proxy);
-
+    QVERIFY("FastPoint, measconfig-scandistance" == getNames(proxy).join(", "));
     // rename
     QString value("new_name");
     QModelIndex index = proxy->index(0,0);
     MeasurementConfig backup = sourceModel->getMeasurementConfig(proxy->mapToSource(index));
     proxy->setData(index, value, Qt::EditRole);
 
+    proxy->setFilterUserConfig();
     qDebug() << getNames(proxy);
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY("new_name" == getNames(proxy).join(", "));
+    QVERIFY("measconfig-scandistance, new_name" == getNames(proxy).join(", "));
 
     // remove
+    index = proxy->index(1,0);
     sourceModel->removeMeasurementConfig(proxy->mapToSource(index));
 
+    proxy->setFilterUserConfig();
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY("" == getNames(proxy).join(", "));
+    QVERIFY("measconfig-scandistance" == getNames(proxy).join(", "));
 
 
     // clean up / previouse content
     ModelManager::getMeasurementConfigManager()->saveUserConfig(backup);
+    // proxy->setFilterUserConfig();
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY(backup.getName() == getNames(proxy).join(", "));
+    QVERIFY("FastPoint, measconfig-scandistance" == getNames(proxy).join(", "));
 
     proxy->setFilter(true);
     qDebug() << getNames(proxy).join(", ");
-    QVERIFY("FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
+    QVERIFY("FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
 }
 
 
