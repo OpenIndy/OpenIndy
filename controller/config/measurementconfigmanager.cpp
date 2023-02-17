@@ -258,13 +258,18 @@ void MeasurementConfigManager::saveUserConfig(const MeasurementConfig &mConfig){
 
     //check if mConfig is valid
     if(!mConfig.isValid()){
-        emit this->sendMessage("Cannot add a measurement configuration with an empty name", eErrorMessage);
+        emit this->sendMessage("Cannot add a user measurement configuration with an empty name", eErrorMessage);
+        return;
+    }
+
+    if(!mConfig.isUserConfig()) {
+        emit this->sendMessage(QString("Is not a user measurement configuration %1").arg(mConfig.getName()), eErrorMessage);
         return;
     }
 
     //check if mConfig already exists
-    if(this->isUserConfig(mConfig.getName())){
-        emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
+    if(this->configs.contains(mConfig.getKey())){
+        emit this->sendMessage(QString("A user measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
 
@@ -283,18 +288,21 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
 
     //check if mConfig is valid
     if(!mConfig.isValid()){
-        emit this->sendMessage("Cannot add a measurement configuration with an empty name", eErrorMessage);
+        emit this->sendMessage("Cannot add a project measurement configuration with an empty name", eErrorMessage);
+        return;
+    }
+
+    if(!mConfig.isProjectConfig()) {
+        emit this->sendMessage(QString("Is not a project measurement configuration %1").arg(mConfig.getName()), eErrorMessage);
         return;
     }
 
     //check if mConfig already exists
     if(this->configs.contains(mConfig.getKey())){
-        emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
+        emit this->sendMessage(QString("A project measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
-    if(!mConfig.isProjectConfig()) {
-        return;
-    }
+
     //save mConfig
     MeasurementConfig projectConfig = mConfig;
     this->configs.insert(projectConfig.getKey(), projectConfig);
