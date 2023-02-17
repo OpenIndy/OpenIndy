@@ -123,7 +123,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
 
         //check if there already is a measurement config with the new name
         MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(value.toString());
-        if(!mConfig.getIsValid()){
+        if(!mConfig.isValid()){
             mConfig = configs.at(index.row());
             QString oldName = mConfig.getName();
             mConfig.setName(value.toString());
@@ -222,7 +222,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const Measuremen
     }
 
     //check mConfig
-    if(this->measurementConfigManager->getUserConfig(mConfig.getName()).getIsValid()){
+    if(this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()){
         return index;
     }
 
@@ -281,7 +281,7 @@ void MeasurementConfigurationModel::replaceMeasurementConfig(const QString &name
     }
 
     //check measurement config
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         return;
     }
 
@@ -303,7 +303,7 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
     }
 
     //check mConfig
-    if(!mConfig.getIsValid() || mConfig.isUserConfig()){
+    if(!mConfig.isValid() || mConfig.isUserConfig()){
         return invalid;
     }
 

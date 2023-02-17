@@ -92,8 +92,8 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
 
     const QList<MeasurementConfig> configs = sourceModel->getMeasurementConfigurationManager()->getConfigs();
     MeasurementConfig mc = configs.at(source_row);
-    const bool isProject = mc.getIsValid() && mc.isProjectConfig();
-    const bool isUser = mc.getIsValid() && mc.isUserConfig();
+    const bool isProject = mc.isValid() && mc.isProjectConfig();
+    const bool isUser = mc.isValid() && mc.isUserConfig();
 
     switch(this->filterType) {
     case eProject_MeasurementConfigurationFilter:

@@ -97,7 +97,7 @@ void DialogsTest::initTestCase() {
     fastPointConfigProject2.setName("measconfig-fastpoint_project");
     fastPointConfigProject2.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPointConfigProject2.setMeasurementType(MeasurementTypes::eSinglePoint_MeasurementType);
-    fastPointConfigProject2.isUserConfig(false);
+    fastPointConfigProject2.makeProjectConfig();
     measurementConfigManager->addProjectConfig(fastPointConfigProject2);
 
     // create plugin with some functions
@@ -628,6 +628,10 @@ void DialogsTest::measurementConfigurationModel() {
     MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
     MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(proxy->sourceModel());
 
+    proxy->setFilter(true);
+    qDebug() << getNames(proxy).join(", ");
+    QVERIFY("FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
+
     proxy->setFilterUserConfig();
 
     qDebug() << getNames(proxy);
@@ -654,6 +658,9 @@ void DialogsTest::measurementConfigurationModel() {
     qDebug() << getNames(proxy).join(", ");
     QVERIFY(backup.getName() == getNames(proxy).join(", "));
 
+    proxy->setFilter(true);
+    qDebug() << getNames(proxy).join(", ");
+    QVERIFY("FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
 }
 
 

@@ -255,7 +255,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
     //add project measurement configs to config manager
     if(!ProjectExchanger::mConfigManager.isNull()){
         foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
-            if( mConfig.getIsValid()
+            if( mConfig.isValid()
                 && mConfig.isProjectConfig()
                 && !mConfig.isStandardConfig()
                 ){
@@ -704,7 +704,9 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement mConfigElement = mConfigList.at(i).toElement();
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
-                    mConfig.isUserConfig(!mConfigManager.isNull() && mConfigManager->isUserConfig(mConfig));
+                    if(!mConfigManager.isNull() && mConfigManager->isUserConfig(mConfig)) {
+                        mConfig.makeUserConfig();
+                    }
                     ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
                 }
             }
@@ -1199,7 +1201,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             if(!mConfigElement.isNull()&& mConfigElement.hasAttribute("name")){
                 MeasurementConfig projectConfig = ProjectExchanger::mConfigManager->getProjectConfig(name.toString());
 
-                if( projectConfig.getIsValid()
+                if( projectConfig.isValid()
                         && ProjectExchanger::mConfigManager->getProjectConfig(name.toString()).isStandardConfig()) {
                     myGeometry->getGeometry()->setMeasurementConfig(projectConfig);
 
@@ -1207,7 +1209,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                     MeasurementConfig mConfig = ProjectExchanger::myMConfigs.value(name.toString());
                     myGeometry->getGeometry()->setMeasurementConfig(mConfig);
 
-                } else if(projectConfig.getIsValid()) {
+                } else if(projectConfig.isValid()) {
                     myGeometry->getGeometry()->setMeasurementConfig(projectConfig);
                 }
             }

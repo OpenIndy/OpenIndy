@@ -32,7 +32,7 @@ MeasurementConfigurationDialog::~MeasurementConfigurationDialog(){
 void MeasurementConfigurationDialog::setMeasurementConfiguration(const MeasurementConfig &mConfig){
 
     //check if name is empty
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         currentListView()->selectionModel()->clearSelection();
         this->updateGuiFromMeasurementConfig(MeasurementConfig());
         this->ui->widget_measurementConfigValues->setEnabled(false);
@@ -215,7 +215,7 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
     }
 
     const MeasurementConfig clone = mConfigModel->cloneMeasurementConfig(mConfig);
-    if(clone.getIsValid()) {
+    if(clone.isValid()) {
         //select the new item
         QModelIndex index = mConfigModel->getIndex(clone);
         this->ui->tabWidget->setCurrentIndex(1);
@@ -339,7 +339,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
     //set up GUI elements
     this->ui->label_configName->setText(QString("%1%2")
                                         .arg(mConfig.getName())
-                                        .arg((!mConfig.getIsValid() || mConfig.isUserConfig())?" [user]":"")
+                                        .arg((!mConfig.isValid() || mConfig.isUserConfig())?" [user]":"")
                                         );
 
     this->ui->comboBox_MeasurementType->setCurrentIndex(mConfig.getMeasurementType());
@@ -404,8 +404,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
 
-
-    mConfig.isUserConfig(true);
+    mConfig.makeUserConfig();
 
     //replace the selected measurement config
     mConfigModel->replaceMeasurementConfig(name, mConfig);

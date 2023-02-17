@@ -21,9 +21,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     fastPoint.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     fastPoint.setDistanceInterval(0);
     fastPoint.setMeasureTwoSides(false);
-    fastPoint.isUserConfig(false);
-    fastPoint.isEditable(false);
-    fastPoint.isStandardConfig(true);
+    fastPoint.makeStandardConfig();
     this->configs.insert(fastPoint.getKey(), fastPoint);
 
     MeasurementConfig stdPoint;
@@ -34,9 +32,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdPoint.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdPoint.setDistanceInterval(0);
     stdPoint.setMeasureTwoSides(false);
-    stdPoint.isUserConfig(false);
-    stdPoint.isEditable(false);
-    stdPoint.isStandardConfig(true);
+    stdPoint.makeStandardConfig();
     this->configs.insert(stdPoint.getKey(), stdPoint);
 
     MeasurementConfig precisePoint;
@@ -47,9 +43,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     precisePoint.setMeasurementMode(MeasurementModes::ePrecise_MeasurementMode);
     precisePoint.setDistanceInterval(0);
     precisePoint.setMeasureTwoSides(false);
-    precisePoint.isUserConfig(false);
-    precisePoint.isEditable(false);
-    precisePoint.isStandardConfig(true);
+    precisePoint.makeStandardConfig();
     this->configs.insert(precisePoint.getKey(), precisePoint);
 
     MeasurementConfig stdTwoSide;
@@ -60,9 +54,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     stdTwoSide.setMeasurementMode(MeasurementModes::eStandard_MeasurementMode);
     stdTwoSide.setDistanceInterval(0);
     stdTwoSide.setMeasureTwoSides(true);
-    stdTwoSide.isUserConfig(false);
-    stdTwoSide.isEditable(false);
-    stdTwoSide.isStandardConfig(true);
+    stdTwoSide.makeStandardConfig();
     this->configs.insert(stdTwoSide.getKey(), stdTwoSide);
 
     MeasurementConfig level;
@@ -73,9 +65,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setMeasurementMode(MeasurementModes::eFast_MeasurementMode);
     level.setDistanceInterval(0);
     level.setMeasureTwoSides(false);
-    level.isUserConfig(false);
-    level.isEditable(false);
-    level.isStandardConfig(true);
+    level.makeStandardConfig();
     this->configs.insert(level.getKey(), level);
 }
 
@@ -272,7 +262,7 @@ MeasurementConfig MeasurementConfigManager::getActiveConfig(const GeometryTypes 
 void MeasurementConfigManager::saveUserConfig(const MeasurementConfig &mConfig){
 
     //check if mConfig is valid
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         emit this->sendMessage("Cannot add a measurement configuration with an empty name", eErrorMessage);
         return;
     }
@@ -297,7 +287,7 @@ void MeasurementConfigManager::saveUserConfig(const MeasurementConfig &mConfig){
 void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig){
 
     //check if mConfig is valid
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         emit this->sendMessage("Cannot add a measurement configuration with an empty name", eErrorMessage);
         return;
     }
@@ -307,10 +297,11 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
         emit this->sendMessage(QString("A measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
     }
-
+    if(!mConfig.isProjectConfig()) {
+        return;
+    }
     //save mConfig
     MeasurementConfig projectConfig = mConfig;
-    projectConfig.isUserConfig(false);
     this->configs.insert(projectConfig.getKey(), projectConfig);
 
     emit this->measurementConfigurationsChanged();
@@ -367,7 +358,7 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     //get the old measurement config
     QPair<QString, ConfigTypes> oldKey(name, eUserConfig);
     MeasurementConfig oldConfig = this->configs.value(oldKey, MeasurementConfig());
-    if(!oldConfig.getIsValid()){
+    if(!oldConfig.isValid()){
         return;
     }
 
@@ -476,7 +467,7 @@ void MeasurementConfigManager::loadFromConfigFolder(){
         if(userConfig.isStandardConfig()) { // skip standard config from xml
             continue;
         }
-        userConfig.isUserConfig(true);
+        userConfig.makeUserConfig();
 
         //check if a measurement config with the same name has been loaded before
         if(mConfigNames.contains(userConfig.getName())){
@@ -682,7 +673,7 @@ void MeasurementConfigManager::updateGeometries(const MeasurementConfig &oldMCon
     }
 
     //check both configs
-    if(!oldMConfig.getIsValid() || !newMConfig.getIsValid()){
+    if(!oldMConfig.isValid() || !newMConfig.isValid()){
         return;
     }
 

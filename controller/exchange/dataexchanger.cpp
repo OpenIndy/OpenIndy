@@ -439,7 +439,7 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
             //function
             if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
                 mConfig = mConfigManager->getUserConfig("level");
-                if(!mConfig.getIsValid()) {
+                if(!mConfig.isValid()) {
                     emit this->sendMessage("No measurement config \"level\" found.", eErrorMessage, eConsoleMessage);
                     continue;
                 }
@@ -644,7 +644,7 @@ void DataExchanger::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>
         if(!function.isNull()){
             feature->getFeature()->addFunction(function);
         }
-        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+        if(mConfig.isValid() && !feature->getGeometry().isNull()){
             feature->getGeometry()->setMeasurementConfig(mConfig);
         }
         this->currentJob->blockSignals(false);

@@ -878,7 +878,7 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
 
     //get and check measurement config
     MeasurementConfig mConfig = this->measurementConfigManager->getProjectConfig(attr.mConfig);
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         mConfig = this->measurementConfigManager->getUserConfig(attr.mConfig);
     }
 
@@ -1300,7 +1300,7 @@ void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
     }else{
         mConfig = this->measurementConfigManager->getProjectConfig(measurementConfig.text());
     }
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eNoMeasurementConfig);
         return;
     }

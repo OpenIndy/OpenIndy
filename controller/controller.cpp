@@ -137,7 +137,7 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     MeasurementConfig mConfig = this->measurementConfigManager->getProjectConfig(attributes.mConfig);
 
     //check if there is at least a function or a measurement config that shall be set
-    if(!mConfig.getIsValid() && (attributes.functionPlugin.first.compare("") == 0
+    if(!mConfig.isValid() && (attributes.functionPlugin.first.compare("") == 0
                                  || attributes.functionPlugin.second.compare("") == 0)){
         return;
     }
@@ -387,7 +387,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
     }
 
     //get and check the specified measurement config
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         this->log("No measurement configuration selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
@@ -2085,7 +2085,7 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
         if(!function.isNull()){
             feature->getFeature()->addFunction(function);
         }
-        if(mConfig.getIsValid() && !feature->getGeometry().isNull()){
+        if(mConfig.isValid() && !feature->getGeometry().isNull()){
             feature->getGeometry()->setMeasurementConfig(mConfig);
         }
         this->job->blockSignals(false);
