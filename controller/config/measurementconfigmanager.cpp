@@ -560,13 +560,13 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig &mConfig){
     //add database entry
     //##################
 
-    SystemDbManager::addMeasurementConfig(mConfig.getName());
+    SystemDbManager::addMeasurementConfig(mConfig.getName()); // TODO OI-948 add key ???
 
     //########################################
     //add mConfig to the list of saved configs
     //########################################
 
-    if(!this->configs.contains(mConfig.getKey())){
+    if(!this->configs.contains(mConfig.getKey())){ // TODO OI-948 pull up
         this->configs.insert(mConfig.getKey(), mConfig);
     }
 
@@ -574,7 +574,7 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig &mConfig){
     //emit signals
     //############
 
-    emit this->measurementConfigurationsChanged();
+    emit this->measurementConfigurationsChanged(); // TODO OI-948 pull up
 
 }
 
