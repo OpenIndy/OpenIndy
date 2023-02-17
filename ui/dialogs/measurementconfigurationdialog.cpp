@@ -219,8 +219,7 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
         //select the new item
         QModelIndex index = mConfigModel->getIndex(clone);
         this->ui->tabWidget->setCurrentIndex(1);
-        this->on_tabWidget_currentChanged(1);
-        currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+        currentListView()->selectionModel()->select(mConfigProxyModel->mapFromSource(index), QItemSelectionModel::ClearAndSelect);
         this->on_listView_configs_clicked(mConfigProxyModel->mapFromSource(index));
     }
 }
@@ -231,7 +230,6 @@ void MeasurementConfigurationDialog::cloneSelectedMeasurementConfig(){
 void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
     this->ui->tabWidget->setCurrentIndex(1);
-    this->on_tabWidget_currentChanged(1);
 
     MeasurementConfig mConfig;
     mConfig.setName("new config");
