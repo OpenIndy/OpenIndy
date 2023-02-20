@@ -34,11 +34,11 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize config manager
     this->initConfigManager();
 
-    #ifdef OI_WEBSOCKETSERVER
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     //init and start OpenIndy server
     this->initServer();
     this->startServer();
-    #endif
+#endif
 
     //initialize tool plugins
     this->initToolPlugins();
@@ -46,7 +46,9 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //connect helper objects
     this->connectDataExchanger();
     this->connectFeatureUpdater();
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     this->connectRequestHandler();
+#endif
 
     this->sensorWorkerThread = new QThread();
     this->sensorWorkerThread->setObjectName("Sensor Worker");
@@ -60,10 +62,12 @@ Controller::Controller(QObject *parent) : QObject(parent){
 Controller::~Controller(){
 
     //stop web socket server thread
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     if(this->serverThread.isRunning()){
         this->serverThread.quit();
         this->serverThread.wait();
     }
+#endif
 
     QPointer<Console> console = Console::getInstance();
     if(!console.isNull()) {
@@ -1817,7 +1821,9 @@ void Controller::setJob(const QPointer<OiJob> &job){
     ModelManager::setCurrentJob(this->job);
     this->exchanger.setCurrentJob(this->job);
     this->featureUpdater.setCurrentJob(this->job);
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     this->requestHandler.setCurrentJob(this->job);
+#endif
     if(!this->measurementConfigManager.isNull()){
         this->measurementConfigManager->setCurrentJob(this->job);
     }
@@ -1878,9 +1884,10 @@ void Controller::initConfigManager(){
         ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
 
         //pass config manager to request handler
+#ifdef OI_WEBSOCKETSERVER_ENABLED
         this->requestHandler.setMeasurementConfigManager(this->measurementConfigManager);
         this->requestHandler.setSensorConfigManager(this->sensorConfigManager);
-
+#endif
         //connect config manager
         QObject::connect(this->sensorConfigManager.data(), &SensorConfigurationManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
         QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::sendMessage, this, &Controller::log, Qt::AutoConnection);
@@ -1943,6 +1950,7 @@ void Controller::registerMetaTypes(){
 
 }
 
+#ifdef OI_WEBSOCKETSERVER_ENABLED
 /*!
  * \brief Controller::initServer
  */
@@ -1993,6 +2001,7 @@ void Controller::stopServer(){
     emit this->stopWebSocketServer();
 
 }
+#endif
 
 /*!
  * \brief Controller::createActualFromNominal
@@ -2117,11 +2126,11 @@ void Controller::connectFeatureUpdater(){
 
 }
 
+#ifdef OI_WEBSOCKETSERVER_ENABLED
 /*!
  * \brief Controller::connectRequestHandler
  */
 void Controller::connectRequestHandler(){
-
     //sensor actions
     QObject::connect(&this->requestHandler, &OiRequestHandler::startAim, this, &Controller::startAim, Qt::AutoConnection);
     QObject::connect(&this->requestHandler, &OiRequestHandler::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
@@ -2137,8 +2146,8 @@ void Controller::connectRequestHandler(){
     QObject::connect(this, &Controller::activeCoordinateSystemChanged, &this->requestHandler, &OiRequestHandler::activeCoordinateSystemChanged, Qt::QueuedConnection);
     QObject::connect(this, &Controller::featureSetChanged, &this->requestHandler, &OiRequestHandler::featureSetChanged, Qt::QueuedConnection);
     QObject::connect(this, &Controller::featureAttributesChanged, &this->requestHandler, &OiRequestHandler::featureAttributesChanged, Qt::QueuedConnection);
-
 }
+#endif
 
 /*!
  * \brief Controller::connectToolPlugin

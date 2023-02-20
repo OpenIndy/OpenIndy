@@ -10,9 +10,6 @@
 #include "oirequesthandler.h"
 #include "oiwebsocketstreamer.h"
 
-// define OI_WEBSOCKETSERVER to enable
-#undef OI_WEBSOCKETSERVER
-
 /*!
  * \brief The OiWebSocketServer class
  * Class to handle all web socket connections to OpenIndy

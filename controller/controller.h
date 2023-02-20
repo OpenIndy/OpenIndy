@@ -27,7 +27,9 @@
 #include "featureupdater.h"
 #include "projectexchanger.h"
 #include "pluginloader.h"
+#ifdef OI_WEBSOCKETSERVER_ENABLED
 #include "oiwebsocketserver.h"
+#endif
 #include "projectconfig.h"
 #include "stablepointlogic.h"
 #include "controllersensoractions.h"
@@ -285,8 +287,10 @@ signals:
     //##############################
 
     //start and stop server
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     void startWebSocketServer();
     void stopWebSocketServer();
+#endif
 
     //error create trafo Param
     void requestMessageBoxTrafoParam();
@@ -324,9 +328,12 @@ private:
     void registerMetaTypes();
 
     //start or stop OpenIndy server
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     void initServer();
     void startServer();
     void stopServer();
+    void connectRequestHandler();
+#endif
 
     //create feature helpers
     bool createActualFromNominal(const QPointer<Geometry> &geometry);
@@ -340,7 +347,6 @@ private:
     //connect helper objects
     void connectDataExchanger();
     void connectFeatureUpdater();
-    void connectRequestHandler();
 
     //connect tools
     void connectToolPlugin(const QPointer<Tool> &tool);
@@ -363,12 +369,14 @@ private:
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
 
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     //thread and server instance
     QThread serverThread;
     QPointer<OiWebSocketServer> webSocketServer;
 
     //request handler for web socket requests
     OiRequestHandler requestHandler;
+#endif
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;
