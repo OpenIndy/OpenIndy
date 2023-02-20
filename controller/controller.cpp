@@ -133,17 +133,14 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         }
     }
 
-    //get saved measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getProjectConfig(attributes.mConfig);
-
     //check if there is at least a function or a measurement config that shall be set
-    if(!mConfig.isValid() && (attributes.functionPlugin.first.compare("") == 0
+    if(!attributes.measurementConfig.isValid() && (attributes.functionPlugin.first.compare("") == 0
                                  || attributes.functionPlugin.second.compare("") == 0)){
         return;
     }
 
     //create functions and measurement configs for the created features
-    this->addFunctionsAndMConfigs(features, mConfig, attributes.functionPlugin.second, attributes.functionPlugin.first);
+    this->addFunctionsAndMConfigs(features, attributes.measurementConfig, attributes.functionPlugin.second, attributes.functionPlugin.first);
 
 }
 
@@ -2030,7 +2027,7 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     //get measurement config
     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
     MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(elementConfigName);
-    attr.mConfig = mConfig.getName();
+    attr.measurementConfigName = mConfig.getName();
 
     //create actual
     this->job->addFeatures(attr);

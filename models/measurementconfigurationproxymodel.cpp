@@ -163,3 +163,9 @@ QVariant MeasurementConfigurationProxyModel::data(const QModelIndex &index, int 
 
     return data;
 }
+
+MeasurementConfig MeasurementConfigurationProxyModel::getMeasurementConfig(const QModelIndex &index) const {
+    MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(this->sourceModel());
+
+    return sourceModel->getMeasurementConfig(this->mapToSource(index));
+}

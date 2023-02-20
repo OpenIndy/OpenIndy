@@ -870,16 +870,16 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
         attr.nominalSystem = nominalSystem.text();
     }
     if(!measurementConfig.isNull()){
-        attr.mConfig = measurementConfig.text();
+        attr.measurementConfigName = measurementConfig.text();
     }
 
     //add features
     QList<QPointer<FeatureWrapper> > features = this->currentJob->addFeatures(attr);
 
     //get and check measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getProjectConfig(attr.mConfig);
+    MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(attr.measurementConfigName);
     if(!mConfig.isValid()){
-        mConfig = this->measurementConfigManager->getUserConfig(attr.mConfig);
+        mConfig = this->measurementConfigManager->getProjectConfig(attr.measurementConfigName);
     }
 
     //pass measurement config to features
