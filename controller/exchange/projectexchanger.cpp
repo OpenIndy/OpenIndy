@@ -1193,18 +1193,15 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             //set measurement configs
             QDomElement mConfigElement = geometry.firstChildElement("measurementConfig");
             const QVariant name = mConfigElement.attribute("name");
-            if(!mConfigElement.isNull()&& mConfigElement.hasAttribute("name")){
-                MeasurementConfig projectConfig = ProjectExchanger::mConfigManager->getProjectConfig(name.toString());
+            if(!mConfigElement.isNull()&& mConfigElement.hasAttribute("name") && !name.toString().isEmpty()){
 
-                if( projectConfig.isValid()
-                        && ProjectExchanger::mConfigManager->getStandardConfig(name.toString()).isValid()) {
-                    myGeometry->getGeometry()->setMeasurementConfig(projectConfig);
+                MeasurementConfig projectConfig = ProjectExchanger::measurementConfigs.value(name.toString()); // will add to MeasurementConfigManager later !!!
+                MeasurementConfig standardConfig = ProjectExchanger::mConfigManager->getStandardConfig(name.toString());
 
-                } else if(ProjectExchanger::measurementConfigs.contains(name.toString())) {// is not saved / user measurement config
-                    MeasurementConfig mConfig = ProjectExchanger::measurementConfigs.value(name.toString());
-                    myGeometry->getGeometry()->setMeasurementConfig(mConfig);
+                if(standardConfig.isValid()) { // if standard config with "name" available use it
+                    myGeometry->getGeometry()->setMeasurementConfig(standardConfig);
 
-                } else if(projectConfig.isValid()) {
+                } else if(projectConfig.isValid()) { // if project config with "name" available use it
                     myGeometry->getGeometry()->setMeasurementConfig(projectConfig);
                 }
             }
