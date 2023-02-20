@@ -252,6 +252,13 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
 
     //add project measurement configs to config manager
     if(!ProjectExchanger::mConfigManager.isNull()){
+
+        // remove project config loaded from previous job
+        foreach(const MeasurementConfig &mConfig, ProjectExchanger::mConfigManager->getProjectConfigs()) {
+            ProjectExchanger::mConfigManager->removeProjectConfig(mConfig.getName());
+        }
+
+        // add project config loaded from this job
         foreach(const MeasurementConfig &mConfig, ProjectExchanger::measurementConfigs.values()){
             if( mConfig.isValid()
                 && mConfig.isProjectConfig()
