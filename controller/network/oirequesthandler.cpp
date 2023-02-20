@@ -57,6 +57,7 @@ const QPointer<MeasurementConfigManager> &OiRequestHandler::getMeasurementConfig
  * \param measurementConfigManager
  */
 void OiRequestHandler::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &measurementConfigManager){
+    this->projectExchanger.setMeasurementConfigManager(measurementConfigManager);
     this->measurementConfigManager = measurementConfigManager;
 }
 
@@ -340,7 +341,7 @@ void OiRequestHandler::getProject(OiRequestResponse &request){
     this->prepareResponse(request);
 
     //get and set project xml
-    QDomDocument project = ProjectExchanger::saveProject(this->currentJob);
+    QDomDocument project = projectExchanger.saveProject(this->currentJob);
     if(!project.isNull()){
         request.response.documentElement().appendChild(request.response.importNode(project.documentElement(), true));
     }

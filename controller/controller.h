@@ -368,6 +368,7 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+    ProjectExchanger projectExchanger;
 
 #ifdef OI_WEBSOCKETSERVER_ENABLED
     //thread and server instance

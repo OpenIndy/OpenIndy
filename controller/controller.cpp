@@ -841,7 +841,7 @@ bool Controller::hasProjectDigestChanged() {
         return false;
     }
     QString preDigest = this->job->getDigest();
-    ProjectExchanger::saveProject(this->job);
+    projectExchanger.saveProject(this->job);
     return preDigest != job->getDigest(); // not equal, that means project data changed
 }
 
@@ -877,7 +877,7 @@ void Controller::saveProject(){
     QMutexLocker locker(&saveProjectMutex); // synchronize write file
 
     //get project xml
-    QDomDocument project = ProjectExchanger::saveProject(this->job);
+    QDomDocument project = projectExchanger.saveProject(this->job);
 
     if(project.isNull()){
         this->log("Error while creating project XML", eErrorMessage, eMessageBoxMessage);
@@ -961,7 +961,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
     }
 
     //load project from xml
-    newJob = ProjectExchanger::loadProject(project);
+    newJob = projectExchanger.loadProject(project);
 
     //check job
     if(newJob.isNull()){
@@ -1881,7 +1881,7 @@ void Controller::initConfigManager(){
         ModelManager::setMeasurementConfigManager(this->measurementConfigManager);
 
         //pass config manager to project exchanger
-        ProjectExchanger::setMeasurementConfigManager(this->measurementConfigManager);
+        projectExchanger.setMeasurementConfigManager(this->measurementConfigManager);
 
         //pass config manager to request handler
 #ifdef OI_WEBSOCKETSERVER_ENABLED
