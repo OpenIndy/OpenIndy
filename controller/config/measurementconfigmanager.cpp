@@ -303,6 +303,11 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
         return;
     }
 
+    if(this->configs.contains(Key(mConfig.getName(), eStandardConfig))) {
+        emit this->sendMessage(QString("A standard measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
+        return;
+    }
+
     //save mConfig
     MeasurementConfig projectConfig = mConfig;
     this->configs.insert(projectConfig.getKey(), projectConfig);
