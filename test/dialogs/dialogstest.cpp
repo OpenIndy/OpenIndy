@@ -7,10 +7,14 @@
 #include "createfeaturedialog.h"
 #include "availablefunctionslistproxymodel.h"
 #include "measurementconfigurationdialog.h"
+#include "projectexchanger.h"
+#include "controller.h"
 
 // recomended readings:
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
 // https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
+
+#define DEBUG_PRETTY_PRINT_DOM(dom) QByteArray arr; QTextStream stream(&arr); dom.save(stream, 2 /*indent*/); stream.flush(); qDebug().noquote() << arr;
 
 using namespace oi;
 
@@ -24,6 +28,8 @@ public:
 private Q_SLOTS:
     void initTestCase();
 
+    // functions my change global list of MeasurementConfigs
+    // !!! keep order !!!
     void measurementConfigurationModel();
 
     void createPoint();
@@ -38,12 +44,15 @@ private Q_SLOTS:
 
     void measurementConfigDialog();
 
+    void projectSaveLoad();
+
 private:
 
     void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
     QStringList getNames(QSortFilterProxyModel *model);
     QStringList getNames(QAbstractListModel *model);
     QStringList getNames(QAbstractItemModel *model);
+    QStringList getNames(QList<MeasurementConfig> list);
 };
 
 DialogsTest::DialogsTest() {
@@ -502,6 +511,16 @@ QStringList DialogsTest::getNames(QAbstractItemModel *model) {
     return names;
 }
 
+QStringList DialogsTest::getNames(QList<MeasurementConfig> list) {
+
+    QStringList names;
+    foreach(const MeasurementConfig mc, list) {
+        names <<  mc.getName();
+    }
+    return names;
+}
+
+
 void DialogsTest::measurementConfigFilter() {
     MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
     MeasurementConfigurationModel *sourceModel = static_cast<MeasurementConfigurationModel *>(proxy->sourceModel());
@@ -630,6 +649,9 @@ void DialogsTest::measurementConfigDialog() {
     QTest::qWait(500);
     QPointer<QLabel> configNameL = dialog.findChild<QLabel*>("label_configName");
     QVERIFY("PrecisePoint" == configNameL->text());
+
+    // clean up
+    ModelManager::getMeasurementConfigManager()->removeUserConfig("new config");
 }
 
 void DialogsTest::measurementConfigurationModel() {
@@ -673,6 +695,85 @@ void DialogsTest::measurementConfigurationModel() {
     proxy->setFilter(true);
     qDebug() << getNames(proxy).join(", ");
     QVERIFY("FastPoint, FastPoint, level, measconfig-fastpoint_project, measconfig-scandistance, PrecisePoint, StdPoint, StdTwoSide" == getNames(proxy).join(", "));
+}
+
+void DialogsTest::projectSaveLoad() {
+
+    OiJob jobS;
+
+    QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
+    QPointer<Station> station = new Station();
+    station->setFeatureName("STATION01");
+    stationFeature->setStation(station);
+    jobS.addFeature(stationFeature);
+
+    QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
+    QPointer<CoordinateSystem> system = new CoordinateSystem();
+    system->setFeatureName("PART");
+    systemFeature->setCoordinateSystem(system);
+    jobS.addFeature(systemFeature);
+
+    //activate features
+    station->setActiveStationState(true);
+    station->getCoordinateSystem()->setActiveCoordinateSystemState(true);
+
+    //create feature attributes
+    FeatureAttributes attr;
+    attr.count = 1;
+    attr.typeOfFeature = eCoordinateSystemFeature;
+    attr.name = "Bundle01";
+    attr.isBundleSystem = true;
+
+    //add feature
+    jobS.addFeatures(attr);
+
+    FeatureAttributes point1;
+    point1.count = 1;
+    point1.isActual = true;
+    point1.typeOfFeature = ePointFeature;
+    point1.name = "Point01";
+    point1.measurementConfig = ModelManager::getMeasurementConfigManager()->getProjectConfig("measconfig-fastpoint_project");
+    QVERIFY(point1.measurementConfig.isValid());
+    point1.functionPlugin = QPair<QString, QString>("function1", "path");
+    jobS.addFeatures(point1);// job is reponsible
+    QPointer<FeatureWrapper> feature = jobS.getFeaturesByName(point1.name).at(0);
+    // feature->getFeature()->addFunction(function); // controller ist responsible
+    feature->getGeometry()->setMeasurementConfig(point1.measurementConfig); // controller ist responsible
+
+
+    ProjectExchanger projectExchanger;
+    projectExchanger.setMeasurementConfigManager(ModelManager::getMeasurementConfigManager());
+
+    QDomDocument project = projectExchanger.saveProject(&jobS);
+
+    DEBUG_PRETTY_PRINT_DOM(project);
+
+    QString name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
+    qDebug() << name;
+    // project, standard & user configs
+    QVERIFY("FastPoint, FastPoint, PrecisePoint, StdPoint, StdTwoSide, level, measconfig-scandistance, measconfig-fastpoint_project" == name);
+
+    // clean up
+    foreach(const MeasurementConfig mc, ModelManager::getMeasurementConfigManager()->getConfigs()) {
+        if( mc.isProjectConfig()
+            && !mc.isStandardConfig()) {
+            ModelManager::getMeasurementConfigManager()->removeProjectConfig(mc.getName());
+        }
+    }
+
+    name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
+    qDebug() << name;
+    // standard & user configs
+    QVERIFY("FastPoint, FastPoint, PrecisePoint, StdPoint, StdTwoSide, level, measconfig-scandistance" == name);
+
+    QPointer<OiJob> jobL = projectExchanger.loadProject(project);
+
+
+    name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
+    qDebug() << name;
+    // project, standard & user configs
+    QVERIFY("FastPoint, FastPoint, PrecisePoint, StdPoint, StdTwoSide, level, measconfig-scandistance, measconfig-fastpoint_project" == name);
+
 }
 
 
