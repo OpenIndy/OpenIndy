@@ -253,10 +253,11 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
             this->mConfigManager->removeProjectConfig(mConfig.getName());
         }
 
-        // add project config loaded from this job
+        // add project config loaded from this job if is not an standard config
         foreach(const MeasurementConfig &mConfig, this->measurementConfigs.values()){
             if( mConfig.isValid()
                 && mConfig.isProjectConfig()
+                && !this->mConfigManager->getStandardConfig(mConfig.getName()).isValid()
                 ){
                 this->mConfigManager->addProjectConfig(mConfig);
             }
