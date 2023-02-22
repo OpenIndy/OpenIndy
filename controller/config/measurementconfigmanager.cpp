@@ -116,75 +116,16 @@ void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob> &job){
     }
 }
 
-/*!
- * \brief MeasurementConfigManager::isUserConfig
- * Checks wether there is a saved measurement config with the given name
- * \param name
- * \return
- */
-bool MeasurementConfigManager::isUserConfig(const QString &name){
-    return getUserConfigNames().contains(name);
-}
-
-/*!
- * \brief MeasurementConfigManager::isProjectConfig
- * Checks wether there is a project measurement config with the given name
- * \param name
- * \return
- */
-bool MeasurementConfigManager::isProjectConfig(const QString &name){
-    return getProjectConfigNames().contains(name);
-}
-
-/*!
- * \brief MeasurementConfigManager::isUserConfig
- * Checks wether there is a saved measurement config with the same name and parameters
- * \param mConfig
- * \return
- */
-bool MeasurementConfigManager::isUserConfig(const MeasurementConfig &mConfig){
-
-    if(!this->configs.contains(mConfig.getKey())){
-        return false;
-    }
-
-    //get saved config and compare it to the given one
-    MeasurementConfig userConfig = this->configs.value(mConfig.getKey()); // TODO OI-948
-    return userConfig.isUserConfig();
-
-}
-
-/*!
- * \brief MeasurementConfigManager::isProjectConfig
- * Checks wether there is a project measurement config with the same name and parameters
- * \param mConfig
- * \return
- */
-bool MeasurementConfigManager::isProjectConfig(const MeasurementConfig &mConfig){
-
-    if(!this->configs.contains(mConfig.getKey())){
-        return false;
-    }
-
-    //get project config and compare it to the given one
-    MeasurementConfig projectConfig = this->configs.value(mConfig.getKey()); // TODO OI-948
-    return projectConfig.isProjectConfig();
-
-}
-
 MeasurementConfig MeasurementConfigManager::getUserConfig(const QString &name) const{
-    Key key(name, eUserConfig);
-    return configs.value(key, MeasurementConfig());
+    return configs.value(Key(name, eUserConfig), MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getProjectConfig(const QString &name) const{
-    Key key(name, eProjectConfig);
-    return configs.value(key, MeasurementConfig());
+    return configs.value(Key(name, eProjectConfig), MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getStandardConfig(const QString &name) const{
-    Key key(name, eStandardConfig);
-    return configs.value(key, MeasurementConfig());
+    return configs.value(Key(name, eStandardConfig), MeasurementConfig());
 }
 
 /*!
@@ -512,13 +453,12 @@ void MeasurementConfigManager::synchronize(const MeasurementConfigManager &other
     this->configs.clear();
 
     //add new configs
-    QList<MeasurementConfig> userConfigs = other.getUserConfigs();
-    QList<MeasurementConfig> projectConfigs = other.getProjectConfigs();
-    foreach(const MeasurementConfig &mConfig, userConfigs){
-        this->saveUserConfig(mConfig);
-    }
-    foreach(const MeasurementConfig &mConfig, projectConfigs){
-        this->addProjectConfig(mConfig);
+    foreach(const MeasurementConfig &mConfig, other.getConfigs()){
+        if(mConfig.isUserConfig()) {
+            this->saveUserConfig(mConfig);
+        } else {
+            this->addProjectConfig(mConfig);
+        }
     }
 
     //trigger edits again

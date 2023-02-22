@@ -45,12 +45,6 @@ public:
     //get or set measurement configs
     //##############################
 
-    //check presence of a config
-    bool isUserConfig(const QString &name);
-    bool isProjectConfig(const QString &name);
-    bool isUserConfig(const MeasurementConfig &mConfig);
-    bool isProjectConfig(const MeasurementConfig &mConfig);
-
     //get configs
     MeasurementConfig getUserConfig(const QString &name) const;
     MeasurementConfig getProjectConfig(const QString &name) const;
