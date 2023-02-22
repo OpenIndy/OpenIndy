@@ -176,7 +176,7 @@ void DialogsTest::createPoint() {
     dialog.setFeatureType(FeatureTypes::ePointFeature);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -213,7 +213,7 @@ void DialogsTest::createCircle() {
     dialog.setFeatureType(FeatureTypes::eCircleFeature);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -250,7 +250,7 @@ void DialogsTest::createPlane() {
     dialog.setFeatureType(FeatureTypes::ePlaneFeature);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -287,7 +287,7 @@ void DialogsTest::createPlaneFromPoints() {
     dialog.setFeatureType(FeatureTypes::ePlaneFeature);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -310,7 +310,7 @@ void DialogsTest::createPlaneFromPoints() {
 
     // select "function-planefrompoints"
     QTest::mouseClick(functionCB, Qt::LeftButton);
-    QTest::qWait(500); // TODO spy
+    QTest::qWait(1000); // TODO spy
 
     QModelIndex idx = functionLV->model()->index(i,0);
     functionLV->scrollTo(idx);
@@ -322,7 +322,7 @@ void DialogsTest::createPlaneFromPoints() {
     QVERIFY("function-planefrompoints" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(500);
+    QTest::qWait(1000);
 
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
@@ -341,7 +341,7 @@ void DialogsTest::createLevel() {
     dialog.setFeatureType(FeatureTypes::ePlaneFeature);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -366,7 +366,7 @@ void DialogsTest::createLevel() {
 
     // select "function-fitlevel"
     QTest::mouseClick(functionCB, Qt::LeftButton);
-    QTest::qWait(500); // TODO spy
+    QTest::qWait(1000); // TODO spy
 
     QModelIndex idx = functionLV->model()->index(i,0);
     functionLV->scrollTo(idx);
@@ -378,7 +378,7 @@ void DialogsTest::createLevel() {
     QVERIFY("function-fitlevel" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(500);
+    QTest::qWait(1000);
 
     // check applicable measurement configs
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
@@ -398,7 +398,7 @@ void DialogsTest::reuseDialogInstance() {
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     dialog.activateWindow();
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // check function
     QPointer<QComboBox> functionCB;
@@ -426,7 +426,7 @@ void DialogsTest::reuseDialogInstance() {
     QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(6, 0).data( Qt::DisplayRole ).toString());
 
     dialog.close();
-    QTest::qWait(500);
+    QTest::qWait(1000);
     dialog.show();
     dialog.activateWindow();
 
@@ -449,7 +449,7 @@ void DialogsTest::reuseDialogInstance() {
 
     // select "function-fitlevel"
     QTest::mouseClick(functionCB, Qt::LeftButton);
-    QTest::qWait(500); // TODO spy
+    QTest::qWait(1000); // TODO spy
 
     QModelIndex idx = functionLV->model()->index(i,0);
     functionLV->scrollTo(idx);
@@ -461,7 +461,7 @@ void DialogsTest::reuseDialogInstance() {
     QVERIFY("function-fitlevel" == functionName);
 
     QTest::mouseClick(functionLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(500);
+    QTest::qWait(1000);
 
     // check applicable measurement configs
     mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
@@ -630,13 +630,13 @@ void DialogsTest::measurementConfigDialog() {
     dialog.setMeasurementConfiguration(projectFastPointConfig);
     dialog.show(); // to call: void showEvent(QShowEvent *event); and initialize dialog
     QSignalSpy spy_initialized(&dialog, SIGNAL(initialized()));
-    spy_initialized.wait(500);
+    spy_initialized.wait(1000);
 
     // add new config
     QPointer<QWidget> addPB = dialog.findChild<QWidget*>("pushButton_add");
 
     QTest::mouseClick(addPB, Qt::LeftButton);
-    QTest::qWait(500); // TODO spy
+    QTest::qWait(1000); // TODO spy
 
     QPointer<QListView> userConfigsLV = dialog.findChild<QListView*>("listView_userConfigs");
     qDebug() <<  getNames(userConfigsLV->model());
@@ -675,7 +675,7 @@ void DialogsTest::measurementConfigDialog() {
     projectConfigsLV->scrollTo(idx);
     QPoint itemPt = projectConfigsLV->visualRect(idx).center();
     QTest::mouseClick(projectConfigsLV->viewport(), Qt::LeftButton, 0, itemPt);
-    QTest::qWait(500);
+    QTest::qWait(1000);
     QPointer<QLabel> configNameL = dialog.findChild<QLabel*>("label_configName");
     QVERIFY("PrecisePoint" == configNameL->text());
 
