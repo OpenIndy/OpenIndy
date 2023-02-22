@@ -307,7 +307,7 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
         return invalid;
     }
 
-    if(this->measurementConfigManager->isUserConfig(mConfig)) {
+    if(!this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()) {
         return invalid; // already exists
     }
 
