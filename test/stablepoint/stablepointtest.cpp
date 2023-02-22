@@ -65,12 +65,11 @@ void StablePointTest::testStablePoint_basic()
 0.10004 0.20001 0.30001\n\
 ");
 
-
-    MeasurementConfig config;
-    config.setIsStablePoint(true);
-    config.setStablePointThresholdTime(1.); // [second]
-    config.setStablePointMinDistance(1.0);  // [mm]
-    config.setStablePointThresholdRange(0.1); // [mm]
+    StablePointConfig config;
+    config.isStablePoint = true;
+    config.thresholdTime = 1.0; // [second]
+    config.thresholdRange = 1.0; // [mm]
+    config.minDistance = 0.1;  // [mm]
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
@@ -156,11 +155,11 @@ void StablePointTest::testStablePoint_move_stable_move_stable()
 0.10035 0.21001 0.30001\n\
 ");
 
-    MeasurementConfig config;
-    config.setIsStablePoint(true);
-    config.setStablePointThresholdTime(1.0); // [second]
-    config.setStablePointThresholdRange(1.0); // [mm]
-    config.setStablePointMinDistance(1.0);  // [mm]
+    StablePointConfig config;
+    config.isStablePoint = true;
+    config.thresholdTime = 1.0; // [second]
+    config.thresholdRange = 1.0; // [mm]
+    config.minDistance = 1.0;  // [mm]
 
     QPointer<StablePointLogic> logic = new StablePointLogic(this);
 
