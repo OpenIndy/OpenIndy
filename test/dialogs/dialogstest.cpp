@@ -777,10 +777,10 @@ void DialogsTest::projectSaveLoad() {
 
     qDebug() << project;
 
-    QString name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
+    QString name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << name;
     // project, standard & user configs
-    QVERIFY("FastPoint, FastPoint, PrecisePoint, StdPoint, StdTwoSide, level, measconfig-scandistance, measconfig-fastpoint_project" == name);
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
 
     // clean up
     foreach(const MeasurementConfig mc, ModelManager::getMeasurementConfigManager()->getConfigs()) {
@@ -790,18 +790,18 @@ void DialogsTest::projectSaveLoad() {
         }
     }
 
-    name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
+    name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << name;
     // standard & user configs
-    QVERIFY("FastPoint, FastPoint, PrecisePoint, StdPoint, StdTwoSide, level, measconfig-scandistance" == name);
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-scandistance, user)" == name);
 
     QPointer<OiJob> jobL = projectExchanger.loadProject(project);
 
 
-    name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
+    name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << name;
     // project, standard & user configs
-    QVERIFY("FastPoint, FastPoint, PrecisePoint, StdPoint, StdTwoSide, level, measconfig-scandistance, measconfig-fastpoint_project" == name);
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user), (measconfig-scandistance, project)" == name);
 
 }
 
