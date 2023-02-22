@@ -775,7 +775,7 @@ void DialogsTest::projectSaveLoad() {
 
     QDomDocument project = projectExchanger.saveProject(&jobS);
 
-    DEBUG_PRETTY_PRINT_DOM(project);
+    qDebug() << project;
 
     QString name = getNames(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
     qDebug() << name;
