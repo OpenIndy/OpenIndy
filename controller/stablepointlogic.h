@@ -32,6 +32,13 @@ struct ReadingData {
     double distanceToPrevStable;
 };
 
+struct StablePointConfig {
+    bool isStablePoint;
+    double thresholdTime; // [second]
+    double thresholdRange; // [mm]
+    double minDistance;  // [mm]
+};
+
 class OI_MAIN_EXPORT StablePointLogic : public QObject
 {
     Q_OBJECT
@@ -43,7 +50,7 @@ public:
     ~StablePointLogic();
 
 public slots:
-    void startStablePointMeasurement(MeasurementConfig config);
+    void startStablePointMeasurement(StablePointConfig config);
     void stopStablePointMeasurement();
     void realTimeReading(const QVariantMap &reading);
 
@@ -64,7 +71,7 @@ private:
 
     QElapsedTimer elapsedTimer;
     oi::math::OiVec lastStableXyz;
-    MeasurementConfig config;
+    StablePointConfig config;
 
     std::atomic<bool> pointIsStable;
 
