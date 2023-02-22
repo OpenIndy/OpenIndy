@@ -14,9 +14,16 @@
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
 // https://vicrucann.github.io/tutorials/qttest-signals-qtreewidget/
 
-#define DEBUG_PRETTY_PRINT_DOM(dom) QByteArray arr; QTextStream stream(&arr); dom.save(stream, 2 /*indent*/); stream.flush(); qDebug().noquote() << arr;
-
 using namespace oi;
+
+QDebug operator<<(QDebug debug, const QDomDocument &dom) {
+    QByteArray arr;
+    QTextStream stream(&arr);
+    dom.save(stream, 2 /*indent*/);
+    stream.flush();
+    debug.noquote() << arr;
+    return debug;
+}
 
 class DialogsTest : public QObject
 {
