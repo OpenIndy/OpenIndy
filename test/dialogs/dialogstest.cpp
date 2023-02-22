@@ -60,6 +60,7 @@ private:
     QStringList getNames(QAbstractListModel *model);
     QStringList getNames(QAbstractItemModel *model);
     QStringList getNames(QList<MeasurementConfig> list);
+    QStringList getKeys(QList<MeasurementConfig> list);
 };
 
 DialogsTest::DialogsTest() {
@@ -527,6 +528,27 @@ QStringList DialogsTest::getNames(QList<MeasurementConfig> list) {
     return names;
 }
 
+QStringList DialogsTest::getKeys(QList<MeasurementConfig> list) {
+    QStringList keys;
+    foreach(const MeasurementConfig mc, list) {
+        Key key = mc.getKey();
+        QString t;
+        switch(key.getConfigType()) {
+        case eUserConfig:
+            t = "user";
+            break;
+        case eProjectConfig:
+            t = "project";
+            break;
+        case eStandardConfig:
+            t = "standard";
+            break;
+        }
+
+        keys << QString("(%1, %2)").arg(key.getName()).arg(t);
+    }
+    return keys;
+}
 
 void DialogsTest::measurementConfigFilter() {
     MeasurementConfigurationProxyModel *proxy = &ModelManager::getMeasurementConfigurationProxyModel(); // global test instance
