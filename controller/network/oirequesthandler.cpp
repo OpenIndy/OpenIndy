@@ -1145,7 +1145,7 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
 
 }
 
-QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool saved, QDomDocument &response){
+QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool isUserConfig, QDomDocument &response){
     QDomElement config = response.createElement("measurementConfig");
 
     QDomElement name = response.createElement("name");
@@ -1154,7 +1154,7 @@ QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool
     config.appendChild(name);
 
     QDomElement isSaved = response.createElement("isSaved");
-    QDomText isSavedText = response.createTextNode(saved ? "1" : "0");
+    QDomText isSavedText = response.createTextNode(isUserConfig ? "1" : "0");
     isSaved.appendChild(isSavedText);
     config.appendChild(isSaved);
 
@@ -1207,17 +1207,10 @@ void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
         return;
     }
 
-    //get all measurement configs
-    QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getUserConfigs();
-    QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectConfigs();
-
     //add configs
     QDomElement configs = request.response.createElement("measurementConfigs");
-    foreach(const MeasurementConfig &mConfig, userConfigs){
-        configs.appendChild(toXML(mConfig, true, request.response));
-    }
-    foreach(const MeasurementConfig &mConfig, projectConfigs){
-        configs.appendChild(toXML(mConfig, false, request.response));
+    foreach(const MeasurementConfig &mConfig, this->measurementConfigManager->getConfigs()){
+        configs.appendChild(toXML(mConfig, mConfig.isUserConfig(), request.response));
     }
     request.response.documentElement().appendChild(configs);
 
