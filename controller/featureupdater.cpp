@@ -624,6 +624,70 @@ void FeatureUpdater::setUpInputElementsForAlignmentTransformations(const QPointe
 
 }
 
+void FeatureUpdater::setUpInputElementsForNormalTransformations(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation, const bool &startSystem, const bool &bestFitWithLevel) {
+    //sort helper object which compares and sorts the list of start and target points
+    SortListByName sorter;
+
+    //get input elements at the position 0
+    QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
+    foreach(const InputElement &element, inputElements){
+
+        //add all points
+        if(element.typeOfElement == ePointElement && !element.point.isNull()){
+            if(( (startSystem ? !trafoParam->getStartSystem()->getIsStationSystem() : !trafoParam->getDestinationSystem()->getIsStationSystem()) && element.point->getIsNominal())
+                    || element.point->getIsSolved()){
+                Point p(element.point->getIsNominal());
+                p.setFeatureName(element.point->getFeatureName());
+                p.setPoint(element.point->getPosition());
+                if(startSystem) {
+                    sorter.addLocPoint(p);
+                } else {
+                    sorter.addRefPoint(p);
+                }
+            }
+        }
+    }
+    //bestFit with level
+    if(bestFitWithLevel){
+        //get input elements at the position key
+        QList<InputElement> newElements;
+
+        //get input elements at the position key
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
+        foreach(const InputElement &element, inputElements){
+
+            //check geometry
+            if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                continue;
+            }
+
+            //check if the geometry is an actual and is solved
+            if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                continue;
+            }
+
+            InputElement copyElement(element.id);
+            this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+            newElements.append(copyElement);
+        }
+        if(newElements.size() > 0){
+            if(startSystem) {
+                systemTransformation->inputElementsStartSystem.insert(1, newElements);
+            } else {
+                systemTransformation->inputElementsDestinationSystem.insert(1, newElements);
+            }
+        }
+    }
+
+    //add sorted lists to the function
+    if(startSystem){
+        systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
+    } else {
+        systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
+    }
+
+}
+
 /*!
  * \brief FeatureUpdater::setUpTrafoParamActualNominal
  * \param trafoParam
@@ -666,8 +730,6 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
         isAlignment = true;
     }
 
-    //sort helper object which compares and sorts the list of start and target points
-    SortListByName sorter;
 
     //###################
     //set up start system
@@ -680,49 +742,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     if(isAlignment){
         setUpInputElementsForAlignmentTransformations(systemTransformation, true);
     } else { //set up input elements for normal transformations
-
-        //get input elements at the position 0
-        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
-        foreach(const InputElement &element, inputElements){
-
-            //add all points
-            if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if((!trafoParam->getStartSystem()->getIsStationSystem() && element.point->getIsNominal())
-                        || element.point->getIsSolved()){
-                    Point p(element.point->getIsNominal());
-                    p.setFeatureName(element.point->getFeatureName());
-                    p.setPoint(element.point->getPosition());
-                    sorter.addLocPoint(p);
-                }
-            }
-        }
-        //bestFit with level
-        if(keys.size() == 2){
-            //get input elements at the position key
-            QList<InputElement> newElements;
-
-            //get input elements at the position key
-            QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
-            foreach(const InputElement &element, inputElements){
-
-                //check geometry
-                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
-                    continue;
-                }
-
-                //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
-                    continue;
-                }
-                Plane plane = *element.geometry->getFeatureWrapper()->getPlane();
-                InputElement copyElement(element.id);
-                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
-                newElements.append(copyElement);
-            }
-            if(newElements.size() > 0){
-                systemTransformation->inputElementsStartSystem.insert(1, newElements);
-            }
-        }
+        setUpInputElementsForNormalTransformations(trafoParam, systemTransformation, true, isBestFitWithLevel);
     }
 
     //#########################
@@ -736,58 +756,12 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     if(isAlignment){
         setUpInputElementsForAlignmentTransformations(systemTransformation, false);
     } else { //set up input elements for normal transformations
-
-        //get input elements at the position 0
-        QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
-        foreach(const InputElement &element, inputElements){
-
-            //add all points
-            if(element.typeOfElement == ePointElement && !element.point.isNull()){
-                if((!trafoParam->getDestinationSystem()->getIsStationSystem() && element.point->getIsNominal())
-                        || element.point->getIsSolved()){
-                    Point p(element.point->getIsNominal());
-                    p.setFeatureName(element.point->getFeatureName());
-                    p.setPoint(element.point->getPosition());
-                    sorter.addRefPoint(p);
-                }
-            }
-        }
-        //bestFit with level
-        if(keys.size() == 2){
-            //get input elements at the position key
-            QList<InputElement> newElements;
-
-            //get input elements at the position key
-            QList<InputElement> inputElements = systemTransformation->getInputElements().value(1);
-            foreach(const InputElement &element, inputElements){
-
-                //check geometry
-                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
-                    continue;
-                }
-
-                //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
-                    continue;
-                }
-
-                InputElement copyElement(element.id);
-                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
-                newElements.append(copyElement);
-            }
-            if(newElements.size() > 0){
-                systemTransformation->inputElementsDestinationSystem.insert(1, newElements);
-            }
-        }
+        setUpInputElementsForNormalTransformations(trafoParam, systemTransformation, false, isBestFitWithLevel);
     }
 
     //#########################
     //reswitch to active system
     //#########################
-
-    //add sorted lists to the function
-    systemTransformation->inputPointsStartSystem = sorter.getLocPoints();
-    systemTransformation->inputPointsDestinationSystem = sorter.getRefPoints();
 
     //switch back to active system
     this->switchCoordinateSystem();
