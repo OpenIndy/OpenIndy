@@ -407,13 +407,8 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
     deleteElements(systemTransformation);
 
     //get and check keys
-    bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
-    if(keys.size() == 1){ //normal transformation
-        isAlignment = false;
-    }else{ //alignment
-        isAlignment = true;
-    }
+    const bool isAlignment = !(keys.size() == 1); //normal transformation
 
     //sort helper object which compares and sorts the list of start and target points
     SortListByName sorter;
@@ -701,14 +696,8 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
     //get and check keys
     QList<int> keys = systemTransformation->getInputElements().keys();
-    bool isAlignment;
     const bool isBestFitWithLevel = keys.size() == 2; // TODO do not dectect by count of keys / elements
-    if((keys.size() == 1) || isBestFitWithLevel){ //normal transformation
-        isAlignment = false;
-    }else{ //alignment
-        isAlignment = true;
-    }
-
+    const bool isAlignment = !((keys.size() == 1) || isBestFitWithLevel); //normal transformation
 
     //###################
     //set up start system
@@ -758,13 +747,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
     //TODO bool oder aehnliches verwenden und nicht keys
 
     //get and check keys
-    bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
-    if(keys.size() == 1){ //normal transformation
-        isAlignment = false;
-    }else{ //alignment
-        isAlignment = true;
-    }
+    const bool isAlignment = !(keys.size() == 1); //normal transformation
 
     //sort helper object which compares and sorts the list of start and target points
     SortListByName sorter;
@@ -857,13 +841,8 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     }
 
     //get and check keys
-    bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
-    if(keys.size() == 1 || keys.size() == 2){ //normal transformation
-        isAlignment = false;
-    }else{ //alignment
-        isAlignment = true;
-    }
+    const bool isAlignment = !(keys.size() == 1 || keys.size() == 2); //normal transformation
 
     //sort helper object which compares and sorts the list of start and target points
     SortListByName sorter;
