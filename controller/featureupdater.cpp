@@ -1041,7 +1041,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
                 if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
                     continue;
                 }
-                Plane plane = *element.geometry->getFeatureWrapper()->getPlane();
+
                 InputElement copyElement(element.id);
                 this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
                 newElements.append(copyElement);
