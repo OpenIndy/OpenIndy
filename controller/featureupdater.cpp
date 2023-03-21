@@ -679,10 +679,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     //set up input elements for alignment transformations
     if(isAlignment){
         setUpInputElementsForAlignmentTransformations(systemTransformation, true);
-    }
-
-    //set up input elements for normal transformations
-    if(!isAlignment){
+    } else { //set up input elements for normal transformations
 
         //get input elements at the position 0
         QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
@@ -738,10 +735,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     //set up input elements for alignment transformations
     if(isAlignment){
         setUpInputElementsForAlignmentTransformations(systemTransformation, false);
-    }
-
-    //set up input elements for normal transformations
-    if(!isAlignment){
+    } else { //set up input elements for normal transformations
 
         //get input elements at the position 0
         QList<InputElement> inputElements = systemTransformation->getInputElements().value(0);
