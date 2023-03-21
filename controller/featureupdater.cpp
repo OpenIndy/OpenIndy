@@ -720,11 +720,12 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     systemTransformation->inputElementsDestinationSystem.clear();
 
     //get and check keys
-    bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
+    bool isAlignment;
+    const bool isBestFitWithLevel = keys.size() == 2; // TODO do not dectect by count of keys / elements
     if(keys.size() <= 0){ //no input elements
         return;
-    }else if((keys.size() == 1) || (keys.size() == 2)){ //normal transformation
+    }else if((keys.size() == 1) || isBestFitWithLevel){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
