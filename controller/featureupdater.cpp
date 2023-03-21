@@ -585,6 +585,45 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
 
 }
 
+void FeatureUpdater::setUpInputElementsForAlignmentTransformations(const QPointer<SystemTransformation> &systemTransformation, const bool &startSystem) {
+    //run through all keys and add start system elements
+    QList<int> keys = systemTransformation->getInputElements().keys();
+    foreach(const int &key, keys){
+
+        QList<InputElement> newElements;
+
+        //get input elements at the position key
+        QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
+        foreach(const InputElement &element, inputElements){
+
+            //check geometry
+            if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
+                continue;
+            }
+
+            //check if the geometry is an actual and is solved
+            if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
+                continue;
+            }
+
+            InputElement copyElement(element.id);
+            this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
+            newElements.append(copyElement);
+
+        }
+
+        if(newElements.size() > 0){
+            if(startSystem) {
+                systemTransformation->inputElementsStartSystem.insert(key, newElements);
+            } else {
+                systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
+            }
+        }
+
+    }
+
+}
+
 /*!
  * \brief FeatureUpdater::setUpTrafoParamActualNominal
  * \param trafoParam
@@ -639,39 +678,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
     //set up input elements for alignment transformations
     if(isAlignment){
-
-        //run through all keys and add start system elements
-        QList<int> keys = systemTransformation->getInputElements().keys();
-        foreach(const int &key, keys){
-
-            QList<InputElement> newElements;
-
-            //get input elements at the position key
-            QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
-            foreach(const InputElement &element, inputElements){
-
-                //check geometry
-                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
-                    continue;
-                }
-
-                //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
-                    continue;
-                }
-
-                InputElement copyElement(element.id);
-                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
-                newElements.append(copyElement);
-
-            }
-
-            if(newElements.size() > 0){
-                systemTransformation->inputElementsStartSystem.insert(key, newElements);
-            }
-
-        }
-
+        setUpInputElementsForAlignmentTransformations(systemTransformation, true);
     }
 
     //set up input elements for normal transformations
@@ -730,39 +737,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
 
     //set up input elements for alignment transformations
     if(isAlignment){
-
-        //run through all keys and add destination system elements
-        QList<int> keys = systemTransformation->getInputElements().keys();
-        foreach(const int &key, keys){
-
-            QList<InputElement> newElements;
-
-            //get input elements at the position key
-            QList<InputElement> inputElements = systemTransformation->getInputElements().value(key);
-            foreach(const InputElement &element, inputElements){
-
-                //check geometry
-                if(element.geometry.isNull() || element.geometry->getFeatureWrapper().isNull()){
-                    continue;
-                }
-
-                //check if the geometry is an actual and is solved
-                if(element.geometry->getIsNominal() || !element.geometry->getIsSolved()){
-                    continue;
-                }
-
-                InputElement copyElement(element.id);
-                this->copyGeometry(copyElement, element.geometry->getFeatureWrapper(), element.typeOfElement);
-                newElements.append(copyElement);
-
-            }
-
-            if(newElements.size() > 0){
-                systemTransformation->inputElementsDestinationSystem.insert(key, newElements);
-            }
-
-        }
-
+        setUpInputElementsForAlignmentTransformations(systemTransformation, false);
     }
 
     //set up input elements for normal transformations
