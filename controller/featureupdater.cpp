@@ -403,29 +403,7 @@ void FeatureUpdater::recursiveFeatureRecalculation(const QPointer<Feature> &feat
  */
 void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
 
-    //delete old copy elements
-    systemTransformation->inputPointsStartSystem.clear();
-    systemTransformation->inputPointsDestinationSystem.clear();
-    QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
-    foreach(const int &key, startKeys){
-        QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
-        foreach(const InputElement &element, startElements){
-            if(!element.geometry.isNull()){
-                delete element.geometry.data();
-            }
-        }
-    }
-    systemTransformation->inputElementsStartSystem.clear();
-    QList<int> destKeys = systemTransformation->inputElementsDestinationSystem.keys();
-    foreach(const int &key, destKeys){
-        QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
-        foreach(const InputElement &element, destElements){
-            if(!element.geometry.isNull()){
-                delete element.geometry.data();
-            }
-        }
-    }
-    systemTransformation->inputElementsDestinationSystem.clear();
+    deleteElements(systemTransformation);
 
     //get and check keys
     bool isAlignment;
@@ -778,29 +756,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
  */
 void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
 
-    //delete old copy elements
-    systemTransformation->inputPointsStartSystem.clear();
-    systemTransformation->inputPointsDestinationSystem.clear();
-    QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
-    foreach(const int &key, startKeys){
-        QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
-        foreach(const InputElement &element, startElements){
-            if(!element.geometry.isNull()){
-                delete element.geometry.data();
-            }
-        }
-    }
-    systemTransformation->inputElementsStartSystem.clear();
-    QList<int> destKeys = systemTransformation->inputElementsDestinationSystem.keys();
-    foreach(const int &key, destKeys){
-        QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
-        foreach(const InputElement &element, destElements){
-            if(!element.geometry.isNull()){
-                delete element.geometry.data();
-            }
-        }
-    }
-    systemTransformation->inputElementsDestinationSystem.clear();
+    deleteElements(systemTransformation);
 
     //TODO bool oder aehnliches verwenden und nicht keys
 
@@ -884,31 +840,8 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
  */
 void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation)
 {
-    //delete old copy elements
-    systemTransformation->inputPointsStartSystem.clear();
-    systemTransformation->inputPointsDestinationSystem.clear();
 
-    QList<int> startKeys = systemTransformation->inputElementsStartSystem.keys();
-    foreach (const int &key, startKeys) {
-        QList<InputElement> startElements = systemTransformation->inputElementsStartSystem.value(key);
-        foreach (const InputElement &element, startElements) {
-            if(!element.geometry.isNull()){
-                delete element.geometry.data();
-            }
-        }
-    }
-    systemTransformation->inputElementsStartSystem.clear();
-
-    QList<int> destKeys = systemTransformation->inputElementsDestinationSystem.keys();
-    foreach (const int &key, destKeys) {
-        QList<InputElement> destElements = systemTransformation->inputElementsDestinationSystem.value(key);
-        foreach (const InputElement &element, destElements) {
-            if(!element.geometry.isNull()){
-                delete element.geometry.data();
-            }
-        }
-    }
-    systemTransformation->inputElementsDestinationSystem.clear();
+    deleteElements(systemTransformation);
 
     //check if this trafo already exists and temporary de activate the transformation
     QList<QPointer<TrafoParam> > existingTrafoParams = this->currentJob->getTransformationParametersList();
