@@ -139,7 +139,8 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
         return;
     }
     QPointer<SystemTransformation> systemTransformation = dynamic_cast<SystemTransformation *>(trafoParam->getFunctions().at(0).data());
-    if(systemTransformation.isNull()){
+    if(systemTransformation.isNull()
+            || systemTransformation->getInputElements().keys().isEmpty()){
         return;
     }
 
@@ -408,9 +409,7 @@ void FeatureUpdater::setUpTrafoParamActualActual(const QPointer<TrafoParam> &tra
     //get and check keys
     bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
-    if(keys.size() <= 0){ //no input elements
-        return;
-    }else if(keys.size() == 1){ //normal transformation
+    if(keys.size() == 1){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
@@ -704,9 +703,7 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
     QList<int> keys = systemTransformation->getInputElements().keys();
     bool isAlignment;
     const bool isBestFitWithLevel = keys.size() == 2; // TODO do not dectect by count of keys / elements
-    if(keys.size() <= 0){ //no input elements
-        return;
-    }else if((keys.size() == 1) || isBestFitWithLevel){ //normal transformation
+    if((keys.size() == 1) || isBestFitWithLevel){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
@@ -763,9 +760,7 @@ void FeatureUpdater::setUpTrafoParamNominalNominal(const QPointer<TrafoParam> &t
     //get and check keys
     bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
-    if(keys.size() <= 0){ //no input elements
-        return;
-    }else if(keys.size() == 1){ //normal transformation
+    if(keys.size() == 1){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
@@ -864,9 +859,7 @@ void FeatureUpdater::setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &tr
     //get and check keys
     bool isAlignment;
     QList<int> keys = systemTransformation->getInputElements().keys();
-    if(keys.size() <= 0){ //no input elements
-        return;
-    }else if(keys.size() == 1 || keys.size() == 2){ //normal transformation
+    if(keys.size() == 1 || keys.size() == 2){ //normal transformation
         isAlignment = false;
     }else{ //alignment
         isAlignment = true;
