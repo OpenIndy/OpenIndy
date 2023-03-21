@@ -687,14 +687,7 @@ void FeatureUpdater::setUpInputElementsForNormalTransformations(const QPointer<T
     }
 
 }
-
-/*!
- * \brief FeatureUpdater::setUpTrafoParamActualNominal
- * \param trafoParam
- * \param systemTransformation
- */
-void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
-
+void FeatureUpdater::deleteElements(const QPointer<SystemTransformation> &systemTransformation) {
     //delete old copy elements
     systemTransformation->inputPointsStartSystem.clear();
     systemTransformation->inputPointsDestinationSystem.clear();
@@ -718,6 +711,16 @@ void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &tr
         }
     }
     systemTransformation->inputElementsDestinationSystem.clear();
+}
+
+/*!
+ * \brief FeatureUpdater::setUpTrafoParamActualNominal
+ * \param trafoParam
+ * \param systemTransformation
+ */
+void FeatureUpdater::setUpTrafoParamActualNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation){
+
+    deleteElements(systemTransformation);
 
     //get and check keys
     QList<int> keys = systemTransformation->getInputElements().keys();

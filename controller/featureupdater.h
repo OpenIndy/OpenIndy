@@ -83,6 +83,7 @@ private:
     void setUpTrafoParamBundleNominal(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation);
     void setUpInputElementsForAlignmentTransformations(const QPointer<SystemTransformation> &systemTransformation, const bool &startSystem);
     void setUpInputElementsForNormalTransformations(const QPointer<TrafoParam> &trafoParam, const QPointer<SystemTransformation> &systemTransformation, const bool &startSystem, const bool &bestFitWithLevel);
+    void deleteElements(const QPointer<SystemTransformation> &systemTransformation);
 
     //change the active coordinate system (does not transform observations)
     void switchCoordinateSystemWithoutTransformation(const QPointer<CoordinateSystem> &destinationSystem);
