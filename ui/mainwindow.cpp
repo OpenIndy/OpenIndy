@@ -775,6 +775,9 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
 
     const bool isStation = !selectedFeature->getStation().isNull();
     const bool isGeometry = !selectedFeature->getGeometry().isNull();
+    const bool showEnableDisableMenuEntries =
+                (isGeometry && !selectedFeature->getGeometry()->getObservations().isEmpty())
+                || isStation;
 
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
@@ -796,16 +799,17 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         QString("recalc %1").arg(featureName),
                         &this->control, SLOT(recalcActiveFeature()));
 
+        if(showEnableDisableMenuEntries) {
+            menu->addAction(QString("enable all observations of %1").arg(featureName),
+                            this, SLOT(enableObservationsOfActiveFeature()));
+
+            menu->addAction(QString("disable all observations of %1").arg(featureName),
+                            this, SLOT(disableObservationsOfActiveFeature()));
+        }
         //if the active feature is a geometry
         if(isGeometry){
 
-            if(!selectedFeature->getGeometry()->getObservations().isEmpty()) {
-                menu->addAction(QString("enable all observations of %1").arg(featureName),
-                                this, SLOT(enableObservationsOfActiveFeature()));
-
-                menu->addAction(QString("disable all observations of %1").arg(featureName),
-                                this, SLOT(disableObservationsOfActiveFeature()));
-
+            if(showEnableDisableMenuEntries) {
                 menu->addAction(QIcon(":/Images/icons/cancel.png"),
                                 QString("remove observations of %1").arg(featureName),
                                 this, SLOT(removeObservationOfActiveFeature()));
