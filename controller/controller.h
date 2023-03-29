@@ -31,7 +31,6 @@
 #include "oiwebsocketserver.h"
 #endif
 #include "projectconfig.h"
-#include "stablepointlogic.h"
 #include "controllersensoractions.h"
 
 using namespace oi;
@@ -58,11 +57,6 @@ public:
     bool hasProjectDigestChanged();
 
     void _startMeasurement(bool dummyPoint);
-
-    void stopStablePointMeasurement(); // TODO OI-496: signal / slot?
-    void startStablePointMeasurement();// TODO OI-496: signal / slot?
-
-    bool activeFeatureUseStablePointMeasurement(); // TODO OI-496: private ?
 
 private slots:
     void startAimAndMeasure();
@@ -386,7 +380,6 @@ private:
     QMutex saveProjectMutex;
 
     QPointer<Station> getConnectedActiveStation();
-    QPointer<StablePointLogic> stablePointLogic;
 
     QPointer<QThread> sensorWorkerThread;
     QPointer<Station> getActiveStation();

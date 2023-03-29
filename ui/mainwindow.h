@@ -461,7 +461,6 @@ private:
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
     QPropertyAnimation *animation_label_statusSensor;
-    QLabel *label_statusStablePointMeasurement;
 
     //######
     //models

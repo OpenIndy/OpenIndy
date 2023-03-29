@@ -2207,67 +2207,6 @@ void Controller::showToolWidget(const QString &pluginName, const QString &toolNa
 
 }
 
-void Controller::stopStablePointMeasurement() {
-    qDebug() << "stopStablePointMeasurement";
-
-    QPointer<Station> activeStation = getConnectedActiveStation();
-
-    if(!this->stablePointLogic.isNull()) {
-        this->stablePointLogic->stopStablePointMeasurement(); // TODO or call Controller::stopReadingStream ???
-
-        QObject::disconnect(stablePointLogic, &StablePointLogic::startStreaming, this, &Controller::startReadingStream);
-        QObject::disconnect(stablePointLogic, &StablePointLogic::stopStreaming, this, &Controller::stopReadingStream);
-        QObject::disconnect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement);
-        QObject::disconnect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading);
-    }
-    // this->stablePointLogic.clear();
-
-}
-
-
-bool Controller::activeFeatureUseStablePointMeasurement() {
-    QPointer<FeatureWrapper> activeFeature = this->getActiveFeature();
-    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
-        return false;
-    }
-    StablePointConfig config; // TODO
-    config.isStablePoint = false;
-    return config.isStablePoint;
-}
-void Controller::startStablePointMeasurement() {
-
-    // clean up / stop
-    if(!this->stablePointLogic.isNull()) {
-        this->stopStablePointMeasurement();
-    }
-
-    QPointer<Station> activeStation = getConnectedActiveStation();
-    if(activeStation.isNull()) {
-        return;
-    }
-
-    QPointer<FeatureWrapper> activeFeature= this->getActiveFeature();
-    if(activeFeature.isNull() || activeFeature->getGeometry().isNull()){
-        this->log("No active feature", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
-    // start
-     if(this->stablePointLogic.isNull()) {
-        this->stablePointLogic = new StablePointLogic(this);
-     }
-
-    QObject::connect(stablePointLogic, &StablePointLogic::startStreaming, this, &Controller::startReadingStream, Qt::AutoConnection);
-    QObject::connect(stablePointLogic, &StablePointLogic::stopStreaming, this, &Controller::stopReadingStream, Qt::AutoConnection);
-    QObject::connect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
-    QObject::connect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
-
-    StablePointConfig config; // TODO
-    this->stablePointLogic->startStablePointMeasurement(config);
-
-}
-
 void Controller::startSearch(){
     QPointer<Station> activeStation = getConnectedActiveStation();
     if(activeStation.isNull()){

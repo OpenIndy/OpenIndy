@@ -487,27 +487,6 @@ void MeasurementConfigurationDialog::initModels(){
 
 }
 
-void MeasurementConfigurationDialog::on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1)
-{
-    this->updateMeasurementConfigFromSelection();
-}
-
-void MeasurementConfigurationDialog::on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1)
-{
-    this->updateMeasurementConfigFromSelection();
-}
-
-void MeasurementConfigurationDialog::on_checkBox_isStablePoint_clicked()
-{
-    this->updateMeasurementConfigFromSelection();
-}
-
-void MeasurementConfigurationDialog::on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1)
-{
-    this->updateMeasurementConfigFromSelection();
-}
-
-
 void MeasurementConfigurationDialog::on_comboBox_MeasurementMode_currentIndexChanged(int index)
 {
     this->updateMeasurementConfigFromSelection();
