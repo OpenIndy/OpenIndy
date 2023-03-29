@@ -82,13 +82,13 @@ void StablePointLogic::realTimeReading(const QVariantMap &reading){
         rd.distanceToPrevReading = distance;
         rd.distanceToPrevStable = lastMeasuredPointDistance;
         // guess stable because distance is ok
-        rd.guessStable = distance * 1000. < config.getStablePointThresholdRange() && lastMeasuredPointDistance * 1000. > config.getStablePointMinDistance();
+        rd.guessStable = distance * 1000. < config.thresholdRange && lastMeasuredPointDistance * 1000. > config.minDistance;
         qDebug() << DEBUG_READINGDATA(rd);
 
         readingDatas.enqueue(rd);
 
         // removing old ReadingData by time
-        while(rd.elapsed - readingDatas.head().elapsed > this->config.getStablePointThresholdTime() * 1000.) {
+        while(rd.elapsed - readingDatas.head().elapsed > this->config.thresholdTime * 1000.) {
             qDebug() << "remove " << DEBUG_READINGDATA(readingDatas.head());
             readingDatas.dequeue();
         }
@@ -141,7 +141,7 @@ void StablePointLogic::stopStablePointMeasurement(){
 
 }
 
-void StablePointLogic::startStablePointMeasurement(MeasurementConfig config){
+void StablePointLogic::startStablePointMeasurement(StablePointConfig config){
     this->config = config;
 
     qDebug() << "startStablePointMeasurement";
