@@ -431,7 +431,6 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
             //update feature's measurement config
             if(mConfig.isValid()){
                 feature->getGeometry()->setMeasurementConfig(mConfig);
-                SystemDbManager::setDefaultMeasurementConfig(mConfig.getName(), getFeatureTypeName(feature->getFeatureTypeEnum()));
                 return true;
             }
             break;

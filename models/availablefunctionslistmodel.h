@@ -48,7 +48,6 @@ public:
     //############################
 
     QPair<QString, QString> getDefaultFunction(const FeatureTypes &type) const;
-    void setDefaultFunction(const FeatureTypes &type, const QPair<QString, QString> &function);
 
     //############################
     //get or set available plugins
