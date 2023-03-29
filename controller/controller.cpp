@@ -2214,8 +2214,9 @@ bool Controller::activeFeatureUseStablePointMeasurement() {
         this->log("No active feature", eErrorMessage, eMessageBoxMessage);
         return false;
     }
-
-    return activeFeature->getGeometry()->getMeasurementConfig().getIsStablePoint();
+    StablePointConfig config; // TODO
+    config.isStablePoint = false;
+    return config.isStablePoint;
 }
 void Controller::startStablePointMeasurement() {
 
@@ -2245,7 +2246,8 @@ void Controller::startStablePointMeasurement() {
     QObject::connect(stablePointLogic, &StablePointLogic::startMeasurement, this, &Controller::startMeasurement, Qt::AutoConnection);
     QObject::connect(activeStation, &Station::realTimeReading, stablePointLogic, &StablePointLogic::realTimeReading, Qt::AutoConnection);
 
-    this->stablePointLogic->startStablePointMeasurement(activeFeature->getGeometry()->getMeasurementConfig());
+    StablePointConfig config; // TODO
+    this->stablePointLogic->startStablePointMeasurement(config);
 
 }
 
