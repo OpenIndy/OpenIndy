@@ -53,6 +53,7 @@ private Q_SLOTS:
 
     void projectSaveLoad();
 
+    void setDefaultFunctionAndConfig();
 private:
 
     void printMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
@@ -804,6 +805,47 @@ void DialogsTest::projectSaveLoad() {
     QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user), (measconfig-scandistance, project)" == name);
 
 }
+
+void DialogsTest::setDefaultFunctionAndConfig() {
+
+    QList<sdb::Function> functions = SystemDbManager::getFunctions();
+    foreach(sdb::Function function, functions) {
+        qDebug() << "function: " << function.name << function.plugin.file_path;
+    }
+
+    QStringList measurementConfigs = SystemDbManager::getMeasurementConfigs();
+    foreach(QString measurementConfig, measurementConfigs) {
+        qDebug() << "measurementConfig: " << measurementConfig;
+    }
+
+    QList<FeatureTypes> featureTypes = getAvailableFeatureTypes();
+    foreach(FeatureTypes featureType, featureTypes) {
+        qDebug() << "featureType: " << featureType << getFeatureTypeName(featureType);
+    }
+
+    QList<ElementTypes> elementTypes = getAvailableElementTypes();
+    foreach(ElementTypes elementType, elementTypes) {
+        qDebug() << "elementType: " << elementType << getElementTypeName(elementType);
+    }
+
+
+    sdb::Function function = SystemDbManager::getDefaultFunction(getFeatureTypeEnum("point"));
+    qDebug() << "function: " << function.name << function.plugin.file_path;
+    QString name = SystemDbManager::getDefaultMeasurementConfig("point");
+    qDebug() << "measurementConfig: " << name;
+
+    SystemDbManager::setDefaultFunction(getFeatureTypeEnum("point"), "function-fitpoint", "");
+    SystemDbManager::setDefaultMeasurementConfig("FastPoint", "point");
+
+    function = SystemDbManager::getDefaultFunction(getFeatureTypeEnum("point"));
+    qDebug() << "function: " << function.name << function.plugin.file_path;
+    name = SystemDbManager::getDefaultMeasurementConfig("point");
+    qDebug() << "measurementConfig: " << name;
+
+    QVERIFY(function.name == "function-fitpoint");
+    QVERIFY(name == "FastPoint");
+}
+
 
 
 QTEST_MAIN(DialogsTest)
