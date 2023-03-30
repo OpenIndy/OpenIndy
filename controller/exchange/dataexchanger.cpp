@@ -434,72 +434,28 @@ void DataExchanger::createActuals(QList<QPointer<FeatureWrapper> > features) {
             fAttr.isNominal = false;
             fAttr.isCommon = !QString::compare(fw->getFeature()->property("OI_FEATURE_COMMONSTATE").toString(), "true", Qt::CaseInsensitive);
 
-            MeasurementConfig mConfig;
-
-            //function
-            if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) {
-                mConfig = mConfigManager->getUserConfig("level");
-                if(!mConfig.isValid()) {
-                    emit this->sendMessage("No measurement config \"level\" found.", eErrorMessage, eConsoleMessage);
-                    continue;
-                }
-
-                sdb::Function function;
-                bool foundFunction = false;
-                foreach(sdb::Function f, SystemDbManager::getFunctions()) {
-                    if(f.name.compare("FitLevel") == 0) {
-                        function = f;
-                        foundFunction = true;
-                        break;
-                    }
-                }
-                if(!foundFunction) {
-                    emit this->sendMessage("No function \"FitLevel\" found.", eErrorMessage, eConsoleMessage);
-                    continue;
-                }
-
-                QPair<QString, QString> functionPlugin;
-                functionPlugin.first = function.name;
-                functionPlugin.second = function.plugin.file_path;
-                fAttr.functionPlugin = functionPlugin;
+            QString mcElementTypeName;
+            FeatureTypes funFeatureType;
+            if(fw->getFeature()->property("OI_FEATURE_PLANE_LEVEL").toBool()) { // property is still needed because there is no separate FeatureType for Level
+                mcElementTypeName = getElementTypeName(ElementTypes::eLevelElement);
+                funFeatureType = FeatureTypes::eLevelFeature;
             } else {
-                //mconfig and function from default
-                if(!this->mConfigManager.isNull()){
-                    //TODO fix that all measurement configs are saved in the database OI-373
-                    //mConfig = this->mConfigManager->getActiveConfig(getGeometryTypeEnum(fw->getFeatureTypeEnum()));
-                    //mConfig = this->mConfigManager->getUserConfig(SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString()))));
-
-                    QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(fw->getFeatureTypeString())));
-
-                    mConfig = mConfigManager->getUserConfig(elementConfigName);
-
-                    /*//Workaround until bug is fixed
-                    QList<MeasurementConfig> mConfigs = this->mConfigManager->getUserConfigs();
-                    if(mConfigs.size() > 0){
-                        bool fpExists = false;
-                        foreach (MeasurementConfig mC, mConfigs) {
-                            if(mC.getName().compare("FastPoint") == 0){
-                                mConfig = this->mConfigManager->getUserConfig("FastPoint");
-                                fpExists = true;
-                            }
-                        }
-                        if(!fpExists){
-                            mConfig = this->mConfigManager->getUserConfig(mConfigs.at(0).getName());
-                        }
-                    }
-                    fAttr.mConfig = mConfig.getName();*/
-                }
-
-                sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(fAttr.typeOfFeature);
-                QPair<QString, QString> functionPlugin;
-                functionPlugin.first = defaultFunction.name;
-                functionPlugin.second = defaultFunction.plugin.file_path;
-                fAttr.functionPlugin = functionPlugin;
+                mcElementTypeName = fw->getFeatureTypeString();
+                funFeatureType = fAttr.typeOfFeature;
             }
+
+            QString mConfigName = SystemDbManager::getDefaultMeasurementConfig(mcElementTypeName);
+            MeasurementConfig mConfig = mConfigManager->findConfig(mConfigName);
+
+            sdb::Function defaultFunction = SystemDbManager::getDefaultFunction(funFeatureType);
+            QPair<QString, QString> functionPlugin;
+            functionPlugin.first = defaultFunction.name;
+            functionPlugin.second = defaultFunction.plugin.file_path;
+            fAttr.functionPlugin = functionPlugin;
 
             QList<QPointer<FeatureWrapper> > addedFeatures = this->currentJob->addFeatures(fAttr);
 
-            this->addFunctionsAndMConfigs(addedFeatures,mConfig, fAttr.functionPlugin.second, fAttr.functionPlugin.first);
+            this->addFunctionsAndMConfigs(addedFeatures, mConfig, fAttr.functionPlugin.second, fAttr.functionPlugin.first);
 
             break;
         } //case
