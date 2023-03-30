@@ -77,24 +77,6 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
         return;
     }
 
-    //get and cast source model
-    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
-    if(source_model == NULL){
-        if(this->created){
-            this->close();
-        }
-        return;
-    }
-
-    //set default function
-    QPair<QString, QString> functionPlugin;
-    functionPlugin.first = function.name;
-    functionPlugin.second = function.plugin.file_path;
-    source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
-
-    //set default measurement config
-    SystemDbManager::setDefaultMeasurementConfig(attributes.mConfig , getFeatureTypeName(this->typeOfFeature));
-
     if(this->created){
         this->close();
     }
@@ -413,7 +395,11 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        attributes.mConfig = this->neededElements.isEmpty() ? "" : this->ui->comboBox_mConfig->currentText();
+        if(!this->neededElements.isEmpty()) {
+            attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
+                        measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
+                        );
+        }
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
@@ -422,7 +408,11 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        attributes.mConfig = this->neededElements.isEmpty() ? "" : this->ui->comboBox_mConfig->currentText();
+        if(!this->neededElements.isEmpty()) {
+            attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
+                        measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
+                        );
+        }
 
     }
 

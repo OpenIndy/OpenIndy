@@ -57,6 +57,7 @@ const QPointer<MeasurementConfigManager> &OiRequestHandler::getMeasurementConfig
  * \param measurementConfigManager
  */
 void OiRequestHandler::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &measurementConfigManager){
+    this->projectExchanger.setMeasurementConfigManager(measurementConfigManager);
     this->measurementConfigManager = measurementConfigManager;
 }
 
@@ -340,7 +341,7 @@ void OiRequestHandler::getProject(OiRequestResponse &request){
     this->prepareResponse(request);
 
     //get and set project xml
-    QDomDocument project = ProjectExchanger::saveProject(this->currentJob);
+    QDomDocument project = projectExchanger.saveProject(this->currentJob);
     if(!project.isNull()){
         request.response.documentElement().appendChild(request.response.importNode(project.documentElement(), true));
     }
@@ -870,16 +871,16 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
         attr.nominalSystem = nominalSystem.text();
     }
     if(!measurementConfig.isNull()){
-        attr.mConfig = measurementConfig.text();
+        attr.measurementConfigName = measurementConfig.text();
     }
 
     //add features
     QList<QPointer<FeatureWrapper> > features = this->currentJob->addFeatures(attr);
 
     //get and check measurement config
-    MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(attr.mConfig);
-    if(!mConfig.getIsValid()){
-        mConfig = this->measurementConfigManager->getProjectMeasurementConfig(attr.mConfig);
+    MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(attr.measurementConfigName);
+    if(!mConfig.isValid()){
+        mConfig = this->measurementConfigManager->getProjectConfig(attr.measurementConfigName);
     }
 
     //pass measurement config to features
@@ -1144,7 +1145,7 @@ void OiRequestHandler::getParameters(OiRequestResponse &request){
 
 }
 
-QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool saved, QDomDocument &response){
+QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool isUserConfig, QDomDocument &response){
     QDomElement config = response.createElement("measurementConfig");
 
     QDomElement name = response.createElement("name");
@@ -1153,7 +1154,7 @@ QDomElement OiRequestHandler::toXML(const MeasurementConfig &mConfig, const bool
     config.appendChild(name);
 
     QDomElement isSaved = response.createElement("isSaved");
-    QDomText isSavedText = response.createTextNode(saved ? "1" : "0");
+    QDomText isSavedText = response.createTextNode(isUserConfig ? "1" : "0");
     isSaved.appendChild(isSavedText);
     config.appendChild(isSaved);
 
@@ -1206,17 +1207,10 @@ void OiRequestHandler::getMeasurementConfigs(OiRequestResponse &request){
         return;
     }
 
-    //get all measurement configs
-    QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getSavedMeasurementConfigs();
-    QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectMeasurementConfigs();
-
     //add configs
     QDomElement configs = request.response.createElement("measurementConfigs");
-    foreach(const MeasurementConfig &mConfig, savedConfigs){
-        configs.appendChild(toXML(mConfig, true, request.response));
-    }
-    foreach(const MeasurementConfig &mConfig, projectConfigs){
-        configs.appendChild(toXML(mConfig, false, request.response));
+    foreach(const MeasurementConfig &mConfig, this->measurementConfigManager->getConfigs()){
+        configs.appendChild(toXML(mConfig, mConfig.isUserConfig(), request.response));
     }
     request.response.documentElement().appendChild(configs);
 
@@ -1294,13 +1288,13 @@ void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
 
     //get and check measurement config
     MeasurementConfig mConfig;
-    bool savedConfig = (bool)isSaved.text().toInt();
-    if(savedConfig){
-        mConfig = this->measurementConfigManager->getSavedMeasurementConfig(measurementConfig.text());
+    bool userConfig = (bool)isSaved.text().toInt();
+    if(userConfig){
+        mConfig = this->measurementConfigManager->getUserConfig(measurementConfig.text());
     }else{
-        mConfig = this->measurementConfigManager->getProjectMeasurementConfig(measurementConfig.text());
+        mConfig = this->measurementConfigManager->getProjectConfig(measurementConfig.text());
     }
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         this->sendErrorMessage(request, OiRequestResponse::eSetMeasurementConfig, OiRequestResponse::eNoMeasurementConfig);
         return;
     }

@@ -129,11 +129,10 @@ SOURCES += \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
     $$PWD/../controller/config/projectconfig.cpp \
     $$PWD/../ui/dialogs/uiutil.cpp \
-    $$PWD/../controller/stablepointlogic.cpp \
-    $$PWD/../ui/dialogs/showlicensesdialog.cpp \
     $$PWD/../controller/clipboardutil.cpp \
     $$PWD/../ui/dialogs/measurebehaviordialog.cpp \
-    $$PWD/../controller/measurebehaviorlogic.cpp
+    $$PWD/../controller/measurebehaviorlogic.cpp \
+    $$PWD/../controller/config/defaultsconfiginit.cpp
 
 # header files
 HEADERS  += \
@@ -238,13 +237,13 @@ HEADERS  += \
     $$PWD/../models/featuredifferenceproxymodel.h \
     $$PWD/../controller/config/projectconfig.h \
     $$PWD/../ui/dialogs/uiutil.h \
-    $$PWD/../controller/stablepointlogic.h \
     $$PWD/../ui/dialogs/showlicensesdialog.h \
     $$PWD/../controller/clipboardutil.h \
     $$PWD/../ui/dialogs/measurebehaviordialog.h \
     $$PWD/../controller/measurebehaviorlogic.h \
     $$PWD/../controller/controllersensoractions.h \
-    $$PWD/../controller/measurebehaviortypes.h
+    $$PWD/../controller/measurebehaviortypes.h \
+    $$PWD/../controller/config/defaultsconfiginit.h
 
 # ui files
 FORMS    += \

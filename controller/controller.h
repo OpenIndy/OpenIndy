@@ -27,9 +27,10 @@
 #include "featureupdater.h"
 #include "projectexchanger.h"
 #include "pluginloader.h"
+#ifdef OI_WEBSOCKETSERVER_ENABLED
 #include "oiwebsocketserver.h"
+#endif
 #include "projectconfig.h"
-#include "stablepointlogic.h"
 #include "controllersensoractions.h"
 
 using namespace oi;
@@ -56,11 +57,6 @@ public:
     bool hasProjectDigestChanged();
 
     void _startMeasurement(bool dummyPoint);
-
-    void stopStablePointMeasurement(); // TODO OI-496: signal / slot?
-    void startStablePointMeasurement();// TODO OI-496: signal / slot?
-
-    bool activeFeatureUseStablePointMeasurement(); // TODO OI-496: private ?
 
 private slots:
     void startAimAndMeasure();
@@ -97,6 +93,7 @@ public slots:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //import or export features
     void importNominals(const ExchangeParams &params);
@@ -284,8 +281,10 @@ signals:
     //##############################
 
     //start and stop server
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     void startWebSocketServer();
     void stopWebSocketServer();
+#endif
 
     //error create trafo Param
     void requestMessageBoxTrafoParam();
@@ -318,14 +317,18 @@ private:
     void initDisplayConfigs();
     void initConfigManager();
     void initToolPlugins();
+    void initDefaults();
 
     //register meta types
     void registerMetaTypes();
 
     //start or stop OpenIndy server
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     void initServer();
     void startServer();
     void stopServer();
+    void connectRequestHandler();
+#endif
 
     //create feature helpers
     bool createActualFromNominal(const QPointer<Geometry> &geometry);
@@ -339,7 +342,6 @@ private:
     //connect helper objects
     void connectDataExchanger();
     void connectFeatureUpdater();
-    void connectRequestHandler();
 
     //connect tools
     void connectToolPlugin(const QPointer<Tool> &tool);
@@ -361,13 +363,16 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+    ProjectExchanger projectExchanger;
 
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     //thread and server instance
     QThread serverThread;
     QPointer<OiWebSocketServer> webSocketServer;
 
     //request handler for web socket requests
     OiRequestHandler requestHandler;
+#endif
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;
@@ -376,7 +381,6 @@ private:
     QMutex saveProjectMutex;
 
     QPointer<Station> getConnectedActiveStation();
-    QPointer<StablePointLogic> stablePointLogic;
 
     QPointer<QThread> sensorWorkerThread;
     QPointer<Station> getActiveStation();

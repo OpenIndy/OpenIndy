@@ -114,6 +114,7 @@ signals:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();
@@ -141,9 +142,6 @@ signals:
 
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
-
-    //load sensorconfigs and measurementconfigs from folders and store in databas
-    void loadAndSaveConfigs();
 
     void createTemplateFromJob();
 
@@ -463,7 +461,6 @@ private:
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
     QPropertyAnimation *animation_label_statusSensor;
-    QLabel *label_statusStablePointMeasurement;
 
     //######
     //models

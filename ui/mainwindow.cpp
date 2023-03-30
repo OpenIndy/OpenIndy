@@ -489,19 +489,12 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     case Qt::Key_F3: //measure
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
-        }else if(control.activeFeatureUseStablePointMeasurement()) {
-            this->label_statusStablePointMeasurement->setText("stable point");
-            this->control.startStablePointMeasurement();
         }else{ //normal measurement
             this->control._startMeasurement(false);
         }
         break;
     case Qt::Key_F5: // measure as dummy point
             this->control._startMeasurement(true);
-        break;
-    case Qt::Key_Escape: // stop or terminate all running actions
-        this->label_statusStablePointMeasurement->setText("");
-        this->control.stopStablePointMeasurement();
         break;
 
     case Qt::Key_A: //aim
@@ -2126,6 +2119,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::saveUserConfig, &this->control, &Controller::saveUserConfig, Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)(const QString&)>(&MainWindow::saveProject),
@@ -2143,7 +2137,6 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
-    QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
@@ -2206,6 +2199,7 @@ void MainWindow::connectDialogs(){
 
     //connect measurement config dialog
     QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::saveUserConfig, this, &MainWindow::saveUserConfig, Qt::AutoConnection);
 
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);
@@ -2507,7 +2501,6 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitMetric = new QLabel();
     this->label_statusUnitAngular = new QLabel();
     this->label_statusUnitTemperature = new QLabel();
-    this->label_statusStablePointMeasurement = new QLabel();
 
     //format GUI elements
     this->label_statusUnitMetric->setMinimumWidth(50);
@@ -2516,10 +2509,8 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitAngular->setAlignment(Qt::AlignHCenter);
     this->label_statusUnitTemperature->setMinimumWidth(50);
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
-    this->label_statusStablePointMeasurement->setStyleSheet("QLabel { color : orangered;  font-weight: bold;}");
 
     //add GUI elements to status bar
-    this->ui->statusBar->addPermanentWidget(this->label_statusStablePointMeasurement);
     this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);
