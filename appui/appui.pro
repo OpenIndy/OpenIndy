@@ -131,7 +131,8 @@ SOURCES += \
     $$PWD/../ui/dialogs/uiutil.cpp \
     $$PWD/../controller/clipboardutil.cpp \
     $$PWD/../ui/dialogs/measurebehaviordialog.cpp \
-    $$PWD/../controller/measurebehaviorlogic.cpp
+    $$PWD/../controller/measurebehaviorlogic.cpp \
+    $$PWD/../controller/config/defaultsconfiginit.cpp
 
 # header files
 HEADERS  += \
@@ -241,7 +242,8 @@ HEADERS  += \
     $$PWD/../ui/dialogs/measurebehaviordialog.h \
     $$PWD/../controller/measurebehaviorlogic.h \
     $$PWD/../controller/controllersensoractions.h \
-    $$PWD/../controller/measurebehaviortypes.h
+    $$PWD/../controller/measurebehaviortypes.h \
+    $$PWD/../controller/config/defaultsconfiginit.h
 
 # ui files
 FORMS    += \

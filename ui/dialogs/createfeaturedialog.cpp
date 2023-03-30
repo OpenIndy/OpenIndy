@@ -77,24 +77,6 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
         return;
     }
 
-    //get and cast source model
-    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
-    if(source_model == NULL){
-        if(this->created){
-            this->close();
-        }
-        return;
-    }
-
-    //set default function
-    QPair<QString, QString> functionPlugin;
-    functionPlugin.first = function.name;
-    functionPlugin.second = function.plugin.file_path;
-    source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
-
-    //set default measurement config
-    SystemDbManager::setDefaultMeasurementConfig(attributes.measurementConfigName, getFeatureTypeName(this->typeOfFeature));
-
     if(this->created){
         this->close();
     }
