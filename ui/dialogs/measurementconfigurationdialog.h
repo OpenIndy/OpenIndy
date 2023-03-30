@@ -92,14 +92,6 @@ private slots:
     //triggered when measurement config name has been edited
     void measurementConfigNameChanged(const MeasurementConfig &mConfig);
 
-    void on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1);
-
-    void on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1);
-
-    void on_checkBox_isStablePoint_clicked();
-
-    void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
-
     void on_comboBox_MeasurementMode_currentIndexChanged(int index);
 
     void on_comboBox_MeasurementType_currentIndexChanged(int index);
