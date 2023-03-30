@@ -9,6 +9,7 @@
 #include "measurementconfigurationdialog.h"
 #include "projectexchanger.h"
 #include "controller.h"
+#include "defaultsconfiginit.h"
 
 // recomended readings:
 // https://gist.github.com/peteristhegreat/cbd8eaa0e565d0b82dbfb5c7fdc61c8d
@@ -828,14 +829,19 @@ void DialogsTest::setDefaultFunctionAndConfig() {
         qDebug() << "elementType: " << elementType << getElementTypeName(elementType);
     }
 
-
     sdb::Function function = SystemDbManager::getDefaultFunction(getFeatureTypeEnum("point"));
     qDebug() << "function: " << function.name << function.plugin.file_path;
     QString name = SystemDbManager::getDefaultMeasurementConfig("point");
     qDebug() << "measurementConfig: " << name;
 
-    SystemDbManager::setDefaultFunction(getFeatureTypeEnum("point"), "function-fitpoint", "");
-    SystemDbManager::setDefaultMeasurementConfig("FastPoint", "point");
+    QString path;
+    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/../defaults.json");
+    qDebug() << "path" << path;
+
+    DefaultsConfigInit defaultsConfig;
+    QObject::connect(&defaultsConfig, &DefaultsConfigInit::sendMessage,
+                     this, &DialogsTest::printMessage);
+    defaultsConfig.init(path);
 
     function = SystemDbManager::getDefaultFunction(getFeatureTypeEnum("point"));
     qDebug() << "function: " << function.name << function.plugin.file_path;
