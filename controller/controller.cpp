@@ -1,5 +1,5 @@
 #include "controller.h"
-
+#include "defaultsconfiginit.h"
 /*!
  * \brief Controller::Controller
  * \param parent
@@ -42,6 +42,8 @@ Controller::Controller(QObject *parent) : QObject(parent){
 
     //initialize tool plugins
     this->initToolPlugins();
+
+    this->initDefaults();
 
     //connect helper objects
     this->connectDataExchanger();
@@ -1916,6 +1918,13 @@ void Controller::initToolPlugins(){
 
     }
 
+}
+//  void setCurrentJob(const QPointer<OiJob> &job);
+void Controller::initDefaults(){
+    QString path;
+    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/config/defaults.json");
+    DefaultsConfigInit defaultsConfig;
+    defaultsConfig.init(path); // TODO message
 }
 
 /*!

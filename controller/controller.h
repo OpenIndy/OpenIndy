@@ -323,6 +323,7 @@ private:
     void initDisplayConfigs();
     void initConfigManager();
     void initToolPlugins();
+    void initDefaults();
 
     //register meta types
     void registerMetaTypes();
