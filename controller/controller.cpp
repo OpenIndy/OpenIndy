@@ -1919,12 +1919,12 @@ void Controller::initToolPlugins(){
     }
 
 }
-//  void setCurrentJob(const QPointer<OiJob> &job);
+
 void Controller::initDefaults(){
     QString path;
     path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/config/defaults.json");
     DefaultsConfigInit defaultsConfig;
-    defaultsConfig.init(path); // TODO message
+    defaultsConfig.init(path);
 }
 
 /*!
