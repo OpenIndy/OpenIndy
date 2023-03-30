@@ -56,11 +56,11 @@ void ObservationTableColumnConfig::setColumnPosition(const ObservationDisplayAtt
 
 /*!
  * \brief ObservationTableColumnConfig::init
- * Set up default column config
+ * defines visible (!) columns but not column order (!), ordinal defines column order
  */
 void ObservationTableColumnConfig::init(){
 
-    //default columns in default order
+    // defines visible (!) columns but not column order (!), ordinal defines column order
     this->displayColumns.append(eObservationDisplayId);
     this->displayColumns.append(eObservationDisplayStation);
     this->displayColumns.append(eObservationDisplayTargetGeometries);
