@@ -49,6 +49,7 @@ public:
     MeasurementConfig getUserConfig(const QString &name) const;
     MeasurementConfig getProjectConfig(const QString &name) const;
     MeasurementConfig getStandardConfig(const QString &name) const;
+    MeasurementConfig findConfig(const QString &name) const;
     const QList<MeasurementConfig> getConfigs() const;
     const QList<MeasurementConfig> getUserConfigs() const;
     const QList<MeasurementConfig> getProjectConfigs() const;

@@ -128,6 +128,18 @@ MeasurementConfig MeasurementConfigManager::getStandardConfig(const QString &nam
     return configs.value(Key(name, eStandardConfig), MeasurementConfig());
 }
 
+/**
+ * @brief MeasurementConfigManager::findConfig find MeasurementConfig by name with fallback
+ * @param name
+ * @return found MeasurementConfig or invalid MeasurementConfig
+ */
+MeasurementConfig MeasurementConfigManager::findConfig(const QString &name) const{
+    MeasurementConfig mc = this->getStandardConfig(name);
+    mc = mc.isValid() ? mc : this->getProjectConfig(name);  // fallback
+    mc = mc.isValid() ? mc : this->getUserConfig(name);     // fallback
+    return mc;
+}
+
 /*!
  * \brief MeasurementConfigManager::getUserConfigs
  * \return
