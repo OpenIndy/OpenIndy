@@ -129,6 +129,7 @@ SOURCES += \
     $$PWD/../models/featuredifferenceproxymodel.cpp \
     $$PWD/../controller/config/projectconfig.cpp \
     $$PWD/../ui/dialogs/uiutil.cpp \
+    $$PWD/../ui/dialogs/showlicensesdialog.cpp \
     $$PWD/../controller/clipboardutil.cpp \
     $$PWD/../ui/dialogs/measurebehaviordialog.cpp \
     $$PWD/../controller/measurebehaviorlogic.cpp \
