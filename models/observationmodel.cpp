@@ -407,7 +407,6 @@ QPointer<Observation> ObservationModel::getObservation(const QModelIndex &index)
 
     //get row and column indices
     int rowIndex = index.row();
-    int columnIndex = index.column();
 
     //get and check observation
 
@@ -453,12 +452,10 @@ void ObservationModel::updateModel(){
 }
 
 void ObservationModel::geometryObservationsChanged(const int &featureId){
-    qDebug() << "ObservationModel::geometryObservationsChanged" << featureId;
     this->updateModel();
 }
 
 void ObservationModel::activeFeatureChanged(){
-    qDebug() << "ObservationModel::activeFeatureChanged";
     this->updateModel();
 }
 
@@ -467,7 +464,6 @@ void ObservationModel::activeFeatureChanged(){
  * \param featureId
  */
 void ObservationModel::featureRecalculated(const int &featureId){
-    qDebug() << "ObservationModel::featureRecalculated" << featureId;
     this->updateModel();
 }
 
