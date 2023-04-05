@@ -89,10 +89,9 @@ bool ObservationProxyModel::lessThan(const QModelIndex &source_left, const QMode
             int fwRight = inputElem.at(source_right.row()).observation->getId();
             int fwLeft =  inputElem.at(source_left.row()).observation->getId();
 
-            return fwLeft > fwRight;
+            return fwLeft < fwRight;
         }
 
     }
     return false;
-
 }
