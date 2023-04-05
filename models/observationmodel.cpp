@@ -452,6 +452,16 @@ void ObservationModel::updateModel(){
     emit layoutChanged();
 }
 
+void ObservationModel::geometryObservationsChanged(const int &featureId){
+    qDebug() << "ObservationModel::geometryObservationsChanged" << featureId;
+    this->updateModel();
+}
+
+void ObservationModel::activeFeatureChanged(){
+    qDebug() << "ObservationModel::activeFeatureChanged";
+    this->updateModel();
+}
+
 /*!
  * \brief ObservationModel::featureRecalculated
  * \param featureId
@@ -471,8 +481,8 @@ void ObservationModel::connectJob(){
         return;
     }
 
-    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ObservationModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ObservationModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ObservationModel::activeFeatureChanged, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ObservationModel::geometryObservationsChanged, Qt::AutoConnection);
     QObject::connect(this->currentJob.data(), &OiJob::featureRecalculated, this, &ObservationModel::featureRecalculated, Qt::AutoConnection);
 
     QObject::connect(this, &ObservationModel::setShouldBeUsed, this->currentJob.data(), &OiJob::setShouldBeUsed, Qt::AutoConnection);
@@ -489,8 +499,8 @@ void ObservationModel::disconnectJob(){
         return;
     }
 
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ObservationModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ObservationModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ObservationModel::activeFeatureChanged);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ObservationModel::geometryObservationsChanged);
     QObject::disconnect(this->currentJob.data(), &OiJob::featureRecalculated, this, &ObservationModel::featureRecalculated);
 
     QObject::disconnect(this, &ObservationModel::setShouldBeUsed, this->currentJob.data(), &OiJob::setShouldBeUsed);
