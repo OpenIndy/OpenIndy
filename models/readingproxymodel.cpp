@@ -69,7 +69,6 @@ bool ReadingProxyModel::lessThan(const QModelIndex &source_left, const QModelInd
         QPointer<Function> function = source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().at(0);
         QList<InputElement> inputElem = function->getInputElements().value(0);
 
-
         if( source_right.isValid()
             && source_left.isValid()
             && source_right.row() < inputElem.size()
