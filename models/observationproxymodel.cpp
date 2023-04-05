@@ -43,13 +43,8 @@ bool ObservationProxyModel::filterAcceptsRow(int source_row, const QModelIndex &
  * \return
  */
 bool ObservationProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-
     //check visibility of the column
-    if(this->observationTableColumnConfig.getColumnVisibility((ObservationDisplayAttributes)source_column)){
-        return true;
-    }
-    return false;
-
+    return this->observationTableColumnConfig.getColumnVisibility((ObservationDisplayAttributes)source_column);
 }
 
 /*!
