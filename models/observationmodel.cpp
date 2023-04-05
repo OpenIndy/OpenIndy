@@ -457,23 +457,8 @@ void ObservationModel::updateModel(){
  * \param featureId
  */
 void ObservationModel::featureRecalculated(const int &featureId){
-
-    //check current job and model index
-    if(this->currentJob.isNull()){
-        return;
-    }
-
-    //get and check active feature
-    QPointer<FeatureWrapper> feature = this->currentJob->getActiveFeature();
-    if(feature.isNull() || feature->getFeature().isNull()){
-        return;
-    }
-
-    //check wether the recalculated feature equals the active feature
-    if(feature->getFeature()->getId() == featureId){
-        this->updateModel();
-    }
-
+    qDebug() << "ObservationModel::featureRecalculated" << featureId;
+    this->updateModel();
 }
 
 /*!
