@@ -231,19 +231,7 @@ QVariant ReadingModel::headerData(int section, Qt::Orientation orientation, int 
  * \return
  */
 Qt::ItemFlags ReadingModel::flags(const QModelIndex &index) const{
-    Qt::ItemFlags myFlags = QAbstractTableModel::flags(index);
-    return (myFlags | Qt::ItemIsEditable);
-}
-
-/*!
- * \brief ReadingModel::setData
- * \param index
- * \param value
- * \param role
- * \return
- */
-bool ReadingModel::setData(const QModelIndex &index, const QVariant &value, int role){
-    return false;
+    return Qt::NoItemFlags;
 }
 
 /*!
