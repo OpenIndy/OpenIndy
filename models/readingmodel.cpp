@@ -298,6 +298,14 @@ void ReadingModel::updateModel(){
     emit layoutChanged();
 }
 
+void ReadingModel::geometryObservationsChanged(const int &featureId){
+    this->updateModel();
+}
+
+void ReadingModel::activeFeatureChanged(){
+    this->updateModel();
+}
+
 /*!
  * \brief ReadingModel::connectJob
  */
@@ -308,8 +316,8 @@ void ReadingModel::connectJob(){
         return;
     }
 
-    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ReadingModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ReadingModel::updateModel, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ReadingModel::activeFeatureChanged, Qt::AutoConnection);
+    QObject::connect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ReadingModel::geometryObservationsChanged, Qt::AutoConnection);
 
 }
 
@@ -323,7 +331,7 @@ void ReadingModel::disconnectJob(){
         return;
     }
 
-    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ReadingModel::updateModel);
-    QObject::disconnect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ReadingModel::updateModel);
+    QObject::disconnect(this->currentJob.data(), &OiJob::activeFeatureChanged, this, &ReadingModel::activeFeatureChanged);
+    QObject::disconnect(this->currentJob.data(), &OiJob::geometryObservationsChanged, this, &ReadingModel::geometryObservationsChanged);
 
 }

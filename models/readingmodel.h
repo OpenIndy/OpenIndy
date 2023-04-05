@@ -61,7 +61,8 @@ private slots:
     //update the model when job state or display config have changed
     //##############################################################
 
-    void updateModel();
+    void activeFeatureChanged();
+    void geometryObservationsChanged(const int & featureId);
 
 private:
 
@@ -69,6 +70,7 @@ private:
     //helper methods
     //##############
 
+    void updateModel();
     void connectJob();
     void disconnectJob();
 
