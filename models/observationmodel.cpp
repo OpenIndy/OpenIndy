@@ -160,6 +160,8 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
                 }
             }
             break;
+        case eObservationDisplayReadingTime:
+            return observation->getReading().isNull() ? QVariant() : observation->getReading()->getDisplayTime();
         }
 
     }else if(role == Qt::CheckStateRole){

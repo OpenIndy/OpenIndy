@@ -56,11 +56,11 @@ void ObservationTableColumnConfig::setColumnPosition(const ObservationDisplayAtt
 
 /*!
  * \brief ObservationTableColumnConfig::init
- * Set up default column config
+ * defines visible (!) columns but not column order (!), ordinal defines column order
  */
 void ObservationTableColumnConfig::init(){
 
-    //default columns in default order
+    // defines visible (!) columns but not column order (!), ordinal defines column order
     this->displayColumns.append(eObservationDisplayId);
     this->displayColumns.append(eObservationDisplayStation);
     this->displayColumns.append(eObservationDisplayTargetGeometries);
@@ -70,13 +70,6 @@ void ObservationTableColumnConfig::init(){
     this->displayColumns.append(eObservationDisplayI);
     this->displayColumns.append(eObservationDisplayJ);
     this->displayColumns.append(eObservationDisplayK);
-    /*this->displayColumns.append(eObservationDisplaySigmaX);
-    this->displayColumns.append(eObservationDisplaySigmaY);
-    this->displayColumns.append(eObservationDisplaySigmaZ);
-    this->displayColumns.append(eObservationDisplaySigmaI);
-    this->displayColumns.append(eObservationDisplaySigmaJ);
-    this->displayColumns.append(eObservationDisplaySigmaK);*/
-    //this->displayColumns.append(eObservationDisplayIsValid);
     this->displayColumns.append(eObservationDisplayIsSolved);
     this->displayColumns.append(eObservationDisplayVX);
     this->displayColumns.append(eObservationDisplayVY);
@@ -85,5 +78,6 @@ void ObservationTableColumnConfig::init(){
     this->displayColumns.append(eObservationDisplayVR);
     this->displayColumns.append(eObservationDisplayIsUsed);
     this->displayColumns.append(eObservationDisplayIsDummyPoint);
+    this->displayColumns.append(eObservationDisplayReadingTime);
 
 }
