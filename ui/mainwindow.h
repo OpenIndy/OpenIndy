@@ -56,6 +56,8 @@
 
 #include "measurebehaviorlogic.h"
 
+#include "stationstatus.h"
+
 #if ENABLE_SOUND
 #include <QSound>
 #endif
@@ -344,6 +346,8 @@ private slots:
 
     void measureBehaviorLogicFinished();
 
+    void on_actionStation_create_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -488,6 +492,8 @@ private:
     MeasureBehaviorLogic measureBehaviorLogic;
 
     void measureBehaviorLogicStarted();
+
+    StationStatus *stationStatus;
 };
 
 #endif // MAINWINDOW_H

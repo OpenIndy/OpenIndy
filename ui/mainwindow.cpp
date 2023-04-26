@@ -170,6 +170,8 @@ void MainWindow::activeStationChanged(){
         return;
     }
 
+    this->stationStatus->setName(station->getFeatureName());
+
     //ask the user wether to take the sensor from the last station
     QMessageBox msgBox;
     msgBox.setText("Do you want to take the sensor from the last station?");
@@ -2512,6 +2514,10 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitTemperature->setMinimumWidth(50);
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
 
+    this->stationStatus = new StationStatus();
+    this->stationStatus->setVisible(true);
+    this->ui->statusBar->addPermanentWidget(this->stationStatus);
+
     //add GUI elements to status bar
     this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
@@ -3258,4 +3264,9 @@ void MainWindow::measureBehaviorLogicFinished() {
     if(value.isValid()) {
         this->ui->actiongo_to_next_feature->setChecked(value.toBool());
     }
+}
+
+void MainWindow::on_actionStation_create_triggered()
+{
+
 }
