@@ -1195,6 +1195,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionActivate_station">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/activate station.png</normaloff>:/icons/icons/toolbars/standard/activate station.png</iconset>
+   </property>
    <property name="text">
     <string>activate station</string>
    </property>
@@ -1469,7 +1473,7 @@ background-position: center center;</string>
   <action name="actiondifferences">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/magnify.PNG</normaloff>:/Images/icons/magnify.PNG</iconset>
+     <normaloff>:/Images/icons/differences.png</normaloff>:/Images/icons/differences.png</iconset>
    </property>
    <property name="text">
     <string>differences</string>
@@ -1520,6 +1524,19 @@ background-position: center center;</string>
    </property>
    <property name="toolTip">
     <string>save current project as template with out observations</string>
+   </property>
+  </action>
+  <action name="actionStation_create">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/icons/toolbars/standard/new_station.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>create new station</string>
+   </property>
+   <property name="toolTip">
+    <string>create new station</string>
    </property>
   </action>
  </widget>

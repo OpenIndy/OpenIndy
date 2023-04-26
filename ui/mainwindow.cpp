@@ -788,7 +788,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
-        menu->addAction(QIcon(":/Images/icons/button_ok.png"),
+        menu->addAction(QIcon(":/icons/icons/toolbars/standard/recalc.png"),
                         QString("recalc %1").arg(featureName),
                         &this->control, SLOT(recalcActiveFeature()));
 
@@ -808,11 +808,13 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                                 this, SLOT(removeObservationOfActiveFeature()));
             }
 
-            menu->addAction(QString("aim to feature %1").arg(featureName),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/aim.png"),
+                            QString("aim to feature %1").arg(featureName),
                             &this->control, SLOT(startAim()));
         } else if(isStation){
 
-            menu->addAction(QString("activate station %1").arg(featureName),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/activate station.png"),
+                        QString("activate station %1").arg(featureName),
                             this, SLOT(on_actionActivate_station_triggered()));
         }
 
