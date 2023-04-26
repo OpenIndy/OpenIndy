@@ -732,7 +732,14 @@ background-position: center center;</string>
    <addaction name="actionConsole"/>
    <addaction name="actiongo_to_next_feature"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+  </widget>
   <widget class="QToolBar" name="toolBar_controlPad">
    <property name="enabled">
     <bool>true</bool>
@@ -979,6 +986,19 @@ background-position: center center;</string>
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_station">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionStation_create"/>
+   <addaction name="action_RunBundle"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
