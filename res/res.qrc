@@ -5,19 +5,15 @@
         <file>icons/button_ok.png</file>
         <file>icons/cancel.png</file>
         <file>icons/console.png</file>
-        <file>icons/coordinateSystem.png</file>
-        <file>icons/coordinateSystem_2a09f3.png</file>
         <file>icons/differences.png</file>
         <file>icons/edit_add.png</file>
         <file>icons/edit_remove.png</file>
-        <file>icons/exec.png</file>
         <file>icons/featureToolBar.png</file>
         <file>icons/function.png</file>
         <file>icons/info_gruen.PNG</file>
         <file>icons/info_schwarz.PNG</file>
         <file>icons/loadPlugin.png</file>
         <file>icons/magnify.PNG</file>
-        <file>icons/newproject.png</file>
         <file>icons/obs_disable.png</file>
         <file>icons/obs_enable.png</file>
         <file>icons/openIndy.png</file>
@@ -26,9 +22,6 @@
         <file>icons/settings.png</file>
         <file>icons/simulation.png</file>
         <file>icons/streamingLogo.png</file>
-        <file>icons/trafoParam.png</file>
-        <file>icons/trafoParam_2a09f3.png</file>
-        <file>icons/watchwindow.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file>icons/toolbars/feature/anchor.png</file>
