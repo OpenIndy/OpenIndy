@@ -170,8 +170,6 @@ void MainWindow::activeStationChanged(){
         return;
     }
 
-    this->stationStatus->setName(station->getFeatureName());
-
     //ask the user wether to take the sensor from the last station
     QMessageBox msgBox;
     msgBox.setText("Do you want to take the sensor from the last station?");

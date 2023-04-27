@@ -1615,6 +1615,10 @@ void Controller::activeStationChangedCallback(){
         return;
     }
 
+    StationStatusData data;
+    data.name = activeStation->getFeatureName();
+    emit stationStatus(data);
+
     //disconnect all stations
     QList<QPointer<Station> > stations = this->job->getStationsList();
     foreach(const QPointer<Station> &station, stations){
