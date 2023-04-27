@@ -2515,11 +2515,12 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitTemperature->setMinimumWidth(50);
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
 
+    //add GUI elements to status bar
+    this->ui->statusBar->addPermanentWidget(this->label_statusSensor); // variable width
+
     this->stationStatus = new StationStatus();
     this->ui->statusBar->addPermanentWidget(this->stationStatus);
 
-    //add GUI elements to status bar
-    this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitTemperature);
