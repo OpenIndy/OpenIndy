@@ -1043,6 +1043,7 @@ const QPointer<OiJob> &Controller::createDefaultJob(){
     QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
     QPointer<Station> station = new Station();
     station->setFeatureName("STATION01");
+    station->setGroupName("00_Stations");
     stationFeature->setStation(station);
 
     QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
