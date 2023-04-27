@@ -3267,6 +3267,8 @@ void MainWindow::measureBehaviorLogicFinished() {
 
 void MainWindow::on_actionStation_create_triggered()
 {
+    this->control.createNewStation();
+}
 
 void  MainWindow::showStatusStation(const StationStatusData &data) {
     this->stationStatus->setName(data.name);
