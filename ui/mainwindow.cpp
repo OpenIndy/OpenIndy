@@ -3273,6 +3273,16 @@ void MainWindow::on_actionStation_create_triggered()
 }
 
 void  MainWindow::showStatusStation(const StationStatusData &data) {
-    this->stationStatus->setName(data.name);
-    this->stationStatus->setBundled(data.isBundled);
+
+    if(!data.id.isValid()) {
+        this->log("cannot set station status", eWarningMessage);
+        this->stationStatus->reset();
+        return;
+    }
+
+    if(!data.name.isNull()) { // optional
+        this->stationStatus->setName(data.name);
+    }
+
+    this->stationStatus->setBundled(this->control.isStationBundled(data.id.toInt()));
 }
