@@ -2244,4 +2244,31 @@ void Controller::createTemplateFromJob(){
 
 }
 
+void Controller::createNewStation() {
 
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    const int count = this->job->getStationsList().size();
+    QString stationName = "";
+    if(count < 9){
+        stationName.append("STATION").append("0").append(QString::number(count+1));
+    }else{
+        stationName.append("STATION").append(QString::number(count+1));
+    }
+
+    FeatureAttributes attributes;
+    attributes.typeOfFeature = eStationFeature;
+    attributes.name = stationName;
+    attributes.group = "00_Stations";
+    attributes.count = 1;
+
+    this->addFeatures(attributes);
+
+    this->job->getStationsList().last()->getFeatureWrapper()->getStation()->setActiveStationState(true);
+
+
+}

@@ -164,6 +164,8 @@ public slots:
 
     void createTemplateFromJob();
 
+    void createNewStation();
+
 signals:
 
     void stationStatus(const StationStatusData &status);
