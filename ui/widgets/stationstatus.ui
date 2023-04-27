@@ -74,6 +74,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="bundled">
+     <property name="text">
+      <string>&lt;span style=&quot;color: #f00;&quot;&gt;&amp;#x26AB;&lt;/span&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::AutoText</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="label_temperature">
      <property name="text">
       <string>Temperture:</string>

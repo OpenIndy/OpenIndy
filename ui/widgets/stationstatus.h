@@ -17,6 +17,7 @@ public:
 
     void setName(QString name);
     void setTemperature(QString temperature);
+    void setBundled(bool bundled);
 private:
     Ui::StationStatus *ui;
 };

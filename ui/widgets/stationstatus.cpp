@@ -20,3 +20,7 @@ void StationStatus::setName(QString name) {
 void StationStatus::setTemperature(QString temperature) {
     this->ui->temperature->setText(temperature);
 }
+
+void StationStatus:: setBundled(bool bundled) {
+    this->ui->bundled->setText(QString("<span style=\"color: %1;\">&#x26AB;</span>").arg(bundled ? "lightgreen" : "red"));
+}
