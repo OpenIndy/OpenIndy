@@ -63,6 +63,8 @@ public:
 
     void _startMeasurement(bool dummyPoint);
 
+    bool isStationBundled(int id);
+
 private slots:
     void startAimAndMeasure();
 

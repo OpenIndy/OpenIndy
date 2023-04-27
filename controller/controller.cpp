@@ -2273,3 +2273,18 @@ void Controller::createNewStation() {
 
 
 }
+
+bool Controller::isStationBundled(int id) {
+    const QString stationName = this->job->getFeatureById(id)->getFeature()->getFeatureName();
+
+    foreach(QPointer<TrafoParam> param, this->job->getTransformationParametersList()) {
+        if( param->getStartSystem()->getIsBundleSystem()
+            && param->getDestinationSystem()->getIsStationSystem()
+            && param->getDestinationSystem()->getFeatureName() == stationName
+            ){
+            return param->getIsSolved() && param->getIsUsed();
+        }
+    }
+
+    return false;
+}
