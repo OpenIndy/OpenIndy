@@ -35,6 +35,11 @@
 
 using namespace oi;
 
+struct StationStatusData {
+    QString name;
+    bool  isBundled = false;
+};
+
 /*!
  * \brief The Controller class
  */
