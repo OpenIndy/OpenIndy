@@ -18,9 +18,15 @@ void StationStatus::setName(QString name) {
 }
 
 void StationStatus::setTemperature(QString temperature) {
-    this->ui->temperature->setText(temperature);
+    this->ui->temperature->setText(QString("%1%2").arg(temperature).arg(" °C"));
 }
 
-void StationStatus:: setBundled(bool bundled) {
+void StationStatus::setBundled(bool bundled) {
     this->ui->bundled->setText(QString("<span style=\"color: %1;\">&#x26AB;</span>").arg(bundled ? "lightgreen" : "red"));
+}
+
+void StationStatus::reset() {
+    this->ui->name->clear();
+    this->setTemperature("-/-");
+    this->ui->bundled->clear();
 }
