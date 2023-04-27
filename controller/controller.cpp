@@ -1616,6 +1616,7 @@ void Controller::activeStationChangedCallback(){
     }
 
     StationStatusData data;
+    data.id = activeStation->getId();
     data.name = activeStation->getFeatureName();
     emit stationStatus(data);
 

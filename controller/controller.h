@@ -36,8 +36,8 @@
 using namespace oi;
 
 struct StationStatusData {
+    QVariant id;
     QString name;
-    bool  isBundled = false;
 };
 
 /*!
