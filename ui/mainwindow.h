@@ -466,6 +466,7 @@ private:
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
     QPropertyAnimation *animation_label_statusSensor;
+    StationStatus *stationStatus;
 
     //######
     //models
@@ -493,8 +494,6 @@ private:
     MeasureBehaviorLogic measureBehaviorLogic;
 
     void measureBehaviorLogicStarted();
-
-    StationStatus *stationStatus;
 };
 
 #endif // MAINWINDOW_H

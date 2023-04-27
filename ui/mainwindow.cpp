@@ -2516,7 +2516,6 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
 
     this->stationStatus = new StationStatus();
-    this->stationStatus->setVisible(true);
     this->ui->statusBar->addPermanentWidget(this->stationStatus);
 
     //add GUI elements to status bar
