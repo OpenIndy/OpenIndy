@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectController();
     this->connectStatusBar();
 
+    // before create job
+    this->initStatusBar();
+
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
     this->createFeatureDialog.setCurrentJob(job);
@@ -26,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initSensorPad();
     this->initToolMenus();
     this->initFilterComboBoxes();
-    this->initStatusBar();
     this->initBundleView();
     this->initFilterToolBar();
 
