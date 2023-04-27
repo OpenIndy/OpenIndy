@@ -93,7 +93,7 @@
    <item>
     <widget class="QLabel" name="temperature">
      <property name="text">
-      <string>xx.x °C</string>
+      <string>-/- °C</string>
      </property>
     </widget>
    </item>
