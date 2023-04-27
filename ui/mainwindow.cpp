@@ -2159,6 +2159,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorStatus, this, &MainWindow::showStatusSensor, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::stationStatus, this, &MainWindow::showStatusStation, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
@@ -3269,4 +3270,7 @@ void MainWindow::measureBehaviorLogicFinished() {
 void MainWindow::on_actionStation_create_triggered()
 {
 
+void  MainWindow::showStatusStation(const StationStatusData &data) {
+    this->stationStatus->setName(data.name);
+    this->stationStatus->setBundled(data.isBundled);
 }

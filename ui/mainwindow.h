@@ -194,6 +194,7 @@ private slots:
     int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
+    void showStatusStation(const StationStatusData &data);
 
     //#########################
     //actions triggered by user

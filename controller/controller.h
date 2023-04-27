@@ -166,6 +166,8 @@ public slots:
 
 signals:
 
+    void stationStatus(const StationStatusData &status);
+
     void sensorStatus(const SensorStatus &status, const QString &msg);
 
     //#################################################
