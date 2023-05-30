@@ -91,7 +91,7 @@ void SettingsDialog::initModels(){
 /*!
  * \brief SettingsDialog::updateDisplayConfigFromSelection
  */
-void SettingsDialog::updateDisplayConfigFromSelection(){
+ParameterDisplayConfig SettingsDialog::updateDisplayConfigFromSelection(){
 
     ParameterDisplayConfig config;
     config.setDisplayDigits(eAngular, this->ui->lineEdit_angleDigits->text().toInt());
@@ -102,19 +102,32 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
     config.setDisplayUnitType(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
     config.setUseSounds(this->ui->checkBox_sounds->isChecked());
 
-    if(this->isVisible()){//online save the changes after editing in GUI
+    return config;
+}
 
-        ProjectConfig::setAngularDigits(this->ui->lineEdit_angleDigits->text().toInt());
-        ProjectConfig::setDistanceDigits(this->ui->lineEdit_distanceDigits->text().toInt());
-        ProjectConfig::setTemperatureDigits(this->ui->lineEdit_temperatureDigits->text().toInt());
-        ProjectConfig::setAngularUnit(getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
-        ProjectConfig::setMetricUnit(getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
-        ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
-        ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
-        ProjectConfig::setAutoSaveInterval(this->ui->lineEdit_autoSaveInterval->text().toInt());
-    }
+
+/*!
+ * \brief SettingsDialog::on_pushButton_ok_clicked
+ */
+void SettingsDialog::on_pushButton_ok_clicked()
+{
+    ParameterDisplayConfig config = this->updateDisplayConfigFromSelection();
+
+    // update ProjectConfig
+    ProjectConfig::setAngularDigits(this->ui->lineEdit_angleDigits->text().toInt());
+    ProjectConfig::setDistanceDigits(this->ui->lineEdit_distanceDigits->text().toInt());
+    ProjectConfig::setTemperatureDigits(this->ui->lineEdit_temperatureDigits->text().toInt());
+    ProjectConfig::setAngularUnit(getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
+    ProjectConfig::setMetricUnit(getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
+    ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
+    ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
+    ProjectConfig::setAutoSaveInterval(this->ui->lineEdit_autoSaveInterval->text().toInt());
+    // and save ProejctConfig file
+    ProjectConfig::saveProjectPathConfigFile();
 
     emit this->setDisplayConfig(config);
+
+    this->close();
 }
 
 void SettingsDialog::on_pushButton_cancel_clicked()
