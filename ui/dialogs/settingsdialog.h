@@ -59,15 +59,16 @@ private:
     //helper methods
     //##############
 
-
-
 private:
     Ui::SettingsDialog *ui;
 
 private slots:
     void on_pushButton_ok_clicked();
-
-    void on_checkBox_sounds_toggled(bool checked);
+    void on_pushButton_cancel_clicked();
+    void on_lineEdit_angleDigits_textChanged(const QString &arg1);
+    void on_lineEdit_distanceDigits_textChanged(const QString &arg1);
+    void on_lineEdit_temperatureDigits_textChanged(const QString &arg1);
 };
 
 #endif // SETTINGSDIALOG_H
+
