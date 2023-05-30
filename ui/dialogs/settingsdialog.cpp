@@ -36,6 +36,8 @@ SettingsDialog::~SettingsDialog()
 void SettingsDialog::showEvent(QShowEvent *event){
     this->ui->tabWidget_settings->setTabEnabled(2,false);
     this->ui->tabWidget_settings->setTabEnabled(3,false);
+    this->ui->pushButton_ok->setEnabled(true);
+
     this->initGUI();
 
     event->accept();
