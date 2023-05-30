@@ -177,11 +177,22 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
     emit this->setDisplayConfig(config);
 }
 
-/*!
- * \brief SettingsDialog::on_checkBox_sounds_toggled
- * \param checked
- */
-void SettingsDialog::on_checkBox_sounds_toggled(bool checked)
+void SettingsDialog::on_pushButton_cancel_clicked()
 {
-    this->updateDisplayConfigFromSelection();
+     this->close();
+}
+
+void SettingsDialog::on_lineEdit_angleDigits_textChanged(const QString &text)
+{
+    ui->pushButton_ok->setEnabled(text.toInt() > 0);
+}
+
+void SettingsDialog::on_lineEdit_distanceDigits_textChanged(const QString &text)
+{
+    ui->pushButton_ok->setEnabled(text.toInt() > 0);
+}
+
+void SettingsDialog::on_lineEdit_temperatureDigits_textChanged(const QString &text)
+{
+    ui->pushButton_ok->setEnabled(text.toInt() > 0);
 }
