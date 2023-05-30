@@ -47,6 +47,7 @@ void SettingsDialog::showEvent(QShowEvent *event){
  * \brief SettingsDialog::initGUI
  */
 void SettingsDialog::initGUI(){
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     //do not trigger changes while settings defaults
     this->ui->comboBox_angleType->blockSignals(true);
