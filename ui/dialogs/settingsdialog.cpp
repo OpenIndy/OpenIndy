@@ -1,12 +1,5 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
-/*!
- * \brief SettingsDialog::on_pushButton_ok_clicked
- */
-void SettingsDialog::on_pushButton_ok_clicked()
-{
-    this->close();
-}
 
 /*!
  * \brief SettingsDialog::SettingsDialog
@@ -26,7 +19,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     //init GUI elements and assign models
     this->initModels();
     this->initGUI();
-    this->updateDisplayConfigFromSelection(); //no signal emit in constructor call!!!
 }
 
 /*!
@@ -36,57 +28,6 @@ SettingsDialog::~SettingsDialog()
 {
 }
 
-/*!
- * \brief SettingsDialog::on_comboBox_angleType_currentIndexChanged
- * \param arg1
- */
-void SettingsDialog::on_comboBox_angleType_currentIndexChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_comboBox_distanceType_currentIndexChanged
- * \param arg1
- */
-void SettingsDialog::on_comboBox_distanceType_currentIndexChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_comboBox_temperatureType_currentIndexChanged
- * \param arg1
- */
-void SettingsDialog::on_comboBox_temperatureType_currentIndexChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_lineEdit_angleDigits_textChanged
- * \param arg1
- */
-void SettingsDialog::on_lineEdit_angleDigits_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_lineEdit_distanceDigits_textChanged
- * \param arg1
- */
-void SettingsDialog::on_lineEdit_distanceDigits_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_lineEdit_temperatureDigits_textChanged
- * \param arg1
- */
-void SettingsDialog::on_lineEdit_temperatureDigits_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-void SettingsDialog::on_lineEdit_autoSaveInterval_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
 
 /*!
  * \brief SettingsDialog::showEvent
@@ -96,7 +37,6 @@ void SettingsDialog::showEvent(QShowEvent *event){
     this->ui->tabWidget_settings->setTabEnabled(2,false);
     this->ui->tabWidget_settings->setTabEnabled(3,false);
     this->initGUI();
-    this->updateDisplayConfigFromSelection();
 
     event->accept();
 }
