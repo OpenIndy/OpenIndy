@@ -37,7 +37,6 @@ QString ProjectConfig::getImportNominalPath()
 void ProjectConfig::setImportNominalPath(const QString &value)
 {
     importNominalPath = value;
-    saveProjectPathConfigFile();
 }
 
 /*!
@@ -56,7 +55,6 @@ QString ProjectConfig::getProjectPath()
 void ProjectConfig::setProjectPath(const QString &value)
 {
     projectPath = value;
-    saveProjectPathConfigFile();
 }
 
 /*!
@@ -113,7 +111,6 @@ int ProjectConfig::getTemperatureUnit()
 void ProjectConfig::setTemperatureUnit(int value)
 {
     temperatureUnit = value;
-    saveprojectSettingsConfigFile();
 }
 
 /*!
@@ -132,7 +129,6 @@ int ProjectConfig::getDistanceDigits()
 void ProjectConfig::setDistanceDigits(int value)
 {
     distanceDigits = value;
-    saveprojectSettingsConfigFile();
 }
 
 /*!
@@ -151,7 +147,6 @@ int ProjectConfig::getAngularDigits()
 void ProjectConfig::setAngularDigits(int value)
 {
     angularDigits = value;
-    saveprojectSettingsConfigFile();
 }
 
 /*!
@@ -170,7 +165,6 @@ int ProjectConfig::getTemperatureDigits()
 void ProjectConfig::setTemperatureDigits(int value)
 {
     temperatureDigits = value;
-    saveprojectSettingsConfigFile();
 }
 
 /*!
@@ -189,7 +183,6 @@ bool ProjectConfig::getUseSounds()
 void ProjectConfig::setUseSounds(bool value)
 {
     useSounds = value;
-    saveprojectSettingsConfigFile();
 }
 
 int ProjectConfig::getAutoSaveInterval()
@@ -200,7 +193,6 @@ int ProjectConfig::getAutoSaveInterval()
 void ProjectConfig::setAutoSaveInterval(int value)
 {
     autoSaveInterval = value;
-    saveprojectSettingsConfigFile();
 }
 
 QList<oi::FeatureDisplayAttributes> ProjectConfig::getDisplayColumns() {
