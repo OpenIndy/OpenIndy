@@ -43,7 +43,7 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize tool plugins
     this->initToolPlugins();
 
-    this->initDefaults();
+    this->initDefaults(); // after read measurement confing & after load functions
 
     //connect helper objects
     this->connectDataExchanger();
