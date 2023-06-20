@@ -230,7 +230,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const Measuremen
     this->measurementConfigManager->saveUserConfig(mConfig);
 
     //get all saved measurement configs
-    const QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getUserConfigs();
+    const QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getConfigs();
     for(int i = 0; i < userConfigs.size(); i++){
         if(userConfigs.at(i).getName().compare(mConfig.getName()) == 0){
             return this->createIndex(i, 0);
