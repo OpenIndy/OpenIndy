@@ -1,6 +1,9 @@
 #include "measurementconfigurationdialog.h"
 #include "ui_measurementconfigurationdialog.h"
 
+#define MIN_TIME_INTERVAL 0.005
+#define MIN_DISTANCE_INTERVAL 0.0001
+
 /*!
  * \brief MeasurementConfigurationDialog::MeasurementConfigurationDialog
  * \param parent
@@ -9,6 +12,9 @@ MeasurementConfigurationDialog::MeasurementConfigurationDialog(QWidget *parent) 
     ui(new Ui::MeasurementConfigurationDialog)
 {
     ui->setupUi(this);
+
+    this->ui->lineEdit_timeInterval->setValidator(new QDoubleValidator(MIN_TIME_INTERVAL, DBL_MAX, 3, this));
+    this->ui->lineEdit_distancInterval->setValidator(new QDoubleValidator(MIN_DISTANCE_INTERVAL, DBL_MAX, 4, this));
 
     //init models
     this->initModels();
