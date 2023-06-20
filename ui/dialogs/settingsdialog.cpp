@@ -59,7 +59,7 @@ void SettingsDialog::initGUI(){
     this->ui->checkBox_sounds->blockSignals(true);
     this->ui->lineEdit_autoSaveInterval->blockSignals(true);
 
-    //set default unit
+    //set default unit, see ProjectConfig::getParameterDisplayConfig()
     this->ui->comboBox_angleType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getAngularUnit())));
     this->ui->comboBox_distanceType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getMetricUnit())));
     this->ui->comboBox_temperatureType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getTemperatureUnit())));
