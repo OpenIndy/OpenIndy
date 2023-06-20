@@ -237,10 +237,6 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
     this->ui->tabWidget->setCurrentIndex(1);
 
-    MeasurementConfig mConfig;
-    mConfig.setName("new config");
-    mConfig.makeUserConfig();
-
     //get and check measurement config proxy model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
@@ -252,6 +248,17 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     if(mConfigModel == NULL){
         return;
     }
+
+    // find usable name
+    QString name = "new config";
+    MeasurementConfig mc;
+    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isUserConfig()) {
+        name += ".";
+    }
+
+    MeasurementConfig mConfig;
+    mConfig.setName(name);
+    mConfig.makeUserConfig();
 
     //add new measurement config
     QModelIndex index = mConfigModel->addMeasurementConfig(mConfig);
