@@ -129,6 +129,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
             mConfig.setName(value.toString());
             this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
             emit this->measurementConfigNameChanged(mConfig);
+            emit this->updateModel(); // force update: filter & sort model
             return true;
         }
 
