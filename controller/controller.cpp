@@ -2044,7 +2044,6 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     //get measurement config
     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
     MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(elementConfigName);
-    attr.measurementConfigName = mConfig.getName();
 
     //create actual
     this->job->addFeatures(attr);
