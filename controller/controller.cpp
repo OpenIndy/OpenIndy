@@ -1854,7 +1854,7 @@ void Controller::initDisplayConfigs(){
     TrafoParamTableColumnConfig trafoParamTableColumnConfig;
     ObservationTableColumnConfig observationTableColumnConfig;
     ReadingTableColumnConfig readingTableColumnConfig;
-    ParameterDisplayConfig parameterDisplayConfig;
+    ParameterDisplayConfig parameterDisplayConfig = ProjectConfig::getParameterDisplayConfig();
 
     //pass the default configs to model manager
     ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
