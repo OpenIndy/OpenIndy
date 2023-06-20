@@ -213,21 +213,21 @@ bool MeasurementConfigurationModel::isUserConfig(const QModelIndex &index) const
  * \return
  */
 QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const MeasurementConfig &mConfig){
-
-    QModelIndex index;
-
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
-        return index;
+        return QModelIndex();
     }
 
     //check mConfig
     if(this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()){
-        return index;
+        return  QModelIndex();
     }
 
     //add the measurement config
     this->measurementConfigManager->saveUserConfig(mConfig);
+
+    this->updateModel();
+
 
     //get all saved measurement configs
     const QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getConfigs();
@@ -237,9 +237,7 @@ QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const Measuremen
         }
     }
 
-    this->updateModel();
-
-    return index;
+    return  QModelIndex();
 
 }
 
