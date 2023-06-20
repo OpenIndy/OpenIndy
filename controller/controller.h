@@ -46,6 +46,8 @@ public:
     explicit Controller(QObject *parent = 0);
     ~Controller();
 
+    void init();
+
 public:
 
     //###############################

@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectController();
     this->connectStatusBar();
 
+    this->control.init();
+
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
     this->createFeatureDialog.setCurrentJob(job);

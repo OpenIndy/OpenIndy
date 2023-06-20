@@ -6,6 +6,9 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
+}
+
+void Controller::init() {
     //register meta types
     this->registerMetaTypes();
 
