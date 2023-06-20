@@ -125,8 +125,9 @@ void SettingsDialog::on_pushButton_ok_clicked()
     ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
     ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
     ProjectConfig::setAutoSaveInterval(this->ui->lineEdit_autoSaveInterval->text().toInt());
-    // and save ProejctConfig file
-    ProjectConfig::saveProjectPathConfigFile();
+
+    // and save ProejctSettingsConfig file
+    ProjectConfig::saveprojectSettingsConfigFile();
 
     emit this->setDisplayConfig(config);
 
