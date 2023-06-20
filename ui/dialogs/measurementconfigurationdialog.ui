@@ -446,7 +446,7 @@
                              </sizepolicy>
                             </property>
                             <property name="text">
-                             <string>time interval [sec]:</string>
+                             <string>time interval [s]:</string>
                             </property>
                            </widget>
                           </item>

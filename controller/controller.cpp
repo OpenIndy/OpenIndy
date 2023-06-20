@@ -6,14 +6,21 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
+}
+
+void Controller::init() {
     //register meta types
     this->registerMetaTypes();
 
     //load and restore project unit settings
-    ProjectConfig::loadProjectPathConfigFile();
+    if(!ProjectConfig::loadProjectPathConfigFile()) {
+        this->log("Could not load project path", eErrorMessage, eMessageBoxMessage);
+    }
 
     //load config from file
-    ProjectConfig::loadProjectSettingsConfigFile();
+    if(!ProjectConfig::loadProjectSettingsConfigFile()) {
+        this->log("Could not load project settings", eErrorMessage, eMessageBoxMessage);
+    }
 
     //initialize and connect model manager
     ModelManager::init();
@@ -43,7 +50,7 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize tool plugins
     this->initToolPlugins();
 
-    this->initDefaults();
+    this->initDefaults(); // after read measurement confing & after load functions
 
     //connect helper objects
     this->connectDataExchanger();
@@ -1854,7 +1861,7 @@ void Controller::initDisplayConfigs(){
     TrafoParamTableColumnConfig trafoParamTableColumnConfig;
     ObservationTableColumnConfig observationTableColumnConfig;
     ReadingTableColumnConfig readingTableColumnConfig;
-    ParameterDisplayConfig parameterDisplayConfig;
+    ParameterDisplayConfig parameterDisplayConfig = ProjectConfig::getParameterDisplayConfig();
 
     //pass the default configs to model manager
     ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
@@ -2044,7 +2051,6 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     //get measurement config
     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
     MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(elementConfigName);
-    attr.measurementConfigName = mConfig.getName();
 
     //create actual
     this->job->addFeatures(attr);

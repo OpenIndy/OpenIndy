@@ -16,6 +16,8 @@
 #include <QDesktopWidget>
 #include <QGridLayout>
 #include <QMenu>
+#include <QDoubleValidator>
+#include <float.h>
 
 #include "types.h"
 #include "console.h"

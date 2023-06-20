@@ -129,6 +129,7 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
             mConfig.setName(value.toString());
             this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
             emit this->measurementConfigNameChanged(mConfig);
+            emit this->updateModel(); // force update: filter & sort model
             return true;
         }
 
@@ -213,33 +214,31 @@ bool MeasurementConfigurationModel::isUserConfig(const QModelIndex &index) const
  * \return
  */
 QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const MeasurementConfig &mConfig){
-
-    QModelIndex index;
-
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
-        return index;
+        return QModelIndex();
     }
 
     //check mConfig
     if(this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()){
-        return index;
+        return  QModelIndex();
     }
 
     //add the measurement config
     this->measurementConfigManager->saveUserConfig(mConfig);
 
+    this->updateModel();
+
+
     //get all saved measurement configs
-    const QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getUserConfigs();
+    const QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getConfigs();
     for(int i = 0; i < userConfigs.size(); i++){
         if(userConfigs.at(i).getName().compare(mConfig.getName()) == 0){
             return this->createIndex(i, 0);
         }
     }
 
-    this->updateModel();
-
-    return index;
+    return  QModelIndex();
 
 }
 

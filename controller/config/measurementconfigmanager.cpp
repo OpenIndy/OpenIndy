@@ -67,6 +67,10 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setMeasureTwoSides(false);
     level.makeStandardConfig();
     this->configs.insert(level.getKey(), level);
+
+    for(const MeasurementConfig c : configs) {
+        SystemDbManager::addMeasurementConfig(c.getName()); // insert if name not exists
+    }
 }
 
 /*!
