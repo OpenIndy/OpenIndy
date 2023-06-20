@@ -13,10 +13,14 @@ void Controller::init() {
     this->registerMetaTypes();
 
     //load and restore project unit settings
-    ProjectConfig::loadProjectPathConfigFile();
+    if(!ProjectConfig::loadProjectPathConfigFile()) {
+        this->log("Could not load project path", eErrorMessage, eMessageBoxMessage);
+    }
 
     //load config from file
-    ProjectConfig::loadProjectSettingsConfigFile();
+    if(!ProjectConfig::loadProjectSettingsConfigFile()) {
+        this->log("Could not load project settings", eErrorMessage, eMessageBoxMessage);
+    }
 
     //initialize and connect model manager
     ModelManager::init();
