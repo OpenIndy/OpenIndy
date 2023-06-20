@@ -640,3 +640,18 @@ bool ProjectConfig::saveprojectSettingsConfigFile()
     return false;
 }
 
+// see SettingsDialog::initGUI()
+// see SettingsDialog::updateDisplayConfigFromSelection()
+ParameterDisplayConfig ProjectConfig::getParameterDisplayConfig() {
+
+    ParameterDisplayConfig config;
+    config.setDisplayDigits(eAngular, ProjectConfig::angularDigits);
+    config.setDisplayDigits(eMetric, ProjectConfig::distanceDigits);
+    config.setDisplayDigits(eTemperature, ProjectConfig::temperatureDigits);
+    config.setDisplayUnitType(eAngular, static_cast<oi::UnitType>(ProjectConfig::angularUnit));
+    config.setDisplayUnitType(eMetric, static_cast<oi::UnitType>(ProjectConfig::metricUnit));
+    config.setDisplayUnitType(eTemperature, static_cast<oi::UnitType>(ProjectConfig::temperatureUnit));
+    config.setUseSounds(ProjectConfig::useSounds);
+
+    return config;
+}
