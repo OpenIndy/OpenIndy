@@ -352,7 +352,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
 
     this->ui->lineEdit_maxObservations->setText(QString::number(mConfig.getMaxObservations()));
     this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
-    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
+    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval(), 'f', 3));
 
     this->enableUIElements(this->selectedMeasurementConfig.isEditable()
                            ? mConfig.getMeasurementType() : eUnknown_MeasurementType);
@@ -406,7 +406,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     // scan
     mConfig.setMaxObservations(this->ui->lineEdit_maxObservations->text().toInt());
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
-    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
+    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toDouble()); // [s]
 
     mConfig.makeUserConfig();
 
