@@ -288,16 +288,30 @@ void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked(){
  * \brief MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &text){
+    bool isValid = text.toDouble() >= MIN_TIME_INTERVAL;
+
+    this->ui->pushButton_save_user_config->setEnabled(isValid);
+    this->ui->pushButton_set_to_feature->setEnabled(isValid);
+
+    if(isValid) {
+        this->updateMeasurementConfigFromSelection();
+    }
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(const QString &text){
+    bool isValid = text.toDouble() >= MIN_DISTANCE_INTERVAL;
+
+    this->ui->pushButton_save_user_config->setEnabled(isValid);
+    this->ui->pushButton_set_to_feature->setEnabled(isValid);
+
+    if(isValid) {
+        this->updateMeasurementConfigFromSelection();
+    }
 }
 
 /*!
@@ -515,6 +529,8 @@ void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
     this->ui->lineEdit_timeInterval->setEnabled(true);
     this->ui->lineEdit_distancInterval->setEnabled(true);
     this->ui->lineEdit_maxObservations->setEnabled(true);
+    this->ui->label_timeInterval->setEnabled(true);
+    this->ui->label_distanceInterval->setEnabled(true);
 
     switch(type) {
     case eSinglePoint_MeasurementType:
@@ -523,10 +539,35 @@ void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
     case eScanTimeDependent_MeasurementType:
         this->ui->groupBox_Single_Point->setEnabled(false);
         this->ui->lineEdit_distancInterval->setEnabled(false);
+        this->ui->label_distanceInterval->setEnabled(false);
+        if(this->ui->lineEdit_timeInterval->text().isEmpty()
+                || this->ui->lineEdit_timeInterval->text().toDouble() < MIN_TIME_INTERVAL) {
+            this->ui->lineEdit_timeInterval->blockSignals(true);
+            this->ui->lineEdit_distancInterval->blockSignals(true);
+
+            this->ui->lineEdit_timeInterval->setText("1.000"); // set default values to satisfy the valiator
+            this->ui->lineEdit_distancInterval->setText("");
+
+            this->ui->lineEdit_timeInterval->blockSignals(false);
+            this->ui->lineEdit_distancInterval->blockSignals(false);
+        }
         break;
     case eScanDistanceDependent_MeasurementType:
         this->ui->groupBox_Single_Point->setEnabled(false);
         this->ui->lineEdit_timeInterval->setEnabled(false);
+        this->ui->label_timeInterval->setEnabled(false);
+        if(this->ui->lineEdit_distancInterval->text().isEmpty()
+                || this->ui->lineEdit_distancInterval->text().toDouble() < MIN_DISTANCE_INTERVAL) {
+            this->ui->lineEdit_timeInterval->blockSignals(true);
+            this->ui->lineEdit_distancInterval->blockSignals(true);
+
+            this->ui->lineEdit_timeInterval->setText("");
+            this->ui->lineEdit_distancInterval->setText("20.0000"); // set 0default values to satisfy the valiator
+
+            this->ui->lineEdit_timeInterval->blockSignals(false);
+            this->ui->lineEdit_distancInterval->blockSignals(false);
+
+        }
         break;
     case eLevel_MeasurementType:
     case eDistance_MeasurementType:
