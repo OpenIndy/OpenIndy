@@ -439,6 +439,11 @@ bool ProjectConfig::loadProjectSettingsConfigFile()
                 }
             }
         }
+
+        if(displayColumns.isEmpty()) { // no display columns found
+            return false;
+        }
+
         return true;
     }
     return false;
