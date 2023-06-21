@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
+    QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::closeAllSensorTaskDialogs, this, &MainWindow::closeAllSensorTaskDialogs, Qt::AutoConnection);
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -367,9 +368,7 @@ void MainWindow::currentJobChanged(){
 void MainWindow::sensorActionStarted(const QString &msg, const SensorAction sensorAction, const bool enableFinishButton){
     this->showStatusSensor(SensorStatus::eSensorActionInProgress, msg);
 
-    qDebug() << "sensorActionStarted" << msg << enableFinishButton << sensorAction;
-
-    QPointer<SensorTaskInfoDialog >sensorTaskInfoDialog;
+    QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
     if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
         sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
     } else {
@@ -398,13 +397,9 @@ void MainWindow::sensorActionStarted(const QString &msg, const SensorAction sens
 void MainWindow::sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction){
     this->showStatusSensor(SensorStatus::eClearStatus, "");
 
-    qDebug() << "sensorActionFinished" << msg << success << sensorAction;
-
-    QPointer<SensorTaskInfoDialog >sensorTaskInfoDialog;
+    QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
     if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
-        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
-        this->sensorTaskInfoDialogs.remove(sensorAction);
-
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.take(sensorAction);
         sensorTaskInfoDialog->close();
         delete sensorTaskInfoDialog.data();
 
@@ -412,6 +407,19 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg, c
                        success ? eInformationMessage : eErrorMessage,
                        success ? eConsoleMessage     : eMessageBoxMessage);
     }
+}
+
+void  MainWindow::closeAllSensorTaskDialogs() {
+    this->showStatusSensor(SensorStatus::eClearStatus, "");
+
+    SensorAction sensorAction;
+    foreach(sensorAction, this->sensorTaskInfoDialogs.keys()) {
+        QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog = sensorTaskInfoDialogs.value(sensorAction);
+        sensorTaskInfoDialog->close();
+        delete sensorTaskInfoDialog.data();
+    }
+    this->sensorTaskInfoDialogs.clear();
+
 }
 
 /*!
@@ -1693,10 +1701,7 @@ void MainWindow::aimAndMeasureFeatures(){
     }
 
     this->measureBehaviorLogicStarted();
-    QList<QPointer<QDialog>> dialogsToClose;
-    dialogsToClose.append(&this->sensorTaskInfoDialog);
-    //dialogsToClose.append(&this->commonMessageBox);
-    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();
     }

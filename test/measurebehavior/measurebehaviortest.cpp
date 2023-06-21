@@ -45,8 +45,7 @@ void MeasureBehaviorTest::testAimAndMeasure()
     measureFeatures.append(102);
     measureFeatures.append(103);
 
-    QList<QPointer<QDialog> > dialogs;
-    logic.init(&controller, measureFeatures, featureTableModel, dialogs);
+    logic.init(&controller, measureFeatures, featureTableModel);
     QCOMPARE(logic.next(), true);
     logic.measure();
     logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
@@ -72,8 +71,7 @@ void MeasureBehaviorTest::testSkip()
     measureFeatures.append(102);
     measureFeatures.append(103);
 
-    QList<QPointer<QDialog> > dialogs;
-    logic.init(&controller, measureFeatures, featureTableModel, dialogs);
+    logic.init(&controller, measureFeatures, featureTableModel);
     QCOMPARE(logic.next(), true);
     logic.measure();
     logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure
@@ -101,8 +99,7 @@ void MeasureBehaviorTest::testSearch()
     measureFeatures.append(102);
     measureFeatures.append(103);
 
-    QList<QPointer<QDialog> > dialogs;
-    logic.init(&controller, measureFeatures, featureTableModel, dialogs);
+    logic.init(&controller, measureFeatures, featureTableModel);
     QCOMPARE(logic.next(), true);
     logic.measure();
     logic.sensorActionFinished(true, SensorWorkerMessage::MEASUREMENT_FINISHED); // calls next / measure

@@ -185,6 +185,7 @@ private slots:
     //sensor actions
     void sensorActionStarted(const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
     void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
+    void closeAllSensorTaskDialogs();
     void measurementCompleted();
     void measurementDone(bool success);
 
