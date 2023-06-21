@@ -252,7 +252,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     // find usable name
     QString name = "new config";
     MeasurementConfig mc;
-    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isUserConfig()) {
+    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isValid()) {
         name += ".";
     }
 
