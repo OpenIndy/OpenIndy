@@ -269,10 +269,11 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     }
 
     //select the new item
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     this->updateGuiFromMeasurementConfig(mConfig);
+    this->enableUIElements(mConfig.getMeasurementType());
+
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     currentListView()->edit(mConfigProxyModel->mapFromSource(index));
-    this->selectedMeasurementConfig = mConfig;
 
 }
 
