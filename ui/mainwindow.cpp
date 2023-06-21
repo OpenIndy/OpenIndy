@@ -372,7 +372,7 @@ void MainWindow::sensorActionStarted(const QString &msg, const SensorAction sens
     if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
         sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
     } else {
-        sensorTaskInfoDialog = new SensorTaskInfoDialog();
+        sensorTaskInfoDialog = new SensorTaskInfoDialog(); // create dialog if not exits
         this->sensorTaskInfoDialogs.insert(sensorAction, sensorTaskInfoDialog);
     }
     sensorTaskInfoDialog->setDisplayMessage(msg);
@@ -401,7 +401,7 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg, c
     if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
         sensorTaskInfoDialog = this->sensorTaskInfoDialogs.take(sensorAction);
         sensorTaskInfoDialog->close();
-        delete sensorTaskInfoDialog.data();
+        // reuse dialog delete sensorTaskInfoDialog.data();
 
         emit this->log(msg,
                        success ? eInformationMessage : eErrorMessage,
@@ -416,7 +416,7 @@ void  MainWindow::closeAllSensorTaskDialogs() {
     foreach(sensorAction, this->sensorTaskInfoDialogs.keys()) {
         QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog = sensorTaskInfoDialogs.value(sensorAction);
         sensorTaskInfoDialog->close();
-        delete sensorTaskInfoDialog.data();
+        // reuse dialog delete sensorTaskInfoDialog.data();
     }
     this->sensorTaskInfoDialogs.clear();
 
