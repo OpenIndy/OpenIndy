@@ -28,7 +28,7 @@ public:
     void measure();
 
 public slots:
-    void sensorActionFinished(const bool &success, const QString &msg);
+    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
     void setDecision(Decision decision);
 
 protected slots:

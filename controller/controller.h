@@ -251,8 +251,8 @@ signals:
     //##############
 
     //sensor actions
-    void sensorActionStarted(const QString &name, const bool enableFinishButton = false);
-    void sensorActionFinished(const bool &success, const QString &msg);
+    void sensorActionStarted(const QString &name, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
+    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
     void measurementCompleted();
     void measurementDone(bool success);
 

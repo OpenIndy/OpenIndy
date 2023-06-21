@@ -364,15 +364,29 @@ void MainWindow::currentJobChanged(){
  * \brief MainWindow::sensorActionStarted
  * \param name
  */
-void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
-    this->showStatusSensor(SensorStatus::eSensorActionInProgress, name);
+void MainWindow::sensorActionStarted(const QString &msg, const SensorAction sensorAction, const bool enableFinishButton){
+    this->showStatusSensor(SensorStatus::eSensorActionInProgress, msg);
 
-    this->sensorTaskInfoDialog.setDisplayMessage(name);
-    this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
-    if(this->sensorTaskInfoDialog.isVisible()){
-        this->sensorTaskInfoDialog.repaint();
+    qDebug() << "sensorActionStarted" << msg << enableFinishButton << sensorAction;
+
+    QPointer<SensorTaskInfoDialog >sensorTaskInfoDialog;
+    if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
     } else {
-        showCentered(this->sensorTaskInfoDialog);
+        sensorTaskInfoDialog = new SensorTaskInfoDialog();
+        this->sensorTaskInfoDialogs.insert(sensorAction, sensorTaskInfoDialog);
+    }
+    sensorTaskInfoDialog->setDisplayMessage(msg);
+
+    sensorTaskInfoDialog->enableFinishButton(enableFinishButton);
+    if(enableFinishButton) {
+        // connect SensorTaskInfo dialog
+        QObject::connect(sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
+    }
+    if(sensorTaskInfoDialog->isVisible()){
+        sensorTaskInfoDialog->repaint();
+    } else {
+        showCentered(*(sensorTaskInfoDialog.data()));
     }
 }
 
@@ -381,14 +395,23 @@ void MainWindow::sensorActionStarted(const QString &name, const bool enableFinis
  * \param success
  * \param msg
  */
-void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
+void MainWindow::sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction){
     this->showStatusSensor(SensorStatus::eClearStatus, "");
 
-    this->sensorTaskInfoDialog.enableFinishButton(false);
-    this->sensorTaskInfoDialog.close();
-    emit this->log(msg,
-                   success ? eInformationMessage : eErrorMessage,
-                   success ? eConsoleMessage     : eMessageBoxMessage);
+    qDebug() << "sensorActionFinished" << msg << success << sensorAction;
+
+    QPointer<SensorTaskInfoDialog >sensorTaskInfoDialog;
+    if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
+        this->sensorTaskInfoDialogs.remove(sensorAction);
+
+        sensorTaskInfoDialog->close();
+        delete sensorTaskInfoDialog.data();
+
+        emit this->log(msg,
+                       success ? eInformationMessage : eErrorMessage,
+                       success ? eConsoleMessage     : eMessageBoxMessage);
+    }
 }
 
 /*!
@@ -2230,9 +2253,6 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
-
-    // connect SensorTaskInfo dialog
-    QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
 
 }
 

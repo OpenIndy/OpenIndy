@@ -59,7 +59,7 @@ bool MeasureBehaviorLogic::next() {
  * @param success
  * @param msg
  */
-void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QString &msg) {
+void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QString &msg,  const SensorAction sensorAction) {
 
     if(activeFeatureId == -1) { // silent ignore
         return;

@@ -1152,7 +1152,7 @@ void Controller::_startMeasurement(bool dummyPoint){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("performing measurement...", true);
+    emit this->sensorActionStarted("performing measurement...", SensorAction::eSensorActionMeasure, true);
 
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
@@ -1287,7 +1287,7 @@ void Controller::startAim(){
 
     //aim the active feature if a valid position has been found
     if(pos.getSize() == 4){
-        emit this->sensorActionStarted("moving sensor...");
+        emit this->sensorActionStarted("moving sensor...", SensorAction::eSensorActionMove);
         activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), false);
     }
 
@@ -1962,6 +1962,7 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QList<oi::ConnectionTypes> >("QList<ConnectionTypes>");
     qRegisterMetaType<oi::SensorFunctions>("SensorFunctions");
     qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
+    qRegisterMetaType<oi::SensorTypes>("SensorAction");
 
 }
 
