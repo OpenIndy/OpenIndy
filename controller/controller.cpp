@@ -1182,7 +1182,7 @@ void Controller::startMove(const Reading &reading){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("moving sensor...");
+    emit this->sensorActionStarted("moving sensor...", SensorAction::eSensorActionMove);
 
     //move sensor
     if(reading.getTypeOfReading() == eCartesianReading){
