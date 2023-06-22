@@ -252,7 +252,7 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     // find usable name
     QString name = "new config";
     MeasurementConfig mc;
-    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isUserConfig()) {
+    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isValid()) {
         name += ".";
     }
 
@@ -269,10 +269,11 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     }
 
     //select the new item
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     this->updateGuiFromMeasurementConfig(mConfig);
+    this->enableUIElements(mConfig.getMeasurementType());
+
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     currentListView()->edit(mConfigProxyModel->mapFromSource(index));
-    this->selectedMeasurementConfig = mConfig;
 
 }
 
