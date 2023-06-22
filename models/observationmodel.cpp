@@ -170,7 +170,12 @@ QVariant ObservationModel::data(const QModelIndex &index, int role) const{
         case eObservationDisplayIsUsed:
             if(geometry->getFunctions().size() > 0 && !geometry->getFunctions().at(0).isNull()){
                 QPointer<Function> function = geometry->getFunctions()[0];
-                return function->getShouldBeUsed(0, observation->getId())?Qt::Checked:Qt::Unchecked;
+
+                bool checked = false;
+                foreach(int key, function->getInputElements().keys()) {
+                    checked = function->getShouldBeUsed(key, observation->getId()) ? true : checked;
+                }
+                return checked ? Qt::Checked : Qt::Unchecked;
             }
             return Qt::Unchecked;
         case eObservationDisplayIsSolved:
@@ -316,16 +321,9 @@ bool ObservationModel::setData(const QModelIndex &index, const QVariant &value, 
 
         ObservationDisplayAttributes attr = getObservationDisplayAttributes().at(columnIndex);
         if(attr == eObservationDisplayIsUsed){
-
-            //add or remove input observation
-            if((Qt::CheckState)value.toInt() == Qt::Checked){
-                emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), true, true);
-                return true;
-            }else{
-                emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), false, true);
-                return true;
-            }
-
+            // add or remove input observation currently functionIndex == 0 and neededElementIndex == 0 are supported
+            emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), (Qt::CheckState)value.toInt() == Qt::Checked, true);
+            return true;
         }
 
     }

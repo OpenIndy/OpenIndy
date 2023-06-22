@@ -499,20 +499,29 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                     copyFunction->getScalarInputParams());
                         } // <- copy scalar input params
 
+                        QPointer<Geometry> geometry = feature->getGeometry();
                         // 3.3.2 copy used elements
                         if(editMode & EditMode::eFunctionCopyUsedElements) {
                             QMap<int, QList<InputElement> > inputElements = copyFunction->getInputElements();
                             QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
+                            if(!inputElements.isEmpty()) { // remove existing observation references
+                                for(QPointer<Observation> obs : geometry->getObservations()) {
+                                    geometry->removeObservation(obs);
+                                }
+                            }
                             while (iterator != inputElements.constEnd()) {
                                 QList<InputElement> elements = iterator.value();
                                 for (int i = 0; i < elements.size(); ++i) {
-                                    function->addInputElement(elements.at(i), iterator.key());
+                                    InputElement element = elements.at(i);
+                                    function->addInputElement(element, iterator.key());
+                                    if(!element.observation.isNull()) {  // insert observation reference from function to feature
+                                        geometry->addObservation(element.observation);
+                                    }
                                 }
                                 ++iterator;
                             }
                         } // <- copy used elements
                     }
-
                 }
                 return result;
             }
