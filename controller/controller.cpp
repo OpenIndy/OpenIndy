@@ -2229,7 +2229,7 @@ void Controller::startSearch(){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("performing search...", false /* TODO */);
+    emit this->sensorActionStarted("performing search...");
 
     activeStation->search();
 }
