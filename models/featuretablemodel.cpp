@@ -506,13 +506,16 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                             while (iterator != inputElements.constEnd()) {
                                 QList<InputElement> elements = iterator.value();
                                 for (int i = 0; i < elements.size(); ++i) {
-                                    function->addInputElement(elements.at(i), iterator.key());
+                                    InputElement element = elements.at(i);
+                                    function->addInputElement(element, iterator.key());
+                                    if(!element.observation.isNull()) {
+                                        feature->getGeometry()->addObservation(element.observation);
+                                    }
                                 }
                                 ++iterator;
                             }
                         } // <- copy used elements
                     }
-
                 }
                 return result;
             }
