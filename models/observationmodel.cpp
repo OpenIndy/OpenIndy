@@ -321,16 +321,9 @@ bool ObservationModel::setData(const QModelIndex &index, const QVariant &value, 
 
         ObservationDisplayAttributes attr = getObservationDisplayAttributes().at(columnIndex);
         if(attr == eObservationDisplayIsUsed){
-
-            //add or remove input observation
-            if((Qt::CheckState)value.toInt() == Qt::Checked){
-                emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), true, true);
-                return true;
-            }else{
-                emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), false, true);
-                return true;
-            }
-
+            // add or remove input observation currently functionIndex == 0 and neededElementIndex == 0 are supported
+            emit this->setShouldBeUsed(feature, 0, 0, observation->getId(), (Qt::CheckState)value.toInt() == Qt::Checked, true);
+            return true;
         }
 
     }
