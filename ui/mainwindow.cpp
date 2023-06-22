@@ -1955,6 +1955,7 @@ void MainWindow::pasteFromClipboard(){
                                 isFunctionColumnSelected
                                     ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams | FeatureTableModel::EditMode::eFunctionCopyUsedElements
                                     : FeatureTableModel::EditMode::eDefault);
+            this->control.recalcActiveFeature();
         }
     }else{
         int i = 0;
