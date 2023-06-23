@@ -133,7 +133,19 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     //add measurement configs
     if(!this->mConfigManager.isNull()){
-        foreach(const MeasurementConfig &mConfig, this->mConfigManager->getConfigs()){
+        QMap<Key, MeasurementConfig> mConfigs;
+        foreach(const QPointer<FeatureWrapper> &feature, job->getGeometriesList()) {
+            MeasurementConfig mConfig = feature->getGeometry()->getMeasurementConfig();
+            if(mConfig.isValid()) {
+                mConfigs.insert(mConfig.getKey(), mConfig);
+            }
+        }
+
+        foreach(const MeasurementConfig &mConfig, mConfigs.values()){
+            if(mConfig.isStandardConfig()) {
+                continue;
+            }
+            // used user or project configs
             QDomElement config = mConfig.toOpenIndyXML(project);
             if(!config.isNull()){
                 measurementConfigs.appendChild(config);

@@ -70,6 +70,7 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
 
     for(const MeasurementConfig c : configs) {
         SystemDbManager::addMeasurementConfig(c.getName()); // insert if name not exists
+        addProjectConfig(c);
     }
 }
 
