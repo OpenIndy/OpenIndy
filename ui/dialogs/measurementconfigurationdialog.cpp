@@ -79,9 +79,6 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelInd
         return;
     }
 
-    //set widgets visibility
-    this->ui->widget_measurementConfigValues->setEnabled(true);
-
     //get and check model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
@@ -100,10 +97,8 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelInd
     //update GUI from selected measurement config
     this->updateGuiFromMeasurementConfig(mConfig);
 
-    //toggle enabled state depending on what mConfig has been selected (project vs. user)
-    this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
-                                                         ? !mConfig.isStandardConfig()
-                                                         : false);
+    this->ui->widget_measurementConfigValues->setEnabled(mConfig.isEditable());
+    this->enableUIElements(mConfig.getMeasurementType());
 
     this->selectedMeasurementConfig = mConfig;
 
@@ -509,9 +504,8 @@ void MeasurementConfigurationDialog::initModels(){
 
     this->ui->tabWidget->setCurrentIndex(0);
 
-    this->isProjectConfigSelected = true;
     model->setFilterProjectConfig();
-    this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
+    this->ui->pushButton_save_user_config->setEnabled(false);
 
 }
 
@@ -528,8 +522,6 @@ void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexCha
 }
 
 void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
-    type = this->isProjectConfigSelected ? eUnknown_MeasurementType : type;
-
     // enable all
     this->ui->groupBox_Single_Point->setEnabled(true);
     this->ui->groupBox_Scan->setEnabled(true);
@@ -622,13 +614,11 @@ void MeasurementConfigurationDialog::on_tabWidget_currentChanged(int index)
 
     if(index == 0) {    // project
         model->setFilterProjectConfig();
-        this->isProjectConfigSelected = true;
     } else {            // user
         model->setFilterUserConfig();
-        this->isProjectConfigSelected = false;
     }
 
-    this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
+    this->ui->pushButton_save_user_config->setEnabled( index != 0);
 }
 
 void MeasurementConfigurationDialog::on_pushButton_save_user_config_clicked()

@@ -133,7 +133,6 @@ private:
     MeasurementConfig selectedMeasurementConfig;
 
     QPointer<QListView> currentListView();
-    bool isProjectConfigSelected;
     void on_listView_configs_clicked(const QModelIndex &index);
 
 };
