@@ -403,7 +403,11 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-
+        if(!this->neededElements.isEmpty()) {
+                attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
+                measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
+            );
+        }
     }
 
     //fill selected function plugin
