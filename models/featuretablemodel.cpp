@@ -504,7 +504,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                         if(editMode & EditMode::eFunctionCopyUsedElements) {
                             QMap<int, QList<InputElement> > inputElements = copyFunction->getInputElements();
                             QMap<int, QList<InputElement> >::const_iterator iterator = inputElements.constBegin();
-                            if(!inputElements.isEmpty()) { // remove existing observation references
+                            if(!geometry.isNull() && !inputElements.isEmpty()) { // remove existing observation references
                                 for(QPointer<Observation> obs : geometry->getObservations()) {
                                     geometry->removeObservation(obs);
                                 }
@@ -514,7 +514,7 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                                 for (int i = 0; i < elements.size(); ++i) {
                                     InputElement element = elements.at(i);
                                     function->addInputElement(element, iterator.key());
-                                    if(!element.observation.isNull()) {  // insert observation reference from function to feature
+                                    if(!geometry.isNull() && !element.observation.isNull()) {  // insert observation reference from function to feature
                                         geometry->addObservation(element.observation);
                                     }
                                 }
