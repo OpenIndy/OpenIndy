@@ -141,6 +141,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
 
     if(this->selectedMeasurementConfig.isUserConfig() && this->selectedMeasurementConfig.isEditable()) {
         QMenu *menu = new QMenu();
+        menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
         menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
         menu->exec(ui->listView_userConfigs->mapToGlobal(point));
     }else if(this->selectedMeasurementConfig.isProjectConfig()){
