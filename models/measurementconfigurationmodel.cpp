@@ -302,18 +302,21 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
     }
 
     //check mConfig
-    if(!mConfig.isValid() || mConfig.isUserConfig()){
+    if(!mConfig.isValid()){
         return invalid;
     }
 
-    if(!this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()) {
-        return invalid; // already exists
+    // find usable name
+    QString name = mConfig.getName();
+    while(measurementConfigManager->findConfig(name).isValid()) {
+        name += ".";
     }
 
     //add the measurement config
     MeasurementConfig userConfig = mConfig;
+    userConfig.setName(name);
     userConfig.makeUserConfig();
-    this->measurementConfigManager->saveUserConfig(mConfig);
+    this->measurementConfigManager->saveUserConfig(userConfig);
 
     this->updateModel();
 
