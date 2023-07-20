@@ -47,10 +47,10 @@
      <item>
       <widget class="QPushButton" name="pushButton_save_user_config">
        <property name="toolTip">
-        <string>save user config to local file system</string>
+        <string>save user config as xml to local file system</string>
        </property>
        <property name="text">
-        <string>save user config</string>
+        <string>save user config as xml</string>
        </property>
       </widget>
      </item>
