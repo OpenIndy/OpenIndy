@@ -1794,6 +1794,7 @@ void MainWindow::copyToClipboard(){
     QPointer<QAbstractItemModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
     bool isFunctionColumnSelected = false;
+    bool isMeasurementConfigColumnSelected = false;
 
     //get selection of the active table view
     // keep order of if statments
@@ -1806,6 +1807,9 @@ void MainWindow::copyToClipboard(){
         isFunctionColumnSelected = !selectionModel.isNull()
                 && selectionModel->selectedIndexes().size() == 1
                 && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
+        isMeasurementConfigColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayMeasurementConfig == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1826,6 +1830,14 @@ void MainWindow::copyToClipboard(){
         object.insert("type", "feature");
         object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
         object.insert("action", "copy function");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
+
+    } else if(isMeasurementConfigColumnSelected) {
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy measurement config","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy measurement config");
         clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
     } else { // common case: copy displayed values
