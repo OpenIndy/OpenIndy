@@ -1911,11 +1911,6 @@ void MainWindow::pasteFromClipboard(){
         return;
     }
 
-    if(isFunctionColumnSelected && selection.size() > 1) {
-        emit this->log("Only select one feature to paste functions to.", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
     qSort(selection);
 
     //get values from clipboard, so you can copy them
