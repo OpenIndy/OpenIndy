@@ -83,8 +83,6 @@ signals:
     //#######################################
 
     void measurementConfigurationsChanged();
-    void measurementConfigurationReplaced(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
-    void activeMeasurementConfigurationChanged(const GeometryTypes &type);
 
     //############
     //log messages
@@ -101,10 +99,6 @@ private:
     //save or remove configs
     void saveConfig(const MeasurementConfig &mConfig);
     void deleteMeasurementConfig(const QString &name);
-
-    //update geometries when measurement configs change
-    void updateGeometries();
-    void updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
 
     //job connects
     void connectJob();

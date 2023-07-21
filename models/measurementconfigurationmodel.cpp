@@ -362,7 +362,5 @@ void MeasurementConfigurationModel::connectConfigManager(){
 
     QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::measurementConfigurationsChanged,
                      this, &MeasurementConfigurationModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::activeMeasurementConfigurationChanged,
-                     this, &MeasurementConfigurationModel::updateModel, Qt::AutoConnection);
 
 }
