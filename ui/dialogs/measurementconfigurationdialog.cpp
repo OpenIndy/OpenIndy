@@ -434,7 +434,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
 
 
     //replace the selected measurement config
-    mConfigModel->replaceMeasurementConfig(name, mConfig);
+    mConfigModel->replaceMeasurementConfig(selectedMeasurementConfig.getKey(), mConfig);
     this->selectedMeasurementConfig = mConfig;
 
 }
