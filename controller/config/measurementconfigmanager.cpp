@@ -324,11 +324,9 @@ void MeasurementConfigManager::removeProjectConfig(const QString &name){
  * \param name
  * \param mConfig
  */
-void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
+void MeasurementConfigManager::replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig){
 
-    //get the old measurement config
-    MeasurementConfigKey oldKey(name, eUserConfig);
-    MeasurementConfig oldConfig = this->configs.value(oldKey, MeasurementConfig());
+    MeasurementConfig oldConfig = this->getConfig(oldKey);
     if(!oldConfig.isValid()){
         return;
     }
@@ -342,7 +340,7 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
 
     // write user config as xml file
     if(mConfig.isUserConfig()) {
-        this->saveToConfigFolder(name, mConfig);
+        this->saveToConfigFolder(oldConfig.getName(), mConfig);
     }
 
     //replace mConfig in map

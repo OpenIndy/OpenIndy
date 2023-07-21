@@ -67,7 +67,7 @@ public:
     void removeProjectConfig(const QString &name);
 
     //replace a config
-    void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
 
     void saveToConfigFolder(const QString &name, const MeasurementConfig &mConfig);
     //load configs from xml
