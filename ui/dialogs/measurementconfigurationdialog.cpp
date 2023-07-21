@@ -419,6 +419,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
 
     // single point
+    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
 
     // scan
