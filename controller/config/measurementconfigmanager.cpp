@@ -331,11 +331,7 @@ void MeasurementConfigManager::replaceMeasurementConfig(const MeasurementConfigK
         return;
     }
 
-    //###########################
-    //replace mConfig in database
-    //###########################
-
-    SystemDbManager::removeMeasurementConfig(name);
+    SystemDbManager::removeMeasurementConfig(oldConfig.getName()); // TODO OI-948 keep name because of FK of default measurement config ???
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
     // write user config as xml file
