@@ -336,11 +336,18 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     SystemDbManager::removeMeasurementConfig(name);
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
-    //########################
-    //replace mConfig xml file
-    //########################
-
     //create xml document
+    this->saveToConfigFolder(name, mConfig);
+
+    //replace mConfig in map
+    this->configs.remove(oldKey);
+    this->configs.insert(mConfig.getKey(), mConfig);
+
+    emit this->measurementConfigurationReplaced(oldConfig, mConfig);
+
+}
+
+void MeasurementConfigManager::saveToConfigFolder(const QString &name, const MeasurementConfig &mConfig) {
     QDomDocument mConfigXml("measurementConfig");
 
     //add mConfig to document as xml
@@ -369,17 +376,6 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     QTextStream stream(&configFile);
     mConfigXml.save(stream, 4);
     configFile.close();
-
-    //###############################
-    //replace mConfig in list and map
-    //###############################
-
-    //replace mConfig in map
-    this->configs.remove(oldKey);
-    this->configs.insert(mConfig.getKey(), mConfig);
-
-    emit this->measurementConfigurationReplaced(oldConfig, mConfig);
-
 }
 
 /*!

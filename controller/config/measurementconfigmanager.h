@@ -68,6 +68,7 @@ public:
     //replace a config
     void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
 
+    void saveToConfigFolder(const QString &name, const MeasurementConfig &mConfig);
     //load configs from xml
     void loadFromConfigFolder();
 
