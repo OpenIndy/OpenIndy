@@ -426,7 +426,12 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toDouble()); // [s]
 
-    mConfig.makeUserConfig();
+    if(this->selectedMeasurementConfig.isUserConfig()) {
+        mConfig.makeUserConfig();
+    } else if(this->selectedMeasurementConfig.isProjectConfig() && !this->selectedMeasurementConfig.isStandardConfig()) {
+        mConfig.makeProjectConfig();
+    }
+
 
     //replace the selected measurement config
     mConfigModel->replaceMeasurementConfig(name, mConfig);

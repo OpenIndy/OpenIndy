@@ -529,7 +529,7 @@ QStringList DialogsTest::getNames(QList<MeasurementConfig> list) {
 QStringList DialogsTest::getKeys(QList<MeasurementConfig> list) {
     QStringList keys;
     foreach(const MeasurementConfig mc, list) {
-        Key key = mc.getKey();
+        MeasurementConfigKey key = mc.getKey();
         QString t;
         switch(key.getConfigType()) {
         case eUserConfig:
@@ -765,7 +765,7 @@ void DialogsTest::projectSaveLoad() {
     jobS.addFeatures(point1);// job is reponsible
     QPointer<FeatureWrapper> feature = jobS.getFeaturesByName(point1.name).at(0);
     // feature->getFeature()->addFunction(function); // controller ist responsible
-    feature->getGeometry()->setMeasurementConfig(point1.measurementConfig); // controller ist responsible
+    feature->getGeometry()->setMeasurementConfig(point1.measurementConfig.getKey()); // controller ist responsible
 
 
     ProjectExchanger projectExchanger;

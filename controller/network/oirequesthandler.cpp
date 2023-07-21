@@ -886,7 +886,7 @@ void OiRequestHandler::addFeatures(OiRequestResponse &request){
     //pass measurement config to features
     foreach(const QPointer<FeatureWrapper> &feature, features){
         if(!feature.isNull() && !feature->getGeometry().isNull() && !feature->getGeometry()->getIsNominal()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
+            feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
         }
     }
 
@@ -1246,7 +1246,7 @@ void OiRequestHandler::getMeasurementConfig(OiRequestResponse &request){
     request.response.documentElement().appendChild(request.response.importNode(id, true));
 
     //add config
-    MeasurementConfig mConfig = feature->getGeometry()->getMeasurementConfig();
+    MeasurementConfig mConfig = this->measurementConfigManager->getConfig(feature->getGeometry()->getMeasurementConfig());
 
     request.response.documentElement().appendChild(toXML(mConfig, false, request.response));
 
@@ -1300,7 +1300,7 @@ void OiRequestHandler::setMeasurementConfig(OiRequestResponse &request){
     }
 
     //pass measurement config to feature
-    feature->getGeometry()->setMeasurementConfig(mConfig);
+    feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
 
     emit this->sendResponse(request);
 

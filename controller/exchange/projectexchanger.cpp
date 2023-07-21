@@ -133,22 +133,25 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     //add measurement configs
     if(!this->mConfigManager.isNull()){
-        QMap<Key, MeasurementConfig> mConfigs;
+        QSet<MeasurementConfigKey> mConfigs;
         foreach(const QPointer<FeatureWrapper> &feature, job->getGeometriesList()) {
-            MeasurementConfig mConfig = feature->getGeometry()->getMeasurementConfig();
+            MeasurementConfigKey mConfig = feature->getGeometry()->getMeasurementConfig();
             if(mConfig.isValid()) {
-                mConfigs.insert(mConfig.getKey(), mConfig);
+                mConfigs.insert(mConfig);
             }
         }
 
-        foreach(const MeasurementConfig &mConfig, mConfigs.values()){
+        foreach(const MeasurementConfigKey &mConfig, mConfigs.values()){
             if(mConfig.isStandardConfig()) {
                 continue;
             }
             // used user or project configs
-            QDomElement config = mConfig.toOpenIndyXML(project);
-            if(!config.isNull()){
-                measurementConfigs.appendChild(config);
+            MeasurementConfig mc = this->getMeasurementConfigManager()->getConfig(mConfig);
+            if(mc.isValid()) {
+                QDomElement config = mc.toOpenIndyXML(project);
+                if(!config.isNull()){
+                    measurementConfigs.appendChild(config);
+                }
             }
         }
     }
@@ -1214,10 +1217,10 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                 MeasurementConfig standardConfig = this->mConfigManager->getStandardConfig(name.toString());
 
                 if(standardConfig.isValid()) { // if standard config with "name" available use it
-                    myGeometry->getGeometry()->setMeasurementConfig(standardConfig);
+                    myGeometry->getGeometry()->setMeasurementConfig(standardConfig.getKey());
 
                 } else if(projectConfig.isValid()) { // if project config with "name" available use it
-                    myGeometry->getGeometry()->setMeasurementConfig(projectConfig);
+                    myGeometry->getGeometry()->setMeasurementConfig(projectConfig.getKey());
                 }
             }
 
