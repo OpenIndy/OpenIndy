@@ -336,8 +336,10 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     SystemDbManager::removeMeasurementConfig(name);
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
-    //create xml document
-    this->saveToConfigFolder(name, mConfig);
+    // write user config as xml file
+    if(mConfig.isUserConfig()) {
+        this->saveToConfigFolder(name, mConfig);
+    }
 
     //replace mConfig in map
     this->configs.remove(oldKey);
