@@ -91,6 +91,10 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     }
 
     const QList<MeasurementConfig> configs = sourceModel->getMeasurementConfigurationManager()->getConfigs();
+    if( ! (source_row < configs.size()) ) {
+        return false;
+    }
+
     MeasurementConfig mc = configs.at(source_row);
     const bool isProject = mc.isValid() && mc.isProjectConfig();
     const bool isUser = mc.isValid() && mc.isUserConfig();

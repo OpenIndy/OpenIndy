@@ -601,7 +601,7 @@ void DataExchanger::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>
             feature->getFeature()->addFunction(function);
         }
         if(mConfig.isValid() && !feature->getGeometry().isNull()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
+            feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
         }
         this->currentJob->blockSignals(false);
 

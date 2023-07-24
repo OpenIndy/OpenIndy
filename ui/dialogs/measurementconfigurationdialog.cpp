@@ -141,6 +141,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
 
     if(this->selectedMeasurementConfig.isUserConfig() && this->selectedMeasurementConfig.isEditable()) {
         QMenu *menu = new QMenu();
+        menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
         menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
         menu->exec(ui->listView_userConfigs->mapToGlobal(point));
     }else if(this->selectedMeasurementConfig.isProjectConfig()){
@@ -418,6 +419,7 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
 
     // single point
+    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
 
     // scan
@@ -425,10 +427,15 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
     mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toDouble()); // [s]
 
-    mConfig.makeUserConfig();
+    if(this->selectedMeasurementConfig.isUserConfig()) {
+        mConfig.makeUserConfig();
+    } else if(this->selectedMeasurementConfig.isProjectConfig() && !this->selectedMeasurementConfig.isStandardConfig()) {
+        mConfig.makeProjectConfig();
+    }
+
 
     //replace the selected measurement config
-    mConfigModel->replaceMeasurementConfig(name, mConfig);
+    mConfigModel->replaceMeasurementConfig(selectedMeasurementConfig.getKey(), mConfig);
     this->selectedMeasurementConfig = mConfig;
 
 }

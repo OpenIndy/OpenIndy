@@ -125,9 +125,9 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
         MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(value.toString());
         if(!mConfig.isValid()){
             mConfig = configs.at(index.row());
-            QString oldName = mConfig.getName();
+            MeasurementConfigKey oldKey = mConfig.getKey();
             mConfig.setName(value.toString());
-            this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
+            this->measurementConfigManager->replaceMeasurementConfig(oldKey, mConfig);
             emit this->measurementConfigNameChanged(mConfig);
             emit this->updateModel(); // force update: filter & sort model
             return true;
@@ -269,10 +269,10 @@ void MeasurementConfigurationModel::removeMeasurementConfig(const QModelIndex &i
 
 /*!
  * \brief MeasurementConfigurationModel::replaceMeasurementConfig
- * \param name
+ * \param oldKey
  * \param mConfig
  */
-void MeasurementConfigurationModel::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
+void MeasurementConfigurationModel::replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig){
 
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
@@ -285,7 +285,7 @@ void MeasurementConfigurationModel::replaceMeasurementConfig(const QString &name
     }
 
     //replace the measurement config
-    this->measurementConfigManager->replaceMeasurementConfig(name, mConfig);
+    this->measurementConfigManager->replaceMeasurementConfig(oldKey, mConfig);
 
 }
 
@@ -302,18 +302,21 @@ MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const Me
     }
 
     //check mConfig
-    if(!mConfig.isValid() || mConfig.isUserConfig()){
+    if(!mConfig.isValid()){
         return invalid;
     }
 
-    if(!this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()) {
-        return invalid; // already exists
+    // find usable name
+    QString name = mConfig.getName();
+    while(measurementConfigManager->findConfig(name).isValid()) {
+        name += ".";
     }
 
     //add the measurement config
     MeasurementConfig userConfig = mConfig;
+    userConfig.setName(name);
     userConfig.makeUserConfig();
-    this->measurementConfigManager->saveUserConfig(mConfig);
+    this->measurementConfigManager->saveUserConfig(userConfig);
 
     this->updateModel();
 
@@ -358,8 +361,6 @@ void MeasurementConfigurationModel::connectConfigManager(){
     }
 
     QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::measurementConfigurationsChanged,
-                     this, &MeasurementConfigurationModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::activeMeasurementConfigurationChanged,
                      this, &MeasurementConfigurationModel::updateModel, Qt::AutoConnection);
 
 }

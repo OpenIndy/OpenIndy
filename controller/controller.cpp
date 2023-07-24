@@ -403,7 +403,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
     }
 
     //set measurement config for the active feature
-    activeFeature->getGeometry()->setMeasurementConfig(mConfig);
+    activeFeature->getGeometry()->setMeasurementConfig(mConfig.getKey());
 }
 void Controller::saveUserConfig(const MeasurementConfig &mConfig){
     if( mConfig.isUserConfig()
@@ -1156,7 +1156,7 @@ void Controller::_startMeasurement(bool dummyPoint){
 
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
-    MeasurementConfig mConfig = activeFeature->getGeometry()->getMeasurementConfig();
+    MeasurementConfig mConfig = this->measurementConfigManager->getConfig(activeFeature->getGeometry()->getMeasurementConfig());
     mConfig.setTransientData("isDummyPoint", dummyPoint); // use MeasurementConfig for "transportation"
     activeStation->measure(id, mConfig);
 
@@ -1381,7 +1381,7 @@ void Controller::startAimAndMeasure(){
     if(pos.getSize() == 4){
         emit this->sensorActionStarted("moving sensor...");
         activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), true, activeFeature->getGeometry()->getId(),
-                            activeFeature->getGeometry()->getMeasurementConfig());
+                            this->measurementConfigManager->getConfig(activeFeature->getGeometry()->getMeasurementConfig()));
     }
 
 }
@@ -2107,7 +2107,7 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
             feature->getFeature()->addFunction(function);
         }
         if(mConfig.isValid() && !feature->getGeometry().isNull()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
+            feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
         }
         this->job->blockSignals(false);
 

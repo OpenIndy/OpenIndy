@@ -421,19 +421,24 @@ bool FeatureTableModel::setData(const QModelIndex & index, const QVariant & valu
                 return false;
             }
 
-            //get config from config name
-            QString mConfigName = value.toString();
-            if(this->measurementConfigManager.isNull()){
-                return false;
-            }
-            MeasurementConfig mConfig = this->measurementConfigManager->findConfig(mConfigName);
+            //get the feature to copy measurement config from
+            QPointer<FeatureWrapper> copyFeature = this->currentJob->getFeatureById(value.toInt());
+            // 0. precondition: function(s) available ?
+            if(!copyFeature.isNull() && !copyFeature->getFeature().isNull() && !copyFeature->getFeature()->getFunctions().size() == 0){
 
-            //update feature's measurement config
-            if(mConfig.isValid()){
-                feature->getGeometry()->setMeasurementConfig(mConfig);
+                if(copyFeature->getFeature()->getId() == feature->getFeature()->getId()){
+                    //dont overwrite the measurement config of the feature you copy from.
+                    return false;
+                }
+
+                feature->getFeature()->setActiveFeatureState(true);
+
+                feature->getGeometry()->setMeasurementConfig(copyFeature->getGeometry()->getMeasurementConfig());
+
                 return true;
             }
             break;
+
         }
         case eFeatureDisplayFunctions:{
 
