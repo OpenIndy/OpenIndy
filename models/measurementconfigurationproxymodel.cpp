@@ -91,7 +91,7 @@ bool MeasurementConfigurationProxyModel::filterAcceptsRow(int source_row, const 
     }
 
     const QList<MeasurementConfig> configs = sourceModel->getMeasurementConfigurationManager()->getConfigs();
-    if( ! (source_row < configs.size()) ) {
+    if( source_row < 0 || source_row >= configs.size()) {
         return false;
     }
 
