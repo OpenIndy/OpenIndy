@@ -37,6 +37,8 @@ public:
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
 
+    QVariant data(const QModelIndex &index, int role) const;
+
 signals:
 
     //###########################

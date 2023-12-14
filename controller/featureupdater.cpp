@@ -115,11 +115,15 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature){
         }
     }
 
-    //recalculate feature
-    this->recursiveFeatureRecalculation(feature);
+    try {
+        //recalculate feature
+        this->recursiveFeatureRecalculation(feature);
 
-    emit this->featureRecalculated(feature->getId());
+        emit this->featureRecalculated(feature->getId());
 
+    } catch(const exception &e) {
+        emit this->currentJob->sendMessage(e.what(), eErrorMessage);
+    }
 }
 
 /*!
@@ -304,14 +308,18 @@ void FeatureUpdater::switchCoordinateSystem(){
         return;
     }
 
-    this->transformObsAndNominals(this->currentJob->getActiveCoordinateSystem());
+    try {
+        this->transformObsAndNominals(this->currentJob->getActiveCoordinateSystem());
 
-    //###################
-    //recalc all features
-    //###################
+        //###################
+        //recalc all features
+        //###################
 
-    this->recalcFeatureSet();
+        this->recalcFeatureSet();
 
+    } catch(const exception &e) {
+        emit this->currentJob->sendMessage(e.what(), eErrorMessage);
+    }
 }
 
 /*!
