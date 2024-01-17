@@ -61,7 +61,7 @@ public:
     QModelIndex addMeasurementConfig(const MeasurementConfig &mConfig);
     void removeMeasurementConfig(const QModelIndex &index);
 
-    void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
 
     MeasurementConfig cloneMeasurementConfig(const MeasurementConfig &mConfig);
 

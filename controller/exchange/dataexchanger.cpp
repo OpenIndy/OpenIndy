@@ -107,13 +107,13 @@ bool DataExchanger::importData(const ExchangeParams &params){
     //load exchange method with plugin loader
     QPointer<ExchangeInterface> exchange(NULL);
     if(params.isDefinedFormat){
-        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
+        QPointer<ExchangeDefinedFormat> definedFormat = PluginLoader::loadExchangeDefinedFormatPlugin(plugin.file_path, params.exchangeName);
         if(!definedFormat.isNull()){
             definedFormat->setUsedElements(params.usedElements);
         }
         exchange = definedFormat;
     }else{
-        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(qApp->applicationDirPath() + "/" + plugin.file_path, params.exchangeName);
+        QPointer<ExchangeSimpleAscii> simpleAscii = PluginLoader::loadExchangeSimpleAsciiPlugin(plugin.file_path, params.exchangeName);
         if(!simpleAscii.isNull()){
 
             switch(params.typeOfGeometry) {
@@ -601,7 +601,7 @@ void DataExchanger::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper>
             feature->getFeature()->addFunction(function);
         }
         if(mConfig.isValid() && !feature->getGeometry().isNull()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
+            feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
         }
         this->currentJob->blockSignals(false);
 

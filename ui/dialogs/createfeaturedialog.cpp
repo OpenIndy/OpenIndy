@@ -243,8 +243,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_common->setVisible(true);
         this->ui->label_entityType->setVisible(true);
         this->ui->comboBox_entityType->setVisible(true);
-        this->ui->label_mConfig->setVisible(true);
-        this->ui->comboBox_mConfig->setVisible(true);
+        this->ui->label_mConfig->setVisible(false);
+        this->ui->comboBox_mConfig->setVisible(false);
 
         //set checked state
         this->ui->checkBox_actual->setChecked(true);
@@ -395,11 +395,6 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        if(!this->neededElements.isEmpty()) {
-            attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
-                        measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
-                        );
-        }
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
@@ -409,11 +404,10 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
         if(!this->neededElements.isEmpty()) {
-            attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
-                        measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
-                        );
+                attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
+                measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
+            );
         }
-
     }
 
     //fill selected function plugin
@@ -452,6 +446,7 @@ void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QStri
         }
         this->initMeasurementConfigModel();
 
+        this->initGUI();
     }
 
 }

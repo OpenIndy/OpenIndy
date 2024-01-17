@@ -16,6 +16,8 @@
 #include <QDesktopWidget>
 #include <QGridLayout>
 #include <QMenu>
+#include <QDoubleValidator>
+#include <float.h>
 
 #include "types.h"
 #include "console.h"
@@ -131,7 +133,6 @@ private:
     MeasurementConfig selectedMeasurementConfig;
 
     QPointer<QListView> currentListView();
-    bool isProjectConfigSelected;
     void on_listView_configs_clicked(const QModelIndex &index);
 
 };

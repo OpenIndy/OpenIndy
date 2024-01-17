@@ -46,6 +46,7 @@ public:
     //##############################
 
     //get configs
+    MeasurementConfig getConfig(const MeasurementConfigKey &key) const;
     MeasurementConfig getUserConfig(const QString &name) const;
     MeasurementConfig getProjectConfig(const QString &name) const;
     MeasurementConfig getStandardConfig(const QString &name) const;
@@ -66,8 +67,9 @@ public:
     void removeProjectConfig(const QString &name);
 
     //replace a config
-    void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
 
+    void saveToConfigFolder(const QString &name, const MeasurementConfig &mConfig);
     //load configs from xml
     void loadFromConfigFolder();
 
@@ -81,8 +83,6 @@ signals:
     //#######################################
 
     void measurementConfigurationsChanged();
-    void measurementConfigurationReplaced(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
-    void activeMeasurementConfigurationChanged(const GeometryTypes &type);
 
     //############
     //log messages
@@ -100,10 +100,6 @@ private:
     void saveConfig(const MeasurementConfig &mConfig);
     void deleteMeasurementConfig(const QString &name);
 
-    //update geometries when measurement configs change
-    void updateGeometries();
-    void updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
-
     //job connects
     void connectJob();
     void disconnectJob();
@@ -112,7 +108,7 @@ private:
     //save measurement configs
     //########################
 
-    QMap<Key, MeasurementConfig> configs;
+    QMap<MeasurementConfigKey, MeasurementConfig> configs;
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 

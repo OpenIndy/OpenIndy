@@ -185,8 +185,9 @@ private slots:
     void currentJobChanged();
 
     //sensor actions
-    void sensorActionStarted(const QString &name, const bool enableFinishButton = false);
-    void sensorActionFinished(const bool &success, const QString &msg);
+    void sensorActionStarted(const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
+    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
+    void closeAllSensorTaskDialogs();
     void measurementCompleted();
     void measurementDone(bool success);
 
@@ -422,7 +423,7 @@ private:
     FeatureFunctionsDialog featureFunctionsDialog;
     SensorConfigurationDialog sensorConfigurationDialog;
     MoveSensorDialog moveSensorDialog;
-    SensorTaskInfoDialog sensorTaskInfoDialog;
+    QMap<SensorAction, QPointer<SensorTaskInfoDialog>> sensorTaskInfoDialogs;
     PluginManagerDialog pluginManagerDialog;
     QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;

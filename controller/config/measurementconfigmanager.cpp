@@ -5,13 +5,6 @@
  */
 MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(parent){
 
-    //connect geometry updates
-    QObject::connect(this, static_cast<void (MeasurementConfigManager::*)()>(&MeasurementConfigManager::measurementConfigurationsChanged),
-                     this, static_cast<void (MeasurementConfigManager::*)()>(&MeasurementConfigManager::updateGeometries), Qt::AutoConnection);
-    QObject::connect(this, &MeasurementConfigManager::measurementConfigurationReplaced,
-                     this, static_cast<void (MeasurementConfigManager::*)(const MeasurementConfig&, const MeasurementConfig &newMConfig)>
-                     (&MeasurementConfigManager::updateGeometries), Qt::AutoConnection);
-
     // initial read only standard configs
     MeasurementConfig fastPoint;
     fastPoint.setName("FastPoint");
@@ -67,6 +60,11 @@ MeasurementConfigManager::MeasurementConfigManager(QObject *parent) : QObject(pa
     level.setMeasureTwoSides(false);
     level.makeStandardConfig();
     this->configs.insert(level.getKey(), level);
+
+    for(const MeasurementConfig c : configs) {
+        SystemDbManager::addMeasurementConfig(c.getName()); // insert if name not exists
+        addProjectConfig(c);
+    }
 }
 
 /*!
@@ -117,15 +115,15 @@ void MeasurementConfigManager::setCurrentJob(const QPointer<OiJob> &job){
 }
 
 MeasurementConfig MeasurementConfigManager::getUserConfig(const QString &name) const{
-    return configs.value(Key(name, eUserConfig), MeasurementConfig());
+    return configs.value(MeasurementConfigKey(name, eUserConfig), MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getProjectConfig(const QString &name) const{
-    return configs.value(Key(name, eProjectConfig), MeasurementConfig());
+    return configs.value(MeasurementConfigKey(name, eProjectConfig), MeasurementConfig());
 }
 
 MeasurementConfig MeasurementConfigManager::getStandardConfig(const QString &name) const{
-    return configs.value(Key(name, eStandardConfig), MeasurementConfig());
+    return configs.value(MeasurementConfigKey(name, eStandardConfig), MeasurementConfig());
 }
 
 /**
@@ -138,6 +136,10 @@ MeasurementConfig MeasurementConfigManager::findConfig(const QString &name) cons
     mc = mc.isValid() ? mc : this->getProjectConfig(name);  // fallback
     mc = mc.isValid() ? mc : this->getUserConfig(name);     // fallback
     return mc;
+}
+
+MeasurementConfig MeasurementConfigManager::getConfig(const MeasurementConfigKey &key) const {
+    return configs.value(key, MeasurementConfig());
 }
 
 /*!
@@ -256,7 +258,7 @@ void MeasurementConfigManager::addProjectConfig(const MeasurementConfig &mConfig
         return;
     }
 
-    Key key(mConfig.getName(), eStandardConfig);
+    MeasurementConfigKey key(mConfig.getName(), eStandardConfig);
     if(this->configs.contains(key)) {
         emit this->sendMessage(QString("A standard measurement configuration with the name %1 already exists").arg(mConfig.getName()), eErrorMessage);
         return;
@@ -299,7 +301,7 @@ void MeasurementConfigManager::removeUserConfig(const QString &name){
  */
 void MeasurementConfigManager::removeProjectConfig(const QString &name){
 
-    Key key(name, eProjectConfig);
+    MeasurementConfigKey key(name, eProjectConfig);
     if(this->configs.contains(key)){
 
         this->configs.remove(key);
@@ -315,27 +317,28 @@ void MeasurementConfigManager::removeProjectConfig(const QString &name){
  * \param name
  * \param mConfig
  */
-void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
+void MeasurementConfigManager::replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig){
 
-    //get the old measurement config
-    Key oldKey(name, eUserConfig);
-    MeasurementConfig oldConfig = this->configs.value(oldKey, MeasurementConfig());
+    MeasurementConfig oldConfig = this->getConfig(oldKey);
     if(!oldConfig.isValid()){
         return;
     }
 
-    //###########################
-    //replace mConfig in database
-    //###########################
-
-    SystemDbManager::removeMeasurementConfig(name);
+    SystemDbManager::removeMeasurementConfig(oldConfig.getName()); // TODO keep name because of FK of default measurement config ???
     SystemDbManager::addMeasurementConfig(mConfig.getName());
 
-    //########################
-    //replace mConfig xml file
-    //########################
+    // write user config as xml file
+    if(mConfig.isUserConfig()) {
+        this->saveToConfigFolder(oldConfig.getName(), mConfig);
+    }
 
-    //create xml document
+    //replace mConfig in map
+    this->configs.remove(oldKey);
+    this->configs.insert(mConfig.getKey(), mConfig);
+
+}
+
+void MeasurementConfigManager::saveToConfigFolder(const QString &name, const MeasurementConfig &mConfig) {
     QDomDocument mConfigXml("measurementConfig");
 
     //add mConfig to document as xml
@@ -364,17 +367,6 @@ void MeasurementConfigManager::replaceMeasurementConfig(const QString &name, con
     QTextStream stream(&configFile);
     mConfigXml.save(stream, 4);
     configFile.close();
-
-    //###############################
-    //replace mConfig in list and map
-    //###############################
-
-    //replace mConfig in map
-    this->configs.remove(oldKey);
-    this->configs.insert(mConfig.getKey(), mConfig);
-
-    emit this->measurementConfigurationReplaced(oldConfig, mConfig);
-
 }
 
 /*!
@@ -518,13 +510,13 @@ void MeasurementConfigManager::saveConfig(const MeasurementConfig &mConfig){
     //add database entry
     //##################
 
-    SystemDbManager::addMeasurementConfig(mConfig.getName()); // TODO OI-948 add key ???
+    SystemDbManager::addMeasurementConfig(mConfig.getName()); // TODO add key ???
 
     //########################################
     //add mConfig to the list of saved configs
     //########################################
 
-    if(!this->configs.contains(mConfig.getKey())){ // TODO OI-948 pull up
+    if(!this->configs.contains(mConfig.getKey())){ // TODO pull up
         this->configs.insert(mConfig.getKey(), mConfig);
     }
 
@@ -569,85 +561,10 @@ void MeasurementConfigManager::deleteMeasurementConfig(const QString &name){
     //remove mConfig from the list of saved configs
     //#############################################
 
-    Key key(name, eUserConfig);
+    MeasurementConfigKey key(name, eUserConfig);
     this->configs.remove(key);
 
-    //############
-    //emit signals
-    //############
-
     emit this->measurementConfigurationsChanged();
-
-}
-
-/*!
- * \brief MeasurementConfigManager::updateGeometries
- * Calles whenever a measurement config has been added or removed
- */
-void MeasurementConfigManager::updateGeometries(){
-
-    //check job
-    if(this->currentJob.isNull()){
-        return;
-    }
-
-    //get a list of used measurement configs
-    const QList<Key> &usedConfigs = this->currentJob->getUsedMeasurementConfigs();
-
-    //check each used measurement config (wether it still exists)
-    QList<Key> removedConfigs;
-    Key key;
-    foreach(key, usedConfigs){
-        if(!this->configs.contains(key)){
-            removedConfigs.append(key);
-        }
-    }
-
-    //reset all geometry's mConfigs whose config has been removed
-    foreach(key, removedConfigs){
-
-        //get geometries by mConfig
-        QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(key);
-
-        //reset mConfigs
-        foreach(const QPointer<Geometry> &geom, geometries){
-            if(!geom.isNull()){
-                geom->setMeasurementConfig(MeasurementConfig());
-            }
-        }
-
-    }
-
-}
-
-/*!
- * \brief MeasurementConfigManager::updateGeometries
- * Called whenever the attributes of an existing measurement config have changed
- * \param oldMConfig
- * \param newMConfig
- */
-void MeasurementConfigManager::updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig){
-
-    //check job
-    if(this->currentJob.isNull()){
-        return;
-    }
-
-    //check both configs
-    if(!oldMConfig.isValid() || !newMConfig.isValid()){
-        return;
-    }
-
-    //get a list of geometries which are using the old config
-    QList<QPointer<Geometry> > geometries = this->currentJob->getGeometriesByMConfig(oldMConfig.getKey());
-
-    //pass the new config to the geometries
-    foreach(const QPointer<Geometry> &geom, geometries){
-        if(!geom.isNull()){
-            geom->setMeasurementConfig(newMConfig);
-        }
-    }
-
 }
 
 /*!

@@ -6,14 +6,21 @@
  */
 Controller::Controller(QObject *parent) : QObject(parent){
 
+}
+
+void Controller::init() {
     //register meta types
     this->registerMetaTypes();
 
     //load and restore project unit settings
-    ProjectConfig::loadProjectPathConfigFile();
+    if(!ProjectConfig::loadProjectPathConfigFile()) {
+        this->log("Could not load project path", eErrorMessage, eMessageBoxMessage);
+    }
 
     //load config from file
-    ProjectConfig::loadProjectSettingsConfigFile();
+    if(!ProjectConfig::loadProjectSettingsConfigFile()) {
+        this->log("Could not load project settings", eErrorMessage, eMessageBoxMessage);
+    }
 
     //initialize and connect model manager
     ModelManager::init();
@@ -43,7 +50,7 @@ Controller::Controller(QObject *parent) : QObject(parent){
     //initialize tool plugins
     this->initToolPlugins();
 
-    this->initDefaults();
+    this->initDefaults(); // after read measurement confing & after load functions
 
     //connect helper objects
     this->connectDataExchanger();
@@ -396,7 +403,7 @@ void Controller::measurementConfigurationChanged(const MeasurementConfig &mConfi
     }
 
     //set measurement config for the active feature
-    activeFeature->getGeometry()->setMeasurementConfig(mConfig);
+    activeFeature->getGeometry()->setMeasurementConfig(mConfig.getKey());
 }
 void Controller::saveUserConfig(const MeasurementConfig &mConfig){
     if( mConfig.isUserConfig()
@@ -1146,11 +1153,11 @@ void Controller::_startMeasurement(bool dummyPoint){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("performing measurement...", true);
+    emit this->sensorActionStarted("performing measurement...", SensorAction::eSensorActionMeasure, true);
 
     //perform measurement
     int id = activeFeature->getGeometry()->getId();
-    MeasurementConfig mConfig = activeFeature->getGeometry()->getMeasurementConfig();
+    MeasurementConfig mConfig = this->measurementConfigManager->getConfig(activeFeature->getGeometry()->getMeasurementConfig());
     mConfig.setTransientData("isDummyPoint", dummyPoint); // use MeasurementConfig for "transportation"
     activeStation->measure(id, mConfig);
 
@@ -1176,7 +1183,7 @@ void Controller::startMove(const Reading &reading){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("moving sensor...");
+    emit this->sensorActionStarted("moving sensor...", SensorAction::eSensorActionMove);
 
     //move sensor
     if(reading.getTypeOfReading() == eCartesianReading){
@@ -1281,7 +1288,7 @@ void Controller::startAim(){
 
     //aim the active feature if a valid position has been found
     if(pos.getSize() == 4){
-        emit this->sensorActionStarted("moving sensor...");
+        emit this->sensorActionStarted("moving sensor...", SensorAction::eSensorActionMove);
         activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), false);
     }
 
@@ -1375,7 +1382,7 @@ void Controller::startAimAndMeasure(){
     if(pos.getSize() == 4){
         emit this->sensorActionStarted("moving sensor...");
         activeStation->move(pos.getAt(0), pos.getAt(1), pos.getAt(2), true, activeFeature->getGeometry()->getId(),
-                            activeFeature->getGeometry()->getMeasurementConfig());
+                            this->measurementConfigManager->getConfig(activeFeature->getGeometry()->getMeasurementConfig()));
     }
 
 }
@@ -1860,7 +1867,7 @@ void Controller::initDisplayConfigs(){
     TrafoParamTableColumnConfig trafoParamTableColumnConfig;
     ObservationTableColumnConfig observationTableColumnConfig;
     ReadingTableColumnConfig readingTableColumnConfig;
-    ParameterDisplayConfig parameterDisplayConfig;
+    ParameterDisplayConfig parameterDisplayConfig = ProjectConfig::getParameterDisplayConfig();
 
     //pass the default configs to model manager
     ModelManager::setFeatureTableColumnConfig(featureTableColumnConfig);
@@ -1961,6 +1968,7 @@ void Controller::registerMetaTypes(){
     qRegisterMetaType<QList<oi::ConnectionTypes> >("QList<ConnectionTypes>");
     qRegisterMetaType<oi::SensorFunctions>("SensorFunctions");
     qRegisterMetaType<QList<oi::SensorFunctions> >("QList<SensorFunctions>");
+    qRegisterMetaType<oi::SensorTypes>("SensorAction");
 
 }
 
@@ -2050,7 +2058,6 @@ bool Controller::createActualFromNominal(const QPointer<Geometry> &geometry){
     //get measurement config
     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(geometry->getFeatureWrapper()->getFeatureTypeString())));
     MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(elementConfigName);
-    attr.measurementConfigName = mConfig.getName();
 
     //create actual
     this->job->addFeatures(attr);
@@ -2106,7 +2113,7 @@ void Controller::addFunctionsAndMConfigs(const QList<QPointer<FeatureWrapper> > 
             feature->getFeature()->addFunction(function);
         }
         if(mConfig.isValid() && !feature->getGeometry().isNull()){
-            feature->getGeometry()->setMeasurementConfig(mConfig);
+            feature->getGeometry()->setMeasurementConfig(mConfig.getKey());
         }
         this->job->blockSignals(false);
 
@@ -2228,7 +2235,7 @@ void Controller::startSearch(){
     }
 
     //inform about start of sensor action
-    emit this->sensorActionStarted("performing search...", false /* TODO */);
+    emit this->sensorActionStarted("performing search...");
 
     activeStation->search();
 }

@@ -196,14 +196,13 @@ void DialogsTest::createPoint() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(7 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint [user]"                  == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(6, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(6 == mConfigLV->model()->rowCount());
+    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -233,14 +232,13 @@ void DialogsTest::createCircle() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(7 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint [user]"                  == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(6, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(6 == mConfigLV->model()->rowCount());
+    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -270,14 +268,13 @@ void DialogsTest::createPlane() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(7 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint [user]"                  == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(6, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(6 == mConfigLV->model()->rowCount());
+    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 
 }
 
@@ -418,14 +415,13 @@ void DialogsTest::reuseDialogInstance() {
     QPointer<QComboBox> mConfigCB = dialog.findChild<QComboBox *>("comboBox_mConfig");
     QPointer<QListView> mConfigLV = mConfigCB->findChild<QListView *>();
     qDebug() << getNames(mConfigLV->model());
-    QVERIFY(7 == mConfigLV->model()->rowCount());
-    QVERIFY("FastPoint [user]"                  == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("FastPoint"                         == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdPoint"                          == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
-    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(6, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY(6 == mConfigLV->model()->rowCount());
+    QVERIFY("FastPoint"                         == mConfigLV->model()->index(0, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-fastpoint_project"      == mConfigLV->model()->index(1, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("measconfig-scandistance [user]"    == mConfigLV->model()->index(2, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("PrecisePoint"                      == mConfigLV->model()->index(3, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdPoint"                          == mConfigLV->model()->index(4, 0).data( Qt::DisplayRole ).toString());
+    QVERIFY("StdTwoSide"                        == mConfigLV->model()->index(5, 0).data( Qt::DisplayRole ).toString());
 
     dialog.close();
     QTest::qWait(1000);
@@ -533,7 +529,7 @@ QStringList DialogsTest::getNames(QList<MeasurementConfig> list) {
 QStringList DialogsTest::getKeys(QList<MeasurementConfig> list) {
     QStringList keys;
     foreach(const MeasurementConfig mc, list) {
-        Key key = mc.getKey();
+        MeasurementConfigKey key = mc.getKey();
         QString t;
         switch(key.getConfigType()) {
         case eUserConfig:
@@ -769,7 +765,7 @@ void DialogsTest::projectSaveLoad() {
     jobS.addFeatures(point1);// job is reponsible
     QPointer<FeatureWrapper> feature = jobS.getFeaturesByName(point1.name).at(0);
     // feature->getFeature()->addFunction(function); // controller ist responsible
-    feature->getGeometry()->setMeasurementConfig(point1.measurementConfig); // controller ist responsible
+    feature->getGeometry()->setMeasurementConfig(point1.measurementConfig.getKey()); // controller ist responsible
 
 
     ProjectExchanger projectExchanger;
@@ -780,7 +776,7 @@ void DialogsTest::projectSaveLoad() {
     qDebug() << project;
 
     QString name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
-    qDebug() << name;
+    qDebug() << "a" << name;
     // project, standard & user configs
     QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
 
@@ -793,7 +789,7 @@ void DialogsTest::projectSaveLoad() {
     }
 
     name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
-    qDebug() << name;
+    qDebug() << "b" << name;
     // standard & user configs
     QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-scandistance, user)" == name);
 
@@ -801,9 +797,9 @@ void DialogsTest::projectSaveLoad() {
 
 
     name = getKeys(ModelManager::getMeasurementConfigManager()->getConfigs()).join(", ");
-    qDebug() << name;
+    qDebug() << "c" << name;
     // project, standard & user configs
-    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user), (measconfig-scandistance, project)" == name);
+    QVERIFY("(FastPoint, user), (FastPoint, standard), (PrecisePoint, standard), (StdPoint, standard), (StdTwoSide, standard), (level, standard), (measconfig-fastpoint_project, project), (measconfig-scandistance, user)" == name);
 
 }
 

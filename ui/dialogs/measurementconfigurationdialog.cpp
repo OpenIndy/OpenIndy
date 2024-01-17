@@ -1,6 +1,9 @@
 #include "measurementconfigurationdialog.h"
 #include "ui_measurementconfigurationdialog.h"
 
+#define MIN_TIME_INTERVAL 0.005
+#define MIN_DISTANCE_INTERVAL 0.0001
+
 /*!
  * \brief MeasurementConfigurationDialog::MeasurementConfigurationDialog
  * \param parent
@@ -9,6 +12,9 @@ MeasurementConfigurationDialog::MeasurementConfigurationDialog(QWidget *parent) 
     ui(new Ui::MeasurementConfigurationDialog)
 {
     ui->setupUi(this);
+
+    this->ui->lineEdit_timeInterval->setValidator(new QDoubleValidator(MIN_TIME_INTERVAL, DBL_MAX, 3, this));
+    this->ui->lineEdit_distancInterval->setValidator(new QDoubleValidator(MIN_DISTANCE_INTERVAL, DBL_MAX, 4, this));
 
     //init models
     this->initModels();
@@ -73,9 +79,6 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelInd
         return;
     }
 
-    //set widgets visibility
-    this->ui->widget_measurementConfigValues->setEnabled(true);
-
     //get and check model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
@@ -94,10 +97,8 @@ void MeasurementConfigurationDialog::on_listView_configs_clicked(const QModelInd
     //update GUI from selected measurement config
     this->updateGuiFromMeasurementConfig(mConfig);
 
-    //toggle enabled state depending on what mConfig has been selected (project vs. user)
-    this->ui->widget_measurementConfigValues->setEnabled(mConfig.isUserConfig()
-                                                         ? !mConfig.isStandardConfig()
-                                                         : false);
+    this->ui->widget_measurementConfigValues->setEnabled(mConfig.isEditable());
+    this->enableUIElements(mConfig.getMeasurementType());
 
     this->selectedMeasurementConfig = mConfig;
 
@@ -140,6 +141,7 @@ void MeasurementConfigurationDialog::measurementConfigContextMenuRequested(const
 
     if(this->selectedMeasurementConfig.isUserConfig() && this->selectedMeasurementConfig.isEditable()) {
         QMenu *menu = new QMenu();
+        menu->addAction(QIcon(":/Images/icons/edit_add.png"), QString("clone config"), this, SLOT(cloneSelectedMeasurementConfig()));
         menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete config"), this, SLOT(removeSelectedMeasurementConfig()));
         menu->exec(ui->listView_userConfigs->mapToGlobal(point));
     }else if(this->selectedMeasurementConfig.isProjectConfig()){
@@ -231,10 +233,6 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
 
     this->ui->tabWidget->setCurrentIndex(1);
 
-    MeasurementConfig mConfig;
-    mConfig.setName("new config");
-    mConfig.makeUserConfig();
-
     //get and check measurement config proxy model
     MeasurementConfigurationProxyModel *mConfigProxyModel = static_cast<MeasurementConfigurationProxyModel *>(currentListView()->model());
     if(mConfigProxyModel == NULL){
@@ -247,6 +245,17 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
         return;
     }
 
+    // find usable name
+    QString name = "new config";
+    MeasurementConfig mc;
+    while(mConfigModel->getMeasurementConfigurationManager()->findConfig(name).isValid()) {
+        name += ".";
+    }
+
+    MeasurementConfig mConfig;
+    mConfig.setName(name);
+    mConfig.makeUserConfig();
+
     //add new measurement config
     QModelIndex index = mConfigModel->addMeasurementConfig(mConfig);
 
@@ -256,10 +265,11 @@ void MeasurementConfigurationDialog::on_pushButton_add_clicked(){
     }
 
     //select the new item
-    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     this->updateGuiFromMeasurementConfig(mConfig);
+    this->enableUIElements(mConfig.getMeasurementType());
+
+    currentListView()->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     currentListView()->edit(mConfigProxyModel->mapFromSource(index));
-    this->selectedMeasurementConfig = mConfig;
 
 }
 
@@ -282,16 +292,30 @@ void MeasurementConfigurationDialog::on_checkBox_twoFace_clicked(){
  * \brief MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::on_lineEdit_timeInterval_textChanged(const QString &text){
+    bool isValid = text.toDouble() >= MIN_TIME_INTERVAL;
+
+    this->ui->pushButton_save_user_config->setEnabled(isValid);
+    this->ui->pushButton_set_to_feature->setEnabled(isValid);
+
+    if(isValid) {
+        this->updateMeasurementConfigFromSelection();
+    }
 }
 
 /*!
  * \brief MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged
  * \param arg1
  */
-void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(const QString &arg1){
-    this->updateMeasurementConfigFromSelection();
+void MeasurementConfigurationDialog::on_lineEdit_distancInterval_textChanged(const QString &text){
+    bool isValid = text.toDouble() >= MIN_DISTANCE_INTERVAL;
+
+    this->ui->pushButton_save_user_config->setEnabled(isValid);
+    this->ui->pushButton_set_to_feature->setEnabled(isValid);
+
+    if(isValid) {
+        this->updateMeasurementConfigFromSelection();
+    }
 }
 
 /*!
@@ -346,7 +370,7 @@ void MeasurementConfigurationDialog::updateGuiFromMeasurementConfig(const Measur
 
     this->ui->lineEdit_maxObservations->setText(QString::number(mConfig.getMaxObservations()));
     this->ui->lineEdit_distancInterval->setText(QString::number(mConfig.getDistanceInterval(), 'f', 4));
-    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval()));
+    this->ui->lineEdit_timeInterval->setText(QString::number(mConfig.getTimeInterval(), 'f', 3));
 
     this->enableUIElements(this->selectedMeasurementConfig.isEditable()
                            ? mConfig.getMeasurementType() : eUnknown_MeasurementType);
@@ -395,17 +419,23 @@ void MeasurementConfigurationDialog::updateMeasurementConfigFromSelection(){
     mConfig.setMeasurementType((MeasurementTypes)this->ui->comboBox_MeasurementType->currentIndex());
 
     // single point
+    mConfig.setMeasurementMode((MeasurementModes)this->ui->comboBox_MeasurementMode->currentIndex());
     mConfig.setMeasureTwoSides(this->ui->checkBox_twoFace->isChecked());
 
     // scan
     mConfig.setMaxObservations(this->ui->lineEdit_maxObservations->text().toInt());
     mConfig.setDistanceInterval(this->ui->lineEdit_distancInterval->text().toDouble()); // [mm]
-    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toLong());
+    mConfig.setTimeInterval(this->ui->lineEdit_timeInterval->text().toDouble()); // [s]
 
-    mConfig.makeUserConfig();
+    if(this->selectedMeasurementConfig.isUserConfig()) {
+        mConfig.makeUserConfig();
+    } else if(this->selectedMeasurementConfig.isProjectConfig() && !this->selectedMeasurementConfig.isStandardConfig()) {
+        mConfig.makeProjectConfig();
+    }
+
 
     //replace the selected measurement config
-    mConfigModel->replaceMeasurementConfig(name, mConfig);
+    mConfigModel->replaceMeasurementConfig(selectedMeasurementConfig.getKey(), mConfig);
     this->selectedMeasurementConfig = mConfig;
 
 }
@@ -481,9 +511,8 @@ void MeasurementConfigurationDialog::initModels(){
 
     this->ui->tabWidget->setCurrentIndex(0);
 
-    this->isProjectConfigSelected = true;
     model->setFilterProjectConfig();
-    this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
+    this->ui->pushButton_save_user_config->setEnabled(false);
 
 }
 
@@ -500,8 +529,6 @@ void MeasurementConfigurationDialog::on_comboBox_MeasurementType_currentIndexCha
 }
 
 void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
-    type = this->isProjectConfigSelected ? eUnknown_MeasurementType : type;
-
     // enable all
     this->ui->groupBox_Single_Point->setEnabled(true);
     this->ui->groupBox_Scan->setEnabled(true);
@@ -509,6 +536,8 @@ void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
     this->ui->lineEdit_timeInterval->setEnabled(true);
     this->ui->lineEdit_distancInterval->setEnabled(true);
     this->ui->lineEdit_maxObservations->setEnabled(true);
+    this->ui->label_timeInterval->setEnabled(true);
+    this->ui->label_distanceInterval->setEnabled(true);
 
     switch(type) {
     case eSinglePoint_MeasurementType:
@@ -517,10 +546,35 @@ void MeasurementConfigurationDialog::enableUIElements(MeasurementTypes type) {
     case eScanTimeDependent_MeasurementType:
         this->ui->groupBox_Single_Point->setEnabled(false);
         this->ui->lineEdit_distancInterval->setEnabled(false);
+        this->ui->label_distanceInterval->setEnabled(false);
+        if(this->ui->lineEdit_timeInterval->text().isEmpty()
+                || this->ui->lineEdit_timeInterval->text().toDouble() < MIN_TIME_INTERVAL) {
+            this->ui->lineEdit_timeInterval->blockSignals(true);
+            this->ui->lineEdit_distancInterval->blockSignals(true);
+
+            this->ui->lineEdit_timeInterval->setText("1.000"); // set default values to satisfy the valiator
+            this->ui->lineEdit_distancInterval->setText("");
+
+            this->ui->lineEdit_timeInterval->blockSignals(false);
+            this->ui->lineEdit_distancInterval->blockSignals(false);
+        }
         break;
     case eScanDistanceDependent_MeasurementType:
         this->ui->groupBox_Single_Point->setEnabled(false);
         this->ui->lineEdit_timeInterval->setEnabled(false);
+        this->ui->label_timeInterval->setEnabled(false);
+        if(this->ui->lineEdit_distancInterval->text().isEmpty()
+                || this->ui->lineEdit_distancInterval->text().toDouble() < MIN_DISTANCE_INTERVAL) {
+            this->ui->lineEdit_timeInterval->blockSignals(true);
+            this->ui->lineEdit_distancInterval->blockSignals(true);
+
+            this->ui->lineEdit_timeInterval->setText("");
+            this->ui->lineEdit_distancInterval->setText("20.0000"); // set 0default values to satisfy the valiator
+
+            this->ui->lineEdit_timeInterval->blockSignals(false);
+            this->ui->lineEdit_distancInterval->blockSignals(false);
+
+        }
         break;
     case eLevel_MeasurementType:
     case eDistance_MeasurementType:
@@ -567,13 +621,11 @@ void MeasurementConfigurationDialog::on_tabWidget_currentChanged(int index)
 
     if(index == 0) {    // project
         model->setFilterProjectConfig();
-        this->isProjectConfigSelected = true;
     } else {            // user
         model->setFilterUserConfig();
-        this->isProjectConfigSelected = false;
     }
 
-    this->ui->pushButton_save_user_config->setEnabled( ! this->isProjectConfigSelected);
+    this->ui->pushButton_save_user_config->setEnabled( index != 0);
 }
 
 void MeasurementConfigurationDialog::on_pushButton_save_user_config_clicked()

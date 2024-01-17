@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // before create job
     this->initStatusBar();
+    this->control.init();
+
 
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
@@ -39,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
+    QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::closeAllSensorTaskDialogs, this, &MainWindow::closeAllSensorTaskDialogs, Qt::AutoConnection);
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -364,15 +367,27 @@ void MainWindow::currentJobChanged(){
  * \brief MainWindow::sensorActionStarted
  * \param name
  */
-void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
-    this->showStatusSensor(SensorStatus::eSensorActionInProgress, name);
+void MainWindow::sensorActionStarted(const QString &msg, const SensorAction sensorAction, const bool enableFinishButton){
+    this->showStatusSensor(SensorStatus::eSensorActionInProgress, msg);
 
-    this->sensorTaskInfoDialog.setDisplayMessage(name);
-    this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
-    if(this->sensorTaskInfoDialog.isVisible()){
-        this->sensorTaskInfoDialog.repaint();
+    QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
+    if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
     } else {
-        showCentered(this->sensorTaskInfoDialog);
+        sensorTaskInfoDialog = new SensorTaskInfoDialog(); // create dialog if not exits
+        this->sensorTaskInfoDialogs.insert(sensorAction, sensorTaskInfoDialog);
+    }
+    sensorTaskInfoDialog->setDisplayMessage(msg);
+
+    sensorTaskInfoDialog->enableFinishButton(enableFinishButton);
+    if(enableFinishButton) {
+        // connect SensorTaskInfo dialog
+        QObject::connect(sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
+    }
+    if(sensorTaskInfoDialog->isVisible()){
+        sensorTaskInfoDialog->repaint();
+    } else {
+        showCentered(*(sensorTaskInfoDialog.data()));
     }
 }
 
@@ -381,14 +396,32 @@ void MainWindow::sensorActionStarted(const QString &name, const bool enableFinis
  * \param success
  * \param msg
  */
-void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
+void MainWindow::sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction){
     this->showStatusSensor(SensorStatus::eClearStatus, "");
 
-    this->sensorTaskInfoDialog.enableFinishButton(false);
-    this->sensorTaskInfoDialog.close();
-    emit this->log(msg,
-                   success ? eInformationMessage : eErrorMessage,
-                   success ? eConsoleMessage     : eMessageBoxMessage);
+    QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
+    if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.take(sensorAction);
+        sensorTaskInfoDialog->close();
+        // reuse dialog delete sensorTaskInfoDialog.data();
+
+        emit this->log(msg,
+                       success ? eInformationMessage : eErrorMessage,
+                       success ? eConsoleMessage     : eMessageBoxMessage);
+    }
+}
+
+void  MainWindow::closeAllSensorTaskDialogs() {
+    this->showStatusSensor(SensorStatus::eClearStatus, "");
+
+    SensorAction sensorAction;
+    foreach(sensorAction, this->sensorTaskInfoDialogs.keys()) {
+        QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog = sensorTaskInfoDialogs.value(sensorAction);
+        sensorTaskInfoDialog->close();
+        // reuse dialog delete sensorTaskInfoDialog.data();
+    }
+    this->sensorTaskInfoDialogs.clear();
+
 }
 
 /*!
@@ -1346,7 +1379,11 @@ void MainWindow::on_actionMeasurement_Configuration_triggered(){
     //check if there is an active feature and pass its config to the measurement config dialog
     QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
     if(!activeFeature.isNull() && !activeFeature->getGeometry().isNull()){
-        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig());
+        this->measurementConfigDialog.setMeasurementConfiguration(
+                    ModelManager::getMeasurementConfigManager()->getConfig(
+                        activeFeature->getGeometry()->getMeasurementConfig()
+                        )
+                    );
     }else{
         this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
     }
@@ -1672,10 +1709,7 @@ void MainWindow::aimAndMeasureFeatures(){
     }
 
     this->measureBehaviorLogicStarted();
-    QList<QPointer<QDialog>> dialogsToClose;
-    dialogsToClose.append(&this->sensorTaskInfoDialog);
-    //dialogsToClose.append(&this->commonMessageBox);
-    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel, dialogsToClose);
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel);
     if(this->measureBehaviorLogic.next()) {
         this->measureBehaviorLogic.measure();
     }
@@ -1768,6 +1802,7 @@ void MainWindow::copyToClipboard(){
     QPointer<QAbstractItemModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
     bool isFunctionColumnSelected = false;
+    bool isMeasurementConfigColumnSelected = false;
 
     //get selection of the active table view
     // keep order of if statments
@@ -1780,6 +1815,9 @@ void MainWindow::copyToClipboard(){
         isFunctionColumnSelected = !selectionModel.isNull()
                 && selectionModel->selectedIndexes().size() == 1
                 && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
+        isMeasurementConfigColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayMeasurementConfig == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
@@ -1800,6 +1838,14 @@ void MainWindow::copyToClipboard(){
         object.insert("type", "feature");
         object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
         object.insert("action", "copy function");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
+
+    } else if(isMeasurementConfigColumnSelected) {
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy measurement config","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy measurement config");
         clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
     } else { // common case: copy displayed values
@@ -1873,11 +1919,6 @@ void MainWindow::pasteFromClipboard(){
         return;
     }
 
-    if(isFunctionColumnSelected && selection.size() > 1) {
-        emit this->log("Only select one feature to paste functions to.", eErrorMessage, eMessageBoxMessage);
-        return;
-    }
-
     qSort(selection);
 
     //get values from clipboard, so you can copy them
@@ -1929,6 +1970,7 @@ void MainWindow::pasteFromClipboard(){
                                 isFunctionColumnSelected
                                     ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams | FeatureTableModel::EditMode::eFunctionCopyUsedElements
                                     : FeatureTableModel::EditMode::eDefault);
+            this->control.recalcActiveFeature();
         }
     }else{
         int i = 0;
@@ -2233,9 +2275,6 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::openSensorConfigurationDialog, this, &MainWindow::on_actionSet_sensor_triggered, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
-
-    // connect SensorTaskInfo dialog
-    QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
 
 }
 

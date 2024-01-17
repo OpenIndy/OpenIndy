@@ -379,8 +379,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="cmd_ok">
+       <property name="toolTip">
+        <string>Close dialog.</string>
+       </property>
        <property name="text">
-        <string>ok</string>
+        <string>Close</string>
        </property>
       </widget>
      </item>
