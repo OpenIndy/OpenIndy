@@ -1050,6 +1050,7 @@ const QPointer<OiJob> &Controller::createDefaultJob(){
     QPointer<FeatureWrapper> stationFeature = new FeatureWrapper();
     QPointer<Station> station = new Station();
     station->setFeatureName("STATION01");
+    station->setGroupName("00_Stations");
     stationFeature->setStation(station);
 
     QPointer<FeatureWrapper> systemFeature = new FeatureWrapper();
@@ -1620,6 +1621,11 @@ void Controller::activeStationChangedCallback(){
     if(activeStation.isNull()){
         return;
     }
+
+    StationStatusData data;
+    data.id = activeStation->getId();
+    data.name = activeStation->getFeatureName();
+    emit stationStatus(data);
 
     //disconnect all stations
     QList<QPointer<Station> > stations = this->job->getStationsList();
@@ -2246,4 +2252,46 @@ void Controller::createTemplateFromJob(){
 
 }
 
+void Controller::createNewStation() {
 
+    //check job
+    if(this->job.isNull()){
+        this->log("No job available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    const int count = this->job->getStationsList().size();
+    QString stationName = "";
+    if(count < 9){
+        stationName.append("STATION").append("0").append(QString::number(count+1));
+    }else{
+        stationName.append("STATION").append(QString::number(count+1));
+    }
+
+    FeatureAttributes attributes;
+    attributes.typeOfFeature = eStationFeature;
+    attributes.name = stationName;
+    attributes.group = "00_Stations";
+    attributes.count = 1;
+
+    this->addFeatures(attributes);
+
+    this->job->getStationsList().last()->getFeatureWrapper()->getStation()->setActiveStationState(true);
+
+
+}
+
+bool Controller::isStationBundled(int id) {
+    const QString stationName = this->job->getFeatureById(id)->getFeature()->getFeatureName();
+
+    foreach(QPointer<TrafoParam> param, this->job->getTransformationParametersList()) {
+        if( param->getStartSystem()->getIsBundleSystem()
+            && param->getDestinationSystem()->getIsStationSystem()
+            && param->getDestinationSystem()->getFeatureName() == stationName
+            ){
+            return param->getIsSolved() && param->getIsUsed();
+        }
+    }
+
+    return false;
+}

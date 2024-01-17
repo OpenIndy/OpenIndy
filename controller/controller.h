@@ -35,6 +35,11 @@
 
 using namespace oi;
 
+struct StationStatusData {
+    QVariant id;
+    QString name;
+};
+
 /*!
  * \brief The Controller class
  */
@@ -59,6 +64,8 @@ public:
     bool hasProjectDigestChanged();
 
     void _startMeasurement(bool dummyPoint);
+
+    bool isStationBundled(int id);
 
 private slots:
     void startAimAndMeasure();
@@ -161,7 +168,11 @@ public slots:
 
     void createTemplateFromJob();
 
+    void createNewStation();
+
 signals:
+
+    void stationStatus(const StationStatusData &status);
 
     void sensorStatus(const SensorStatus &status, const QString &msg);
 

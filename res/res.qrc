@@ -1,76 +1,27 @@
 <RCC>
     <qresource prefix="/Images">
-        <file>icons/station.png</file>
-        <file>icons/coordinateSystem.png</file>
-        <file>icons/sphere.png</file>
-        <file>icons/point.png</file>
-        <file>icons/line.png</file>
-        <file>icons/cylinder.png</file>
-        <file>icons/cone.png</file>
-        <file>icons/circle.png</file>
-        <file>icons/watchwindow.png</file>
-        <file>icons/settings.png</file>
-        <file>icons/sensorcontrol.png</file>
-        <file>icons/pluginmanager.png</file>
-        <file>icons/measurementconfig.png</file>
-        <file>icons/loadPlugin.png</file>
-        <file>icons/info.png</file>
-        <file>icons/filesave.png</file>
-        <file>icons/fileexport.png</file>
-        <file>icons/exec.png</file>
-        <file>icons/console.png</file>
-        <file>icons/cancel.png</file>
         <file>icons/button_ok.png</file>
-        <file>icons/folder_open.png</file>
-        <file>icons/setInstrument.png</file>
-        <file>icons/function.png</file>
-        <file>icons/1downarrow.png</file>
-        <file>icons/1leftarrow.png</file>
-        <file>icons/1rightarrow.png</file>
-        <file>icons/1uparrow.png</file>
+        <file>icons/cancel.png</file>
+        <file>icons/console.png</file>
+        <file>icons/differences.png</file>
         <file>icons/edit_add.png</file>
         <file>icons/edit_remove.png</file>
-        <file>icons/arrow_left.png</file>
-        <file>icons/arrow_right.png</file>
-        <file>icons/trafoParam.png</file>
-        <file>icons/circle_2a09f3.png</file>
-        <file>icons/cone_2a09f3.png</file>
-        <file>icons/coordinateSystem_2a09f3.png</file>
-        <file>icons/cylinder_2a09f3.png</file>
-        <file>icons/line_2a09f3.png</file>
-        <file>icons/plane_2a09f3.png</file>
-        <file>icons/point_2a09f3.png</file>
-        <file>icons/sphere_2a09f3.png</file>
-        <file>icons/station_2a09f3.png</file>
-        <file>icons/trafoParam_2a09f3.png</file>
-        <file>icons/scalarEntities_2a09f3.png</file>
-        <file>icons/plane.png</file>
-        <file>icons/ellipse_2a09f3.png</file>
-        <file>icons/hyperboloid_2a09f3.png</file>
-        <file>icons/nurbs_2a09f3.png</file>
-        <file>icons/paraboloid_2a09f3.png</file>
-        <file>icons/pointCloud_2a09f3.png</file>
-        <file>icons/cylinder_5e8acf.png</file>
-        <file>icons/sphere_5e8acf.png</file>
-        <file>icons/cone_5e8acf.png</file>
-        <file>icons/ellipse_5e8acf.png</file>
-        <file>icons/hyperboloid_5e8acf.png</file>
-        <file>icons/line_5e8acf.png</file>
-        <file>icons/nurbs_5e8acf.png</file>
-        <file>icons/paraboloid_5e8acf.png</file>
-        <file>icons/plane_5e8acf.png</file>
-        <file>icons/point_5e8acf.png</file>
-        <file>icons/pointCloud_5e8acf.png</file>
-        <file>icons/circle_5e8acf.png</file>
+        <file>icons/featureToolBar.png</file>
+        <file>icons/info_gruen.PNG</file>
+        <file>icons/info_schwarz.PNG</file>
+        <file>icons/loadPlugin.png</file>
+        <file>icons/magnify.PNG</file>
+        <file>icons/obs_disable.png</file>
+        <file>icons/obs_enable.png</file>
         <file>icons/openIndy.png</file>
         <file>icons/openIndy_bg.png</file>
-        <file>icons/scalarEntities_5e8acf.png</file>
-        <file>icons/featureToolBar.png</file>
+        <file>icons/OpenIndy_splash.png</file>
+        <file>icons/settings.png</file>
         <file>icons/simulation.png</file>
         <file>icons/streamingLogo.png</file>
-        <file>icons/OpenIndy_splash.png</file>
     </qresource>
     <qresource prefix="/icons">
+        <file>icons/toolbars/feature/anchor.png</file>
         <file>icons/toolbars/feature/Circle.png</file>
         <file>icons/toolbars/feature/Cone.png</file>
         <file>icons/toolbars/feature/Coordinatesystem.png</file>
@@ -90,16 +41,27 @@
         <file>icons/toolbars/feature/Station.png</file>
         <file>icons/toolbars/feature/Torus.png</file>
         <file>icons/toolbars/feature/TrafoParam.png</file>
+        <file>icons/toolbars/standard/activate station.png</file>
+        <file>icons/toolbars/standard/aim.png</file>
+        <file>icons/toolbars/standard/exit.png</file>
+        <file>icons/toolbars/standard/export.PNG</file>
         <file>icons/toolbars/standard/function.png</file>
         <file>icons/toolbars/standard/help.png</file>
-        <file>icons/toolbars/standard/open.png</file>
-        <file>icons/toolbars/standard/save.png</file>
-        <file>icons/toolbars/standard/sensor control pad.png</file>
+        <file>icons/toolbars/standard/import_icon.PNG</file>
+        <file>icons/toolbars/standard/jump_station.png</file>
         <file>icons/toolbars/standard/Measurement Config.png</file>
+        <file>icons/toolbars/standard/new_station.png</file>
+        <file>icons/toolbars/standard/open.png</file>
+        <file>icons/toolbars/standard/recalc.png</file>
+        <file>icons/toolbars/standard/run bundle.png</file>
+        <file>icons/toolbars/standard/save.png</file>
+        <file>icons/toolbars/standard/save_as.png</file>
+        <file>icons/toolbars/standard/save_template.png</file>
+        <file>icons/toolbars/standard/sensor control pad.png</file>
         <file>icons/toolbars/standard/Sensor Set.png</file>
         <file>icons/toolbars/standard/Watch Window.png</file>
-        <file>icons/toolbars/standard/import_icon.PNG</file>
-        <file>icons/toolbars/feature/anchor.png</file>
+        <file>icons/toolbars/standard/watch_new.PNG</file>
+        <file>icons/toolbars/standard/watch_nominal.PNG</file>
     </qresource>
     <qresource prefix="/">
         <file>sounds/measure_fail.wav</file>

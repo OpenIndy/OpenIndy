@@ -732,7 +732,14 @@ background-position: center center;</string>
    <addaction name="actionConsole"/>
    <addaction name="actiongo_to_next_feature"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
   <widget class="QToolBar" name="toolBar_controlPad">
    <property name="enabled">
     <bool>true</bool>
@@ -980,6 +987,19 @@ background-position: center center;</string>
     <bool>true</bool>
    </attribute>
   </widget>
+  <widget class="QToolBar" name="toolBar_station">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionStation_create"/>
+   <addaction name="action_RunBundle"/>
+  </widget>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../res/res.qrc">
@@ -992,7 +1012,7 @@ background-position: center center;</string>
   <action name="actionClose">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/exit.png</normaloff>:/icons/icons/toolbars/standard/exit.png</iconset>
    </property>
    <property name="text">
     <string>close</string>
@@ -1151,7 +1171,7 @@ background-position: center center;</string>
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/fileexport.png</normaloff>:/Images/icons/fileexport.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/save_as.png</normaloff>:/icons/icons/toolbars/standard/save_as.png</iconset>
    </property>
    <property name="text">
     <string>save as</string>
@@ -1195,6 +1215,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionActivate_station">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/activate station.png</normaloff>:/icons/icons/toolbars/standard/activate station.png</iconset>
+   </property>
    <property name="text">
     <string>activate station</string>
    </property>
@@ -1297,7 +1321,7 @@ background-position: center center;</string>
   </action>
   <action name="actionPlugin_manager">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/pluginmanager.png</normaloff>:/Images/icons/pluginmanager.png</iconset>
    </property>
    <property name="text">
@@ -1339,6 +1363,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionMagnify">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/magnify.PNG</normaloff>:/Images/icons/magnify.PNG</iconset>
+   </property>
    <property name="text">
     <string>magnify</string>
    </property>
@@ -1397,6 +1425,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="action_RunBundle">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/run bundle.png</normaloff>:/icons/icons/toolbars/standard/run bundle.png</iconset>
+   </property>
    <property name="text">
     <string>run bundle</string>
    </property>
@@ -1419,7 +1451,7 @@ background-position: center center;</string>
    </property>
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</iconset>
    </property>
    <property name="text">
     <string>import</string>
@@ -1428,7 +1460,7 @@ background-position: center center;</string>
   <action name="actionexport">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/export.PNG</normaloff>:/icons/icons/toolbars/standard/export.PNG</iconset>
    </property>
    <property name="text">
     <string>export</string>
@@ -1459,11 +1491,19 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actiondifferences">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/differences.png</normaloff>:/Images/icons/differences.png</iconset>
+   </property>
    <property name="text">
     <string>differences</string>
    </property>
   </action>
   <action name="actionNew_watch_window">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/watch_new.PNG</normaloff>:/icons/icons/toolbars/standard/watch_new.PNG</iconset>
+   </property>
    <property name="text">
     <string>new watch window</string>
    </property>
@@ -1475,6 +1515,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionWatch_window_nearest_nominal">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/watch_nominal.PNG</normaloff>:/icons/icons/toolbars/standard/watch_nominal.PNG</iconset>
+   </property>
    <property name="text">
     <string>watch window nearest nominal</string>
    </property>
@@ -1491,11 +1535,28 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionSave_as_template">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/save_template.png</normaloff>:/icons/icons/toolbars/standard/save_template.png</iconset>
+   </property>
    <property name="text">
     <string>save as template</string>
    </property>
    <property name="toolTip">
     <string>save current project as template with out observations</string>
+   </property>
+  </action>
+  <action name="actionStation_create">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/icons/toolbars/standard/new_station.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>create new station</string>
+   </property>
+   <property name="toolTip">
+    <string>create new station</string>
    </property>
   </action>
  </widget>

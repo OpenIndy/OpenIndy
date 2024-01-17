@@ -56,6 +56,8 @@
 
 #include "measurebehaviorlogic.h"
 
+#include "stationstatus.h"
+
 #if ENABLE_SOUND
 #include <QSound>
 #endif
@@ -193,6 +195,7 @@ private slots:
     int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
+    void showStatusStation(const StationStatusData &data);
 
     //#########################
     //actions triggered by user
@@ -345,6 +348,8 @@ private slots:
 
     void measureBehaviorLogicFinished();
 
+    void on_actionStation_create_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -462,6 +467,7 @@ private:
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
     QPropertyAnimation *animation_label_statusSensor;
+    StationStatus *stationStatus;
 
     //######
     //models

@@ -14,7 +14,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectController();
     this->connectStatusBar();
 
+    // before create job
+    this->initStatusBar();
     this->control.init();
+
 
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
@@ -28,7 +31,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initSensorPad();
     this->initToolMenus();
     this->initFilterComboBoxes();
-    this->initStatusBar();
     this->initBundleView();
     this->initFilterToolBar();
 
@@ -821,7 +823,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
-        menu->addAction(QIcon(":/Images/icons/button_ok.png"),
+        menu->addAction(QIcon(":/icons/icons/toolbars/standard/recalc.png"),
                         QString("recalc %1").arg(featureName),
                         &this->control, SLOT(recalcActiveFeature()));
 
@@ -841,11 +843,13 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                                 this, SLOT(removeObservationOfActiveFeature()));
             }
 
-            menu->addAction(QString("aim to feature %1").arg(featureName),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/aim.png"),
+                            QString("aim to feature %1").arg(featureName),
                             &this->control, SLOT(startAim()));
         } else if(isStation){
 
-            menu->addAction(QString("activate station %1").arg(featureName),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/activate station.png"),
+                        QString("activate station %1").arg(featureName),
                             this, SLOT(on_actionActivate_station_triggered()));
         }
 
@@ -2197,6 +2201,7 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorStatus, this, &MainWindow::showStatusSensor, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::stationStatus, this, &MainWindow::showStatusStation, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
@@ -2550,7 +2555,11 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
 
     //add GUI elements to status bar
-    this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
+    this->ui->statusBar->addPermanentWidget(this->label_statusSensor); // variable width
+
+    this->stationStatus = new StationStatus();
+    this->ui->statusBar->addPermanentWidget(this->stationStatus);
+
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitTemperature);
@@ -3295,4 +3304,24 @@ void MainWindow::measureBehaviorLogicFinished() {
     if(value.isValid()) {
         this->ui->actiongo_to_next_feature->setChecked(value.toBool());
     }
+}
+
+void MainWindow::on_actionStation_create_triggered()
+{
+    this->control.createNewStation();
+}
+
+void  MainWindow::showStatusStation(const StationStatusData &data) {
+
+    if(!data.id.isValid()) {
+        this->log("cannot set station status", eWarningMessage);
+        this->stationStatus->reset();
+        return;
+    }
+
+    if(!data.name.isNull()) { // optional
+        this->stationStatus->setName(data.name);
+    }
+
+    this->stationStatus->setBundled(this->control.isStationBundled(data.id.toInt()));
 }
