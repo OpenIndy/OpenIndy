@@ -1545,14 +1545,22 @@ void MainWindow::on_action_RunBundle_triggered(){
 
     //get selected bundle system
     QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        return;
+    QModelIndex index;
+    if(selection.size() == 1){
+        index = selection.at(0);
+    } else {
+        if(this->ui->listView_bundle->model()->rowCount() > 0) {
+            emit this->log(QString("no bundle selected, use first bundle"),
+                           eWarningMessage, eConsoleMessage);
+            index = this->ui->listView_bundle->model()->index(0,0);
+        }
     }
-    QModelIndex index = selection.at(0);
 
     //get system id
     int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
     if(id < 0){
+        emit this->log(QString("no bundle available"),
+                       eWarningMessage, eConsoleMessage);
         return;
     }
 
