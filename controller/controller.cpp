@@ -1272,15 +1272,21 @@ void Controller::startAim(){
 
     //transform the active feature into the station coordinate system
     //switch between actual and nominal if the active feature is not solved
+    QPointer<CoordinateSystem> cs = !activeStation->getCoordinateSystem().isNull()
+            && !activeStation->getCoordinateSystem()->getIsSolved()
+            && !activeStation->getEstimatedCoordinateSystem().isNull()
+            ? activeStation->getEstimatedCoordinateSystem()
+            : activeStation->getCoordinateSystem();
+
     if(activeFeature->getGeometry()->getIsNominal()){ //nominal
 
         //transform the nominal into the station coordinate system
-        if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
+        if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), cs)){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
         }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
                  && activeFeature->getGeometry()->getActual()->getIsSolved()
-                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, cs)){
             pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
             pos = t * pos;
         }
@@ -1288,14 +1294,14 @@ void Controller::startAim(){
     }else{ //actual
 
         //transform the actual into the station coordinate system
-        if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+         if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, cs)){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
         }else if(activeFeature->getGeometry()->getNominals().size() > 0){
 
             //use nominal instead of actual
             foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
-                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
+                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), cs)){
                     pos = nominal->getPosition().getVectorH();
                     pos = t * pos;
                     break;
