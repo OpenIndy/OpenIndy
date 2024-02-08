@@ -148,8 +148,8 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
 
     //check if there is at least a function or a measurement config that shall be set
     if(attributes.measurementConfig.isValid()
-            && (!attributes.functionPlugin.first.isEmpty()
-                || !attributes.functionPlugin.second.isEmpty()
+            || (!attributes.functionPlugin.first.isEmpty()
+                && !attributes.functionPlugin.second.isEmpty()
                 )
             ){
         //create functions and measurement configs for the created features
