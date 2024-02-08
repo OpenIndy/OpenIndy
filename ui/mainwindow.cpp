@@ -1520,12 +1520,7 @@ void MainWindow::on_pushButton_addBundle_clicked(){
  */
 void MainWindow::on_pushButton_removeBundle_clicked(){
 
-    //get selected bundle system
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        return;
-    }
-    QModelIndex index = selection.at(0);
+    QModelIndex index = getBundleIndex();
 
     //get system id
     int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
@@ -1538,23 +1533,26 @@ void MainWindow::on_pushButton_removeBundle_clicked(){
 
 }
 
-/*!
- * \brief MainWindow::on_action_RunBundle_triggered
- */
-void MainWindow::on_action_RunBundle_triggered(){
-
+QModelIndex MainWindow::getBundleIndex() {
     //get selected bundle system
     QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
     QModelIndex index;
     if(selection.size() == 1){
         index = selection.at(0);
-    } else {
-        if(this->ui->listView_bundle->model()->rowCount() > 0) {
-            emit this->log(QString("no bundle selected, use first bundle"),
-                           eWarningMessage, eConsoleMessage);
-            index = this->ui->listView_bundle->model()->index(0,0);
-        }
+    } else if(this->ui->listView_bundle->model()->rowCount() > 0) {
+        emit this->log(QString("no bundle selected, use first bundle"),
+                       eWarningMessage, eConsoleMessage);
+        index = this->ui->listView_bundle->model()->index(0,0);
     }
+    return index;
+}
+
+/*!
+ * \brief MainWindow::on_action_RunBundle_triggered
+ */
+void MainWindow::on_action_RunBundle_triggered(){
+
+    QModelIndex index = getBundleIndex();
 
     //get system id
     int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
@@ -1578,12 +1576,7 @@ void MainWindow::on_action_RunBundle_triggered(){
  */
 void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
 
-    //get selected bundle system
-    QModelIndexList bundleSelection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    if(bundleSelection.size() != 1){
-        return;
-    }
-    QModelIndex index = bundleSelection.at(0);
+    QModelIndex index = getBundleIndex();
 
     //get system id
     int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
@@ -2019,10 +2012,10 @@ void MainWindow::bundleSelectionChanged(){
     }
 
     //get selection
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
+    QModelIndex index = getBundleIndex();
 
     //update visibility depending on current selection
-    if(selection.size() != 1){
+    if(!index.isValid()){
         this->ui->tabWidget_bundle->setEnabled(false);
         this->ui->pushButton_removeBundle->setEnabled(false);
         this->ui->pushButton_runBundle->setEnabled(false);
@@ -2034,7 +2027,6 @@ void MainWindow::bundleSelectionChanged(){
     }
 
     //get system id
-    QModelIndex index = selection.at(0);
     int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
     if(id < 0){
         return;
@@ -2103,14 +2095,7 @@ void MainWindow::bundleSelectionChanged(){
  */
 void MainWindow::bundleSettingsChanged(){
 
-    //get selection
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-
-    //get system id
-    if(selection.size() != 1){
-        return;
-    }
-    QModelIndex index = selection.at(0);
+    QModelIndex index = getBundleIndex();
     int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
     if(id < 0){
         return;

@@ -495,6 +495,8 @@ private:
     MeasureBehaviorLogic measureBehaviorLogic;
 
     void measureBehaviorLogicStarted();
+
+    QModelIndex getBundleIndex();
 };
 
 #endif // MAINWINDOW_H
