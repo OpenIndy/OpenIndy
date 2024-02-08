@@ -2272,16 +2272,10 @@ void Controller::createNewStation() {
     }
 
     const int count = this->job->getStationsList().size();
-    QString stationName = "";
-    if(count < 9){
-        stationName.append("STATION").append("0").append(QString::number(count+1));
-    }else{
-        stationName.append("STATION").append(QString::number(count+1));
-    }
 
     FeatureAttributes attributes;
     attributes.typeOfFeature = eStationFeature;
-    attributes.name = stationName;
+    attributes.name = QStringLiteral("STATION%1").arg(count + 1, 2, 10, QLatin1Char('0'));
     attributes.group = "00_Stations";
     attributes.count = 1;
 
