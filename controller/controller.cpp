@@ -156,6 +156,14 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
         this->addFunctionsAndMConfigs(features, attributes.measurementConfig, attributes.functionPlugin.second, attributes.functionPlugin.first);
     }
 
+    foreach(QPointer<FeatureWrapper> feature, features) {
+        QPointer<Station> station = feature->getStation();
+        if(!station.isNull()){
+            QPointer<Station> activeStation = this->job->getActiveStation();
+            station->setEstimatedCoordinateSystem(activeStation->getCoordinateSystem());
+        }
+    }
+
 }
 
 /*!
