@@ -835,9 +835,20 @@ void Controller::runBundle(const int &bundleId){
     //calculate bundle adjustment
     if(!this->featureUpdater.recalcBundle(bundleSystem)){
         this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+    } else {
+        this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+    }
+
+    // update station status
+    QPointer<Station> activeStation = job->getActiveStation();
+    if(activeStation.isNull()){
         return;
     }
-    this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+
+    StationStatusData data;
+    data.id = activeStation->getId();
+    data.name = activeStation->getFeatureName();
+    emit stationStatus(data);
 
 }
 
