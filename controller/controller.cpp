@@ -147,13 +147,22 @@ void Controller::addFeatures(const FeatureAttributes &attributes){
     }
 
     //check if there is at least a function or a measurement config that shall be set
-    if(!attributes.measurementConfig.isValid() && (attributes.functionPlugin.first.compare("") == 0
-                                 || attributes.functionPlugin.second.compare("") == 0)){
-        return;
+    if(attributes.measurementConfig.isValid()
+            || (!attributes.functionPlugin.first.isEmpty()
+                && !attributes.functionPlugin.second.isEmpty()
+                )
+            ){
+        //create functions and measurement configs for the created features
+        this->addFunctionsAndMConfigs(features, attributes.measurementConfig, attributes.functionPlugin.second, attributes.functionPlugin.first);
     }
 
-    //create functions and measurement configs for the created features
-    this->addFunctionsAndMConfigs(features, attributes.measurementConfig, attributes.functionPlugin.second, attributes.functionPlugin.first);
+    foreach(QPointer<FeatureWrapper> feature, features) {
+        QPointer<Station> station = feature->getStation();
+        if(!station.isNull()){
+            QPointer<Station> activeStation = this->job->getActiveStation();
+            station->setEstimatedCoordinateSystem(activeStation->getCoordinateSystem());
+        }
+    }
 
 }
 
@@ -835,9 +844,20 @@ void Controller::runBundle(const int &bundleId){
     //calculate bundle adjustment
     if(!this->featureUpdater.recalcBundle(bundleSystem)){
         this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+    } else {
+        this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+    }
+
+    // update station status
+    QPointer<Station> activeStation = job->getActiveStation();
+    if(activeStation.isNull()){
         return;
     }
-    this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+
+    StationStatusData data;
+    data.id = activeStation->getId();
+    data.name = activeStation->getFeatureName();
+    emit stationStatus(data);
 
 }
 
@@ -1252,15 +1272,21 @@ void Controller::startAim(){
 
     //transform the active feature into the station coordinate system
     //switch between actual and nominal if the active feature is not solved
+    QPointer<CoordinateSystem> cs = !activeStation->getCoordinateSystem().isNull()
+            && !activeStation->getCoordinateSystem()->getIsSolved()
+            && !activeStation->getEstimatedCoordinateSystem().isNull()
+            ? activeStation->getEstimatedCoordinateSystem()
+            : activeStation->getCoordinateSystem();
+
     if(activeFeature->getGeometry()->getIsNominal()){ //nominal
 
         //transform the nominal into the station coordinate system
-        if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), activeStation->getCoordinateSystem())){
+        if(trafoController.getTransformationMatrix(t, activeFeature->getGeometry()->getNominalSystem(), cs)){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
         }else if(!activeFeature->getGeometry()->getActual().isNull() && activeFeature->getGeometry()->getActual()->hasPosition()
                  && activeFeature->getGeometry()->getActual()->getIsSolved()
-                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+                 && trafoController.getTransformationMatrix(t, activeCoordinateSystem, cs)){
             pos = activeFeature->getGeometry()->getActual()->getPosition().getVectorH();
             pos = t * pos;
         }
@@ -1268,14 +1294,14 @@ void Controller::startAim(){
     }else{ //actual
 
         //transform the actual into the station coordinate system
-        if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, activeStation->getCoordinateSystem())){
+         if(activeFeature->getGeometry()->getIsSolved() && trafoController.getTransformationMatrix(t, activeCoordinateSystem, cs)){
             pos = activeFeature->getGeometry()->getPosition().getVectorH();
             pos = t * pos;
         }else if(activeFeature->getGeometry()->getNominals().size() > 0){
 
             //use nominal instead of actual
             foreach(const QPointer<Geometry> &nominal, activeFeature->getGeometry()->getNominals()){
-                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), activeStation->getCoordinateSystem())){
+                if(nominal->hasPosition() && trafoController.getTransformationMatrix(t, nominal->getNominalSystem(), cs)){
                     pos = nominal->getPosition().getVectorH();
                     pos = t * pos;
                     break;
@@ -2261,16 +2287,10 @@ void Controller::createNewStation() {
     }
 
     const int count = this->job->getStationsList().size();
-    QString stationName = "";
-    if(count < 9){
-        stationName.append("STATION").append("0").append(QString::number(count+1));
-    }else{
-        stationName.append("STATION").append(QString::number(count+1));
-    }
 
     FeatureAttributes attributes;
     attributes.typeOfFeature = eStationFeature;
-    attributes.name = stationName;
+    attributes.name = QStringLiteral("STATION%1").arg(count + 1, 2, 10, QLatin1Char('0'));
     attributes.group = "00_Stations";
     attributes.count = 1;
 
