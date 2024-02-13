@@ -1,12 +1,5 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
-/*!
- * \brief SettingsDialog::on_pushButton_ok_clicked
- */
-void SettingsDialog::on_pushButton_ok_clicked()
-{
-    this->close();
-}
 
 /*!
  * \brief SettingsDialog::SettingsDialog
@@ -17,10 +10,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
+    this->ui->lineEdit_angleDigits->setValidator(new QRegExpValidator(QRegExp("[1-8]"), this));
+    this->ui->lineEdit_distanceDigits->setValidator(new QRegExpValidator(QRegExp("[1-8]"), this));
+    this->ui->lineEdit_temperatureDigits->setValidator(new QRegExpValidator(QRegExp("[1-3]"), this));
+    // 0 = disable autosave, > 0 = interval in minutes
+    this->ui->lineEdit_autoSaveInterval->setValidator(new QIntValidator(0, 1000, this));
+
     //init GUI elements and assign models
     this->initModels();
     this->initGUI();
-    this->updateDisplayConfigFromSelection(); //no signal emit in constructor call!!!
 }
 
 /*!
@@ -30,57 +28,6 @@ SettingsDialog::~SettingsDialog()
 {
 }
 
-/*!
- * \brief SettingsDialog::on_comboBox_angleType_currentIndexChanged
- * \param arg1
- */
-void SettingsDialog::on_comboBox_angleType_currentIndexChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_comboBox_distanceType_currentIndexChanged
- * \param arg1
- */
-void SettingsDialog::on_comboBox_distanceType_currentIndexChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_comboBox_temperatureType_currentIndexChanged
- * \param arg1
- */
-void SettingsDialog::on_comboBox_temperatureType_currentIndexChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_lineEdit_angleDigits_textChanged
- * \param arg1
- */
-void SettingsDialog::on_lineEdit_angleDigits_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_lineEdit_distanceDigits_textChanged
- * \param arg1
- */
-void SettingsDialog::on_lineEdit_distanceDigits_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-/*!
- * \brief SettingsDialog::on_lineEdit_temperatureDigits_textChanged
- * \param arg1
- */
-void SettingsDialog::on_lineEdit_temperatureDigits_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
-
-void SettingsDialog::on_lineEdit_autoSaveInterval_textChanged(const QString &arg1){
-    this->updateDisplayConfigFromSelection();
-}
 
 /*!
  * \brief SettingsDialog::showEvent
@@ -89,8 +36,9 @@ void SettingsDialog::on_lineEdit_autoSaveInterval_textChanged(const QString &arg
 void SettingsDialog::showEvent(QShowEvent *event){
     this->ui->tabWidget_settings->setTabEnabled(2,false);
     this->ui->tabWidget_settings->setTabEnabled(3,false);
+    this->ui->pushButton_ok->setEnabled(true);
+
     this->initGUI();
-    this->updateDisplayConfigFromSelection();
 
     event->accept();
 }
@@ -99,6 +47,7 @@ void SettingsDialog::showEvent(QShowEvent *event){
  * \brief SettingsDialog::initGUI
  */
 void SettingsDialog::initGUI(){
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     //do not trigger changes while settings defaults
     this->ui->comboBox_angleType->blockSignals(true);
@@ -110,7 +59,7 @@ void SettingsDialog::initGUI(){
     this->ui->checkBox_sounds->blockSignals(true);
     this->ui->lineEdit_autoSaveInterval->blockSignals(true);
 
-    //set default unit
+    //set default unit, see ProjectConfig::getParameterDisplayConfig()
     this->ui->comboBox_angleType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getAngularUnit())));
     this->ui->comboBox_distanceType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getMetricUnit())));
     this->ui->comboBox_temperatureType->setCurrentText(getUnitTypeName(static_cast<oi::UnitType>(ProjectConfig::getTemperatureUnit())));
@@ -145,7 +94,7 @@ void SettingsDialog::initModels(){
 /*!
  * \brief SettingsDialog::updateDisplayConfigFromSelection
  */
-void SettingsDialog::updateDisplayConfigFromSelection(){
+ParameterDisplayConfig SettingsDialog::updateDisplayConfigFromSelection(){
 
     ParameterDisplayConfig config;
     config.setDisplayDigits(eAngular, this->ui->lineEdit_angleDigits->text().toInt());
@@ -156,26 +105,51 @@ void SettingsDialog::updateDisplayConfigFromSelection(){
     config.setDisplayUnitType(eTemperature, getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
     config.setUseSounds(this->ui->checkBox_sounds->isChecked());
 
-    if(this->isVisible()){//online save the changes after editing in GUI
-
-        ProjectConfig::setAngularDigits(this->ui->lineEdit_angleDigits->text().toInt());
-        ProjectConfig::setDistanceDigits(this->ui->lineEdit_distanceDigits->text().toInt());
-        ProjectConfig::setTemperatureDigits(this->ui->lineEdit_temperatureDigits->text().toInt());
-        ProjectConfig::setAngularUnit(getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
-        ProjectConfig::setMetricUnit(getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
-        ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
-        ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
-        ProjectConfig::setAutoSaveInterval(this->ui->lineEdit_autoSaveInterval->text().toInt());
-    }
-
-    emit this->setDisplayConfig(config);
+    return config;
 }
 
+
 /*!
- * \brief SettingsDialog::on_checkBox_sounds_toggled
- * \param checked
+ * \brief SettingsDialog::on_pushButton_ok_clicked
  */
-void SettingsDialog::on_checkBox_sounds_toggled(bool checked)
+void SettingsDialog::on_pushButton_ok_clicked()
 {
-    this->updateDisplayConfigFromSelection();
+    ParameterDisplayConfig config = this->updateDisplayConfigFromSelection();
+
+    // update ProjectConfig
+    ProjectConfig::setAngularDigits(this->ui->lineEdit_angleDigits->text().toInt());
+    ProjectConfig::setDistanceDigits(this->ui->lineEdit_distanceDigits->text().toInt());
+    ProjectConfig::setTemperatureDigits(this->ui->lineEdit_temperatureDigits->text().toInt());
+    ProjectConfig::setAngularUnit(getUnitTypeEnum(this->ui->comboBox_angleType->currentText()));
+    ProjectConfig::setMetricUnit(getUnitTypeEnum(this->ui->comboBox_distanceType->currentText()));
+    ProjectConfig::setTemperatureUnit(getUnitTypeEnum(this->ui->comboBox_temperatureType->currentText()));
+    ProjectConfig::setUseSounds(this->ui->checkBox_sounds->isChecked());
+    ProjectConfig::setAutoSaveInterval(this->ui->lineEdit_autoSaveInterval->text().toInt());
+
+    // and save ProejctSettingsConfig file
+    ProjectConfig::saveprojectSettingsConfigFile();
+
+    emit this->setDisplayConfig(config);
+
+    this->close();
+}
+
+void SettingsDialog::on_pushButton_cancel_clicked()
+{
+     this->close();
+}
+
+void SettingsDialog::on_lineEdit_angleDigits_textChanged(const QString &text)
+{
+    ui->pushButton_ok->setEnabled(text.toInt() > 0);
+}
+
+void SettingsDialog::on_lineEdit_distanceDigits_textChanged(const QString &text)
+{
+    ui->pushButton_ok->setEnabled(text.toInt() > 0);
+}
+
+void SettingsDialog::on_lineEdit_temperatureDigits_textChanged(const QString &text)
+{
+    ui->pushButton_ok->setEnabled(text.toInt() > 0);
 }

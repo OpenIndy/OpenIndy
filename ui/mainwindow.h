@@ -56,6 +56,8 @@
 
 #include "measurebehaviorlogic.h"
 
+#include "stationstatus.h"
+
 #if ENABLE_SOUND
 #include <QSound>
 #endif
@@ -114,6 +116,7 @@ signals:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();
@@ -141,9 +144,6 @@ signals:
 
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
-
-    //load sensorconfigs and measurementconfigs from folders and store in databas
-    void loadAndSaveConfigs();
 
     void createTemplateFromJob();
 
@@ -185,8 +185,9 @@ private slots:
     void currentJobChanged();
 
     //sensor actions
-    void sensorActionStarted(const QString &name, const bool enableFinishButton = false);
-    void sensorActionFinished(const bool &success, const QString &msg);
+    void sensorActionStarted(const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
+    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
+    void closeAllSensorTaskDialogs();
     void measurementCompleted();
     void measurementDone(bool success);
 
@@ -194,6 +195,7 @@ private slots:
     int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
+    void showStatusStation(const StationStatusData &data);
 
     //#########################
     //actions triggered by user
@@ -346,6 +348,8 @@ private slots:
 
     void measureBehaviorLogicFinished();
 
+    void on_actionStation_create_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -419,7 +423,7 @@ private:
     FeatureFunctionsDialog featureFunctionsDialog;
     SensorConfigurationDialog sensorConfigurationDialog;
     MoveSensorDialog moveSensorDialog;
-    SensorTaskInfoDialog sensorTaskInfoDialog;
+    QMap<SensorAction, QPointer<SensorTaskInfoDialog>> sensorTaskInfoDialogs;
     PluginManagerDialog pluginManagerDialog;
     QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
@@ -463,7 +467,7 @@ private:
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
     QPropertyAnimation *animation_label_statusSensor;
-    QLabel *label_statusStablePointMeasurement;
+    StationStatus *stationStatus;
 
     //######
     //models
@@ -491,6 +495,8 @@ private:
     MeasureBehaviorLogic measureBehaviorLogic;
 
     void measureBehaviorLogicStarted();
+
+    QModelIndex getBundleIndex();
 };
 
 #endif // MAINWINDOW_H

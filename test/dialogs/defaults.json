@@ -1,0 +1,24 @@
+{
+    "createFeature": [
+        {
+            "featureType": "point",
+            "function": "function-fitpoint",
+            "measurementConfig": "FastPoint"
+        },
+        {
+            "featureType": "point_unknown",
+            "function": "function-fitpoint",
+            "measurementConfig": "FastPoint"
+        },
+        {
+            "featureType": "point",
+            "function": "function-fitpoint_unknown",
+            "measurementConfig": "FastPoint"
+        },
+        {
+            "featureType": "point",
+            "function": "function-fitpoint",
+            "measurementConfig": "FastPoint_unknown"
+        }
+    ]
+}

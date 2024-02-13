@@ -1,0 +1,10 @@
+{
+    "createFeature": [
+        {
+            "featureType": "point",
+            "function": "ExampleFunction",
+            "measurementConfig": "ExampleMeasurementConfig"
+        }
+    ]
+
+}

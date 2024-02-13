@@ -43,13 +43,8 @@ bool ObservationProxyModel::filterAcceptsRow(int source_row, const QModelIndex &
  * \return
  */
 bool ObservationProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-
     //check visibility of the column
-    if(this->observationTableColumnConfig.getColumnVisibility((ObservationDisplayAttributes)source_column)){
-        return true;
-    }
-    return false;
-
+    return this->observationTableColumnConfig.getColumnVisibility((ObservationDisplayAttributes)source_column);
 }
 
 /*!
@@ -94,10 +89,9 @@ bool ObservationProxyModel::lessThan(const QModelIndex &source_left, const QMode
             int fwRight = inputElem.at(source_right.row()).observation->getId();
             int fwLeft =  inputElem.at(source_left.row()).observation->getId();
 
-            return fwLeft > fwRight;
+            return fwLeft < fwRight;
         }
 
     }
     return false;
-
 }

@@ -1,13 +1,12 @@
 TEMPLATE = subdirs
 
-SUBDIRS = watchwindow stablepoint featuresorter measurebehavior dialogs
+SUBDIRS = watchwindow featuresorter measurebehavior dialogs
 
 QMAKE_EXTRA_TARGETS += run-test
 win32-msvc* {
 run-test.commands = \
     if not exist reports mkdir reports & if not exist reports exit 1 $$escape_expand(\n\t)\
     cd $$shell_quote($$OUT_PWD/watchwindow) && $(MAKE) run-test & \
-    cd $$shell_quote($$OUT_PWD/stablepoint) && $(MAKE) run-test & \
     cd $$shell_quote($$OUT_PWD/featuresorter) && $(MAKE) run-test
 
 contains( DEFINES, ENABLE_MULTITHREAD_TEST ) {
@@ -24,8 +23,7 @@ run-test.commangs += & \
 run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
     $(MAKE) -C $$shell_quote($$OUT_PWD/watchwindow) run-test & \
-    $(MAKE) -C $$shell_quote($$OUT_PWD/featuresorter) run-test & \
-    $(MAKE) -C $$shell_quote($$OUT_PWD/stablepoint) run-test
+    $(MAKE) -C $$shell_quote($$OUT_PWD/featuresorter) run-test
 
 contains( DEFINES, ENABLE_GUI_TEST ) {
     run-test.commands += & \
@@ -41,7 +39,6 @@ run-test.commangs += & \
 run-test.commands = \
     [ -e "reports" ] || mkdir reports ; \
     $(MAKE) -C watchwindow run-test ; \
-    $(MAKE) -C stablepoint run-test ; \
     $(MAKE) -C featuresorter run-test
 
 contains( DEFINES, ENABLE_GUI_TEST ) {

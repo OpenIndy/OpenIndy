@@ -52,7 +52,7 @@ public:
 
     MeasurementConfig getMeasurementConfig(const QModelIndex &index) const;
 
-    bool getIsSaved(const QModelIndex &index) const;
+    bool isUserConfig(const QModelIndex &index) const;
 
     //#################################
     //add or remove measurement configs
@@ -61,9 +61,9 @@ public:
     QModelIndex addMeasurementConfig(const MeasurementConfig &mConfig);
     void removeMeasurementConfig(const QModelIndex &index);
 
-    void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
 
-    void cloneMeasurementConfig(const MeasurementConfig &mConfig);
+    MeasurementConfig cloneMeasurementConfig(const MeasurementConfig &mConfig);
 
     //#######################################
     //get or set sensor configuration manager

@@ -180,6 +180,7 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+    ProjectExchanger projectExchanger;
 
     //job
     QPointer<OiJob> currentJob;

@@ -132,15 +132,6 @@ QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(const Fe
 }
 
 /*!
- * \brief AvailableFunctionsListModel::setDefaultFunction
- * \param type
- * \param function
- */
-void AvailableFunctionsListModel::setDefaultFunction(const FeatureTypes &type, const QPair<QString, QString> &function){
-    SystemDbManager::setDefaultFunction(type, function.first, function.second);
-}
-
-/*!
  * \brief AvailableFunctionsListModel::getPlugins
  * \return
  */

@@ -31,7 +31,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_units">
         <attribute name="title">
@@ -203,9 +203,16 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButton_cancel">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton_ok">
          <property name="text">
-          <string>ok</string>
+          <string>OK</string>
          </property>
         </widget>
        </item>

@@ -20,10 +20,7 @@ int MeasurementConfigurationModel::rowCount(const QModelIndex &parent) const{
         return 0;
     }
 
-    int numSavedConfigs = this->measurementConfigManager->getSavedMeasurementConfigs().size();
-    int numProjectConfigs = this->measurementConfigManager->getProjectMeasurementConfigs().size();
-
-    return numSavedConfigs + numProjectConfigs;
+    return this->measurementConfigManager->getConfigs().size();
 
 }
 
@@ -59,15 +56,9 @@ QVariant MeasurementConfigurationModel::data(const QModelIndex &index, int role)
         return QVariant();
     }
 
-    //check if the index is a saved config
-    if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
-        return this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row()).getName();
-    }
-
-    //check if the index is a project measurement config
-    if(index.row() < this->rowCount(index.parent())){
-        return QString("*%1").arg(this->measurementConfigManager->getProjectMeasurementConfigs()
-                                  .at(index.row() - this->measurementConfigManager->getSavedMeasurementConfigs().size()).getName());
+    const QList<MeasurementConfig> configs = this->measurementConfigManager->getConfigs();
+    if(index.row() < configs.size()){
+        return configs.at(index.row()).getName();
     }
 
     return QVariant();
@@ -127,18 +118,18 @@ bool MeasurementConfigurationModel::setData(const QModelIndex &index, const QVar
         return false;
     }
 
-    //check if the index is a saved config
-    if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
+    const QList<MeasurementConfig> configs = this->measurementConfigManager->getConfigs();
+    if(index.row() < configs.size()){
 
         //check if there already is a measurement config with the new name
-        MeasurementConfig mConfig = this->measurementConfigManager->getSavedMeasurementConfig(value.toString());
-        if(!mConfig.getIsValid()){
-            mConfig = this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row());
-            QString oldName = mConfig.getName();
+        MeasurementConfig mConfig = this->measurementConfigManager->getUserConfig(value.toString());
+        if(!mConfig.isValid()){
+            mConfig = configs.at(index.row());
+            MeasurementConfigKey oldKey = mConfig.getKey();
             mConfig.setName(value.toString());
-            mConfig.setIsSaved(true);
-            this->measurementConfigManager->replaceMeasurementConfig(oldName, mConfig);
+            this->measurementConfigManager->replaceMeasurementConfig(oldKey, mConfig);
             emit this->measurementConfigNameChanged(mConfig);
+            emit this->updateModel(); // force update: filter & sort model
             return true;
         }
 
@@ -160,24 +151,9 @@ QModelIndex MeasurementConfigurationModel::getIndex(const MeasurementConfig &mCo
         return QModelIndex();
     }
 
-    //get all saved configs and check names
-    if(mConfig.getIsSaved()){
-        QList<MeasurementConfig> savedConfigs = this->measurementConfigManager->getSavedMeasurementConfigs();
-        for(int i = 0; i < savedConfigs.size(); i++){
-            if(savedConfigs.at(i).getName().compare(mConfig.getName()) == 0){
-                return this->createIndex(i, 0);
-            }
-        }
-    }
-
-    //get all project configs and check names
-    if(!mConfig.getIsSaved()){
-        QList<MeasurementConfig> projectConfigs = this->measurementConfigManager->getProjectMeasurementConfigs();
-        for(int i = 0; i < projectConfigs.size(); i++){
-            if(projectConfigs.at(i).getName().compare(mConfig.getName()) == 0){
-                return this->createIndex(i + this->measurementConfigManager->getSavedMeasurementConfigs().size(), 0);
-            }
-        }
+    const int idx = this->measurementConfigManager->getConfigs().indexOf(mConfig);
+    if(idx >= 0){
+        return this->createIndex(idx, 0);
     }
 
     return QModelIndex();
@@ -202,25 +178,16 @@ MeasurementConfig MeasurementConfigurationModel::getMeasurementConfig(const QMod
     }
 
     //check if the index is a measurement config
-    if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
-        return this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row());
-    }
-
-    //check if the index is a project measurement config
-    if(index.row() < this->rowCount(index.parent())){
-        return this->measurementConfigManager->getProjectMeasurementConfigs().at(index.row() - this->measurementConfigManager->getSavedMeasurementConfigs().size());
+    const QList<MeasurementConfig> configs = this->measurementConfigManager->getConfigs();
+    if(index.row() < configs.size()){
+        return configs.at(index.row());
     }
 
     return MeasurementConfig();
 
 }
 
-/*!
- * \brief MeasurementConfigurationModel::getIsSaved
- * \param index
- * \return
- */
-bool MeasurementConfigurationModel::getIsSaved(const QModelIndex &index) const{
+bool MeasurementConfigurationModel::isUserConfig(const QModelIndex &index) const{
 
     //check sensor config manager
     if(this->measurementConfigManager.isNull()){
@@ -232,9 +199,9 @@ bool MeasurementConfigurationModel::getIsSaved(const QModelIndex &index) const{
         return false;
     }
 
-    //check if the index is a saved config
-    if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
-        return true;
+    const QList<MeasurementConfig> configs = this->measurementConfigManager->getConfigs();
+    if(index.row() < configs.size()){
+        return configs.at(index.row()).isUserConfig();
     }
 
     return false;
@@ -247,33 +214,31 @@ bool MeasurementConfigurationModel::getIsSaved(const QModelIndex &index) const{
  * \return
  */
 QModelIndex MeasurementConfigurationModel::addMeasurementConfig(const MeasurementConfig &mConfig){
-
-    QModelIndex index;
-
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
-        return index;
+        return QModelIndex();
     }
 
     //check mConfig
-    if(this->measurementConfigManager->getSavedMeasurementConfig(mConfig.getName()).getIsValid()){
-        return index;
+    if(this->measurementConfigManager->getUserConfig(mConfig.getName()).isValid()){
+        return  QModelIndex();
     }
 
     //add the measurement config
-    this->measurementConfigManager->addSavedMeasurementConfig(mConfig);
+    this->measurementConfigManager->saveUserConfig(mConfig);
+
+    this->updateModel();
+
 
     //get all saved measurement configs
-    QList<MeasurementConfig> savedMeasurementConfigs = this->measurementConfigManager->getSavedMeasurementConfigs();
-    for(int i = 0; i < savedMeasurementConfigs.size(); i++){
-        if(savedMeasurementConfigs.at(i).getName().compare(mConfig.getName()) == 0){
+    const QList<MeasurementConfig> userConfigs = this->measurementConfigManager->getConfigs();
+    for(int i = 0; i < userConfigs.size(); i++){
+        if(userConfigs.at(i).getName().compare(mConfig.getName()) == 0){
             return this->createIndex(i, 0);
         }
     }
 
-    this->updateModel();
-
-    return index;
+    return  QModelIndex();
 
 }
 
@@ -294,8 +259,8 @@ void MeasurementConfigurationModel::removeMeasurementConfig(const QModelIndex &i
     }
 
     //check if the index is a saved config
-    if(index.row() < this->measurementConfigManager->getSavedMeasurementConfigs().size()){
-        this->measurementConfigManager->removeSavedMeasurementConfig(this->measurementConfigManager->getSavedMeasurementConfigs().at(index.row()).getName());
+    if(index.row() < this->measurementConfigManager->getConfigs().size()){
+        this->measurementConfigManager->removeUserConfig(getMeasurementConfig(index).getName());
     }
 
     this->updateModel();
@@ -304,10 +269,10 @@ void MeasurementConfigurationModel::removeMeasurementConfig(const QModelIndex &i
 
 /*!
  * \brief MeasurementConfigurationModel::replaceMeasurementConfig
- * \param name
+ * \param oldKey
  * \param mConfig
  */
-void MeasurementConfigurationModel::replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig){
+void MeasurementConfigurationModel::replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig){
 
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
@@ -315,37 +280,47 @@ void MeasurementConfigurationModel::replaceMeasurementConfig(const QString &name
     }
 
     //check measurement config
-    if(!mConfig.getIsValid()){
+    if(!mConfig.isValid()){
         return;
     }
 
     //replace the measurement config
-    this->measurementConfigManager->replaceMeasurementConfig(name, mConfig);
+    this->measurementConfigManager->replaceMeasurementConfig(oldKey, mConfig);
 
 }
 
 /*!
  * \brief MeasurementConfigurationModel::cloneMeasurementConfig
  * \param mConfig
+ * \return clone or invalid config
  */
-void MeasurementConfigurationModel::cloneMeasurementConfig(const MeasurementConfig &mConfig){
-
+MeasurementConfig MeasurementConfigurationModel::cloneMeasurementConfig(const MeasurementConfig &mConfig){
+    MeasurementConfig invalid;
     //check measurement config manager
     if(this->measurementConfigManager.isNull()){
-        return;
+        return invalid;
     }
 
     //check mConfig
-    if(!mConfig.getIsValid() || mConfig.getIsSaved()){
-        return;
+    if(!mConfig.isValid()){
+        return invalid;
+    }
+
+    // find usable name
+    QString name = mConfig.getName();
+    while(measurementConfigManager->findConfig(name).isValid()) {
+        name += ".";
     }
 
     //add the measurement config
-    MeasurementConfig savedConfig = mConfig;
-    savedConfig.setIsSaved(true);
-    this->measurementConfigManager->addSavedMeasurementConfig(mConfig);
+    MeasurementConfig userConfig = mConfig;
+    userConfig.setName(name);
+    userConfig.makeUserConfig();
+    this->measurementConfigManager->saveUserConfig(userConfig);
 
     this->updateModel();
+
+    return userConfig;
 
 }
 
@@ -386,8 +361,6 @@ void MeasurementConfigurationModel::connectConfigManager(){
     }
 
     QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::measurementConfigurationsChanged,
-                     this, &MeasurementConfigurationModel::updateModel, Qt::AutoConnection);
-    QObject::connect(this->measurementConfigManager.data(), &MeasurementConfigManager::activeMeasurementConfigurationChanged,
                      this, &MeasurementConfigurationModel::updateModel, Qt::AutoConnection);
 
 }

@@ -216,3 +216,11 @@ void FunctionTableProxyModel::disconnectJob(){
     QObject::disconnect(this, &FunctionTableProxyModel::startAddFunction, this->currentJob.data(), &OiJob::addFunction);
 
 }
+
+QVariant FunctionTableProxyModel::data(const QModelIndex &index, int role) const{
+
+    if(role == Qt::ToolTipRole) {
+       return "double click to use function";
+    }
+    return QSortFilterProxyModel::data(index, role);
+}
