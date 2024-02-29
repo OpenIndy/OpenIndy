@@ -400,6 +400,12 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg, c
     this->showStatusSensor(SensorStatus::eClearStatus, "");
 
     QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
+
+    if(sensorAction == SensorAction::eSensorActionAll) {
+        closeAllSensorTaskDialogs();
+        return;
+    }
+
     if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
         sensorTaskInfoDialog = this->sensorTaskInfoDialogs.take(sensorAction);
         sensorTaskInfoDialog->close();
