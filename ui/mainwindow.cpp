@@ -56,12 +56,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     this->resizeTableView();
 
-    //load default bundle plugin
-    if(job->getBundleSystemList().size() >0){
-        int bundleID = job->getBundleSystemList().at(0)->getId();
-        this->loadDefaultBundlePlugIn(bundleID);
-    }
-
     this->startAutoSave();
 
     this->updateCompleter();
@@ -1514,94 +1508,6 @@ void MainWindow::on_actionAbout_OpenIndy_triggered(){
 void MainWindow::on_actionShow_Licenses_triggered(){
     showCentered(this->showLicensesDialog);
 }
-/*!
- * \brief MainWindow::on_pushButton_addBundle_clicked
- */
-void MainWindow::on_pushButton_addBundle_clicked(){
-    emit this->addBundleSystem();
-}
-
-/*!
- * \brief MainWindow::on_pushButton_removeBundle_clicked
- */
-void MainWindow::on_pushButton_removeBundle_clicked(){
-
-    QModelIndex index = getBundleIndex();
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //remove bundle system
-    emit this->removeBundleSystem(id);
-
-}
-
-QModelIndex MainWindow::getBundleIndex() {
-    //get selected bundle system
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    QModelIndex index;
-    if(selection.size() == 1){
-        index = selection.at(0);
-    } else if(this->ui->listView_bundle->model()->rowCount() > 0) {
-        emit this->log(QString("no bundle selected, use first bundle"),
-                       eWarningMessage, eConsoleMessage);
-        index = this->ui->listView_bundle->model()->index(0,0);
-    }
-    return index;
-}
-
-/*!
- * \brief MainWindow::on_action_RunBundle_triggered
- */
-void MainWindow::on_action_RunBundle_triggered(){
-
-    QModelIndex index = getBundleIndex();
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        emit this->log(QString("no bundle available"),
-                       eWarningMessage, eConsoleMessage);
-        return;
-    }
-
-    //get selected bundle parameters
-    //TODO zu verwendende stations ermitteln
-    //TODO zu schätzende Parameter je station ermitteln
-
-    //calculate bundle
-    emit this->runBundle(id);
-
-}
-
-/*!
- * \brief MainWindow::on_pushButton_loadBundleTemplate_clicked
- */
-void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
-
-    QModelIndex index = getBundleIndex();
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //get selected bundle template
-    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
-    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
-    if(bundleTemplate.isEmpty()){
-        return;
-    }
-
-    //load template
-    emit this->loadBundleTemplate(id, bundleTemplate);
-    this->bundleSelectionChanged();
-
-}
 
 /*!
  * \brief MainWindow::showFeatureProperties
@@ -2017,43 +1923,24 @@ void MainWindow::bundleSelectionChanged(){
         return;
     }
 
-    //get selection
-    QModelIndex index = getBundleIndex();
-
-    //update visibility depending on current selection
-    if(!index.isValid()){
-        this->ui->tabWidget_bundle->setEnabled(false);
-        this->ui->pushButton_removeBundle->setEnabled(false);
-        this->ui->pushButton_runBundle->setEnabled(false);
-        return;
-    }else{
-        this->ui->tabWidget_bundle->setEnabled(true);
-        this->ui->pushButton_removeBundle->setEnabled(true);
-        this->ui->pushButton_runBundle->setEnabled(true);
-    }
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
     //reset old parameters
     this->resetBundleView();
 
     //get and check bundle plugin and template
-    QJsonObject bundleTemplate = this->control.getBundleTemplate(id);
-    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment(id);
+    QJsonObject bundleTemplate = this->control.getBundleTemplate();
+    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment();
     if(bundlePlugin.isNull()){
         return;
     }
 
     //set up scalar parameters
     ScalarInputParams scalarParams = bundlePlugin->getScalarInputParams();
-    this->bundleParameterWidget->setEnabled(true);
-    this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
-    this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
-    this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+    if(!this->bundleParameterWidget.isNull()) {
+        this->bundleParameterWidget->setEnabled(true);
+        this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
+        this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
+        this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+    }
 
     //set up input stations
     QJsonArray inputStations;
@@ -2100,13 +1987,7 @@ void MainWindow::bundleSelectionChanged(){
  * Is called whenever the settings of a bundle have changed
  */
 void MainWindow::bundleSettingsChanged(){
-
-    QModelIndex index = getBundleIndex();
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
+/*
     //create parameter object
     QJsonObject param;
 
@@ -2148,7 +2029,7 @@ void MainWindow::bundleSettingsChanged(){
     this->bundleGeometriesModel->setStations(stations);
 
     emit this->updateBundleAdjustment(id, param);
-
+*/
 }
 
 /*!
@@ -2291,13 +2172,6 @@ void MainWindow::connectStatusBar(){
  * \brief MainWindow::connectBundleView
  */
 void MainWindow::connectBundleView(){
-
-    //connect bundle selection
-    QObject::connect(this->ui->listView_bundle->selectionModel(), &QItemSelectionModel::selectionChanged,
-                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
-    QObject::connect(&ModelManager::getBundleSystemsModel(), &BundleSystemsModel::layoutChanged,
-                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
-
     //connect scalar parameters widget
     QObject::connect(this->bundleParameterWidget, &ScalarParameterWidget::scalarParametersChanged,
                      this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
@@ -2336,8 +2210,6 @@ void MainWindow::assignModels(){
     this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
 
     //assign bundle models
-    this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
-    this->ui->comboBox_bundleTemplate->setModel(&ModelManager::getBundleTemplatesModel());
     this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
     this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
@@ -2568,23 +2440,58 @@ void MainWindow::initStatusBar(){
 
 }
 
+QList<QJsonObject> MainWindow::loadBundleTemplates(){
+    QList<QJsonObject> templates;
+    //get template path
+    QString path;
+    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/templates/bundle");
+
+    //iterate over templates
+    QDirIterator it(path, QDirIterator::NoIteratorFlags);
+    while(it.hasNext()){
+
+        //load file
+        QFile file(it.next());
+        if(!file.open(QFile::ReadOnly)){
+            continue;
+        }
+
+        //save json template
+        QJsonDocument bundleTemplate;
+        QJsonParseError parseError;
+        bundleTemplate = QJsonDocument::fromJson(file.readAll(), &parseError);
+        if(parseError.error != QJsonParseError::NoError){
+            continue;
+        }
+        templates.append(bundleTemplate.object());
+
+        //close file
+        file.close();
+
+    }
+
+    return templates;
+}
+
 /*!
  * \brief MainWindow::initBundleView
  */
 void MainWindow::initBundleView(){
 
     //load bundle templates
-    ModelManager::getBundleTemplatesModel().loadTemplates();
-    this->ui->comboBox_bundleTemplate->setCurrentIndex(0);
+    QList<QJsonObject> templates = this->loadBundleTemplates();
+    if(templates.isEmpty()){
+        return;
+    }
+    QJsonObject bundleTemplate = templates.first(); // only one should exists
 
-    //set initial visibility
-    this->ui->tabWidget_bundle->setEnabled(false);
-    this->ui->pushButton_removeBundle->setEnabled(false);
-    this->ui->pushButton_runBundle->setEnabled(false);
+    //load template
+    emit this->loadBundleTemplate(bundleTemplate);
+    this->bundleSelectionChanged();
 
     //init bundle parameter widget
     QGridLayout *extraParameterLayout = new QGridLayout();
-    this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
+    // this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
     this->bundleParameterWidget = new ScalarParameterWidget();
     extraParameterLayout->addWidget(this->bundleParameterWidget);
 
@@ -2835,10 +2742,12 @@ void MainWindow::updateActualNominalFilterSize(){
 void MainWindow::resetBundleView(){
 
     //reset scalar parameters
-    this->bundleParameterWidget->blockSignals(true);
-    this->bundleParameterWidget->clearAll();
-    this->bundleParameterWidget->setEnabled(false);
-    this->bundleParameterWidget->blockSignals(false);
+    if(!this->bundleParameterWidget.isNull()) {
+        this->bundleParameterWidget->blockSignals(true);
+        this->bundleParameterWidget->clearAll();
+        this->bundleParameterWidget->setEnabled(false);
+        this->bundleParameterWidget->blockSignals(false);
+    }
 
     //reset input stations
     QJsonArray stations;
@@ -2888,23 +2797,6 @@ void MainWindow::saveProjectAs(bool asTemplate)
         }
         emit this->saveProject(filename);
     }
-}
-
-/*!
- * \brief MainWindow::loadDefaultBundlePlugIn
- */
-void MainWindow::loadDefaultBundlePlugIn(int bundleID)
-{
-    //get selected bundle template
-    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
-    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
-    if(bundleTemplate.isEmpty()){
-        return;
-    }
-
-    //load template
-    emit this->loadBundleTemplate(bundleID, bundleTemplate);
-    this->bundleSelectionChanged();
 }
 
 /*!

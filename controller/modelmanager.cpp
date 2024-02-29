@@ -53,8 +53,6 @@ ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
-BundleSystemsModel ModelManager::bundleSystemsModel;
-BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
 BundleParameterTableProxyModel ModelManager::bundleParameterTableProxyModel;
@@ -338,14 +336,6 @@ QStringListModel &ModelManager::getNominalSystemsModel(){
 }
 
 /*!
- * \brief ModelManager::getBundleSystemsModel
- * \return
- */
-BundleSystemsModel &ModelManager::getBundleSystemsModel(){
-    return ModelManager::bundleSystemsModel;
-}
-
-/*!
  * \brief ModelManager::getGroupNamesModel
  * \return
  */
@@ -579,14 +569,6 @@ ReadingModel &ModelManager::getReadingModel(){
  */
 ReadingProxyModel &ModelManager::getReadingProxyModel(){
     return ModelManager::readingProxyModel;
-}
-
-/*!
- * \brief ModelManager::getBundleTemplatesModel
- * \return
- */
-BundleTemplatesModel &ModelManager::getBundleTemplatesModel(){
-    return ModelManager::bundleTemplatesModel;
 }
 
 /*!
@@ -914,7 +896,6 @@ void ModelManager::updateJob(){
     ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
-    ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::featureDifferenceTableModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::featureDifferenceProxyModel.setCurrentJob(ModelManager::currentJob);
 

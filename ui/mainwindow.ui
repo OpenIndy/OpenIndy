@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1081</width>
-    <height>657</height>
+    <width>1120</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -332,7 +332,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_features">
          <attribute name="title">
@@ -449,8 +449,8 @@ background-position: center center;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1081</width>
-     <height>25</height>
+     <width>1120</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -748,7 +748,7 @@ background-position: center center;</string>
     <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,1,5">
+    <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,0,0">
      <item row="0" column="2">
       <widget class="QLabel" name="label_magnifyActualNominal">
        <property name="sizePolicy">
