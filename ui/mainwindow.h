@@ -133,9 +133,9 @@ signals:
     void removeBundleSystem(const int &bundleId);
 
     //load or calculate bundle
-    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
-    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
-    void runBundle(const int &bundleId);
+    void updateBundleAdjustment(const QJsonObject &param);
+    void loadBundleTemplate(const QJsonObject &bundleTemplate);
+    void runBundle();
 
     //save or load projects
     void saveProject();
@@ -287,13 +287,8 @@ private slots:
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
-    //add or remove bundle system
-    void on_pushButton_addBundle_clicked();
-    void on_pushButton_removeBundle_clicked();
-
     //load or calculate bundle
     void on_action_RunBundle_triggered();
-    void on_pushButton_loadBundleTemplate_clicked();
 
     //##############
     //helper methods
@@ -400,9 +395,6 @@ private:
     //save project help function
     void saveProjectAs(bool asTemplate = false);
 
-    //load default bundle plugin
-    void loadDefaultBundlePlugIn(int bundleID);
-
     //go automatically to next feature
     void autoSwitchToNextFeature(bool sucessMeasure);
 
@@ -436,7 +428,7 @@ private:
     StationPropertiesDialog stationPropertiesDialog;
 
     //widget with scalar input parameters
-    ScalarParameterWidget *bundleParameterWidget;
+    QPointer<ScalarParameterWidget> bundleParameterWidget;
 
     //##########
     //sensor pad
