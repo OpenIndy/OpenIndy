@@ -840,6 +840,7 @@ background-position: center center;</string>
     <bool>false</bool>
    </attribute>
    <addaction name="actionStation_create"/>
+   <addaction name="actionSpacer"/>
    <addaction name="action_RunBundle"/>
   </widget>
   <action name="actionOpen">
@@ -1399,6 +1400,17 @@ background-position: center center;</string>
    </property>
    <property name="toolTip">
     <string>create new station</string>
+   </property>
+  </action>
+  <action name="actionSpacer">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string> </string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
