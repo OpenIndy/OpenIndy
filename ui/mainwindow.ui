@@ -419,11 +419,6 @@ background-position: center center;</string>
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_bundleResults">
-             <attribute name="title">
-              <string>results</string>
-             </attribute>
-            </widget>
            </widget>
           </item>
          </layout>
