@@ -287,13 +287,8 @@ private slots:
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
-    //add or remove bundle system
-    //void on_pushButton_addBundle_clicked();
-    //void on_pushButton_removeBundle_clicked();
-
     //load or calculate bundle
-    //void on_action_RunBundle_triggered();
-    //void on_pushButton_loadBundleTemplate_clicked();
+    void on_action_RunBundle_triggered();
 
     //##############
     //helper methods

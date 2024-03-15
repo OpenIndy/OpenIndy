@@ -3216,3 +3216,13 @@ void  MainWindow::showStatusStation(const StationStatusData &data) {
 
     this->stationStatus->setBundled(this->control.isStationBundled(data.id.toInt()));
 }
+
+/*!
+ * \brief MainWindow::on_action_RunBundle_triggered
+ */
+void MainWindow::on_action_RunBundle_triggered(){
+
+    //calculate bundle
+    emit this->runBundle();
+
+}
