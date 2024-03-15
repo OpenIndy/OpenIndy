@@ -2440,46 +2440,13 @@ void MainWindow::initStatusBar(){
 
 }
 
-QList<QJsonObject> MainWindow::loadBundleTemplates(){
-    QList<QJsonObject> templates;
-    //get template path
-    QString path;
-    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/templates/bundle");
-
-    //iterate over templates
-    QDirIterator it(path, QDirIterator::NoIteratorFlags);
-    while(it.hasNext()){
-
-        //load file
-        QFile file(it.next());
-        if(!file.open(QFile::ReadOnly)){
-            continue;
-        }
-
-        //save json template
-        QJsonDocument bundleTemplate;
-        QJsonParseError parseError;
-        bundleTemplate = QJsonDocument::fromJson(file.readAll(), &parseError);
-        if(parseError.error != QJsonParseError::NoError){
-            continue;
-        }
-        templates.append(bundleTemplate.object());
-
-        //close file
-        file.close();
-
-    }
-
-    return templates;
-}
-
 /*!
  * \brief MainWindow::initBundleView
  */
 void MainWindow::initBundleView(){
 
     //load bundle templates
-    QList<QJsonObject> templates = this->loadBundleTemplates();
+    QList<QJsonObject> templates = this->control.loadBundleTemplates();
     if(templates.isEmpty()){
         return;
     }

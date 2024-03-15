@@ -67,6 +67,8 @@ public:
 
     bool isStationBundled(int id);
 
+    QList<QJsonObject> loadBundleTemplates();
+
 private slots:
     void startAimAndMeasure();
 

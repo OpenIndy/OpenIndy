@@ -371,7 +371,6 @@ private:
     void initToolMenus();
     void initFilterComboBoxes();
     void initStatusBar();
-    QList<QJsonObject> loadBundleTemplates();
     void initBundleView();
     void initFilterToolBar();
 

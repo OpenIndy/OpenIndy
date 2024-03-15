@@ -2296,3 +2296,36 @@ bool Controller::isStationBundled(int id) {
 
     return false;
 }
+
+QList<QJsonObject> Controller::loadBundleTemplates(){
+    QList<QJsonObject> templates;
+    //get template path
+    QString path;
+    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/templates/bundle");
+
+    //iterate over templates
+    QDirIterator it(path, QDirIterator::NoIteratorFlags);
+    while(it.hasNext()){
+
+        //load file
+        QFile file(it.next());
+        if(!file.open(QFile::ReadOnly)){
+            continue;
+        }
+
+        //save json template
+        QJsonDocument bundleTemplate;
+        QJsonParseError parseError;
+        bundleTemplate = QJsonDocument::fromJson(file.readAll(), &parseError);
+        if(parseError.error != QJsonParseError::NoError){
+            continue;
+        }
+        templates.append(bundleTemplate.object());
+
+        //close file
+        file.close();
+
+    }
+
+    return templates;
+}
