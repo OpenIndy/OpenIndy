@@ -1987,10 +1987,10 @@ void MainWindow::bundleSelectionChanged(){
  * Is called whenever the settings of a bundle have changed
  */
 void MainWindow::bundleSettingsChanged(){
-/*
+
     //create parameter object
     QJsonObject param;
-
+/* TODO bundle scalar parameters remove later
     //set up scalar parameters
     const QMap<QString, int> &intParams = this->bundleParameterWidget->getIntParameter();
     const QMap<QString, double> &doubleParams = this->bundleParameterWidget->getDoubleParameter();
@@ -2020,6 +2020,8 @@ void MainWindow::bundleSettingsChanged(){
     param.insert("integerParameter", integerParameter);
     param.insert("doubleParameter", doubleParameter);
     param.insert("stringParameter", stringParameter);
+*/
+
 
     //set up input stations
     QJsonArray stations = this->bundleStationsModel->getStations();
@@ -2028,8 +2030,7 @@ void MainWindow::bundleSettingsChanged(){
     //update bundle geometries model
     this->bundleGeometriesModel->setStations(stations);
 
-    emit this->updateBundleAdjustment(id, param);
-*/
+    emit this->updateBundleAdjustment(param);
 }
 
 /*!

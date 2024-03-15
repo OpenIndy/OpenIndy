@@ -133,9 +133,9 @@ signals:
     void removeBundleSystem(const int &bundleId);
 
     //load or calculate bundle
-    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
+    void updateBundleAdjustment(const QJsonObject &param);
     void loadBundleTemplate(const QJsonObject &bundleTemplate);
-    void runBundle(const int &bundleId);
+    void runBundle();
 
     //save or load projects
     void saveProject();

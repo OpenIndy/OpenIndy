@@ -132,9 +132,9 @@ public slots:
     //load or calculate bundle
     QJsonObject getBundleTemplate();
     QPointer<BundleAdjustment> getBundleAdjustment();
-    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
+    void updateBundleAdjustment(const QJsonObject &param);
     void loadBundleTemplate(const QJsonObject &bundleTemplate);
-    void runBundle(const int &bundleId);
+    void runBundle();
 
     //save or load a job
     void saveProject();
