@@ -1255,6 +1255,11 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionStationProperties">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Images/icons/info_schwarz.PNG</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>properties</string>
    </property>

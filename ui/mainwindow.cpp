@@ -819,7 +819,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
         }
 
-        menu->addAction(QIcon(":/Images/icons/info.png"),
+        menu->addAction(QIcon(":/Images/icons/info_schwarz.PNG"),
                         QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
@@ -828,10 +828,12 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         &this->control, SLOT(recalcActiveFeature()));
 
         if(showEnableDisableMenuEntries) {
-            menu->addAction(QString("enable all observations of %1").arg(featureName),
+            menu->addAction(QIcon(":/Images/icons/obs_enable.png"),
+                            QString("enable all observations of %1").arg(featureName),
                             this, SLOT(enableObservationsOfActiveFeature()));
 
-            menu->addAction(QString("disable all observations of %1").arg(featureName),
+            menu->addAction(QIcon(":/Images/icons/obs_disable.png"),
+                            QString("disable all observations of %1").arg(featureName),
                             this, SLOT(disableObservationsOfActiveFeature()));
         }
         //if the active feature is a geometry
@@ -864,6 +866,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         menu->addSeparator();
 
         QAction *enableObservationssAction = menu->addAction(
+                    QIcon(":/Images/icons/obs_enable.png"),
                     QString("enable all observations of %1").arg(labelSuffix));
         connect(enableObservationssAction, &QAction::triggered,
                         this, [=]() {
@@ -873,6 +876,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         });
 
         QAction *disableObservationsAction = menu->addAction(
+                    QIcon(":/Images/icons/obs_disable.png"),
                     QString("disable all observations of %1").arg(labelSuffix));
         connect(disableObservationsAction, &QAction::triggered,
                         this, [=]() {
