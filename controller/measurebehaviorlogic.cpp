@@ -60,10 +60,6 @@ bool MeasureBehaviorLogic::next() {
  */
 void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QString &msg,  const SensorAction sensorAction) {
 
-    if(activeFeatureId == -1) { // silent ignore
-        return;
-    }
-
     if( success
        && ( SensorWorkerMessage::MEASUREMENT_FINISHED == msg            // sync sensor
             || SensorWorkerMessage::MEASUREMENT_DATA_RECEIVED == msg)   // async sensor
@@ -74,7 +70,9 @@ void MeasureBehaviorLogic::sensorActionFinished(const bool &success, const QStri
 
     } else if( !success
               && ( SensorWorkerMessage::FAILED_TO_MEASURE == msg                            // sync sensor
-                   || SensorWorkerMessage::MEASUREMENT_DIT_NOT_DELIVER_ANY_RESULTS == msg)  // async sensor
+                   || SensorWorkerMessage::MEASUREMENT_DIT_NOT_DELIVER_ANY_RESULTS == msg   // async sensor
+                   || eSensorActionAll == sensorAction // error / exception from lmf service
+                   )
               ){
         // close / supress all unwanted dialogs
         emit this->closeAllSensorTaskDialogs();
