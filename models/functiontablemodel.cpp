@@ -31,7 +31,7 @@ int FunctionTableModel::rowCount(const QModelIndex &parent) const{
  * \return
  */
 int FunctionTableModel::columnCount(const QModelIndex &parent) const{
-    return 3;
+    return 2; // first 2 columns: name & plugin
 }
 
 /*!
