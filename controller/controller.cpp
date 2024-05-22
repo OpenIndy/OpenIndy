@@ -1010,7 +1010,8 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
 
         //load bundle templates
         QList<QJsonObject> templates = this->loadBundleTemplates();
-        if(!templates.isEmpty()) {
+        if(!templates.isEmpty()
+                && !this->job->getActiveBundleSystem().isNull()) {
             QJsonObject bundleTemplate = templates.first(); // only one should exists
             //load template
             //this->loadBundleTemplate(bundleTemplate);
