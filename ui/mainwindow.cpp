@@ -39,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
-    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
     QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::closeAllSensorTaskDialogs, this, &MainWindow::closeAllSensorTaskDialogs, Qt::AutoConnection);
 
@@ -3156,12 +3155,16 @@ void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
 }
 
 void MainWindow::measureBehaviorLogicStarted() {
+    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished);
+
     // disable "go to next feautre"
     this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", this->ui->actiongo_to_next_feature->isChecked());
     this->ui->actiongo_to_next_feature->setChecked(false);
 }
 
 void MainWindow::measureBehaviorLogicFinished() {
+    QObject::disconnect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished);
+
     QVariant value = this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE");
     this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", QVariant::Invalid);
     if(value.isValid()) {
