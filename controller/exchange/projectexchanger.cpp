@@ -1,4 +1,5 @@
 #include "projectexchanger.h"
+#include "featureutil.h"
 
 ProjectExchanger::ProjectExchanger() {
 }
@@ -247,6 +248,15 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
     //set id count
     if(project.documentElement().hasAttribute("idCount")){
         job->nextId = project.documentElement().attribute("idCount").toInt() + 1;
+    }
+
+    // create Bundle01_1 if not exists
+    if(job->getFeaturesByName("Bundle01_1").isEmpty()) {
+        FeatureUtil util;
+        if(!util.createInitialBundleTransformation(job)) {
+            this->clearHelperMaps(true);
+            return NULL;
+        }
     }
 
     if(project.documentElement().hasAttribute("digest")){
