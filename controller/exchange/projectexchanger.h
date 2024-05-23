@@ -89,6 +89,8 @@ private:
 
     QPointer<MeasurementConfigManager> mConfigManager;
 
+    bool isScalar(QPointer<FeatureWrapper> geometry);
+
 };
 
 #endif // OIPROJECTEXCHANGER_H
