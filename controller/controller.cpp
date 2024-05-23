@@ -592,7 +592,7 @@ void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config)
 /*!
  * \brief Controller::addBundleSystem
  */
-void Controller::addBundleSystem(){ // TODO OI-932 remove method
+void Controller::addBundleSystem(){ // TODO OI-932 remove method / OI-1009 maybe
 
     //check job
     if(this->job.isNull()){
@@ -601,17 +601,17 @@ void Controller::addBundleSystem(){ // TODO OI-932 remove method
     }
 
     //create feature name
-    QString bundleName = "Bundle01";
+    const QString bundleName = "Bundle01";
 
     //create feature attributes
-    FeatureAttributes attr;
-    attr.count = 1;
-    attr.typeOfFeature = eCoordinateSystemFeature;
-    attr.name = bundleName;
-    attr.isBundleSystem = true;
+    FeatureAttributes bundleAttr;
+    bundleAttr.count = 1;
+    bundleAttr.typeOfFeature = eCoordinateSystemFeature;
+    bundleAttr.name = bundleName;
+    bundleAttr.isBundleSystem = true;
 
     //add feature
-    this->job->addFeatures(attr);
+    this->job->addFeatures(bundleAttr);
 
 }
 
