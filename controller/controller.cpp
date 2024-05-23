@@ -613,6 +613,45 @@ void Controller::addBundleSystem(){ // TODO OI-932 remove method / OI-1009 maybe
     //add feature
     this->job->addFeatures(bundleAttr);
 
+    // adapted from FeatureUpdater::createBundleTransformations
+    // create intial bundle transformation (Bundle01_1) to STATION01
+    {
+
+        FeatureAttributes trafoAttr;
+        trafoAttr.typeOfFeature = eTrafoParamFeature;
+        trafoAttr.group = "";
+        trafoAttr.count = 1;
+        trafoAttr.startSystem = bundleName;
+        trafoAttr.name = QString("%1_1").arg(bundleName);
+        trafoAttr.destinationSystem = "STATION01";
+
+        QPointer<FeatureWrapper> trafoParam = this->job->addFeatures(trafoAttr).at(0); // TODO OI-1009 error handling
+
+        //set up transformation parameters
+        //check feature
+        if(trafoParam.isNull() || trafoParam->getTrafoParam().isNull()){
+            return; // TODO OI-1009 error handling
+        }
+
+        QPointer<TrafoParam> trafo = trafoParam->getTrafoParam();
+
+        //set up parameters
+        QMap<TrafoParamParameters, double> parameters;
+        parameters.insert(eUnknownTX, 0.0);
+        parameters.insert(eUnknownTY, 0.0);
+        parameters.insert(eUnknownTZ, 0.0);
+        parameters.insert(eUnknownRX, 0.0);
+        parameters.insert(eUnknownRY, 0.0);
+        parameters.insert(eUnknownRZ, 0.0);
+        parameters.insert(eUnknownSX, 1.0);
+        parameters.insert(eUnknownSY, 1.0);
+        parameters.insert(eUnknownSZ, 1.0);
+        trafo->setUnknownParameters(parameters);
+        trafo->setIsUsed(true);
+        trafo->setIsDatumTrafo(true);
+
+    }
+
 }
 
 /*!
