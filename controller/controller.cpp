@@ -625,12 +625,17 @@ void Controller::addBundleSystem(){ // TODO OI-932 remove method / OI-1009 maybe
         trafoAttr.name = QString("%1_1").arg(bundleName);
         trafoAttr.destinationSystem = "STATION01";
 
-        QPointer<FeatureWrapper> trafoParam = this->job->addFeatures(trafoAttr).at(0); // TODO OI-1009 error handling
+        QList<QPointer<FeatureWrapper> > features = this->job->addFeatures(trafoAttr);
+        if(features.isEmpty()) {
+            this->log("initial bundle not created", eWarningMessage, eConsoleMessage);
+            return;
+        }
+        QPointer<FeatureWrapper> trafoParam = features.first();
 
         //set up transformation parameters
-        //check feature
-        if(trafoParam.isNull() || trafoParam->getTrafoParam().isNull()){
-            return; // TODO OI-1009 error handling
+        if(trafoParam.isNull() || trafoParam->getTrafoParam().isNull()) {
+            this->log("initial bundle is null", eWarningMessage, eConsoleMessage);
+            return;
         }
 
         QPointer<TrafoParam> trafo = trafoParam->getTrafoParam();
