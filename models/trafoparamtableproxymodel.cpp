@@ -18,15 +18,6 @@ const TrafoParamTableColumnConfig &TrafoParamTableProxyModel::getTrafoParamTable
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::setTrafoParamTableColumnConfig
- * \param config
- */
-void TrafoParamTableProxyModel::setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config){
-    this->trafoParamTableColumnConfig = config;
-    this->invalidateFilter();
-}
-
-/*!
  * \brief TrafoParamTableProxyModel::mapFromSource
  * \param sourceIndex
  * \return

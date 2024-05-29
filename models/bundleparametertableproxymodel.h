@@ -20,13 +20,6 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel
 public:
     explicit BundleParameterTableProxyModel(QObject *parent = 0);
 
-    //#########################
-    //get or set display config
-    //#########################
-
-    const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig() const;
-    void setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config);
-
     //###########################################
     //override methods of sort filter proxy model
     //###########################################
