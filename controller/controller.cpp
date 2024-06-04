@@ -806,10 +806,21 @@ void Controller::runBundle(){
     }
 
     //calculate bundle adjustment
-    if(!this->featureUpdater.recalcBundle(bundleSystem)){
-        this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
-    } else {
-        this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+    try {
+        if(!this->featureUpdater.recalcBundle(bundleSystem)){
+            this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+        } else {
+            this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+        }
+    } catch(BundleException &e) {
+        QPointer<FeatureWrapper> feature = this->job->getFeatureById(e.getFeatureId());
+        QString featureName = feature.isNull() ? "" : feature->getFeature()->getFeatureName() + ": ";
+        this->log(featureName.append(e.what()),
+                  MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
+    } catch(std::exception &e) {
+        this->log(e.what(), MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
+    } catch(...) {
+        this->log("unexpected: cannot recalc bundle", MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     }
 
     // update station status
