@@ -25,7 +25,6 @@ public:
     //#########################
 
     const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig() const;
-    void setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config);
 
     //###########################################
     //override methods of sort filter proxy model

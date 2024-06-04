@@ -4,26 +4,8 @@
  * \brief BundleParameterTableProxyModel::TrafoParamTableProxyModel
  * \param parent
  */
-BundleParameterTableProxyModel::BundleParameterTableProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent)
+BundleParameterTableProxyModel::BundleParameterTableProxyModel(QObject *parent) : QSortFilterProxyModel(parent), trafoParamTableColumnConfig(true)
 {
-}
-
-/*!
- * \brief TrafoParamTableProxyModel::getTrafoParamTableColumnConfig
- * \return
- */
-const TrafoParamTableColumnConfig &BundleParameterTableProxyModel::getTrafoParamTableColumnConfig() const{
-    return this->trafoParamTableColumnConfig;
-}
-
-/*!
- * \brief BundleParameterTableProxyModel::setTrafoParamTableColumnConfig
- * \param config
- */
-void BundleParameterTableProxyModel::setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config){
-    this->trafoParamTableColumnConfig = config;
-    this->invalidateFilter();
 }
 
 /*!

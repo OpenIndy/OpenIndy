@@ -1041,18 +1041,6 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 }
 
 /*!
- * \brief MainWindow::tableViewBundleParamsSelectionChangedByKeyboard
- * \param selected
- * \param deselected
- */
-void MainWindow::tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected)
-{
-    if(selected.isValid() && deselected.isValid()){
-        this->on_tableView_bundleParameter_clicked(selected);
-    }
-}
-
-/*!
  * \brief MainWindow::on_actionSet_function_triggered
  */
 void MainWindow::on_actionSet_function_triggered(){
@@ -2251,8 +2239,6 @@ void MainWindow::initFeatureTableViews(){
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-    QObject::connect(this->ui->tableView_bundleParameter->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewBundleParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-
 }
 
 /*!
@@ -2802,24 +2788,6 @@ void MainWindow::createMessageBoxTrafoParamWarning()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
-}
-
-void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
-{
-    //get and check model
-    BundleParameterTableProxyModel *model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //set active feature
-    sourceModel->setActiveFeature(model->mapToSource(index));
 }
 
 /*!

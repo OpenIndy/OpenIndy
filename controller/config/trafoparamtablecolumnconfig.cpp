@@ -3,10 +3,14 @@
 /*!
  * \brief TrafoParamTableColumnConfig::FeatureTableColumnConfig
  */
-TrafoParamTableColumnConfig::TrafoParamTableColumnConfig(){
+TrafoParamTableColumnConfig::TrafoParamTableColumnConfig(bool initBundle){
 
-    //load default column config
-    this->init();
+    if(initBundle) {
+        this->initBundle();
+    } else {
+        //load default column config
+        this->init();
+    }
 
 }
 
@@ -74,7 +78,6 @@ TrafoParamDisplayAttributes TrafoParamTableColumnConfig::getDisplayAttributeAt(c
 void TrafoParamTableColumnConfig::init(){
 
     //default columns in default order
-    this->displayColumns.append(eTrafoParamDisplayType);
     this->displayColumns.append(eTrafoParamDisplayName);
     this->displayColumns.append(eTrafoParamDisplayGroup);
     this->displayColumns.append(eTrafoParamDisplayIsSolved);
@@ -91,8 +94,27 @@ void TrafoParamTableColumnConfig::init(){
     this->displayColumns.append(eTrafoParamDisplayScaleY);
     this->displayColumns.append(eTrafoParamDisplayScaleZ);
     this->displayColumns.append(eTrafoParamDisplayStDev);
-    this->displayColumns.append(eTrafoParamDisplayValidTime);
     this->displayColumns.append(eTrafoParamDisplayFunctions);
     this->displayColumns.append(eTrafoParamDisplayComment);
 
 }
+
+void TrafoParamTableColumnConfig::initBundle(){
+
+    //default columns in default order
+    this->displayColumns.append(eTrafoParamDisplayName);
+    this->displayColumns.append(eTrafoParamDisplayIsSolved);
+    this->displayColumns.append(eTrafoParamDisplayStartSystem);
+    this->displayColumns.append(eTrafoParamDisplayDestinationSystem);
+    this->displayColumns.append(eTrafoParamDisplayTranslationX);
+    this->displayColumns.append(eTrafoParamDisplayTranslationY);
+    this->displayColumns.append(eTrafoParamDisplayTranslationZ);
+    this->displayColumns.append(eTrafoParamDisplayRotationX);
+    this->displayColumns.append(eTrafoParamDisplayRotationY);
+    this->displayColumns.append(eTrafoParamDisplayRotationZ);
+    this->displayColumns.append(eTrafoParamDisplayScaleX);
+    this->displayColumns.append(eTrafoParamDisplayScaleY);
+    this->displayColumns.append(eTrafoParamDisplayScaleZ);
+
+}
+

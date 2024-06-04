@@ -14,7 +14,7 @@ using namespace oi;
 class TrafoParamTableColumnConfig
 {
 public:
-    TrafoParamTableColumnConfig();
+    TrafoParamTableColumnConfig(bool initBundle = false);
 
     bool getColumnVisibility(const TrafoParamDisplayAttributes &column) const;
     void setColumnVisibility(const TrafoParamDisplayAttributes &column, const bool &isVisible);
@@ -26,6 +26,7 @@ public:
 
 private:
     void init();
+    void initBundle();
 
     QList<TrafoParamDisplayAttributes> displayColumns;
 };
