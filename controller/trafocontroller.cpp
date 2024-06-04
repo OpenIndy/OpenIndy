@@ -235,7 +235,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         foreach(const QPointer<TrafoParam> &t, tp->getStartSystem()->getTransformationParameters()){
 
             //check t
-            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || (!t->getIsDatumTrafo() && !datumTrafoInChain)){
+            if(t.isNull() || !t->getIsUsed() || !t->getIsSolved() || (!t->getIsDatumTrafo() && !datumTrafoInChain)){
                 continue;
             }
 
@@ -268,7 +268,7 @@ bool TrafoController::getTransformationMatrix(OiMat &trafoMat, const QPointer<Co
         foreach(const QPointer<TrafoParam> &t, tp->getDestinationSystem()->getTransformationParameters()) {
 
             //check t
-            if(t.isNull() || !t->getIsUsed() || !tp->getIsSolved() || (!t->getIsDatumTrafo() && !datumTrafoInChain)){
+            if(t.isNull() || !t->getIsUsed() || !t->getIsSolved() || (!t->getIsDatumTrafo() && !datumTrafoInChain)){
                 continue;
             }
 
