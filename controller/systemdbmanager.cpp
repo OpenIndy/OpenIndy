@@ -11,9 +11,10 @@ QThreadStorage<QMap<QString, sdb::Plugin> > SystemDbManager::caches;
  * \brief SystemDbManager::addPlugin
  * Saves an OpenIndy plugin in the system database
  * \param plugin
- * \return
+ * \param msg
+ * \return success
  */
-bool SystemDbManager::addPlugin(const sdb::Plugin &plugin){
+bool SystemDbManager::addPlugin(const sdb::Plugin &plugin, QString &msg){
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -49,13 +50,14 @@ bool SystemDbManager::addPlugin(const sdb::Plugin &plugin){
             }
 
             if(!SystemDbManager::db.commit()){
+                msg = QString("Commit failed: %1.").arg(SystemDbManager::db.lastError().text());
                 SystemDbManager::db.rollback();
                 SystemDbManager::disconnect();
                 return false;
             }
 
         }else{
-            Console::getInstance()->addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()), eCriticalMessage );
+            msg = QString("Database error: %1.").arg(SystemDbManager::db.lastError().text());
             SystemDbManager::disconnect();
             return false;
         }
@@ -64,7 +66,7 @@ bool SystemDbManager::addPlugin(const sdb::Plugin &plugin){
         return true;
 
     }
-
+    msg = QString("Database not connected: %1.").arg(SystemDbManager::db.lastError().text());
     return false;
 
 }
