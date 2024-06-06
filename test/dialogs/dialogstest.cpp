@@ -161,8 +161,9 @@ void DialogsTest::initTestCase() {
     plugins << testPlugin;
 
     // add plugin to database
-    SystemDbManager::addPlugin(testPlugin);
-
+    QString msg;
+    const bool success = SystemDbManager::addPlugin(testPlugin, msg);
+    qDebug() << "addPlugin" << success << msg;
 
     // init ModelManager
     ModelManager::testInit(entityTypes, measurementConfigManager, plugins);
