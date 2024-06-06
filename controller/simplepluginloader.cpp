@@ -4,8 +4,15 @@ SimplePluginLoader::SimplePluginLoader(QString path)
 {
     this->path = path;
 
-    QObject::connect(&pluginCopier, &PluginCopier::sendMessage, this, &SimplePluginLoader::log, Qt::AutoConnection);
-    QObject::connect(&pluginCopier, &PluginCopier::importFinished, this, &SimplePluginLoader::importFinished, Qt::AutoConnection);
+    QObject::connect(&pluginCopier, &PluginCopier::sendMessage, this, &SimplePluginLoader::log);
+    QObject::connect(&pluginCopier, &PluginCopier::importFinished, this, &SimplePluginLoader::importFinished);
+
+    logfile = std::ofstream("SimplePluginLoader.log", ios::app);
+}
+SimplePluginLoader::~SimplePluginLoader() {
+    if(logfile.is_open()) {
+        logfile.close();
+    }
 }
 
 void SimplePluginLoader::importFinished(bool success) {
@@ -16,17 +23,20 @@ void SimplePluginLoader::importFinished(bool success) {
         QString relPath(QString("plugins/%1").arg(fileInfo.fileName())); // save relative path
         if(this->pluginCopier.savePlugin(relPath)) {
             this->log("step 2/2: plugin successfully saved in the database");
-            return;
+        } else {
+            this->log("could not save plugin to database.", eErrorMessage);
         }
+    } else {
+        this->log("could not import plugin.", eErrorMessage);
     }
 
-    this->log("could not import plugin.");
-    exit(1);
+    exit(success ? 0 : 1);
 }
 
-void SimplePluginLoader::log(const QString &msg) {
-    QTextStream ts( stdout );
-    ts << msg << "\n";
+void SimplePluginLoader::log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest) {
+    logfile << "[" << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data() << "] "
+            << "[" << getMessageTypeName(msgType).toLocal8Bit().data() << "] "
+            << msg.toLocal8Bit().data() << "\n";
 }
 
 
