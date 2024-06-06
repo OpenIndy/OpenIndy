@@ -346,6 +346,11 @@ bool PluginCopier::savePlugin(const QString &path){
         }
     }
 
-    return SystemDbManager::addPlugin(plugin);
+    QString msg;
+    const bool success = SystemDbManager::addPlugin(plugin, msg);
+    if(!msg.isEmpty()) {
+        emit this->sendMessage(msg, success ? eInformationMessage : eCriticalMessage);
+    }
+    return success;
 
 }
