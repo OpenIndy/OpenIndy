@@ -223,7 +223,7 @@ bool PluginCopier::checkDependencies(const QString &sourcePath, const PluginMeta
         QFileInfo fileInfo(p);
 
         if(!fileInfo.exists()){
-            this->sendMessage(QString("dependency " + fileInfo.fileName() + " does not exist"), eCriticalMessage);
+            emit this->sendMessage(QString("dependency %1 does not exist").arg(fileInfo.fileName()), eCriticalMessage);
             return false;
         }
     }
@@ -241,6 +241,7 @@ bool PluginCopier::savePlugin(const QString &path){
 
     //check if the file exists
     if(!QFile::exists(path)){
+        emit this->sendMessage(QString("file not exists: %1").arg(path), eCriticalMessage);
         return false;
     }
 
