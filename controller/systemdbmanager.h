@@ -163,7 +163,7 @@ public:
     //add or remove plugins
     //#####################
 
-    static bool addPlugin(const sdb::Plugin &plugin);
+    static bool addPlugin(const sdb::Plugin &plugin, QString &msg);
     static bool removePlugin(const sdb::Plugin &plugin);
 
     //###########

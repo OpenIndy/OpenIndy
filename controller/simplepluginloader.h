@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <iostream>
+#include <fstream>
 #include <QDebug>
 #include "plugincopier.h"
 
@@ -18,16 +19,18 @@ class OI_MAIN_EXPORT SimplePluginLoader : public QObject
 
 public:
     SimplePluginLoader(QString path);
+    ~SimplePluginLoader();
 
     void importPlugin();
 
 private slots:
-    void log(const QString &msg);
+    void log(const QString &msg, const MessageTypes &msgType = eInformationMessage, const MessageDestinations &msgDest = eConsoleMessage);
     void importFinished(bool);
 
 private:
     QString path;
     PluginCopier pluginCopier;
+    std::ofstream logfile;
 
 };
 
