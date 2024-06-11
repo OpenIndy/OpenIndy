@@ -136,16 +136,6 @@ bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QMo
 }
 
 /*!
- * \brief TrafoParamTableProxyModel::lessThan
- * \param left
- * \param right
- * \return
- */
-bool TrafoParamTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
-    return true;
-}
-
-/*!
  * \brief TrafoParamTableProxyModel::isBundleStationTrafo
  * \param param
  * \return

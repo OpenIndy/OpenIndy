@@ -44,8 +44,6 @@ protected:
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
     bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;
 
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
-
 private:
 
     //##############

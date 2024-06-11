@@ -126,16 +126,6 @@ bool BundleParameterTableProxyModel::filterAcceptsColumn(int source_column, cons
 }
 
 /*!
- * \brief BundleParameterTableProxyModel::lessThan
- * \param left
- * \param right
- * \return
- */
-bool BundleParameterTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
-    return true;
-}
-
-/*!
  * \brief BundleParameterTableProxyModel::isBundleStationTrafo
  * \param param
  * \return
