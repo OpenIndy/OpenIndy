@@ -168,12 +168,9 @@ private slots:
 
     //feature(s) added or removed
     void coordSystemSetChanged();
-    void stationSetChanged();
-    void trafoParamSetChanged();
 
     //group(s) added or removed
     void availableGroupsChanged();
-    void activeGroupChanged();
 
     //feature specific attributes changed
     void featureNameChanged(const int &featureId, const QString &oldName);
