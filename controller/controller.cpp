@@ -797,7 +797,13 @@ void Controller::runBundle(){
         return;
     }
 
-    QPointer<CoordinateSystem> bundleSystem =  this->getBundleAdjustment()->getBundleSystem();
+    QPointer<oi::BundleAdjustment> bundleAdjustment = this->getBundleAdjustment();
+    if(bundleAdjustment.isNull()) {
+        this->log("No bundle adjustment available", eErrorMessage, eMessageBoxMessage);
+        return;
+    }
+
+    QPointer<CoordinateSystem> bundleSystem =  bundleAdjustment->getBundleSystem();
 
     //check bundle plugin
     if(bundleSystem->getBundlePlugin().isNull()){
