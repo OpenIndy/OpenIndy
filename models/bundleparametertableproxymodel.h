@@ -33,7 +33,7 @@ signals:
     //send messages to OpenIndy
     //#########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
     
 protected:
 
