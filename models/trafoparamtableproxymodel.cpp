@@ -33,10 +33,7 @@ QModelIndex TrafoParamTableProxyModel::mapFromSource(const QModelIndex &sourceIn
     //set up new column position (column sorting)
     int columnIndex = sourceIndex.column();
     int columnPosition = this->trafoParamTableColumnConfig.getColumnPosition((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
-    //proxyIndex = this->createIndex(proxyIndex.row(), columnPosition);
     return this->index(proxyIndex.row(), columnPosition);
-
-    return proxyIndex;
 }
 
 /*!
@@ -68,8 +65,6 @@ QModelIndex TrafoParamTableProxyModel::mapToSource(const QModelIndex &proxyIndex
     sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
 
     return source_model->index(sourceIndex.row(), sourceColumn);
-
-    return sourceIndex;
 }
 
 /*!
@@ -136,21 +131,8 @@ bool TrafoParamTableProxyModel::filterAcceptsColumn(int source_column, const QMo
     }
 
     //check visibility of the attribute
-    if(this->trafoParamTableColumnConfig.getColumnVisibility((TrafoParamDisplayAttributes)attr)){
-        return true;
-    }
-    return false;
+    return this->trafoParamTableColumnConfig.getColumnVisibility((TrafoParamDisplayAttributes)attr);
 
-}
-
-/*!
- * \brief TrafoParamTableProxyModel::lessThan
- * \param left
- * \param right
- * \return
- */
-bool TrafoParamTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
-    return true;
 }
 
 /*!
