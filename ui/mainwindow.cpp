@@ -224,32 +224,10 @@ void MainWindow::coordSystemSetChanged(){
 }
 
 /*!
- * \brief MainWindow::stationSetChanged
- */
-void MainWindow::stationSetChanged(){
-
-}
-
-/*!
- * \brief MainWindow::trafoParamSetChanged
- */
-void MainWindow::trafoParamSetChanged(){
-
-    //activate trafo param tab
-    this->ui->tabWidget_views->setCurrentWidget(this->ui->tab_trafoParam);
-
-}
-
-/*!
  * \brief MainWindow::availableGroupsChanged
  */
 void MainWindow::availableGroupsChanged(){
     this->updateGroupFilterSize();
-}
-
-void MainWindow::activeGroupChanged()
-{
-
 }
 
 /*!
@@ -2078,7 +2056,6 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::trafoParamSetChanged, this, &MainWindow::trafoParamSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
