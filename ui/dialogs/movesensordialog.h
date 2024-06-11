@@ -57,6 +57,7 @@ private:
 
     void initGUI();
     void initModels();
+    void showEvent(QShowEvent *event);
 
 private:
 
