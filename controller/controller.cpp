@@ -813,13 +813,19 @@ void Controller::runBundle(){
             this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
         }
     } catch(BundleException &e) {
+        this->featureUpdater.switchCoordinateSystem();
+
         QPointer<FeatureWrapper> feature = this->job->getFeatureById(e.getFeatureId());
         QString featureName = feature.isNull() ? "" : feature->getFeature()->getFeatureName() + ": ";
         this->log(featureName.append(e.what()),
                   MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     } catch(std::exception &e) {
+        this->featureUpdater.switchCoordinateSystem();
+
         this->log(e.what(), MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     } catch(...) {
+        this->featureUpdater.switchCoordinateSystem();
+
         this->log("unexpected: cannot recalc bundle", MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     }
 
