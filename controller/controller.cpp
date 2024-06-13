@@ -1038,12 +1038,73 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
 
         //load bundle templates
         QList<QJsonObject> templates = this->loadBundleTemplates();
-        if(!templates.isEmpty()
-                && !this->job->getActiveBundleSystem().isNull()) {
+        if(!templates.isEmpty()) {
             QJsonObject bundleTemplate = templates.first(); // only one should exists
-            //load template
-            //this->loadBundleTemplate(bundleTemplate);
-            this->job->getActiveBundleSystem()->setBundleTemplate(bundleTemplate);
+
+            if(this->job->getActiveBundleAdjustment().isNull()) {
+                // see MainWindow::initBundleView()
+                QList<QPointer<FeatureWrapper> > bundleSystems = this->job->getFeaturesByName("Bundle01");
+                if(!bundleSystems.isEmpty()) {
+                    QPointer<CoordinateSystem> bundleSystem = bundleSystems.first()->getCoordinateSystem();
+
+                    QString bundleName, pluginName;
+                    bundleName = bundleTemplate.value("plugin").toObject().value("name").toString();
+                    pluginName = bundleTemplate.value("plugin").toObject().value("pluginName").toString();
+
+                    //get and check plugin information
+                    sdb::Plugin plugin = SystemDbManager::getPlugin(pluginName);
+                    if(plugin.id == -1){
+                        this->log(QString("No plugin available with the name %1").arg(pluginName), eErrorMessage, eMessageBoxMessage);
+                        return;
+                    }
+
+                    //load bundle plugin
+                    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+                    if(bundlePlugin.isNull()){
+                        this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
+                        return;
+                    }
+
+                    //get bundle system
+                    if(bundleSystem.isNull()){
+                        this->log(QString("No bundle system available"), eErrorMessage, eMessageBoxMessage);
+                        return;
+                    }
+                    //set up bundle plugin
+                    bundleSystem->setBundleTemplate(bundleTemplate);
+                    bundleSystem->setBundlePlugin(bundlePlugin);
+
+                    // initially add all stations to bundle
+                    // see void MainWindow::bundleSelectionChanged()
+                    QList<BundleStation> bundleStations;
+                    foreach(const QPointer<Station> &station, this->job->getStationsList()){
+
+                        //create json object
+                        BundleStation bundleStation;
+                        bundleStation.id = station->getId();
+                        bundleStation.tx = 0.0;
+                        bundleStation.ty = 0.0;
+                        bundleStation.tz = 0.0;
+                        bundleStation.rx = 0.0;
+                        bundleStation.ry = 0.0;
+                        bundleStation.rz = 0.0;
+                        bundleStation.m = 1.0;
+                        bundleStations.append(bundleStation);
+
+                    }
+
+                    bundlePlugin->setInputStations(bundleStations);
+
+                    // this->runBundle();
+                } else {
+                    // TODO no Bundle01 available, should not appear
+                }
+
+            } else {
+                //load template
+                //this->loadBundleTemplate(bundleTemplate);
+                this->job->getActiveBundleSystem()->setBundleTemplate(bundleTemplate);
+            }
         }
 
         this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
