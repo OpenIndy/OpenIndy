@@ -1041,7 +1041,8 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
         if(!templates.isEmpty()) {
             QJsonObject bundleTemplate = templates.first(); // only one should exists
 
-            if(this->job->getActiveBundleAdjustment().isNull()) {
+            if(this->job->getActiveBundleAdjustment().isNull()) { // no bundle result was saved
+                // load plugin and set plugin to bundle system "Bundle01"
                 // see MainWindow::initBundleView()
                 QList<QPointer<FeatureWrapper> > bundleSystems = this->job->getFeaturesByName("Bundle01");
                 if(!bundleSystems.isEmpty()) {
@@ -1079,7 +1080,7 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
                     QList<BundleStation> bundleStations;
                     foreach(const QPointer<Station> &station, this->job->getStationsList()){
 
-                        //create json object
+                        //create initial BundleStation
                         BundleStation bundleStation;
                         bundleStation.id = station->getId();
                         bundleStation.tx = 0.0;
@@ -1095,14 +1096,12 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
 
                     bundlePlugin->setInputStations(bundleStations);
 
-                    // this->runBundle();
                 } else {
-                    // TODO no Bundle01 available, should not appear
+                    // no Bundle01 available, should not appear
                 }
 
             } else {
                 //load template
-                //this->loadBundleTemplate(bundleTemplate);
                 this->job->getActiveBundleSystem()->setBundleTemplate(bundleTemplate);
             }
         }
