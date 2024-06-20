@@ -133,7 +133,8 @@ SOURCES += \
     $$PWD/../controller/measurebehaviorlogic.cpp \
     $$PWD/../controller/config/defaultsconfiginit.cpp \
     $$PWD/../ui/widgets/stationstatus.cpp \
-    $$PWD/../controller/featureutil.cpp
+    $$PWD/../controller/featureutil.cpp \
+    $$PWD/../ui/delegates/bundleoverviewdelegate.cpp
 
 # header files
 HEADERS  += \
@@ -244,7 +245,8 @@ HEADERS  += \
     $$PWD/../controller/measurebehaviortypes.h \
     $$PWD/../controller/config/defaultsconfiginit.h \
     $$PWD/../ui/widgets/stationstatus.h \
-    $$PWD/../controller/featureutil.h
+    $$PWD/../controller/featureutil.h \
+    $$PWD/../ui/delegates/bundleoverviewdelegate.h
 
 # ui files
 FORMS    += \
