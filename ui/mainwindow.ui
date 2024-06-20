@@ -386,9 +386,156 @@ background-position: center center;</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="tabShape">
+             <enum>QTabWidget::Triangular</enum>
+            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
+            <widget class="QWidget" name="tab_bundleOverview">
+             <attribute name="title">
+              <string>overview</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
+               <widget class="QWidget" name="widget" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>230</width>
+                  <height>180</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>250</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_8">
+                 <item>
+                  <widget class="QGroupBox" name="groupBox">
+                   <property name="title">
+                    <string>Configuration</string>
+                   </property>
+                   <widget class="QWidget" name="gridLayoutWidget">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>9</y>
+                      <width>191</width>
+                      <height>151</height>
+                     </rect>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_11">
+                     <property name="leftMargin">
+                      <number>11</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>11</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>11</number>
+                     </property>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="lineEdit_maxError">
+                       <property name="text">
+                        <string>0.1</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_4">
+                       <property name="text">
+                        <string>StdDev [mm]:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_2">
+                       <property name="text">
+                        <string>at least common points:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_3">
+                       <property name="text">
+                        <string>Max Error [mm]:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLineEdit" name="lineEdit_scaleDev">
+                       <property name="text">
+                        <string>0.000020</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label">
+                       <property name="text">
+                        <string>ScaleDev:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="lineEdit_stdDev">
+                       <property name="text">
+                        <string>0.06</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QLineEdit" name="lineEdit_atLeastCommonPoints">
+                       <property name="text">
+                        <string>5</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <spacer name="verticalSpacer">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </widget>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1" rowspan="2">
+               <widget class="QListView" name="listView_bundleOverview"/>
+              </item>
+             </layout>
+            </widget>
             <widget class="QWidget" name="tab_bundleparameter">
              <attribute name="title">
               <string>bundle parameter</string>
