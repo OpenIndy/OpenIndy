@@ -9,7 +9,12 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
     const QString stationName = index.data(Qt::DisplayRole).toString();
 
     const BundleGeometriesModel *model = static_cast<const BundleGeometriesModel*>(index.model());
-    QPointer<Station> station = model->getCurrentJob()->getFeaturesByName(stationName).first()->getStation();
+    const QPointer<OiJob> job = model->getCurrentJob();
+    if(job.isNull()) {
+        return;
+    }
+
+    QPointer<Station> station = job->getFeaturesByName(stationName).first()->getStation();
 
     QString scaleS = "";
     double scale = 0;
