@@ -250,15 +250,6 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
         job->nextId = project.documentElement().attribute("idCount").toInt() + 1;
     }
 
-    // create Bundle01_1 if not exists
-    if(job->getFeaturesByName("Bundle01_1").isEmpty()) {
-        FeatureUtil util;
-        if(!util.createInitialBundleTransformation(job)) {
-            this->clearHelperMaps(true);
-            return NULL;
-        }
-    }
-
     if(project.documentElement().hasAttribute("digest")){
         job->setDigest(project.documentElement().attribute("digest"));
     } else { // not available, then compute

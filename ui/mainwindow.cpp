@@ -1893,7 +1893,7 @@ void MainWindow::bundleSelectionChanged(){
     }
 
     //reset old parameters
-    this->resetBundleView();
+    this->resetBundleView(); // UI
 
     //get and check bundle plugin and template
     QJsonObject bundleTemplate = this->control.getBundleTemplate();
@@ -1943,8 +1943,8 @@ void MainWindow::bundleSelectionChanged(){
     this->bundleStationsModel->setStations(inputStations);
 
     //set up input geometries
-    inputStations = this->bundleStationsModel->getStations();
-    this->ui->treeView_inputGeometries->setEnabled(true);
+    inputStations = this->bundleStationsModel->getStations(); // does a bit more than just a getter
+    this->ui->treeView_inputGeometries->setEnabled(true); // UI
     this->bundleGeometriesModel->setStations(inputStations);
 
     //set up result
