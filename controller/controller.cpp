@@ -814,6 +814,8 @@ void Controller::runBundle(){
     //calculate bundle adjustment
     try {
         if(!this->featureUpdater.recalcBundle(bundleSystem)){
+            this->featureUpdater.switchCoordinateSystem();
+
             this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
         } else {
             this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);

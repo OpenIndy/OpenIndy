@@ -50,6 +50,7 @@
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
+#include "bundleoverviewdelegate.h"
 
 #include "projectconfig.h"
 #include "clipboardutil.h"
@@ -340,6 +341,14 @@ private slots:
 
     void on_actionStation_create_triggered();
 
+    void on_lineEdit_maxError_textChanged(const QString &arg1);
+
+    void on_lineEdit_stdDev_textChanged(const QString &arg1);
+
+    void on_lineEdit_scaleDev_textChanged(const QString &arg1);
+
+    void on_lineEdit_atLeastCommonPoints_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 
@@ -484,6 +493,8 @@ private:
     void measureBehaviorLogicStarted();
 
     QModelIndex getBundleIndex();
+
+    BundleOverviewDelegate *bundleOverviewDelegate;
 };
 
 #endif // MAINWINDOW_H

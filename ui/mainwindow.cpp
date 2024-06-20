@@ -2182,9 +2182,15 @@ void MainWindow::assignModels(){
     this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
     this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
-    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this);
+
+    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this); // create new instance !
     this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
+
+    this->ui->listView_bundleOverview->setModel(this->bundleStationsModel); // need one model with station names
+    bundleOverviewDelegate = new BundleOverviewDelegate(this);
+    this->ui->listView_bundleOverview->setItemDelegate(bundleOverviewDelegate);
+    this->ui->listView_bundleOverview->setAlternatingRowColors(true);
 
     QObject::connect(&ModelManager::getFeatureTableModel(),&FeatureTableModel::recalcActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
 
@@ -2428,6 +2434,28 @@ void MainWindow::initBundleView(){
     // this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
     this->bundleParameterWidget = new ScalarParameterWidget();
     extraParameterLayout->addWidget(this->bundleParameterWidget);
+
+    // init overview
+    bundleOverviewDelegate->maxError = 0.1;
+    bundleOverviewDelegate->maxStdDev = 0.06;
+    bundleOverviewDelegate->maxScaleDev = 0.000020;
+    bundleOverviewDelegate->minCommonPoints = 5;
+
+    QIntValidator *cpValid = new QIntValidator(3, 10000, this);
+    this->ui->lineEdit_atLeastCommonPoints->setText(QString::number(bundleOverviewDelegate->minCommonPoints));
+    this->ui->lineEdit_atLeastCommonPoints->setValidator(cpValid);
+
+    QDoubleValidator *maxErrorValid = new QDoubleValidator(0, 10, 3, this);
+    this->ui->lineEdit_maxError->setText(QString::number(bundleOverviewDelegate->maxError, 'f', 2));
+    this->ui->lineEdit_maxError->setValidator(maxErrorValid);
+
+    QDoubleValidator *stdDevValid = new QDoubleValidator(0, 10, 3, this);
+    this->ui->lineEdit_stdDev->setText(QString::number(bundleOverviewDelegate->maxStdDev, 'f', 3));
+    this->ui->lineEdit_stdDev->setValidator(stdDevValid);
+
+    QDoubleValidator *scaleDevValid = new QDoubleValidator(0, 0.1, 6, this);
+    this->ui->lineEdit_scaleDev->setText(QString::number(bundleOverviewDelegate->maxScaleDev, 'f', 6));
+    this->ui->lineEdit_scaleDev->setValidator(scaleDevValid);
 
 }
 
@@ -3145,4 +3173,44 @@ void MainWindow::on_action_RunBundle_triggered(){
     //calculate bundle
     emit this->runBundle();
 
+}
+
+void MainWindow::on_lineEdit_maxError_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxError = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_stdDev_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxStdDev = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_scaleDev_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxScaleDev = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_atLeastCommonPoints_textChanged(const QString &arg1)
+{
+    bool ok;
+    int value = arg1.toInt(&ok);
+    if(ok) {
+        bundleOverviewDelegate->minCommonPoints = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
 }
