@@ -14,7 +14,14 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
         return;
     }
 
-    QPointer<Station> station = job->getFeaturesByName(stationName).first()->getStation();
+    QList<QPointer<FeatureWrapper> > stations = job->getFeaturesByName(stationName);
+    if(stations.isEmpty()) {
+        return;
+    }
+    QPointer<Station> station = stations.first()->getStation();
+    if(station.isNull()) {
+        return;
+    }
 
     QString scaleS = "";
     double scale = 0;
@@ -41,7 +48,7 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
         int count_v = 0;
 
         for(QPointer<Geometry> tg : station->getTargetGeometries()) {
-            if(tg->getIsCommon()) {
+            if(tg->getIsCommon() && tg->getIsSolved()) {
                 numberOfCommonGeometries++;
 
                 OiVec actual = tg->getPosition().getVector();
