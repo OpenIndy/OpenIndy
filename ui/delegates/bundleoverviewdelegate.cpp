@@ -48,7 +48,7 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
         int count_v = 0;
 
         for(QPointer<Geometry> tg : station->getTargetGeometries()) {
-            if(tg->getIsCommon()) {
+            if(tg->getIsCommon() && tg->getIsSolved()) {
                 numberOfCommonGeometries++;
 
                 OiVec actual = tg->getPosition().getVector();
