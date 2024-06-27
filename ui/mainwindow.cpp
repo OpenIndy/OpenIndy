@@ -2187,7 +2187,7 @@ void MainWindow::assignModels(){
     this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
 
-    this->ui->listView_bundleOverview->setModel(this->bundleStationsModel); // need one model with station names
+    this->ui->listView_bundleOverview->setModel(this->bundleGeometriesModel); // need one model with station names
     bundleOverviewDelegate = new BundleOverviewDelegate(this);
     this->ui->listView_bundleOverview->setItemDelegate(bundleOverviewDelegate);
     this->ui->listView_bundleOverview->setAlternatingRowColors(true);
