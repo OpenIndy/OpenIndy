@@ -14,7 +14,14 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
         return;
     }
 
-    QPointer<Station> station = job->getFeaturesByName(stationName).first()->getStation();
+    QList<QPointer<FeatureWrapper> > stations = job->getFeaturesByName(stationName);
+    if(stations.isEmpty()) {
+        return;
+    }
+    QPointer<Station> station = stations.first()->getStation();
+    if(station.isNull()) {
+        return;
+    }
 
     QString scaleS = "";
     double scale = 0;
