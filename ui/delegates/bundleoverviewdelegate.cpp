@@ -48,18 +48,27 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
         int count_v = 0;
 
         for(QPointer<Geometry> tg : station->getTargetGeometries()) {
-            if(tg->getIsCommon() && tg->getIsSolved()) {
+            if(!tg.isNull() && tg->getIsCommon() && tg->getIsSolved()) {
                 numberOfCommonGeometries++;
 
                 OiVec actual = tg->getPosition().getVector();
                 for(QPointer<Observation> observation : tg->getObservations()) {
                     if(observation->getStation()->getId() == station->getId()) {
-                        count_v++;
-                        OiVec xyz = observation->getXYZ();
-                        xyz.removeLast();
-                        double v = (xyz - actual).length();
-                        maxError = v > maxError ? v : maxError;
-                        sum_vv += v * v;
+                        // see ObservationModel::data -> case eObservationDisplayIsUsed:
+                        if(tg->getFunctions().size() > 0 && !tg->getFunctions().at(0).isNull()){
+                            QPointer<Function> function = tg->getFunctions()[0]; // first function BestFit...
+
+                            if( ! function->getShouldBeUsed(0, observation->getId())) {
+                                continue;
+                            }
+
+                            count_v++;
+                            OiVec xyz = observation->getXYZ();
+                            xyz.removeLast();
+                            double v = (xyz - actual).length();
+                            maxError = v > maxError ? v : maxError;
+                            sum_vv += v * v;
+                        }
                     }
                 }
             }
