@@ -114,8 +114,6 @@ SOURCES += \
     $$PWD/../models/sensorparametersmodel.cpp \
     $$PWD/../ui/delegates/sensoraccuracydelegate.cpp \
     $$PWD/../ui/delegates/sensorparametersdelegate.cpp \
-    $$PWD/../models/bundlesystemsmodel.cpp \
-    $$PWD/../models/bundletemplatesmodel.cpp \
     $$PWD/../models/treeitems/bundlegeometryitem.cpp \
     $$PWD/../models/treeitems/bundlestationitem.cpp \
     $$PWD/../models/bundlegeometriesmodel.cpp \
@@ -134,7 +132,9 @@ SOURCES += \
     $$PWD/../ui/dialogs/measurebehaviordialog.cpp \
     $$PWD/../controller/measurebehaviorlogic.cpp \
     $$PWD/../controller/config/defaultsconfiginit.cpp \
-    $$PWD/../ui/widgets/stationstatus.cpp
+    $$PWD/../ui/widgets/stationstatus.cpp \
+    $$PWD/../controller/featureutil.cpp \
+    $$PWD/../ui/delegates/bundleoverviewdelegate.cpp
 
 # header files
 HEADERS  += \
@@ -224,8 +224,6 @@ HEADERS  += \
     $$PWD/../models/sensorparametersmodel.h \
     $$PWD/../ui/delegates/sensoraccuracydelegate.h \
     $$PWD/../ui/delegates/sensorparametersdelegate.h \
-    $$PWD/../models/bundlesystemsmodel.h \
-    $$PWD/../models/bundletemplatesmodel.h \
     $$PWD/../models/treeitems/bundlegeometryitem.h \
     $$PWD/../models/treeitems/bundlestationitem.h \
     $$PWD/../models/bundlegeometriesmodel.h \
@@ -246,7 +244,9 @@ HEADERS  += \
     $$PWD/../controller/controllersensoractions.h \
     $$PWD/../controller/measurebehaviortypes.h \
     $$PWD/../controller/config/defaultsconfiginit.h \
-    $$PWD/../ui/widgets/stationstatus.h
+    $$PWD/../ui/widgets/stationstatus.h \
+    $$PWD/../controller/featureutil.h \
+    $$PWD/../ui/delegates/bundleoverviewdelegate.h
 
 # ui files
 FORMS    += \

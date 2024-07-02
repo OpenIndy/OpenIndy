@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "defaultsconfiginit.h"
+#include "featureutil.h"
 /*!
  * \brief Controller::Controller
  * \param parent
@@ -592,7 +593,7 @@ void Controller::setParameterDisplayConfig(const ParameterDisplayConfig &config)
 /*!
  * \brief Controller::addBundleSystem
  */
-void Controller::addBundleSystem(){
+void Controller::addBundleSystem(){ // TODO OI-932 remove method / OI-1009 maybe
 
     //check job
     if(this->job.isNull()){
@@ -601,26 +602,22 @@ void Controller::addBundleSystem(){
     }
 
     //create feature name
-    QString bundleName = "Bundle01";
-    int index = 1;
-    while(!this->job->validateFeatureName(bundleName, eCoordinateSystemFeature)){
-        if(index < 9){
-            bundleName = QString("Bundle0%1").arg(++index);
-        }else{
-            bundleName = QString("Bundle%1").arg(++index);
-        }
-    }
+    const QString bundleName = "Bundle01";
 
     //create feature attributes
-    FeatureAttributes attr;
-    attr.count = 1;
-    attr.typeOfFeature = eCoordinateSystemFeature;
-    attr.name = bundleName;
-    attr.isBundleSystem = true;
+    FeatureAttributes bundleAttr;
+    bundleAttr.count = 1;
+    bundleAttr.typeOfFeature = eCoordinateSystemFeature;
+    bundleAttr.name = bundleName;
+    bundleAttr.isBundleSystem = true;
 
     //add feature
-    this->job->addFeatures(attr);
+    this->job->addFeatures(bundleAttr);
 
+    FeatureUtil util;
+    if(!util.createInitialBundleTransformation(job)) {
+        this->log("initial bundle not created", eWarningMessage, eConsoleMessage);
+    }
 }
 
 /*!
@@ -642,60 +639,41 @@ void Controller::removeBundleSystem(const int &id){
 
 /*!
  * \brief Controller::getBundleTemplate
- * \param bundleId
  * \return
  */
-QJsonObject Controller::getBundleTemplate(const int &bundleId){
+QJsonObject Controller::getBundleTemplate(){
 
     //check job
     if(this->job.isNull()){
         this->log("No job available", eErrorMessage, eMessageBoxMessage);
         return QJsonObject();
     }
-
-    //get and check feature
-    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
-    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
-        return QJsonObject();
-    }
-    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
-
-    return bundleSystem->getBundleTemplate();
+    return this->job->getActiveBundleTemplate();
 
 }
 
 /*!
  * \brief Controller::getBundleAdjustment
  * Returns the bundle plugin of the coordinate system defined by bundleId
- * \param bundleId
  * \return
  */
-QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment(const int &bundleId){
+QPointer<oi::BundleAdjustment> Controller::getBundleAdjustment(){
 
     //check job
     if(this->job.isNull()){
         this->log("No job available", eErrorMessage, eMessageBoxMessage);
         return QPointer<oi::BundleAdjustment>(NULL);
     }
-
-    //get and check feature
-    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
-    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
-        return QPointer<oi::BundleAdjustment>(NULL);
-    }
-    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
-
-    return bundleSystem->getBundlePlugin();
+    return this->job->getActiveBundleAdjustment();
 
 }
 
 /*!
  * \brief Controller::updateBundleAdjustment
  * Updates the bundle plugin of the coordinate system defined by bundleId
- * \param bundleId
  * \param param
  */
-void Controller::updateBundleAdjustment(const int &bundleId, const QJsonObject &param){
+void Controller::updateBundleAdjustment(const QJsonObject &param){ // TODO bundle scalar parameters remove later
 
     //check job
     if(this->job.isNull()){
@@ -703,19 +681,14 @@ void Controller::updateBundleAdjustment(const int &bundleId, const QJsonObject &
         return;
     }
 
-    //get and check feature
-    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
-    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
-        return;
-    }
-    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
-
     //get and check bundle plugin
-    QPointer<BundleAdjustment> bundlePlugin = bundleSystem->getBundlePlugin();
+    QPointer<BundleAdjustment> bundlePlugin = this->getBundleAdjustment();
     if(bundlePlugin.isNull()){
         return;
     }
 
+    QJsonArray params;
+/* TODO bundle scalar parameters remove later
     //update scalar parameters
     ScalarInputParams scalarParams;
     QJsonArray params = param.value("integerParameter").toArray();
@@ -739,7 +712,7 @@ void Controller::updateBundleAdjustment(const int &bundleId, const QJsonObject &
             scalarParams.stringParameter.insert(stringParam.value("name").toString(), stringParam.value("value").toString());
         }
     }
-
+*/
     //update input stations
     QList<BundleStation> inputStations;
     params = param.value("inputStations").toArray();
@@ -762,17 +735,16 @@ void Controller::updateBundleAdjustment(const int &bundleId, const QJsonObject &
     }
 
     //set up input parameters
-    bundlePlugin->setScalarInputParams(scalarParams);
+    //bundlePlugin->setScalarInputParams(scalarParams);
     bundlePlugin->setInputStations(inputStations);
 
 }
 
 /*!
  * \brief Controller::loadBundleTemplate
- * \param bundleId
  * \param bundleTemplate
  */
-void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate){
+void Controller::loadBundleTemplate(const QJsonObject &bundleTemplate){
 
     //check job
     if(this->job.isNull()){
@@ -781,9 +753,9 @@ void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bund
     }
 
     //get bundle system
-    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
-    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
-        this->log(QString("No bundle system with id %1").arg(bundleId), eErrorMessage, eMessageBoxMessage);
+    QPointer<CoordinateSystem> bundleSystem = this->job->getActiveBundleSystem();
+    if(bundleSystem.isNull()){
+        this->log(QString("No bundle system available"), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
@@ -800,16 +772,15 @@ void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bund
     }
 
     //load bundle plugin
-    QPointer<BundleAdjustment> bundlePlugin(NULL);
-    bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
     if(bundlePlugin.isNull()){
         this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
         return;
     }
 
     //set up bundle plugin
-    feature->getCoordinateSystem()->setBundleTemplate(bundleTemplate);
-    feature->getCoordinateSystem()->setBundlePlugin(bundlePlugin);
+    bundleSystem->setBundleTemplate(bundleTemplate);
+    bundleSystem->setBundlePlugin(bundlePlugin);
 
     this->log(QString("Bundle template %1 loaded successfully").arg(bundleTemplate.value("name").toString()), eInformationMessage, eConsoleMessage);
 
@@ -817,9 +788,8 @@ void Controller::loadBundleTemplate(const int &bundleId, const QJsonObject &bund
 
 /*!
  * \brief Controller::runBundle
- * \param bundleId
  */
-void Controller::runBundle(const int &bundleId){
+void Controller::runBundle(){
 
     //check job
     if(this->job.isNull()){
@@ -827,13 +797,13 @@ void Controller::runBundle(const int &bundleId){
         return;
     }
 
-    //get bundle system
-    QPointer<FeatureWrapper> feature = this->job->getFeatureById(bundleId);
-    if(feature.isNull() || feature->getCoordinateSystem().isNull()){
-        this->log(QString("No bundle system with id %1").arg(bundleId), eErrorMessage, eMessageBoxMessage);
+    QPointer<oi::BundleAdjustment> bundleAdjustment = this->getBundleAdjustment();
+    if(bundleAdjustment.isNull()) {
+        this->log("No bundle adjustment available", eErrorMessage, eMessageBoxMessage);
         return;
     }
-    QPointer<CoordinateSystem> bundleSystem = feature->getCoordinateSystem();
+
+    QPointer<CoordinateSystem> bundleSystem =  bundleAdjustment->getBundleSystem();
 
     //check bundle plugin
     if(bundleSystem->getBundlePlugin().isNull()){
@@ -842,10 +812,29 @@ void Controller::runBundle(const int &bundleId){
     }
 
     //calculate bundle adjustment
-    if(!this->featureUpdater.recalcBundle(bundleSystem)){
-        this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
-    } else {
-        this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+    try {
+        if(!this->featureUpdater.recalcBundle(bundleSystem)){
+            this->featureUpdater.switchCoordinateSystem();
+
+            this->log(QString("Error when calculating bundle %1").arg(bundleSystem->getFeatureName()), eErrorMessage, eMessageBoxMessage);
+        } else {
+            this->log(QString("Bundle %1 successfully calculated").arg(bundleSystem->getFeatureName()), eInformationMessage, eMessageBoxMessage);
+        }
+    } catch(BundleException &e) {
+        this->featureUpdater.switchCoordinateSystem();
+
+        QPointer<FeatureWrapper> feature = this->job->getFeatureById(e.getFeatureId());
+        QString featureName = feature.isNull() ? "" : feature->getFeature()->getFeatureName() + ": ";
+        this->log(featureName.append(e.what()),
+                  MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
+    } catch(std::exception &e) {
+        this->featureUpdater.switchCoordinateSystem();
+
+        this->log(e.what(), MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
+    } catch(...) {
+        this->featureUpdater.switchCoordinateSystem();
+
+        this->log("unexpected: cannot recalc bundle", MessageTypes::eErrorMessage, MessageDestinations::eMessageBoxMessage);
     }
 
     // update station status
@@ -1049,11 +1038,80 @@ void Controller::loadProject(const QString &projectName, const QPointer<QFileDev
         //connect active station
         this->activeStationChangedCallback();
 
+        //load bundle templates
+        QList<QJsonObject> templates = this->loadBundleTemplates();
+        if(!templates.isEmpty()) {
+            QJsonObject bundleTemplate = templates.first(); // only one should exists
+
+            if(this->job->getActiveBundleAdjustment().isNull()) { // no bundle result was saved
+                // load plugin and set plugin to bundle system "Bundle01"
+                // see MainWindow::initBundleView()
+                QList<QPointer<FeatureWrapper> > bundleSystems = this->job->getFeaturesByName("Bundle01");
+                if(!bundleSystems.isEmpty()) {
+                    QPointer<CoordinateSystem> bundleSystem = bundleSystems.first()->getCoordinateSystem();
+
+                    QString bundleName, pluginName;
+                    bundleName = bundleTemplate.value("plugin").toObject().value("name").toString();
+                    pluginName = bundleTemplate.value("plugin").toObject().value("pluginName").toString();
+
+                    //get and check plugin information
+                    sdb::Plugin plugin = SystemDbManager::getPlugin(pluginName);
+                    if(plugin.id == -1){
+                        this->log(QString("No plugin available with the name %1").arg(pluginName), eErrorMessage, eMessageBoxMessage);
+                        return;
+                    }
+
+                    //load bundle plugin
+                    QPointer<BundleAdjustment> bundlePlugin = PluginLoader::loadBundleAdjustmentPlugin(plugin.file_path, bundleName);
+                    if(bundlePlugin.isNull()){
+                        this->log(QString("Cannot load bundle template %1").arg(bundleTemplate.value("name").toString()), eErrorMessage, eMessageBoxMessage);
+                        return;
+                    }
+
+                    //get bundle system
+                    if(bundleSystem.isNull()){
+                        this->log(QString("No bundle system available"), eErrorMessage, eMessageBoxMessage);
+                        return;
+                    }
+                    //set up bundle plugin
+                    bundleSystem->setBundleTemplate(bundleTemplate);
+                    bundleSystem->setBundlePlugin(bundlePlugin);
+
+                    // initially add all stations to bundle
+                    // see void MainWindow::bundleSelectionChanged()
+                    QList<BundleStation> bundleStations;
+                    foreach(const QPointer<Station> &station, this->job->getStationsList()){
+
+                        //create initial BundleStation
+                        BundleStation bundleStation;
+                        bundleStation.id = station->getId();
+                        bundleStation.tx = 0.0;
+                        bundleStation.ty = 0.0;
+                        bundleStation.tz = 0.0;
+                        bundleStation.rx = 0.0;
+                        bundleStation.ry = 0.0;
+                        bundleStation.rz = 0.0;
+                        bundleStation.m = 1.0;
+                        bundleStations.append(bundleStation);
+
+                    }
+
+                    bundlePlugin->setInputStations(bundleStations);
+
+                } else {
+                    // no Bundle01 available, should not appear
+                }
+
+            } else {
+                //load template
+                this->job->getActiveBundleSystem()->setBundleTemplate(bundleTemplate);
+            }
+        }
+
         this->log(QString("OpenIndy project \"%1\" successfully loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
     } else {
         this->log(QString("OpenIndy project \"%1\" was not loaded.").arg(device->fileName()), eInformationMessage, eConsoleMessage);
     }
-
 
 }
 
@@ -2314,4 +2372,37 @@ bool Controller::isStationBundled(int id) {
     }
 
     return false;
+}
+
+QList<QJsonObject> Controller::loadBundleTemplates(){
+    QList<QJsonObject> templates;
+    //get template path
+    QString path;
+    path = QString("%1%2").arg(qApp->applicationDirPath()).arg("/templates/bundle");
+
+    //iterate over templates
+    QDirIterator it(path, QDirIterator::NoIteratorFlags);
+    while(it.hasNext()){
+
+        //load file
+        QFile file(it.next());
+        if(!file.open(QFile::ReadOnly)){
+            continue;
+        }
+
+        //save json template
+        QJsonDocument bundleTemplate;
+        QJsonParseError parseError;
+        bundleTemplate = QJsonDocument::fromJson(file.readAll(), &parseError);
+        if(parseError.error != QJsonParseError::NoError){
+            continue;
+        }
+        templates.append(bundleTemplate.object());
+
+        //close file
+        file.close();
+
+    }
+
+    return templates;
 }

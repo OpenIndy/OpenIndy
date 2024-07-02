@@ -39,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
-    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished, Qt::AutoConnection);
     QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
     QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::closeAllSensorTaskDialogs, this, &MainWindow::closeAllSensorTaskDialogs, Qt::AutoConnection);
 
@@ -55,12 +54,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->dockWidget_differences->setMaximumWidth(600);
 
     this->resizeTableView();
-
-    //load default bundle plugin
-    if(job->getBundleSystemList().size() >0){
-        int bundleID = job->getBundleSystemList().at(0)->getId();
-        this->loadDefaultBundlePlugIn(bundleID);
-    }
 
     this->startAutoSave();
 
@@ -231,32 +224,10 @@ void MainWindow::coordSystemSetChanged(){
 }
 
 /*!
- * \brief MainWindow::stationSetChanged
- */
-void MainWindow::stationSetChanged(){
-
-}
-
-/*!
- * \brief MainWindow::trafoParamSetChanged
- */
-void MainWindow::trafoParamSetChanged(){
-
-    //activate trafo param tab
-    this->ui->tabWidget_views->setCurrentWidget(this->ui->tab_trafoParam);
-
-}
-
-/*!
  * \brief MainWindow::availableGroupsChanged
  */
 void MainWindow::availableGroupsChanged(){
     this->updateGroupFilterSize();
-}
-
-void MainWindow::activeGroupChanged()
-{
-
 }
 
 /*!
@@ -400,6 +371,12 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg, c
     this->showStatusSensor(SensorStatus::eClearStatus, "");
 
     QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
+
+    if(sensorAction == SensorAction::eSensorActionAll) {
+        closeAllSensorTaskDialogs();
+        return;
+    }
+
     if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
         sensorTaskInfoDialog = this->sensorTaskInfoDialogs.take(sensorAction);
         sensorTaskInfoDialog->close();
@@ -819,7 +796,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
         }
 
-        menu->addAction(QIcon(":/Images/icons/info.png"),
+        menu->addAction(QIcon(":/Images/icons/info_schwarz.PNG"),
                         QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
@@ -828,10 +805,12 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         &this->control, SLOT(recalcActiveFeature()));
 
         if(showEnableDisableMenuEntries) {
-            menu->addAction(QString("enable all observations of %1").arg(featureName),
+            menu->addAction(QIcon(":/Images/icons/obs_enable.png"),
+                            QString("enable all observations of %1").arg(featureName),
                             this, SLOT(enableObservationsOfActiveFeature()));
 
-            menu->addAction(QString("disable all observations of %1").arg(featureName),
+            menu->addAction(QIcon(":/Images/icons/obs_disable.png"),
+                            QString("disable all observations of %1").arg(featureName),
                             this, SLOT(disableObservationsOfActiveFeature()));
         }
         //if the active feature is a geometry
@@ -864,6 +843,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         menu->addSeparator();
 
         QAction *enableObservationssAction = menu->addAction(
+                    QIcon(":/Images/icons/obs_enable.png"),
                     QString("enable all observations of %1").arg(labelSuffix));
         connect(enableObservationssAction, &QAction::triggered,
                         this, [=]() {
@@ -873,6 +853,7 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
                         });
 
         QAction *disableObservationsAction = menu->addAction(
+                    QIcon(":/Images/icons/obs_disable.png"),
                     QString("disable all observations of %1").arg(labelSuffix));
         connect(disableObservationsAction, &QAction::triggered,
                         this, [=]() {
@@ -1026,7 +1007,7 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
                             this, SLOT(on_actionSet_function_triggered()));
         }
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/Images/icons/info_schwarz.PNG"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
@@ -1035,18 +1016,6 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
-}
-
-/*!
- * \brief MainWindow::tableViewBundleParamsSelectionChangedByKeyboard
- * \param selected
- * \param deselected
- */
-void MainWindow::tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected)
-{
-    if(selected.isValid() && deselected.isValid()){
-        this->on_tableView_bundleParameter_clicked(selected);
-    }
 }
 
 /*!
@@ -1508,94 +1477,6 @@ void MainWindow::on_actionAbout_OpenIndy_triggered(){
 void MainWindow::on_actionShow_Licenses_triggered(){
     showCentered(this->showLicensesDialog);
 }
-/*!
- * \brief MainWindow::on_pushButton_addBundle_clicked
- */
-void MainWindow::on_pushButton_addBundle_clicked(){
-    emit this->addBundleSystem();
-}
-
-/*!
- * \brief MainWindow::on_pushButton_removeBundle_clicked
- */
-void MainWindow::on_pushButton_removeBundle_clicked(){
-
-    QModelIndex index = getBundleIndex();
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //remove bundle system
-    emit this->removeBundleSystem(id);
-
-}
-
-QModelIndex MainWindow::getBundleIndex() {
-    //get selected bundle system
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    QModelIndex index;
-    if(selection.size() == 1){
-        index = selection.at(0);
-    } else if(this->ui->listView_bundle->model()->rowCount() > 0) {
-        emit this->log(QString("no bundle selected, use first bundle"),
-                       eWarningMessage, eConsoleMessage);
-        index = this->ui->listView_bundle->model()->index(0,0);
-    }
-    return index;
-}
-
-/*!
- * \brief MainWindow::on_action_RunBundle_triggered
- */
-void MainWindow::on_action_RunBundle_triggered(){
-
-    QModelIndex index = getBundleIndex();
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        emit this->log(QString("no bundle available"),
-                       eWarningMessage, eConsoleMessage);
-        return;
-    }
-
-    //get selected bundle parameters
-    //TODO zu verwendende stations ermitteln
-    //TODO zu schätzende Parameter je station ermitteln
-
-    //calculate bundle
-    emit this->runBundle(id);
-
-}
-
-/*!
- * \brief MainWindow::on_pushButton_loadBundleTemplate_clicked
- */
-void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
-
-    QModelIndex index = getBundleIndex();
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //get selected bundle template
-    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
-    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
-    if(bundleTemplate.isEmpty()){
-        return;
-    }
-
-    //load template
-    emit this->loadBundleTemplate(id, bundleTemplate);
-    this->bundleSelectionChanged();
-
-}
 
 /*!
  * \brief MainWindow::showFeatureProperties
@@ -2011,43 +1892,24 @@ void MainWindow::bundleSelectionChanged(){
         return;
     }
 
-    //get selection
-    QModelIndex index = getBundleIndex();
-
-    //update visibility depending on current selection
-    if(!index.isValid()){
-        this->ui->tabWidget_bundle->setEnabled(false);
-        this->ui->pushButton_removeBundle->setEnabled(false);
-        this->ui->pushButton_runBundle->setEnabled(false);
-        return;
-    }else{
-        this->ui->tabWidget_bundle->setEnabled(true);
-        this->ui->pushButton_removeBundle->setEnabled(true);
-        this->ui->pushButton_runBundle->setEnabled(true);
-    }
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
     //reset old parameters
-    this->resetBundleView();
+    this->resetBundleView(); // UI
 
     //get and check bundle plugin and template
-    QJsonObject bundleTemplate = this->control.getBundleTemplate(id);
-    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment(id);
+    QJsonObject bundleTemplate = this->control.getBundleTemplate();
+    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment();
     if(bundlePlugin.isNull()){
         return;
     }
 
     //set up scalar parameters
     ScalarInputParams scalarParams = bundlePlugin->getScalarInputParams();
-    this->bundleParameterWidget->setEnabled(true);
-    this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
-    this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
-    this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+    if(!this->bundleParameterWidget.isNull()) {
+        this->bundleParameterWidget->setEnabled(true);
+        this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
+        this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
+        this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+    }
 
     //set up input stations
     QJsonArray inputStations;
@@ -2081,8 +1943,8 @@ void MainWindow::bundleSelectionChanged(){
     this->bundleStationsModel->setStations(inputStations);
 
     //set up input geometries
-    inputStations = this->bundleStationsModel->getStations();
-    this->ui->treeView_inputGeometries->setEnabled(true);
+    inputStations = this->bundleStationsModel->getStations(); // does a bit more than just a getter
+    this->ui->treeView_inputGeometries->setEnabled(true); // UI
     this->bundleGeometriesModel->setStations(inputStations);
 
     //set up result
@@ -2095,15 +1957,9 @@ void MainWindow::bundleSelectionChanged(){
  */
 void MainWindow::bundleSettingsChanged(){
 
-    QModelIndex index = getBundleIndex();
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
     //create parameter object
     QJsonObject param;
-
+/* TODO bundle scalar parameters remove later
     //set up scalar parameters
     const QMap<QString, int> &intParams = this->bundleParameterWidget->getIntParameter();
     const QMap<QString, double> &doubleParams = this->bundleParameterWidget->getDoubleParameter();
@@ -2133,6 +1989,8 @@ void MainWindow::bundleSettingsChanged(){
     param.insert("integerParameter", integerParameter);
     param.insert("doubleParameter", doubleParameter);
     param.insert("stringParameter", stringParameter);
+*/
+
 
     //set up input stations
     QJsonArray stations = this->bundleStationsModel->getStations();
@@ -2141,8 +1999,7 @@ void MainWindow::bundleSettingsChanged(){
     //update bundle geometries model
     this->bundleGeometriesModel->setStations(stations);
 
-    emit this->updateBundleAdjustment(id, param);
-
+    emit this->updateBundleAdjustment(param);
 }
 
 /*!
@@ -2199,7 +2056,6 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::trafoParamSetChanged, this, &MainWindow::trafoParamSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
@@ -2285,13 +2141,6 @@ void MainWindow::connectStatusBar(){
  * \brief MainWindow::connectBundleView
  */
 void MainWindow::connectBundleView(){
-
-    //connect bundle selection
-    QObject::connect(this->ui->listView_bundle->selectionModel(), &QItemSelectionModel::selectionChanged,
-                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
-    QObject::connect(&ModelManager::getBundleSystemsModel(), &BundleSystemsModel::layoutChanged,
-                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
-
     //connect scalar parameters widget
     QObject::connect(this->bundleParameterWidget, &ScalarParameterWidget::scalarParametersChanged,
                      this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
@@ -2330,14 +2179,18 @@ void MainWindow::assignModels(){
     this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
 
     //assign bundle models
-    this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
-    this->ui->comboBox_bundleTemplate->setModel(&ModelManager::getBundleTemplatesModel());
     this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
     this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
-    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this);
+
+    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this); // create new instance !
     this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
+
+    this->ui->listView_bundleOverview->setModel(this->bundleGeometriesModel); // need one model with station names
+    bundleOverviewDelegate = new BundleOverviewDelegate(this);
+    this->ui->listView_bundleOverview->setItemDelegate(bundleOverviewDelegate);
+    this->ui->listView_bundleOverview->setAlternatingRowColors(true);
 
     QObject::connect(&ModelManager::getFeatureTableModel(),&FeatureTableModel::recalcActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
 
@@ -2369,8 +2222,6 @@ void MainWindow::initFeatureTableViews(){
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-    QObject::connect(this->ui->tableView_bundleParameter->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewBundleParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-
 }
 
 /*!
@@ -2568,19 +2419,43 @@ void MainWindow::initStatusBar(){
 void MainWindow::initBundleView(){
 
     //load bundle templates
-    ModelManager::getBundleTemplatesModel().loadTemplates();
-    this->ui->comboBox_bundleTemplate->setCurrentIndex(0);
+    QList<QJsonObject> templates = this->control.loadBundleTemplates();
+    if(templates.isEmpty()){
+        return;
+    }
+    QJsonObject bundleTemplate = templates.first(); // only one should exists
 
-    //set initial visibility
-    this->ui->tabWidget_bundle->setEnabled(false);
-    this->ui->pushButton_removeBundle->setEnabled(false);
-    this->ui->pushButton_runBundle->setEnabled(false);
+    //load template
+    emit this->loadBundleTemplate(bundleTemplate);
+    this->bundleSelectionChanged();
 
     //init bundle parameter widget
     QGridLayout *extraParameterLayout = new QGridLayout();
-    this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
+    // this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
     this->bundleParameterWidget = new ScalarParameterWidget();
     extraParameterLayout->addWidget(this->bundleParameterWidget);
+
+    // init overview
+    bundleOverviewDelegate->maxError = 0.1;
+    bundleOverviewDelegate->maxStdDev = 0.06;
+    bundleOverviewDelegate->maxScaleDev = 0.000020;
+    bundleOverviewDelegate->minCommonPoints = 5;
+
+    QIntValidator *cpValid = new QIntValidator(3, 10000, this);
+    this->ui->lineEdit_atLeastCommonPoints->setText(QString::number(bundleOverviewDelegate->minCommonPoints));
+    this->ui->lineEdit_atLeastCommonPoints->setValidator(cpValid);
+
+    QDoubleValidator *maxErrorValid = new QDoubleValidator(0, 10, 3, this);
+    this->ui->lineEdit_maxError->setText(QString::number(bundleOverviewDelegate->maxError, 'f', 2));
+    this->ui->lineEdit_maxError->setValidator(maxErrorValid);
+
+    QDoubleValidator *stdDevValid = new QDoubleValidator(0, 10, 3, this);
+    this->ui->lineEdit_stdDev->setText(QString::number(bundleOverviewDelegate->maxStdDev, 'f', 3));
+    this->ui->lineEdit_stdDev->setValidator(stdDevValid);
+
+    QDoubleValidator *scaleDevValid = new QDoubleValidator(0, 0.1, 6, this);
+    this->ui->lineEdit_scaleDev->setText(QString::number(bundleOverviewDelegate->maxScaleDev, 'f', 6));
+    this->ui->lineEdit_scaleDev->setValidator(scaleDevValid);
 
 }
 
@@ -2829,10 +2704,12 @@ void MainWindow::updateActualNominalFilterSize(){
 void MainWindow::resetBundleView(){
 
     //reset scalar parameters
-    this->bundleParameterWidget->blockSignals(true);
-    this->bundleParameterWidget->clearAll();
-    this->bundleParameterWidget->setEnabled(false);
-    this->bundleParameterWidget->blockSignals(false);
+    if(!this->bundleParameterWidget.isNull()) {
+        this->bundleParameterWidget->blockSignals(true);
+        this->bundleParameterWidget->clearAll();
+        this->bundleParameterWidget->setEnabled(false);
+        this->bundleParameterWidget->blockSignals(false);
+    }
 
     //reset input stations
     QJsonArray stations;
@@ -2885,23 +2762,6 @@ void MainWindow::saveProjectAs(bool asTemplate)
 }
 
 /*!
- * \brief MainWindow::loadDefaultBundlePlugIn
- */
-void MainWindow::loadDefaultBundlePlugIn(int bundleID)
-{
-    //get selected bundle template
-    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
-    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
-    if(bundleTemplate.isEmpty()){
-        return;
-    }
-
-    //load template
-    emit this->loadBundleTemplate(bundleID, bundleTemplate);
-    this->bundleSelectionChanged();
-}
-
-/*!
  * \brief MainWindow::goToNextFeature
  * Jumping to the next feature in the feature list after an successful measurement
  */
@@ -2933,24 +2793,6 @@ void MainWindow::createMessageBoxTrafoParamWarning()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
-}
-
-void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
-{
-    //get and check model
-    BundleParameterTableProxyModel *model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //set active feature
-    sourceModel->setActiveFeature(model->mapToSource(index));
 }
 
 /*!
@@ -3286,12 +3128,16 @@ void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
 }
 
 void MainWindow::measureBehaviorLogicStarted() {
+    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished);
+
     // disable "go to next feautre"
     this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", this->ui->actiongo_to_next_feature->isChecked());
     this->ui->actiongo_to_next_feature->setChecked(false);
 }
 
 void MainWindow::measureBehaviorLogicFinished() {
+    QObject::disconnect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished);
+
     QVariant value = this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE");
     this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", QVariant::Invalid);
     if(value.isValid()) {
@@ -3317,4 +3163,54 @@ void  MainWindow::showStatusStation(const StationStatusData &data) {
     }
 
     this->stationStatus->setBundled(this->control.isStationBundled(data.id.toInt()));
+}
+
+/*!
+ * \brief MainWindow::on_action_RunBundle_triggered
+ */
+void MainWindow::on_action_RunBundle_triggered(){
+
+    //calculate bundle
+    emit this->runBundle();
+
+}
+
+void MainWindow::on_lineEdit_maxError_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxError = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_stdDev_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxStdDev = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_scaleDev_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxScaleDev = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_atLeastCommonPoints_textChanged(const QString &arg1)
+{
+    bool ok;
+    int value = arg1.toInt(&ok);
+    if(ok) {
+        bundleOverviewDelegate->minCommonPoints = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
 }

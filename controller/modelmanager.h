@@ -42,8 +42,6 @@
 #include "functionstatisticmodel.h"
 #include "sensoraccuracymodel.h"
 #include "sensorparametersmodel.h"
-#include "bundlesystemsmodel.h"
-#include "bundletemplatesmodel.h"
 #include "bundlestationsmodel.h"
 #include "bundlegeometriesmodel.h"
 #include "functionweightstablemodel.h"
@@ -79,7 +77,7 @@ signals:
     //log messages
     //############
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
 
     //#######################
     //display configs changed
@@ -153,7 +151,6 @@ public:
     //coordinate system models
     static QStringListModel &getCoordinateSystemsModel();
     static QStringListModel &getNominalSystemsModel();
-    static BundleSystemsModel &getBundleSystemsModel();
 
     //group name model
     static QStringListModel &getGroupNamesModel();
@@ -204,9 +201,6 @@ public:
     static ObservationProxyModel &getObservationProxyModel();
     static ReadingModel &getReadingModel();
     static ReadingProxyModel &getReadingProxyModel();
-
-    //bundle templates
-    static BundleTemplatesModel &getBundleTemplatesModel();
 
     //############################################################
     //get dynamic models (models that are newly created each time)
@@ -272,7 +266,6 @@ private:
     //coordinate systems models
     static QStringListModel coordinateSystemsModel;
     static QStringListModel nominalSystemsModel;
-    static BundleSystemsModel bundleSystemsModel;
 
     //group name model
     static QStringListModel groupNamesModel;
@@ -326,9 +319,6 @@ private:
     static ObservationProxyModel observationProxyModel;
     static ReadingModel readingModel;
     static ReadingProxyModel readingProxyModel;
-
-    //bundle templates
-    static BundleTemplatesModel bundleTemplatesModel;
 
     //##################
     //empty dummy models

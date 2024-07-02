@@ -50,6 +50,7 @@
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
+#include "bundleoverviewdelegate.h"
 
 #include "projectconfig.h"
 #include "clipboardutil.h"
@@ -133,9 +134,9 @@ signals:
     void removeBundleSystem(const int &bundleId);
 
     //load or calculate bundle
-    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
-    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
-    void runBundle(const int &bundleId);
+    void updateBundleAdjustment(const QJsonObject &param);
+    void loadBundleTemplate(const QJsonObject &bundleTemplate);
+    void runBundle();
 
     //save or load projects
     void saveProject();
@@ -168,12 +169,9 @@ private slots:
 
     //feature(s) added or removed
     void coordSystemSetChanged();
-    void stationSetChanged();
-    void trafoParamSetChanged();
 
     //group(s) added or removed
     void availableGroupsChanged();
-    void activeGroupChanged();
 
     //feature specific attributes changed
     void featureNameChanged(const int &featureId, const QString &oldName);
@@ -233,8 +231,6 @@ private slots:
     void on_tableView_trafoParams_doubleClicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
-    void tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
-    void on_tableView_bundleParameter_clicked(const QModelIndex &index);
 
     //function dialog
     void on_actionSet_function_triggered();
@@ -287,13 +283,8 @@ private slots:
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
-    //add or remove bundle system
-    void on_pushButton_addBundle_clicked();
-    void on_pushButton_removeBundle_clicked();
-
     //load or calculate bundle
     void on_action_RunBundle_triggered();
-    void on_pushButton_loadBundleTemplate_clicked();
 
     //##############
     //helper methods
@@ -350,6 +341,14 @@ private slots:
 
     void on_actionStation_create_triggered();
 
+    void on_lineEdit_maxError_textChanged(const QString &arg1);
+
+    void on_lineEdit_stdDev_textChanged(const QString &arg1);
+
+    void on_lineEdit_scaleDev_textChanged(const QString &arg1);
+
+    void on_lineEdit_atLeastCommonPoints_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 
@@ -400,9 +399,6 @@ private:
     //save project help function
     void saveProjectAs(bool asTemplate = false);
 
-    //load default bundle plugin
-    void loadDefaultBundlePlugIn(int bundleID);
-
     //go automatically to next feature
     void autoSwitchToNextFeature(bool sucessMeasure);
 
@@ -436,7 +432,7 @@ private:
     StationPropertiesDialog stationPropertiesDialog;
 
     //widget with scalar input parameters
-    ScalarParameterWidget *bundleParameterWidget;
+    QPointer<ScalarParameterWidget> bundleParameterWidget;
 
     //##########
     //sensor pad
@@ -497,6 +493,8 @@ private:
     void measureBehaviorLogicStarted();
 
     QModelIndex getBundleIndex();
+
+    BundleOverviewDelegate *bundleOverviewDelegate;
 };
 
 #endif // MAINWINDOW_H

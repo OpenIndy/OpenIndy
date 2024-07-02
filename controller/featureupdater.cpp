@@ -189,7 +189,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
  * \param bundleSystem
  * \return
  */
-bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem){
+bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem) throw(std::exception){
 
     //check job
     if(this->currentJob.isNull()){

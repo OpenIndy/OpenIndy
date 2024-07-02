@@ -1,4 +1,5 @@
 #include "projectexchanger.h"
+#include "featureutil.h"
 
 ProjectExchanger::ProjectExchanger() {
 }
@@ -1211,7 +1212,8 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             //set measurement configs
             QDomElement mConfigElement = geometry.firstChildElement("measurementConfig");
             const QVariant name = mConfigElement.attribute("name");
-            if(!mConfigElement.isNull()&& mConfigElement.hasAttribute("name") && !name.toString().isEmpty()){
+            if( !mConfigElement.isNull() && mConfigElement.hasAttribute("name") && !name.toString().isEmpty()
+                    && !isScalar(myGeometry)/* do not have a measurement config */){
 
                 MeasurementConfig projectConfig = this->measurementConfigs.value(name.toString()); // will add to MeasurementConfigManager later !!!
                 MeasurementConfig standardConfig = this->mConfigManager->getStandardConfig(name.toString());
@@ -1229,6 +1231,13 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
     return result;
 
+}
+
+bool ProjectExchanger::isScalar(QPointer<FeatureWrapper> geometry) {
+    return geometry->getFeatureTypeEnum() == eScalarEntityAngleFeature
+            || geometry->getFeatureTypeEnum() == eScalarEntityDistanceFeature
+            || geometry->getFeatureTypeEnum() == eScalarEntityTemperatureFeature
+            || geometry->getFeatureTypeEnum() == eScalarEntityMeasurementSeriesFeature;
 }
 
 /*!
