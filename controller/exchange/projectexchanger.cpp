@@ -1,15 +1,11 @@
 #include "projectexchanger.h"
+#include "featureutil.h"
 
-QMap<int, QPointer<Observation> > ProjectExchanger::myObservations;
-QMap<int, QPointer<Reading> > ProjectExchanger::myReadings;
-QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myStations;
-QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myCoordinateSystems;
-QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myTransformationParameters;
-QMap<int, QPointer<FeatureWrapper> > ProjectExchanger::myGeometries;
-QList<int> ProjectExchanger::stationPoints;
-QMap<QString, MeasurementConfig> ProjectExchanger::myMConfigs;
-QMap<QString, SensorConfiguration> ProjectExchanger::mySConfigs;
-QPointer<MeasurementConfigManager> ProjectExchanger::mConfigManager;
+ProjectExchanger::ProjectExchanger() {
+}
+
+ProjectExchanger::~ProjectExchanger() {
+}
 
 /*!
  * \brief ProjectExchanger::saveProject create XML-Document, "saves" the project / job to XML and compute a digest
@@ -134,20 +130,33 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
 
     QDomElement configs = project.createElement("configs");
     QDomElement measurementConfigs = project.createElement("measurementConfigs");
-    QDomElement sensorConfigs = project.createElement("sensorConfigs");
+    // QDomElement sensorConfigs = project.createElement("sensorConfigs");
 
     //add measurement configs
-    QList<MeasurementConfig> mConfigs;
-    if(!ProjectExchanger::mConfigManager.isNull()){
-        mConfigs = ProjectExchanger::mConfigManager->getSavedMeasurementConfigs();
-        mConfigs.append(ProjectExchanger::mConfigManager->getProjectMeasurementConfigs());
-    }
-    foreach(const MeasurementConfig &mConfig, mConfigs){
-        QDomElement config = mConfig.toOpenIndyXML(project);
-        if(!config.isNull()){
-            measurementConfigs.appendChild(config);
+    if(!this->mConfigManager.isNull()){
+        QSet<MeasurementConfigKey> mConfigs;
+        foreach(const QPointer<FeatureWrapper> &feature, job->getGeometriesList()) {
+            MeasurementConfigKey mConfig = feature->getGeometry()->getMeasurementConfig();
+            if(mConfig.isValid()) {
+                mConfigs.insert(mConfig);
+            }
+        }
+
+        foreach(const MeasurementConfigKey &mConfig, mConfigs.values()){
+            if(mConfig.isStandardConfig()) {
+                continue;
+            }
+            // used user or project configs
+            MeasurementConfig mc = this->getMeasurementConfigManager()->getConfig(mConfig);
+            if(mc.isValid()) {
+                QDomElement config = mc.toOpenIndyXML(project);
+                if(!config.isNull()){
+                    measurementConfigs.appendChild(config);
+                }
+            }
         }
     }
+
     configs.appendChild(measurementConfigs);
 
     //add sensor configs
@@ -192,50 +201,49 @@ QDomDocument ProjectExchanger::saveProject(const QPointer<OiJob> &job){
  */
 const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project){
 
-    QPointer<OiJob> job(NULL);
-    job = new OiJob();
+    QPointer<OiJob> job = new OiJob();
 
     //load all elements from xml into helper lists
-    if(!ProjectExchanger::loadObservations(project)
-            || !ProjectExchanger::loadStations(project)
-            || !ProjectExchanger::loadCoordinateSystems(project)
-            || !ProjectExchanger::loadTransformationParameters(project)
-            || !ProjectExchanger::loadGeometries(project)
-            || !ProjectExchanger::loadConfigs(project)){
+    if(!this->loadObservations(project)
+            || !this->loadStations(project)
+            || !this->loadCoordinateSystems(project)
+            || !this->loadTransformationParameters(project)
+            || !this->loadGeometries(project)
+            || !this->loadConfigs(project)){
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
-        ProjectExchanger::clearHelperMaps(true);
+        this->clearHelperMaps(true);
         return NULL;
 
     }
 
     //restore dependencies between the elements
-    if(!ProjectExchanger::restoreObservationDependencies(project)
-            || !ProjectExchanger::restoreStationDependencies(project)
-            || !ProjectExchanger::restoreCoordinateSystemDependencies(project)
-            || !ProjectExchanger::restoreTrafoParamDependencies(project)
-            || !ProjectExchanger::restoreGeometryDependencies(project)){
+    if(!this->restoreObservationDependencies(project)
+            || !this->restoreStationDependencies(project)
+            || !this->restoreCoordinateSystemDependencies(project)
+            || !this->restoreTrafoParamDependencies(project)
+            || !this->restoreGeometryDependencies(project)){
 
         //clear all created elements if an error occured in one of the loading helpers (e.g. no station available)
-        ProjectExchanger::clearHelperMaps(true);
+        this->clearHelperMaps(true);
         return NULL;
 
     }
 
     //remove station points
-    foreach(const QPointer<FeatureWrapper> &station, ProjectExchanger::myStations){
+    foreach(const QPointer<FeatureWrapper> &station, this->myStations){
         if(!station.isNull() && !station->getStation().isNull()){
             if(!station->getStation()->getPosition().isNull()){
-                ProjectExchanger::myGeometries.remove(station->getStation()->getPosition()->getId());
+                this->myGeometries.remove(station->getStation()->getPosition()->getId());
             }
         }
     }
 
     //add features to the job
-    job->addFeaturesFromXml(ProjectExchanger::myStations.values());
-    job->addFeaturesFromXml(ProjectExchanger::myCoordinateSystems.values());
-    job->addFeaturesFromXml(ProjectExchanger::myTransformationParameters.values());
-    job->addFeaturesFromXml(ProjectExchanger::myGeometries.values());
+    job->addFeaturesFromXml(this->myStations.values());
+    job->addFeaturesFromXml(this->myCoordinateSystems.values());
+    job->addFeaturesFromXml(this->myTransformationParameters.values());
+    job->addFeaturesFromXml(this->myGeometries.values());
 
     //set id count
     if(project.documentElement().hasAttribute("idCount")){
@@ -246,14 +254,28 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
         job->setDigest(project.documentElement().attribute("digest"));
     } else { // not available, then compute
         // compute digest and store digest in job
-        ProjectExchanger::saveProject(job);
+        this->saveProject(job);
+    }
+
+    if(project.documentElement().hasAttribute("version")) {
+        job->setLoadedProjectVersion(project.documentElement().attribute("version"));
     }
 
     //add project measurement configs to config manager
-    if(!ProjectExchanger::mConfigManager.isNull()){
-        foreach(const MeasurementConfig &mConfig, ProjectExchanger::myMConfigs.values()){
-            if(mConfig.getIsValid() && !mConfig.getIsSaved()){
-                ProjectExchanger::mConfigManager->addProjectMeasurementConfig(mConfig);
+    if(!this->mConfigManager.isNull()){
+
+        // remove project config loaded from previous job
+        foreach(const MeasurementConfig &mConfig, this->mConfigManager->getProjectConfigs()) {
+            this->mConfigManager->removeProjectConfig(mConfig.getName());
+        }
+
+        // add project config loaded from this job if is not an standard config
+        foreach(const MeasurementConfig &mConfig, this->measurementConfigs.values()){
+            if( mConfig.isValid()
+                && mConfig.isProjectConfig()
+                && !this->mConfigManager->getStandardConfig(mConfig.getName()).isValid()
+                ){
+                this->mConfigManager->addProjectConfig(mConfig);
             }
         }
     }
@@ -263,21 +285,21 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
     QDomElement activeCoordinateSystem = project.documentElement().firstChildElement("activeCoordinateSystem");
     if(activeStation.isNull() || activeCoordinateSystem.isNull()
             || !activeStation.hasAttribute("ref") || !activeCoordinateSystem.hasAttribute("ref")
-            || !ProjectExchanger::myStations.contains(activeStation.attribute("ref").toInt())
-            || !ProjectExchanger::myCoordinateSystems.contains(activeCoordinateSystem.attribute("ref").toInt())){
+            || !this->myStations.contains(activeStation.attribute("ref").toInt())
+            || !this->myCoordinateSystems.contains(activeCoordinateSystem.attribute("ref").toInt())){
 
         //clear all created elements if no active station or active coordinate system is available
-        //OiProjectExchanger::clearHelperMaps(true);
+        //this->clearHelperMaps(true);
         //return NULL;
 
     }
-    QPointer<FeatureWrapper> myActiveStation = ProjectExchanger::myStations.value(activeStation.attribute("ref").toInt());
-    QPointer<FeatureWrapper> myActiveSystem = ProjectExchanger::myCoordinateSystems.value(activeCoordinateSystem.attribute("ref").toInt());
+    QPointer<FeatureWrapper> myActiveStation = this->myStations.value(activeStation.attribute("ref").toInt());
+    QPointer<FeatureWrapper> myActiveSystem = this->myCoordinateSystems.value(activeCoordinateSystem.attribute("ref").toInt());
     myActiveStation->getStation()->setActiveStationState(true);
     myActiveSystem->getCoordinateSystem()->setActiveCoordinateSystemState(true);
 
     //clear the helper maps
-    ProjectExchanger::clearHelperMaps(false);
+    this->clearHelperMaps(false);
 
     return job;
 
@@ -288,7 +310,7 @@ const QPointer<OiJob> ProjectExchanger::loadProject(const QDomDocument &project)
  * \return
  */
 QPointer<MeasurementConfigManager> &ProjectExchanger::getMeasurementConfigManager(){
-    return ProjectExchanger::mConfigManager;
+    return this->mConfigManager;
 }
 
 /*!
@@ -296,7 +318,7 @@ QPointer<MeasurementConfigManager> &ProjectExchanger::getMeasurementConfigManage
  * \param mConfigManager
  */
 void ProjectExchanger::setMeasurementConfigManager(const QPointer<MeasurementConfigManager> &mConfigManager){
-    ProjectExchanger::mConfigManager = mConfigManager;
+    this->mConfigManager = mConfigManager;
 }
 
 /*!
@@ -323,8 +345,8 @@ bool ProjectExchanger::loadObservations(const QDomDocument &project){
             }
 
             //add the observation to the list of successfully loaded observations
-            ProjectExchanger::myObservations.insert(obs->getId(), obs);
-            ProjectExchanger::myReadings.insert(obs->getReading()->getId(), obs->getReading());
+            this->myObservations.insert(obs->getId(), obs);
+            this->myReadings.insert(obs->getReading()->getId(), obs->getReading());
 
         }
 
@@ -366,12 +388,12 @@ bool ProjectExchanger::loadStations(const QDomDocument &project){
         stationWrapper->setStation(station);
 
         //add the station to the list of successfully loaded stations
-        ProjectExchanger::myStations.insert(station->getId(), stationWrapper);
+        this->myStations.insert(station->getId(), stationWrapper);
 
     }
 
     //at least one station has to be available
-    if(ProjectExchanger::myStations.size() == 0){
+    if(this->myStations.size() == 0){
         return false;
     }
 
@@ -411,12 +433,12 @@ bool ProjectExchanger::loadCoordinateSystems(const QDomDocument &project){
         coordinateSystemWrapper->setCoordinateSystem(coordinateSystem);
 
         //add the coordinate system to the list of successfully loaded coordinate systems
-        ProjectExchanger::myCoordinateSystems.insert(coordinateSystem->getId(), coordinateSystemWrapper);
+        this->myCoordinateSystems.insert(coordinateSystem->getId(), coordinateSystemWrapper);
 
     }
 
     //at least one coordinate system has to be available
-    if(ProjectExchanger::myCoordinateSystems.size() == 0){
+    if(this->myCoordinateSystems.size() == 0){
         return false;
     }
 
@@ -452,7 +474,7 @@ bool ProjectExchanger::loadTransformationParameters(const QDomDocument &project)
             trafoParamWrapper->setTrafoParam(trafoParam);
 
             //add the trafo param to the list of successfully loaded trafo params
-            ProjectExchanger::myTransformationParameters.insert(trafoParam->getId(), trafoParamWrapper);
+            this->myTransformationParameters.insert(trafoParam->getId(), trafoParamWrapper);
 
         }
 
@@ -669,7 +691,7 @@ bool ProjectExchanger::loadGeometries(const QDomDocument &project){
             }}
 
             //add the feature wrapper to the list of successfully loaded geometries
-            ProjectExchanger::myGeometries.insert(myFeatureWrapper->getFeature()->getId(), myFeatureWrapper);
+            this->myGeometries.insert(myFeatureWrapper->getFeature()->getId(), myFeatureWrapper);
 
         }
 
@@ -698,12 +720,8 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement mConfigElement = mConfigList.at(i).toElement();
                 MeasurementConfig mConfig;
                 if(mConfig.fromOpenIndyXML(mConfigElement)){
-                    if(!mConfigManager.isNull() && mConfigManager->hasSavedMeasurementConfig(mConfig)){
-                        mConfig.setIsSaved(true);
-                    }else{
-                        mConfig.setIsSaved(false);
-                    }
-                    ProjectExchanger::myMConfigs.insert(mConfig.getName(), mConfig);
+                    mConfig.makeProjectConfig();
+                    this->measurementConfigs.insert(mConfig.getName(), mConfig);
                 }
             }
         }
@@ -716,7 +734,7 @@ bool ProjectExchanger::loadConfigs(const QDomDocument &project){
                 QDomElement sConfigElement = sConfigList.at(i).toElement();
                 SensorConfiguration sConfig;
                 if(sConfig.fromOpenIndyXML(sConfigElement)){
-                    ProjectExchanger::mySConfigs.insert(sConfig.getName(), sConfig);
+                    this->mySConfigs.insert(sConfig.getName(), sConfig);
                 }
             }
         }
@@ -744,10 +762,10 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
 
             //get the station tag at position i and the corresponding FeatureWrapper
             QDomElement station = stationList.at(i).toElement();
-            if(!station.hasAttribute("id") || !ProjectExchanger::myStations.contains(station.attribute("id").toInt())){
+            if(!station.hasAttribute("id") || !this->myStations.contains(station.attribute("id").toInt())){
                 continue;
             }
-            QPointer<FeatureWrapper> myStation = ProjectExchanger::myStations.value(station.attribute("id").toInt());
+            QPointer<FeatureWrapper> myStation = this->myStations.value(station.attribute("id").toInt());
             if(myStation.isNull() || myStation->getStation().isNull()){
                 continue;
             }
@@ -789,8 +807,8 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
 
             //set position point
             QDomElement position = station.firstChildElement("position");
-            if(!position.isNull() && position.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(position.attribute("ref").toInt())){
-                QPointer<FeatureWrapper> myPosition = ProjectExchanger::myGeometries.value(position.attribute("ref").toInt());
+            if(!position.isNull() && position.hasAttribute("ref") && this->myGeometries.contains(position.attribute("ref").toInt())){
+                QPointer<FeatureWrapper> myPosition = this->myGeometries.value(position.attribute("ref").toInt());
                 if(!myPosition.isNull() && !myPosition->getPoint().isNull()){
                     myStation->getStation()->position = myPosition->getPoint();
                 }
@@ -799,7 +817,7 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
             //set coordinate system
             QDomElement coordinateSystem = station.firstChildElement("coordinateSystem");
             if(!coordinateSystem.isNull() && coordinateSystem.hasAttribute("ref")){
-                QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(coordinateSystem.attribute("ref").toInt());
+                QPointer<FeatureWrapper> mySystem = this->myCoordinateSystems.value(coordinateSystem.attribute("ref").toInt());
                 if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
                     myStation->getStation()->stationSystem = mySystem->getCoordinateSystem();
                     myStation->getStation()->stationSystem->isStationSystem = true;
@@ -819,12 +837,12 @@ bool ProjectExchanger::restoreStationDependencies(const QDomDocument &project){
                     QDomElement feature = usedForList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
                         QPointer<FeatureWrapper> myFeature(NULL);
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myFeature = ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt());
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myFeature = ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt());
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myFeature = ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt());
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myFeature = this->myGeometries.value(feature.attribute("ref").toInt());
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myFeature = this->myCoordinateSystems.value(feature.attribute("ref").toInt());
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myFeature = this->myTransformationParameters.value(feature.attribute("ref").toInt());
                         }
                         if(!myFeature.isNull()){
                             myStation->getStation()->addUsedFor(myFeature);
@@ -857,10 +875,10 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
 
             //get the coordinate system tag at position i and the corresponding FeatureWrapper
             QDomElement coordinateSystem = coordinateSystemList.at(i).toElement();
-            if(!coordinateSystem.hasAttribute("id") || !ProjectExchanger::myCoordinateSystems.contains(coordinateSystem.attribute("id").toInt())){
+            if(!coordinateSystem.hasAttribute("id") || !this->myCoordinateSystems.contains(coordinateSystem.attribute("id").toInt())){
                 continue;
             }
-            QPointer<FeatureWrapper> myCoordinateSystem = ProjectExchanger::myCoordinateSystems.value(coordinateSystem.attribute("id").toInt());
+            QPointer<FeatureWrapper> myCoordinateSystem = this->myCoordinateSystems.value(coordinateSystem.attribute("id").toInt());
             if(myCoordinateSystem.isNull() || myCoordinateSystem->getCoordinateSystem().isNull()){
                 continue;
             }
@@ -870,7 +888,7 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
             //load function plugins
             QDomElement functions = coordinateSystem.firstChildElement("functions");
             if(!functions.isNull()){
-                QList<QPointer<Function> > myFunctions = ProjectExchanger::restoreFunctionDependencies(functions);
+                QList<QPointer<Function> > myFunctions = this->restoreFunctionDependencies(functions);
                 for(int j = 0; j < myFunctions.size(); j++){
                     myCoordinateSystem->getCoordinateSystem()->addFunction(myFunctions.at(j));
                 }
@@ -879,7 +897,7 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
             //load bundle adjustments
             QDomElement bundle_plugin = coordinateSystem.firstChildElement("bundle");
             if(!bundle_plugin.isNull()){
-                QPointer<BundleAdjustment> myBundle = ProjectExchanger::restoreBundleDependencies(bundle_plugin);
+                QPointer<BundleAdjustment> myBundle = this->restoreBundleDependencies(bundle_plugin);
                 if(!myBundle.isNull()){
                     myCoordinateSystem->getCoordinateSystem()->setBundlePlugin(myBundle);
                 }
@@ -891,8 +909,8 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                 QDomNodeList observationList = observations.childNodes();
                 for(int j = 0; j < observationList.size(); j++){
                     QDomElement observation = observationList.at(j).toElement();
-                    if(observation.hasAttribute("ref") && ProjectExchanger::myObservations.contains(observation.attribute("ref").toInt())){
-                        QPointer<Observation> myObservation = ProjectExchanger::myObservations.value(observation.attribute("ref").toInt());
+                    if(observation.hasAttribute("ref") && this->myObservations.contains(observation.attribute("ref").toInt())){
+                        QPointer<Observation> myObservation = this->myObservations.value(observation.attribute("ref").toInt());
                         myCoordinateSystem->getCoordinateSystem()->observationsList.append(myObservation);
                         myCoordinateSystem->getCoordinateSystem()->observationsMap.insert(myObservation->getId(), myObservation);
                     }
@@ -905,8 +923,8 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                 QDomNodeList geometryList = nominalGeometries.childNodes();
                 for(int j = 0; j < geometryList.size(); j++){
                     QDomElement geometry = geometryList.at(j).toElement();
-                    if(geometry.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(geometry.attribute("ref").toInt())){
-                        QPointer<FeatureWrapper> myGeometry = ProjectExchanger::myGeometries.value(geometry.attribute("ref").toInt());
+                    if(geometry.hasAttribute("ref") && this->myGeometries.contains(geometry.attribute("ref").toInt())){
+                        QPointer<FeatureWrapper> myGeometry = this->myGeometries.value(geometry.attribute("ref").toInt());
                         if(myGeometry->getGeometry()->getIsNominal()){
                             myCoordinateSystem->getCoordinateSystem()->nominalsList.append(myGeometry);
                             myCoordinateSystem->getCoordinateSystem()->nominalsMap.insert(myGeometry->getGeometry()->getId(), myGeometry);
@@ -923,12 +941,12 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement feature = featureList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addUsedFor(ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addUsedFor(ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addUsedFor(ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt()));
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addUsedFor(this->myGeometries.value(feature.attribute("ref").toInt()));
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addUsedFor(this->myCoordinateSystems.value(feature.attribute("ref").toInt()));
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addUsedFor(this->myTransformationParameters.value(feature.attribute("ref").toInt()));
                         }
 
                     }
@@ -943,14 +961,14 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                     QDomElement feature = featureList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myStations.contains(feature.attribute("ref").toInt())){
-                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(ProjectExchanger::myStations.value(feature.attribute("ref").toInt()));
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(this->myGeometries.value(feature.attribute("ref").toInt()));
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(this->myCoordinateSystems.value(feature.attribute("ref").toInt()));
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(this->myTransformationParameters.value(feature.attribute("ref").toInt()));
+                        }else if(this->myStations.contains(feature.attribute("ref").toInt())){
+                            myCoordinateSystem->getCoordinateSystem()->addPreviouslyNeeded(this->myStations.value(feature.attribute("ref").toInt()));
                         }
 
                     }
@@ -963,8 +981,8 @@ bool ProjectExchanger::restoreCoordinateSystemDependencies(const QDomDocument &p
                 QDomNodeList trafoParamList = trafoParams.childNodes();
                 for(int j = 0; j < trafoParamList.size(); j++){
                     QDomElement trafoParam = trafoParamList.at(j).toElement();
-                    if(trafoParam.hasAttribute("ref") && ProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("ref").toInt())){
-                        QPointer<FeatureWrapper> myTrafoParam = ProjectExchanger::myTransformationParameters.value(trafoParam.attribute("ref").toInt());
+                    if(trafoParam.hasAttribute("ref") && this->myTransformationParameters.contains(trafoParam.attribute("ref").toInt())){
+                        QPointer<FeatureWrapper> myTrafoParam = this->myTransformationParameters.value(trafoParam.attribute("ref").toInt());
                         //set the dependency for bundle system and trafoParam
                         myCoordinateSystem->getCoordinateSystem()->addTransformationParameter(myTrafoParam->getTrafoParam());
                     }
@@ -994,10 +1012,10 @@ bool ProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &project
 
             //get the trafo param tag at position i and the corresponding FeatureWrapper
             QDomElement trafoParam = trafoParamList.at(i).toElement();
-            if(!trafoParam.hasAttribute("id") || !ProjectExchanger::myTransformationParameters.contains(trafoParam.attribute("id").toInt())){
+            if(!trafoParam.hasAttribute("id") || !this->myTransformationParameters.contains(trafoParam.attribute("id").toInt())){
                 continue;
             }
-            QPointer<FeatureWrapper> myTrafoParam = ProjectExchanger::myTransformationParameters.value(trafoParam.attribute("id").toInt());
+            QPointer<FeatureWrapper> myTrafoParam = this->myTransformationParameters.value(trafoParam.attribute("id").toInt());
             if(myTrafoParam.isNull() || myTrafoParam->getTrafoParam().isNull()){
                 continue;
             }
@@ -1006,17 +1024,17 @@ bool ProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &project
             QDomElement from = trafoParam.firstChildElement("from");
             QDomElement to = trafoParam.firstChildElement("to");
             if(from.isNull() || to.isNull() || !from.hasAttribute("ref") || !to.hasAttribute("ref")
-                    || !ProjectExchanger::myCoordinateSystems.contains(from.attribute("ref").toInt())
-                    || !ProjectExchanger::myCoordinateSystems.contains(from.attribute("ref").toInt())){
+                    || !this->myCoordinateSystems.contains(from.attribute("ref").toInt())
+                    || !this->myCoordinateSystems.contains(from.attribute("ref").toInt())){
                 continue;
             }
-            myTrafoParam->getTrafoParam()->setCoordinateSystems(ProjectExchanger::myCoordinateSystems.value(from.attribute("ref").toInt())->getCoordinateSystem(),
-                                                                ProjectExchanger::myCoordinateSystems.value(to.attribute("ref").toInt())->getCoordinateSystem());
+            myTrafoParam->getTrafoParam()->setCoordinateSystems(this->myCoordinateSystems.value(from.attribute("ref").toInt())->getCoordinateSystem(),
+                                                                this->myCoordinateSystems.value(to.attribute("ref").toInt())->getCoordinateSystem());
 
             //load function plugins
             QDomElement functions = trafoParam.firstChildElement("functions");
             if(!functions.isNull()){
-                QList<QPointer<Function> > myFunctions = ProjectExchanger::restoreFunctionDependencies(functions);
+                QList<QPointer<Function> > myFunctions = this->restoreFunctionDependencies(functions);
                 for(int j = 0; j < myFunctions.size(); j++){
                     myTrafoParam->getTrafoParam()->addFunction(myFunctions.at(j));
                 }
@@ -1030,12 +1048,12 @@ bool ProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &project
                     QDomElement feature = featureList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addUsedFor(ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addUsedFor(ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addUsedFor(ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt()));
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addUsedFor(this->myGeometries.value(feature.attribute("ref").toInt()));
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addUsedFor(this->myCoordinateSystems.value(feature.attribute("ref").toInt()));
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addUsedFor(this->myTransformationParameters.value(feature.attribute("ref").toInt()));
                         }
 
                     }
@@ -1050,14 +1068,14 @@ bool ProjectExchanger::restoreTrafoParamDependencies(const QDomDocument &project
                     QDomElement feature = featureList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myStations.contains(feature.attribute("ref").toInt())){
-                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(ProjectExchanger::myStations.value(feature.attribute("ref").toInt()));
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(this->myGeometries.value(feature.attribute("ref").toInt()));
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(this->myCoordinateSystems.value(feature.attribute("ref").toInt()));
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(this->myTransformationParameters.value(feature.attribute("ref").toInt()));
+                        }else if(this->myStations.contains(feature.attribute("ref").toInt())){
+                            myTrafoParam->getTrafoParam()->addPreviouslyNeeded(this->myStations.value(feature.attribute("ref").toInt()));
                         }
 
                     }
@@ -1090,10 +1108,10 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
             //get the geometry tag at position i and the corresponding FeatureWrapper
             QDomElement geometry = geometryList.at(i).toElement();
-            if(!geometry.hasAttribute("id") || !ProjectExchanger::myGeometries.contains(geometry.attribute("id").toInt())){
+            if(!geometry.hasAttribute("id") || !this->myGeometries.contains(geometry.attribute("id").toInt())){
                 continue;
             }
-            QPointer<FeatureWrapper> myGeometry = ProjectExchanger::myGeometries.value(geometry.attribute("id").toInt());
+            QPointer<FeatureWrapper> myGeometry = this->myGeometries.value(geometry.attribute("id").toInt());
             if(myGeometry.isNull() || myGeometry->getGeometry().isNull()){
                 continue;
             }
@@ -1105,7 +1123,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                 for(int j = 0; j < observationList.size(); j++){
                     QDomElement observation = observationList.at(j).toElement();
                     if(observation.hasAttribute("ref")){
-                        QPointer<Observation> myObservation = ProjectExchanger::myObservations.value(observation.attribute("ref").toInt());
+                        QPointer<Observation> myObservation = this->myObservations.value(observation.attribute("ref").toInt());
                         if(!myObservation.isNull()){
                             myGeometry->getGeometry()->addObservation(myObservation);
                         }
@@ -1116,7 +1134,7 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
             //load function plugins
             QDomElement functions = geometry.firstChildElement("functions");
             if(!functions.isNull()){
-                QList<QPointer<Function> > myFunctions = ProjectExchanger::restoreFunctionDependencies(functions);
+                QList<QPointer<Function> > myFunctions = this->restoreFunctionDependencies(functions);
                 for(int j = 0; j < myFunctions.size(); j++){
                     myGeometry->getGeometry()->addFunction(myFunctions.at(j));
                 }
@@ -1130,12 +1148,12 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                     QDomElement feature = featureList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addUsedFor(ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addUsedFor(ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addUsedFor(ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt()));
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addUsedFor(this->myGeometries.value(feature.attribute("ref").toInt()));
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addUsedFor(this->myCoordinateSystems.value(feature.attribute("ref").toInt()));
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addUsedFor(this->myTransformationParameters.value(feature.attribute("ref").toInt()));
                         }
 
                     }
@@ -1150,14 +1168,14 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                     QDomElement feature = featureList.at(j).toElement();
                     if(feature.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myGeometries.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addPreviouslyNeeded(ProjectExchanger::myGeometries.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addPreviouslyNeeded(ProjectExchanger::myCoordinateSystems.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myTransformationParameters.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addPreviouslyNeeded(ProjectExchanger::myTransformationParameters.value(feature.attribute("ref").toInt()));
-                        }else if(ProjectExchanger::myStations.contains(feature.attribute("ref").toInt())){
-                            myGeometry->getGeometry()->addPreviouslyNeeded(ProjectExchanger::myStations.value(feature.attribute("ref").toInt()));
+                        if(this->myGeometries.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addPreviouslyNeeded(this->myGeometries.value(feature.attribute("ref").toInt()));
+                        }else if(this->myCoordinateSystems.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addPreviouslyNeeded(this->myCoordinateSystems.value(feature.attribute("ref").toInt()));
+                        }else if(this->myTransformationParameters.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addPreviouslyNeeded(this->myTransformationParameters.value(feature.attribute("ref").toInt()));
+                        }else if(this->myStations.contains(feature.attribute("ref").toInt())){
+                            myGeometry->getGeometry()->addPreviouslyNeeded(this->myStations.value(feature.attribute("ref").toInt()));
                         }
 
                     }
@@ -1170,8 +1188,8 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
                 QDomNodeList nominalList = nominalGeometries.childNodes();
                 for(int j = 0; j < nominalList.size(); j++){
                     QDomElement nominalGeometry = nominalList.at(j).toElement();
-                    if(nominalGeometry.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(nominalGeometry.attribute("ref").toInt())){
-                        QPointer<FeatureWrapper> myNominalGeometry = ProjectExchanger::myGeometries.value(nominalGeometry.attribute("ref").toInt());
+                    if(nominalGeometry.hasAttribute("ref") && this->myGeometries.contains(nominalGeometry.attribute("ref").toInt())){
+                        QPointer<FeatureWrapper> myNominalGeometry = this->myGeometries.value(nominalGeometry.attribute("ref").toInt());
                         myGeometry->getGeometry()->addNominal(myNominalGeometry->getGeometry());
                     }
                 }
@@ -1179,23 +1197,33 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
             //set actual
             QDomElement actualGeometry = geometry.firstChildElement("actual");
-            if(!actualGeometry.isNull() && actualGeometry.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(actualGeometry.attribute("ref").toInt())){
-                QPointer<FeatureWrapper> myActualGeometry = ProjectExchanger::myGeometries.value(actualGeometry.attribute("ref").toInt());
+            if(!actualGeometry.isNull() && actualGeometry.hasAttribute("ref") && this->myGeometries.contains(actualGeometry.attribute("ref").toInt())){
+                QPointer<FeatureWrapper> myActualGeometry = this->myGeometries.value(actualGeometry.attribute("ref").toInt());
                 myGeometry->getGeometry()->setActual(myActualGeometry->getGeometry());
             }
 
             //set nominal system
             QDomElement nominalSystem = geometry.firstChildElement("nominalCoordinateSystem");
-            if(!nominalSystem.isNull() && nominalSystem.hasAttribute("ref") && ProjectExchanger::myCoordinateSystems.contains(nominalSystem.attribute("ref").toInt())){
-                QPointer<FeatureWrapper> myNominalSystem = ProjectExchanger::myCoordinateSystems.value(nominalSystem.attribute("ref").toInt());
+            if(!nominalSystem.isNull() && nominalSystem.hasAttribute("ref") && this->myCoordinateSystems.contains(nominalSystem.attribute("ref").toInt())){
+                QPointer<FeatureWrapper> myNominalSystem = this->myCoordinateSystems.value(nominalSystem.attribute("ref").toInt());
                 myGeometry->getGeometry()->setNominalSystem(myNominalSystem->getCoordinateSystem());
             }
 
             //set measurement configs
             QDomElement mConfigElement = geometry.firstChildElement("measurementConfig");
-            if(!mConfigElement.isNull() && mConfigElement.hasAttribute("name") && ProjectExchanger::myMConfigs.contains(mConfigElement.attribute("name"))){
-                MeasurementConfig mConfig = ProjectExchanger::myMConfigs.value(mConfigElement.attribute("name"));
-                myGeometry->getGeometry()->setMeasurementConfig(mConfig);
+            const QVariant name = mConfigElement.attribute("name");
+            if( !mConfigElement.isNull() && mConfigElement.hasAttribute("name") && !name.toString().isEmpty()
+                    && !isScalar(myGeometry)/* do not have a measurement config */){
+
+                MeasurementConfig projectConfig = this->measurementConfigs.value(name.toString()); // will add to MeasurementConfigManager later !!!
+                MeasurementConfig standardConfig = this->mConfigManager->getStandardConfig(name.toString());
+
+                if(standardConfig.isValid()) { // if standard config with "name" available use it
+                    myGeometry->getGeometry()->setMeasurementConfig(standardConfig.getKey());
+
+                } else if(projectConfig.isValid()) { // if project config with "name" available use it
+                    myGeometry->getGeometry()->setMeasurementConfig(projectConfig.getKey());
+                }
             }
 
         }
@@ -1203,6 +1231,13 @@ bool ProjectExchanger::restoreGeometryDependencies(const QDomDocument &project){
 
     return result;
 
+}
+
+bool ProjectExchanger::isScalar(QPointer<FeatureWrapper> geometry) {
+    return geometry->getFeatureTypeEnum() == eScalarEntityAngleFeature
+            || geometry->getFeatureTypeEnum() == eScalarEntityDistanceFeature
+            || geometry->getFeatureTypeEnum() == eScalarEntityTemperatureFeature
+            || geometry->getFeatureTypeEnum() == eScalarEntityMeasurementSeriesFeature;
 }
 
 /*!
@@ -1222,20 +1257,20 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
 
             //get the observation tag at position i and the corresponding Observation
             QDomElement observation = observationList.at(i).toElement();
-            if(!observation.hasAttribute("id") || !ProjectExchanger::myObservations.contains(observation.attribute("id").toInt())){
+            if(!observation.hasAttribute("id") || !this->myObservations.contains(observation.attribute("id").toInt())){
                 continue;
             }
-            QPointer<Observation> myObservation = ProjectExchanger::myObservations.value(observation.attribute("id").toInt());
+            QPointer<Observation> myObservation = this->myObservations.value(observation.attribute("id").toInt());
             if(myObservation.isNull() || myObservation->getReading().isNull()){
                 continue;
             }
 
             //set station and sensor
             QDomElement station = observation.firstChildElement("station");
-            if(!station.isNull() && station.hasAttribute("ref") && ProjectExchanger::myStations.contains(station.attribute("ref").toInt())){
+            if(!station.isNull() && station.hasAttribute("ref") && this->myStations.contains(station.attribute("ref").toInt())){
 
                 //get station and assign it to the observation
-                QPointer<FeatureWrapper> myStation = ProjectExchanger::myStations.value(station.attribute("ref").toInt());
+                QPointer<FeatureWrapper> myStation = this->myStations.value(station.attribute("ref").toInt());
                 myObservation->setStation(myStation->getStation());
                 if(myStation->getStation()->getIsSensorSet()){
                     myObservation->getReading()->setSensorConfiguration(myStation->getStation()->getSensorConfiguration());
@@ -1266,10 +1301,10 @@ bool ProjectExchanger::restoreObservationDependencies(const QDomDocument &projec
 
             //set measuredTargetGeometry
             QDomElement measuredTargetGeom = observation.firstChildElement("measuredTargetGeometry");
-            if(!measuredTargetGeom.isNull() && measuredTargetGeom.hasAttribute("ref") && ProjectExchanger::myGeometries.contains(measuredTargetGeom.attribute("ref").toInt())){
+            if(!measuredTargetGeom.isNull() && measuredTargetGeom.hasAttribute("ref") && this->myGeometries.contains(measuredTargetGeom.attribute("ref").toInt())){
 
                 //get geometry and assign it
-                QPointer<FeatureWrapper> myMeasuredTargetGeom = ProjectExchanger::myGeometries.value(measuredTargetGeom.attribute("ref").toInt());
+                QPointer<FeatureWrapper> myMeasuredTargetGeom = this->myGeometries.value(measuredTargetGeom.attribute("ref").toInt());
                 myObservation->setMeasuredTargetGeometry(myMeasuredTargetGeom->getGeometry());
             }
 
@@ -1356,8 +1391,8 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                     //create and add input elements
                     if(inputElement.hasAttribute("index") && inputElement.hasAttribute("type") && inputElement.hasAttribute("ref")){
 
-                        if(ProjectExchanger::myStations.contains(inputElement.attribute("ref").toInt())){
-                            QPointer<Station> station = ProjectExchanger::myStations.value(inputElement.attribute("ref").toInt())->getStation();
+                        if(this->myStations.contains(inputElement.attribute("ref").toInt())){
+                            QPointer<Station> station = this->myStations.value(inputElement.attribute("ref").toInt())->getStation();
                             InputElement element;
                             element.station = station;
                             element.id = station->getId();
@@ -1365,8 +1400,8 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.shouldBeUsed = shouldBeUsed;
                             element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
-                        }else if(ProjectExchanger::myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
-                            QPointer<CoordinateSystem> coordinateSystem = ProjectExchanger::myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
+                        }else if(this->myCoordinateSystems.contains(inputElement.attribute("ref").toInt())){
+                            QPointer<CoordinateSystem> coordinateSystem = this->myCoordinateSystems.value(inputElement.attribute("ref").toInt())->getCoordinateSystem();
                             InputElement element;
                             element.coordSystem = coordinateSystem;
                             element.id = coordinateSystem->getId();
@@ -1374,8 +1409,8 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.shouldBeUsed = shouldBeUsed;
                             element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
-                        }else if(ProjectExchanger::myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
-                            QPointer<TrafoParam> trafoParam = ProjectExchanger::myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
+                        }else if(this->myTransformationParameters.contains(inputElement.attribute("ref").toInt())){
+                            QPointer<TrafoParam> trafoParam = this->myTransformationParameters.value(inputElement.attribute("ref").toInt())->getTrafoParam();
                             InputElement element;
                             element.trafoParam = trafoParam;
                             element.id = trafoParam->getId();
@@ -1383,8 +1418,8 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.shouldBeUsed = shouldBeUsed;
                             element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
-                        }else if(ProjectExchanger::myGeometries.contains(inputElement.attribute("ref").toInt())){
-                            QPointer<FeatureWrapper> geometry = ProjectExchanger::myGeometries.value(inputElement.attribute("ref").toInt());
+                        }else if(this->myGeometries.contains(inputElement.attribute("ref").toInt())){
+                            QPointer<FeatureWrapper> geometry = this->myGeometries.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.geometry = geometry->getGeometry();
                             element.id = geometry->getGeometry()->getId();
@@ -1469,8 +1504,8 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                                 break;
                             }
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
-                        }else if(ProjectExchanger::myObservations.contains(inputElement.attribute("ref").toInt())){
-                            QPointer<Observation> observation = ProjectExchanger::myObservations.value(inputElement.attribute("ref").toInt());
+                        }else if(this->myObservations.contains(inputElement.attribute("ref").toInt())){
+                            QPointer<Observation> observation = this->myObservations.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.observation = observation;
                             element.id = observation->getId();
@@ -1478,8 +1513,8 @@ QList<QPointer<Function> > ProjectExchanger::restoreFunctionDependencies(const Q
                             element.shouldBeUsed = shouldBeUsed;
                             element.ignoredDestinationParams =restoreIgnoredParameter;
                             myFunction->addInputElement(element, inputElement.attribute("index").toInt());
-                        }else if(ProjectExchanger::myReadings.contains(inputElement.attribute("ref").toInt())){
-                            QPointer<Reading> reading = ProjectExchanger::myReadings.value(inputElement.attribute("ref").toInt());
+                        }else if(this->myReadings.contains(inputElement.attribute("ref").toInt())){
+                            QPointer<Reading> reading = this->myReadings.value(inputElement.attribute("ref").toInt());
                             InputElement element;
                             element.shouldBeUsed = shouldBeUsed;
                             element.ignoredDestinationParams =restoreIgnoredParameter;
@@ -1567,7 +1602,7 @@ QPointer<BundleAdjustment> ProjectExchanger::restoreBundleDependencies(QDomEleme
         //add bundleCoordinateSystem
         QDomElement bundleCoordSys = bundle.firstChildElement("bundleCoordinateSystem");
         if(!bundleCoordSys.isNull() && bundleCoordSys.hasAttribute("ref")){
-            QPointer<FeatureWrapper> mySystem = ProjectExchanger::myCoordinateSystems.value(bundleCoordSys.attribute("ref").toInt());
+            QPointer<FeatureWrapper> mySystem = this->myCoordinateSystems.value(bundleCoordSys.attribute("ref").toInt());
             if(!mySystem.isNull() && !mySystem->getCoordinateSystem().isNull()){
                 myBundle->setBundleSystem(mySystem->getCoordinateSystem());
                 result = myBundle;
@@ -1593,34 +1628,34 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     if(deleteOnClear){
 
         //delete observations
-        QList<QPointer<Observation> > myObservations = ProjectExchanger::myObservations.values();
+        QList<QPointer<Observation> > myObservations = this->myObservations.values();
         foreach(QPointer<Observation> obs, myObservations){
             delete obs;
         }
 
         //delete stations
-        QList<QPointer<FeatureWrapper> > myStations = ProjectExchanger::myStations.values();
+        QList<QPointer<FeatureWrapper> > myStations = this->myStations.values();
         foreach(QPointer<FeatureWrapper> s, myStations){
             delete s->getStation();
             delete s;
         }
 
         //delete coordinate systems
-        QList<QPointer<FeatureWrapper> > myCoordinateSystems = ProjectExchanger::myCoordinateSystems.values();
+        QList<QPointer<FeatureWrapper> > myCoordinateSystems = this->myCoordinateSystems.values();
         foreach(QPointer<FeatureWrapper> c, myCoordinateSystems){
             delete c->getCoordinateSystem();
             delete c;
         }
 
         //delete trafo params
-        QList<QPointer<FeatureWrapper> > myTrafoParams = ProjectExchanger::myTransformationParameters.values();
+        QList<QPointer<FeatureWrapper> > myTrafoParams = this->myTransformationParameters.values();
         foreach(QPointer<FeatureWrapper> t, myTrafoParams){
             delete t->getTrafoParam();
             delete t;
         }
 
         //delete geometries
-        QList<QPointer<FeatureWrapper> > myGeometries = ProjectExchanger::myGeometries.values();
+        QList<QPointer<FeatureWrapper> > myGeometries = this->myGeometries.values();
         foreach(QPointer<FeatureWrapper> g, myGeometries){
             delete g->getFeature();
             delete g;
@@ -1629,14 +1664,14 @@ void ProjectExchanger::clearHelperMaps(bool deleteOnClear){
     }
 
     //clear the helper maps
-    ProjectExchanger::myObservations.clear();
-    ProjectExchanger::myStations.clear();
-    ProjectExchanger::myCoordinateSystems.clear();
-    ProjectExchanger::myReadings.clear();
-    ProjectExchanger::myTransformationParameters.clear();
-    ProjectExchanger::myGeometries.clear();
-    ProjectExchanger::myMConfigs.clear();
-    ProjectExchanger::mySConfigs.clear();
-    ProjectExchanger::stationPoints.clear();
+    this->myObservations.clear();
+    this->myStations.clear();
+    this->myCoordinateSystems.clear();
+    this->myReadings.clear();
+    this->myTransformationParameters.clear();
+    this->myGeometries.clear();
+    this->measurementConfigs.clear();
+    this->mySConfigs.clear();
+    this->stationPoints.clear();
 
 }

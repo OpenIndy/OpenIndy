@@ -116,11 +116,15 @@ void FeatureUpdater::recalcFeature(const QPointer<Feature> &feature, const Funct
         }
     }
 
-    //recalculate feature
-    this->recursiveFeatureRecalculation(feature, ctx);
+    try {
+        //recalculate feature
+        this->recursiveFeatureRecalculation(feature, ctx);
 
-    emit this->featureRecalculated(feature->getId());
+        emit this->featureRecalculated(feature->getId());
 
+    } catch(const exception &e) {
+        emit this->currentJob->sendMessage(e.what(), eErrorMessage);
+    }
 }
 
 /*!
@@ -191,7 +195,7 @@ void FeatureUpdater::recalcTrafoParam(const QPointer<TrafoParam> &trafoParam){
  * \param bundleSystem
  * \return
  */
-bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem){
+bool FeatureUpdater::recalcBundle(const QPointer<CoordinateSystem> &bundleSystem) throw(std::exception){
 
     //check job
     if(this->currentJob.isNull()){
@@ -310,14 +314,18 @@ void FeatureUpdater::switchCoordinateSystem(){
         return;
     }
 
-    this->transformObsAndNominals(this->currentJob->getActiveCoordinateSystem());
+    try {
+        this->transformObsAndNominals(this->currentJob->getActiveCoordinateSystem());
 
-    //###################
-    //recalc all features
-    //###################
+        //###################
+        //recalc all features
+        //###################
 
-    this->recalcFeatureSet();
+        this->recalcFeatureSet();
 
+    } catch(const exception &e) {
+        emit this->currentJob->sendMessage(e.what(), eErrorMessage);
+    }
 }
 
 /*!

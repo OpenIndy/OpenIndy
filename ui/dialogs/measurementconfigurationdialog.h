@@ -16,12 +16,20 @@
 #include <QDesktopWidget>
 #include <QGridLayout>
 #include <QMenu>
+#include <QDoubleValidator>
+#include <float.h>
 
 #include "types.h"
 #include "console.h"
 #include "measurementconfig.h"
 #include "modelmanager.h"
 #include "measurementconfigurationlistdelegate.h"
+
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
 
 using namespace oi;
 
@@ -32,7 +40,7 @@ class MeasurementConfigurationDialog;
 /*!
  * \brief The MeasurementConfigurationDialog class
  */
-class MeasurementConfigurationDialog : public QDialog
+class OI_MAIN_EXPORT MeasurementConfigurationDialog : public QDialog
 {
     Q_OBJECT
 
@@ -53,6 +61,8 @@ signals:
     //#############################################################################
 
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
+    void initialized(); // currently used for testing
 
 private slots:
 
@@ -61,7 +71,9 @@ private slots:
     //#########################
 
     //measurement configs list view
-    void on_listView_measurementConfigs_clicked(const QModelIndex &index);
+    void on_listView_userConfigs_clicked(const QModelIndex &index);
+    void on_listView_projectConfigs_clicked(const QModelIndex &index);
+
     void measurementConfigContextMenuRequested(const QPoint &point);
     void removeSelectedMeasurementConfig();
     void cloneSelectedMeasurementConfig();
@@ -70,31 +82,26 @@ private slots:
     void on_pushButton_add_clicked();
 
     //measurement config attributes changed
-    void on_lineEdit_numMeas_textChanged(const QString &arg1);
-    void on_lineEdit_iterations_textChanged(const QString &arg1);
-    void on_comboBox_readingType_currentIndexChanged(const QString &arg1);
+    void on_lineEdit_maxObservations_textChanged(const QString &arg1);
     void on_checkBox_twoFace_clicked();
-    void on_checkBox_timeDependent_clicked();
     void on_lineEdit_timeInterval_textChanged(const QString &arg1);
-    void on_checkBox_distanceDependent_clicked();
     void on_lineEdit_distancInterval_textChanged(const QString &arg1);
 
     //set measurement config for the active feature
-    void on_pushButton_set_clicked();
+    void on_pushButton_set_to_feature_clicked();
+    void on_pushButton_save_user_config_clicked();
 
     //triggered when measurement config name has been edited
     void measurementConfigNameChanged(const MeasurementConfig &mConfig);
 
-    //set measurement config filter
-    void on_checkBox_showAll_stateChanged(int arg1);
+    void on_comboBox_MeasurementMode_currentIndexChanged(int index);
 
-    void on_lineEdit_stablePoint_min_distance_textChanged(const QString &arg1);
+    void on_comboBox_MeasurementType_currentIndexChanged(int index);
 
-    void on_lineEdit_stablePoint_threshold_textChanged(const QString &arg1);
+    void on_tabWidget_currentChanged(int index);
 
-    void on_checkBox_isStablePoint_clicked();
-
-    void on_lineEdit_stablePoint_thresholdTime_textChanged(const QString &arg1);
+    void enableUIElements(MeasurementTypes type);
+    void enableUIElements(const MeasurementConfig &mConfig);
 
 private:
     Ui::MeasurementConfigurationDialog *ui;
@@ -124,6 +131,9 @@ private:
     //################
 
     MeasurementConfig selectedMeasurementConfig;
+
+    QPointer<QListView> currentListView();
+    void on_listView_configs_clicked(const QModelIndex &index);
 
 };
 

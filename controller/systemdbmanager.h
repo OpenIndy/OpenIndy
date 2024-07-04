@@ -15,6 +15,13 @@
 #include "types.h"
 #include "util.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
+
 using namespace oi;
 
 //###############################################
@@ -146,15 +153,17 @@ public:
  * \brief The SystemDbManager class
  * System database interface class
  */
-class SystemDbManager
+class OI_MAIN_EXPORT SystemDbManager
 {
 public:
+
+    static void initInMemoryDB(const QStringList initStatements);
 
     //#####################
     //add or remove plugins
     //#####################
 
-    static bool addPlugin(const sdb::Plugin &plugin);
+    static bool addPlugin(const sdb::Plugin &plugin, QString &msg);
     static bool removePlugin(const sdb::Plugin &plugin);
 
     //###########

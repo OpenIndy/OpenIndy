@@ -4,26 +4,8 @@
  * \brief BundleParameterTableProxyModel::TrafoParamTableProxyModel
  * \param parent
  */
-BundleParameterTableProxyModel::BundleParameterTableProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent)
+BundleParameterTableProxyModel::BundleParameterTableProxyModel(QObject *parent) : QSortFilterProxyModel(parent), trafoParamTableColumnConfig(true)
 {
-}
-
-/*!
- * \brief TrafoParamTableProxyModel::getTrafoParamTableColumnConfig
- * \return
- */
-const TrafoParamTableColumnConfig &BundleParameterTableProxyModel::getTrafoParamTableColumnConfig() const{
-    return this->trafoParamTableColumnConfig;
-}
-
-/*!
- * \brief BundleParameterTableProxyModel::setTrafoParamTableColumnConfig
- * \param config
- */
-void BundleParameterTableProxyModel::setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config){
-    this->trafoParamTableColumnConfig = config;
-    this->invalidateFilter();
 }
 
 /*!
@@ -42,10 +24,7 @@ QModelIndex BundleParameterTableProxyModel::mapFromSource(const QModelIndex &sou
     //set up new column position (column sorting)
     int columnIndex = sourceIndex.column();
     int columnPosition = this->trafoParamTableColumnConfig.getColumnPosition((TrafoParamDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
-    //proxyIndex = this->createIndex(proxyIndex.row(), columnPosition);
     return this->index(proxyIndex.row(), columnPosition);
-
-    return proxyIndex;
 }
 
 /*!
@@ -77,8 +56,6 @@ QModelIndex BundleParameterTableProxyModel::mapToSource(const QModelIndex &proxy
     sourceIndex = this->createIndex(sourceIndex.row(), sourceColumn);
 
     return source_model->index(sourceIndex.row(), sourceColumn);
-
-    return sourceIndex;
 }
 
 /*!
@@ -144,21 +121,8 @@ bool BundleParameterTableProxyModel::filterAcceptsColumn(int source_column, cons
     }
 
     //check visibility of the attribute
-    if(this->trafoParamTableColumnConfig.getColumnVisibility((TrafoParamDisplayAttributes)attr)){
-        return true;
-    }
-    return false;
+    return this->trafoParamTableColumnConfig.getColumnVisibility((TrafoParamDisplayAttributes)attr);
 
-}
-
-/*!
- * \brief BundleParameterTableProxyModel::lessThan
- * \param left
- * \param right
- * \return
- */
-bool BundleParameterTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const{
-    return true;
 }
 
 /*!
@@ -168,9 +132,6 @@ bool BundleParameterTableProxyModel::lessThan(const QModelIndex &left, const QMo
  */
 bool BundleParameterTableProxyModel::isBundleStationTrafo(const QPointer<TrafoParam> &param) const
 {
-    if((param->getStartSystem()->getIsStationSystem() && param->getDestinationSystem()->getIsBundleSystem()) ||
-            (param->getStartSystem()->getIsBundleSystem() && param->getDestinationSystem()->getIsStationSystem())){
-        return true;
-    }
-    return false;
+    return (param->getStartSystem()->getIsStationSystem() && param->getDestinationSystem()->getIsBundleSystem())
+            || (param->getStartSystem()->getIsBundleSystem() && param->getDestinationSystem()->getIsStationSystem());
 }

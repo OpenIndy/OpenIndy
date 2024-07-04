@@ -120,7 +120,58 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
-                <widget class="QComboBox" name="comboBox_groups"/>
+                <widget class="QComboBox" name="comboBox_features">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>All Features</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Actuals</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Nominals</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBox_groups">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit_searchByFeatureName">
+                 <property name="minimumSize">
+                  <size>
+                   <width>150</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;search feature by name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;search feature by name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="placeholderText">
+                  <string>search feature by name</string>
+                 </property>
+                </widget>
                </item>
                <item>
                 <spacer name="horizontalSpacer_2">
@@ -328,8 +379,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="cmd_ok">
+       <property name="toolTip">
+        <string>Close dialog.</string>
+       </property>
        <property name="text">
-        <string>ok</string>
+        <string>Close</string>
        </property>
       </widget>
      </item>

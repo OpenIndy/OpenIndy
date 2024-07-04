@@ -6,6 +6,7 @@
 
 #include "oijob.h"
 #include "featuredifferencetablemodel.h"
+#include "featuresorter.h"
 
 using namespace oi;
 
@@ -26,6 +27,8 @@ public:
     const QPointer<OiJob> &getCurrentJob() const;
     void setCurrentJob(const QPointer<OiJob> &job);
 
+    void setSortingMode(FeatureSorter::SortingMode mode);
+
 signals:
 
     //#########################
@@ -39,6 +42,8 @@ protected:
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
     bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;
 
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+
 private:
 
     //###########
@@ -46,6 +51,8 @@ private:
     //###########
 
     QPointer<OiJob> job;
+
+    FeatureSorter sorter;
 
 };
 

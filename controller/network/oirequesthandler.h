@@ -160,6 +160,8 @@ private:
     //set up watch window data
     bool buildWatchWindowMessage(QDomElement &wwTag, const QVariantMap &streamData);
 
+    QDomElement toXML(const MeasurementConfig &config, const bool saved, QDomDocument &response);
+
 private slots:
 
     //##################################
@@ -178,6 +180,7 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+    ProjectExchanger projectExchanger;
 
     //job
     QPointer<OiJob> currentJob;

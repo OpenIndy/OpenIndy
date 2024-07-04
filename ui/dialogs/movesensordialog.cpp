@@ -37,10 +37,6 @@ void MoveSensorDialog::initGUI(){
     this->ui->lineEdit_x->setValidator(this->doubleValidator);
     this->ui->lineEdit_y->setValidator(this->doubleValidator);
     this->ui->lineEdit_z->setValidator(this->doubleValidator);
-
-    //set default reading type
-    this->ui->comboBox_typeOfReading->setCurrentText(getReadingTypeName(eCartesianReading));
-
 }
 
 /*!
@@ -53,6 +49,15 @@ void MoveSensorDialog::initModels(){
 
 }
 
+void MoveSensorDialog::showEvent(QShowEvent *event){
+
+    if(this->ui->comboBox_typeOfReading->currentIndex() < 0) {
+        this->ui->comboBox_typeOfReading->setCurrentText(getReadingTypeName(eCartesianReading));
+    }
+
+    event->accept();
+
+}
 /*!
  * \brief MoveSensorDialog::on_pushButton_move_clicked
  */
@@ -132,6 +137,8 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentIndexChanged(const QStri
         this->ui->label_y->setVisible(false);
         this->ui->label_z->setVisible(false);
 
+        this->ui->pushButton_move->setEnabled(true);
+
         break;
 
     case eCartesianReading:
@@ -149,6 +156,8 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentIndexChanged(const QStri
         this->ui->label_x->setVisible(true);
         this->ui->label_y->setVisible(true);
         this->ui->label_z->setVisible(true);
+
+        this->ui->pushButton_move->setEnabled(true);
 
         break;
 
@@ -168,28 +177,16 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentIndexChanged(const QStri
         this->ui->label_y->setVisible(false);
         this->ui->label_z->setVisible(false);
 
-        break;
-
-    case eDirectionReading:
-
-        //set visibility
-        this->ui->lineEdit_azimuth->setVisible(true);
-        this->ui->lineEdit_zenith->setVisible(true);
-        this->ui->lineEdit_distance->setVisible(false);
-        this->ui->lineEdit_x->setVisible(false);
-        this->ui->lineEdit_y->setVisible(false);
-        this->ui->lineEdit_z->setVisible(false);
-        this->ui->label_azimuth->setVisible(true);
-        this->ui->label_zenith->setVisible(true);
-        this->ui->label_distance->setVisible(false);
-        this->ui->label_x->setVisible(false);
-        this->ui->label_y->setVisible(false);
-        this->ui->label_z->setVisible(false);
+        this->ui->pushButton_move->setEnabled(true);
 
         break;
 
-    case eTemperatureReading:
-
+    case eDirectionReading:     // not implemented, fall through
+    case eTemperatureReading:   // not implemented, fall through
+    case eLevelReading:         // not implemented, fall through
+    case eCartesianReading6D:   // not implemented, fall through
+    case eUndefinedReading:     // fall through
+    default:                    // disable all
         //set visibility
         this->ui->lineEdit_azimuth->setVisible(false);
         this->ui->lineEdit_zenith->setVisible(false);
@@ -204,41 +201,7 @@ void MoveSensorDialog::on_comboBox_typeOfReading_currentIndexChanged(const QStri
         this->ui->label_y->setVisible(false);
         this->ui->label_z->setVisible(false);
 
-        break;
-
-    case eLevelReading:
-
-        //set visibility
-        this->ui->lineEdit_azimuth->setVisible(false);
-        this->ui->lineEdit_zenith->setVisible(false);
-        this->ui->lineEdit_distance->setVisible(false);
-        this->ui->lineEdit_x->setVisible(false);
-        this->ui->lineEdit_y->setVisible(false);
-        this->ui->lineEdit_z->setVisible(false);
-        this->ui->label_azimuth->setVisible(false);
-        this->ui->label_zenith->setVisible(false);
-        this->ui->label_distance->setVisible(false);
-        this->ui->label_x->setVisible(false);
-        this->ui->label_y->setVisible(false);
-        this->ui->label_z->setVisible(false);
-
-        break;
-
-    case eUndefinedReading:
-
-        //set visibility
-        this->ui->lineEdit_azimuth->setVisible(false);
-        this->ui->lineEdit_zenith->setVisible(false);
-        this->ui->lineEdit_distance->setVisible(false);
-        this->ui->lineEdit_x->setVisible(false);
-        this->ui->lineEdit_y->setVisible(false);
-        this->ui->lineEdit_z->setVisible(false);
-        this->ui->label_azimuth->setVisible(false);
-        this->ui->label_zenith->setVisible(false);
-        this->ui->label_distance->setVisible(true);
-        this->ui->label_x->setVisible(false);
-        this->ui->label_y->setVisible(false);
-        this->ui->label_z->setVisible(false);
+        this->ui->pushButton_move->setEnabled(false);
 
         break;
 

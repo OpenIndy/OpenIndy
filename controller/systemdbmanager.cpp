@@ -11,9 +11,10 @@ QThreadStorage<QMap<QString, sdb::Plugin> > SystemDbManager::caches;
  * \brief SystemDbManager::addPlugin
  * Saves an OpenIndy plugin in the system database
  * \param plugin
- * \return
+ * \param msg
+ * \return success
  */
-bool SystemDbManager::addPlugin(const sdb::Plugin &plugin){
+bool SystemDbManager::addPlugin(const sdb::Plugin &plugin, QString &msg){
 
     if(!SystemDbManager::isInit){ SystemDbManager::init(); }
     if(SystemDbManager::connect()){
@@ -49,13 +50,14 @@ bool SystemDbManager::addPlugin(const sdb::Plugin &plugin){
             }
 
             if(!SystemDbManager::db.commit()){
+                msg = QString("Commit failed: %1.").arg(SystemDbManager::db.lastError().text());
                 SystemDbManager::db.rollback();
                 SystemDbManager::disconnect();
                 return false;
             }
 
         }else{
-            Console::getInstance()->addLine( QString("Database error: %1").arg(SystemDbManager::db.lastError().text()), eCriticalMessage );
+            msg = QString("Database error: %1.").arg(SystemDbManager::db.lastError().text());
             SystemDbManager::disconnect();
             return false;
         }
@@ -64,7 +66,7 @@ bool SystemDbManager::addPlugin(const sdb::Plugin &plugin){
         return true;
 
     }
-
+    msg = QString("Database not connected: %1.").arg(SystemDbManager::db.lastError().text());
     return false;
 
 }
@@ -1502,6 +1504,52 @@ bool SystemDbManager::setDefaultSensorConfig(const QString &name){
 
 }
 
+void SystemDbManager::initInMemoryDB(const QStringList initStatements) {
+
+    if(!SystemDbManager::isInit) {
+        SystemDbManager::db = QSqlDatabase::addDatabase("QSQLITE", "inMemory");
+
+        SystemDbManager::db.setDatabaseName(":memory:");
+
+        if (!SystemDbManager::db.open()) {
+            qFatal("unexpected: cannot connect database");
+        }
+
+        if(!initStatements.isEmpty()) {
+            if (!SystemDbManager::db.transaction()) {
+                qFatal("unexpected: cannot create transaction");
+            }
+            QSqlQuery query(SystemDbManager::db);
+
+            foreach (QString statment, initStatements) {
+                if (statment.trimmed().isEmpty()) {
+                    continue;
+                }
+                if (!query.exec(statment)) {
+                    qFatal(QString("unexpected: " + query.lastError().text()).toLocal8Bit());
+                }
+                query.finish();
+
+            }
+
+            if (!SystemDbManager::db.commit()) {
+                qFatal("unexpected: commit failed");
+            }
+        }
+
+        QSqlQuery query(SystemDbManager::db);
+        if (!query.exec("select * from plugin")) {
+            qFatal(QString("unexpected: " + query.lastError().text()).toLocal8Bit());
+        }
+        SystemDbManager::disconnect();
+        if (!query.exec("select * from plugin")) {
+            qFatal(QString("unexpected: " + query.lastError().text()).toLocal8Bit());
+        }
+
+        SystemDbManager::isInit = true;
+    }
+}
+
 /*!
  * \brief SystemDbManager::init
  */
@@ -1536,7 +1584,7 @@ bool SystemDbManager::connect(){
 
     QFileInfo checkFile(SystemDbManager::db.databaseName());
 
-    if(checkFile.isFile()){
+    if(SystemDbManager::db.connectionName() != "inMemory" || checkFile.isFile()){
         SystemDbManager::db.open();
     }
     return SystemDbManager::db.isOpen();
@@ -1547,7 +1595,7 @@ bool SystemDbManager::connect(){
  * \brief SystemDbManager::disconnect
  */
 void SystemDbManager::disconnect(){
-    if(SystemDbManager::db.isOpen()){
+    if(SystemDbManager::db.isOpen() && SystemDbManager::db.connectionName() != "inMemory"){
         SystemDbManager::db.close();
     }
 }
@@ -1739,27 +1787,40 @@ int SystemDbManager::getLastId(const QString &table){
 
 /*!
  * \brief SystemDbManager::getElementIds
- * Returns a list of the element id's
+ * Returns a list of the element id's and inserts element names if they not exisits
  * \param elements
  * \return
  */
 QList<int> SystemDbManager::getElementIds(const QStringList &elements){
 
     QList<int> result;
-    if(elements.length() > 0){
-        QString query = QString("SELECT id FROM element WHERE element_type = '%1'").arg(elements.at(0));
-        for(int i = 1; i < elements.length(); i++){
-            query.append( QString(" OR element_type = '%1'").arg(elements.at(i)) );
-        }
+    QString selectStatement = QString("SELECT id FROM element WHERE element_type = '%1'");
+    QString insertStatement = QString("INSERT INTO element (element_type) values ('%1')");
+    for(QString name : elements) {
+        QString selectQuery = selectStatement.arg(name);
         QSqlQuery command(SystemDbManager::db);
-        command.exec(query);
-        while(command.next()){
+        command.exec(selectQuery);
+        if(command.next()) { // entry found
             QVariant val = command.value(0);
             if(val.isValid()){
                 result.append(val.toInt());
             }
+        } else {
+            QString insertQuery = insertStatement.arg(name);
+            // QSqlQuery command(SystemDbManager::db);
+            command.exec(insertQuery);
+
+            command.exec(selectQuery);
+            if(command.next()) { // entry found
+                QVariant val = command.value(0);
+                if(val.isValid()){
+                    result.append(val.toInt());
+                }
+            }
+
         }
     }
+
     return result;
 
 }

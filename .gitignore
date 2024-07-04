@@ -30,6 +30,9 @@ Makefile
 
 dist
 build/*_resource.rc
+appui/*_resource.rc
 
 **/debug/
 **/release/
+
+install

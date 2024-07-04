@@ -5,6 +5,7 @@
 #include <QString>
 #include <QCoreApplication>
 #include "types.h"
+#include "parameterdisplayconfig.h"
 
 class ProjectConfig
 {
@@ -41,6 +42,7 @@ public:
     static void setAutoSaveInterval(int value);
 
     static QList<oi::FeatureDisplayAttributes> getDisplayColumns();
+    static ParameterDisplayConfig getParameterDisplayConfig();
 
     //********************************************
     //save and load functions for all config files

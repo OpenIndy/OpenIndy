@@ -2,15 +2,24 @@ CONFIG += c++11
 
 TEMPLATE = subdirs
 
-CONFIG += ordered
 SUBDIRS = \
     core \
     app \
+    appui \
     test
 
 # project locations
-app.subdir = $$PWD/build
-core.subdir = $$PWD/lib/OpenIndy-Core
+app.subdir = build
+appui.subdir = appui
+core.subdir = lib/OpenIndy-Core
+test.subdir = test
 
 # project dependencies
-app.depends = core
+appui.depends = core
+app.depends = appui
+test.depends = app
+
+QMAKE_EXTRA_TARGETS += run-test
+run-test.commands = \
+    cd $$test.subdir && $(MAKE) run-test
+#

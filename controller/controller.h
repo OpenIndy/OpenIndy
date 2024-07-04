@@ -27,22 +27,31 @@
 #include "featureupdater.h"
 #include "projectexchanger.h"
 #include "pluginloader.h"
+#ifdef OI_WEBSOCKETSERVER_ENABLED
 #include "oiwebsocketserver.h"
+#endif
 #include "projectconfig.h"
-#include "stablepointlogic.h"
+#include "controllersensoractions.h"
 
 using namespace oi;
+
+struct StationStatusData {
+    QVariant id;
+    QString name;
+};
 
 /*!
  * \brief The Controller class
  */
-class Controller : public QObject
+class Controller : public QObject, public ControllerSensorActions
 {
     Q_OBJECT
 
 public:
     explicit Controller(QObject *parent = 0);
     ~Controller();
+
+    void init();
 
 public:
 
@@ -56,10 +65,12 @@ public:
 
     void _startMeasurement(bool dummyPoint);
 
-    void stopStablePointMeasurement(); // TODO OI-496: signal / slot?
-    void startStablePointMeasurement();// TODO OI-496: signal / slot?
+    bool isStationBundled(int id);
 
-    bool activeFeatureUseStablePointMeasurement(); // TODO OI-496: private ?
+    QList<QJsonObject> loadBundleTemplates();
+
+private slots:
+    void startAimAndMeasure();
 
 public slots:
 
@@ -93,6 +104,7 @@ public slots:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //import or export features
     void importNominals(const ExchangeParams &params);
@@ -118,11 +130,11 @@ public slots:
     void removeBundleSystem(const int &id);
 
     //load or calculate bundle
-    QJsonObject getBundleTemplate(const int &bundleId);
-    QPointer<BundleAdjustment> getBundleAdjustment(const int &bundleId);
-    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
-    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
-    void runBundle(const int &bundleId);
+    QJsonObject getBundleTemplate();
+    QPointer<BundleAdjustment> getBundleAdjustment();
+    void updateBundleAdjustment(const QJsonObject &param);
+    void loadBundleTemplate(const QJsonObject &bundleTemplate);
+    void runBundle();
 
     //save or load a job
     void saveProject();
@@ -136,7 +148,6 @@ public slots:
     void startMeasurement();
     void startMove(const Reading &reading);
     void startAim();
-    void startAimAndMeasure();
     void startToggleSight();
     void startInitialize();
     void startHome();
@@ -146,6 +157,7 @@ public slots:
     void startReadingStream(ReadingTypes streamFormat);
     void stopReadingStream();
     void finishMeasurement();
+    void startSearch();
 
     //log messages to the specified destination
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest);
@@ -156,7 +168,13 @@ public slots:
     //show tool widget
     void showToolWidget(const QString &pluginName, const QString &toolName);
 
+    void createTemplateFromJob();
+
+    void createNewStation();
+
 signals:
+
+    void stationStatus(const StationStatusData &status);
 
     void sensorStatus(const SensorStatus &status, const QString &msg);
 
@@ -246,8 +264,8 @@ signals:
     //##############
 
     //sensor actions
-    void sensorActionStarted(const QString &name, const bool enableFinishButton = false);
-    void sensorActionFinished(const bool &success, const QString &msg);
+    void sensorActionStarted(const QString &name, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
+    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
     void measurementCompleted();
     void measurementDone(bool success);
 
@@ -256,7 +274,7 @@ signals:
     //#############
 
     //messaging
-    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showClientMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
@@ -278,8 +296,10 @@ signals:
     //##############################
 
     //start and stop server
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     void startWebSocketServer();
     void stopWebSocketServer();
+#endif
 
     //error create trafo Param
     void requestMessageBoxTrafoParam();
@@ -312,14 +332,18 @@ private:
     void initDisplayConfigs();
     void initConfigManager();
     void initToolPlugins();
+    void initDefaults();
 
     //register meta types
     void registerMetaTypes();
 
     //start or stop OpenIndy server
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     void initServer();
     void startServer();
     void stopServer();
+    void connectRequestHandler();
+#endif
 
     //create feature helpers
     bool createActualFromNominal(const QPointer<Geometry> &geometry);
@@ -333,7 +357,6 @@ private:
     //connect helper objects
     void connectDataExchanger();
     void connectFeatureUpdater();
-    void connectRequestHandler();
 
     //connect tools
     void connectToolPlugin(const QPointer<Tool> &tool);
@@ -355,13 +378,16 @@ private:
     //config manager
     QPointer<SensorConfigurationManager> sensorConfigManager;
     QPointer<MeasurementConfigManager> measurementConfigManager;
+    ProjectExchanger projectExchanger;
 
+#ifdef OI_WEBSOCKETSERVER_ENABLED
     //thread and server instance
     QThread serverThread;
     QPointer<OiWebSocketServer> webSocketServer;
 
     //request handler for web socket requests
     OiRequestHandler requestHandler;
+#endif
 
     //tool plugins
     QList<QPointer<Tool> > toolPlugins;
@@ -370,7 +396,9 @@ private:
     QMutex saveProjectMutex;
 
     QPointer<Station> getConnectedActiveStation();
-    QPointer<StablePointLogic> stablePointLogic;
+
+    QPointer<QThread> sensorWorkerThread;
+    QPointer<Station> getActiveStation();
 
 };
 

@@ -14,6 +14,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->connectController();
     this->connectStatusBar();
 
+    // before create job
+    this->initStatusBar();
+    this->control.init();
+
+
     //create default job
     QPointer<OiJob> job = this->control.createDefaultJob();
     this->createFeatureDialog.setCurrentJob(job);
@@ -26,13 +31,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->initSensorPad();
     this->initToolMenus();
     this->initFilterComboBoxes();
-    this->initStatusBar();
     this->initBundleView();
+    this->initFilterToolBar();
 
     //connect bundle view
     this->connectBundleView();
 
     QObject::connect(&this->clipBoardUtil, &ClipBoardUtil::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
+
+    QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::measurementsFinished, this, &MainWindow::measureBehaviorLogicFinished, Qt::AutoConnection);
+    QObject::connect(&this->measureBehaviorLogic, &MeasureBehaviorLogic::closeAllSensorTaskDialogs, this, &MainWindow::closeAllSensorTaskDialogs, Qt::AutoConnection);
 
     //initially resize table view to fit the default job
     this->resizeTableView();
@@ -46,12 +54,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->dockWidget_differences->setMaximumWidth(600);
 
     this->resizeTableView();
-
-    //load default bundle plugin
-    if(job->getBundleSystemList().size() >0){
-        int bundleID = job->getBundleSystemList().at(0)->getId();
-        this->loadDefaultBundlePlugIn(bundleID);
-    }
 
     this->startAutoSave();
 
@@ -222,32 +224,10 @@ void MainWindow::coordSystemSetChanged(){
 }
 
 /*!
- * \brief MainWindow::stationSetChanged
- */
-void MainWindow::stationSetChanged(){
-
-}
-
-/*!
- * \brief MainWindow::trafoParamSetChanged
- */
-void MainWindow::trafoParamSetChanged(){
-
-    //activate trafo param tab
-    this->ui->tabWidget_views->setCurrentWidget(this->ui->tab_trafoParam);
-
-}
-
-/*!
  * \brief MainWindow::availableGroupsChanged
  */
 void MainWindow::availableGroupsChanged(){
     this->updateGroupFilterSize();
-}
-
-void MainWindow::activeGroupChanged()
-{
-
 }
 
 /*!
@@ -358,10 +338,28 @@ void MainWindow::currentJobChanged(){
  * \brief MainWindow::sensorActionStarted
  * \param name
  */
-void MainWindow::sensorActionStarted(const QString &name, const bool enableFinishButton){
-    this->sensorTaskInfoDialog.setDisplayMessage(name);
-    this->sensorTaskInfoDialog.enableFinishButton(enableFinishButton);
-    showCentered(this->sensorTaskInfoDialog);
+void MainWindow::sensorActionStarted(const QString &msg, const SensorAction sensorAction, const bool enableFinishButton){
+    this->showStatusSensor(SensorStatus::eSensorActionInProgress, msg);
+
+    QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
+    if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.value(sensorAction);
+    } else {
+        sensorTaskInfoDialog = new SensorTaskInfoDialog(); // create dialog if not exits
+        this->sensorTaskInfoDialogs.insert(sensorAction, sensorTaskInfoDialog);
+    }
+    sensorTaskInfoDialog->setDisplayMessage(msg);
+
+    sensorTaskInfoDialog->enableFinishButton(enableFinishButton);
+    if(enableFinishButton) {
+        // connect SensorTaskInfo dialog
+        QObject::connect(sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
+    }
+    if(sensorTaskInfoDialog->isVisible()){
+        sensorTaskInfoDialog->repaint();
+    } else {
+        showCentered(*(sensorTaskInfoDialog.data()));
+    }
 }
 
 /*!
@@ -369,10 +367,38 @@ void MainWindow::sensorActionStarted(const QString &name, const bool enableFinis
  * \param success
  * \param msg
  */
-void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
-    this->sensorTaskInfoDialog.enableFinishButton(false);
-    this->sensorTaskInfoDialog.close();
-    emit this->log(msg, eInformationMessage, eConsoleMessage);
+void MainWindow::sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction){
+    this->showStatusSensor(SensorStatus::eClearStatus, "");
+
+    QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog;
+
+    if(sensorAction == SensorAction::eSensorActionAll) {
+        closeAllSensorTaskDialogs();
+        return;
+    }
+
+    if(this->sensorTaskInfoDialogs.contains(sensorAction)) {
+        sensorTaskInfoDialog = this->sensorTaskInfoDialogs.take(sensorAction);
+        sensorTaskInfoDialog->close();
+        // reuse dialog delete sensorTaskInfoDialog.data();
+
+        emit this->log(msg,
+                       success ? eInformationMessage : eErrorMessage,
+                       success ? eConsoleMessage     : eMessageBoxMessage);
+    }
+}
+
+void  MainWindow::closeAllSensorTaskDialogs() {
+    this->showStatusSensor(SensorStatus::eClearStatus, "");
+
+    SensorAction sensorAction;
+    foreach(sensorAction, this->sensorTaskInfoDialogs.keys()) {
+        QPointer<SensorTaskInfoDialog> sensorTaskInfoDialog = sensorTaskInfoDialogs.value(sensorAction);
+        sensorTaskInfoDialog->close();
+        // reuse dialog delete sensorTaskInfoDialog.data();
+    }
+    this->sensorTaskInfoDialogs.clear();
+
 }
 
 /*!
@@ -380,29 +406,6 @@ void MainWindow::sensorActionFinished(const bool &success, const QString &msg){
  * Called whenever a measurement task was successfully completed
  */
 void MainWindow::measurementCompleted(){
-
-    //get feature table models
-    FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
-    if(model == NULL){
-        return;
-    }
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel*>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //get current job
-    QPointer<OiJob> job = sourceModel->getCurrentJob();
-    if(job.isNull()){
-        return;
-    }
-
-    //check wether there are more features left, that shall be aimed and measured
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
-    }
 
 }
 
@@ -412,6 +415,7 @@ void MainWindow::measurementCompleted(){
  */
 void MainWindow::measurementDone(bool success)
 {
+    #if ENABLE_SOUND
     if(ModelManager::getParameterDisplayConfig().getUseSounds()){
         if(success){
             QSound::play(":/sounds/measure_success.wav");
@@ -419,7 +423,7 @@ void MainWindow::measurementDone(bool success)
             QSound::play(":/sounds/measure_fail.wav");
         }
     }
-    return;
+    #endif
 }
 
 /*!
@@ -427,29 +431,35 @@ void MainWindow::measurementDone(bool success)
  * \param msg
  * \param msgType
  */
-void MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+int MainWindow::showMessageBox(const QString &msg, const MessageTypes &msgType){
+    QMessageBox commonMessageBox;
 
-    QMessageBox msgBox;
+    commonMessageBox.setModal(false);
+    commonMessageBox.setStandardButtons(QMessageBox::Ok);
+    commonMessageBox.setText(msg);
 
     switch(msgType){
     case eInformationMessage:
-        msgBox.setIcon(QMessageBox::Information);
+        commonMessageBox.setIcon(QMessageBox::Information);
         break;
     case eWarningMessage:
-        msgBox.setIcon(QMessageBox::Warning);
+        commonMessageBox.setIcon(QMessageBox::Warning);
         break;
     case eErrorMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
         break;
     case eCriticalMessage:
-        msgBox.setIcon(QMessageBox::Critical);
+        commonMessageBox.setIcon(QMessageBox::Critical);
+        break;
+    case eQuestionMessage:
+        commonMessageBox.setIcon(QMessageBox::Question);
+        commonMessageBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+        commonMessageBox.setDefaultButton(QMessageBox::No);
+        commonMessageBox.setModal(true);
         break;
     }
 
-    msgBox.setText(msg);
-    msgBox.setStandardButtons(QMessageBox::Ok);
-
-    msgBox.exec();
+    return commonMessageBox.exec();
 
 }
 
@@ -491,19 +501,12 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     case Qt::Key_F3: //measure
         if(e->modifiers() == Qt::AltModifier){ //aim and measure one or more features
             this->aimAndMeasureFeatures();
-        }else if(control.activeFeatureUseStablePointMeasurement()) {
-            this->label_statusStablePointMeasurement->setText("stable point");
-            this->control.startStablePointMeasurement();
         }else{ //normal measurement
             this->control._startMeasurement(false);
         }
         break;
     case Qt::Key_F5: // measure as dummy point
             this->control._startMeasurement(true);
-        break;
-    case Qt::Key_Escape: // stop or terminate all running actions
-        this->label_statusStablePointMeasurement->setText("");
-        this->control.stopStablePointMeasurement();
         break;
 
     case Qt::Key_A: //aim
@@ -737,10 +740,8 @@ void MainWindow::tableViewFeaturesSelectionChangedByKeyboard(const QModelIndex &
  * \param pos
  */
 void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &pos){
-
     //create menu and add delete action
     QMenu *menu = new QMenu();
-    menu->addAction(QIcon(":/Images/icons/edit_remove.png"), QString("delete selected feature(s)"), this, SLOT(deleteFeatures(bool)));
 
     //get feature table models
     FeatureTableProxyModel *model = static_cast<FeatureTableProxyModel*>(this->ui->tableView_features->model());
@@ -753,6 +754,10 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         delete menu;
         return;
     }
+
+    QItemSelectionModel *selectionModel = this->ui->tableView_features->selectionModel();
+    QModelIndexList selection = selectionModel->selectedIndexes();;
+    const bool multipleFeaturesSelected = selection.size() > 1;
 
     //get the selected index (where the right click was done)
     QModelIndex selectedIndex = this->ui->tableView_features->indexAt(pos);
@@ -770,49 +775,120 @@ void MainWindow::on_tableView_features_customContextMenuRequested(const QPoint &
         return;
     }
 
+    QString featureName = selectedFeature->getFeature()->getFeatureName();
+    QString labelSuffix = multipleFeaturesSelected ? "ALL selected features" : featureName;
+
+    const bool isStation = !selectedFeature->getStation().isNull();
+    const bool isGeometry = !selectedFeature->getGeometry().isNull();
+    const bool showEnableDisableMenuEntries =
+                (isGeometry && !selectedFeature->getGeometry()->getObservations().isEmpty())
+                || isStation;
+
     //if the selected feature is the active feature
     if(selectedFeature->getFeature()->getIsActiveFeature()){
 
-        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
-            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        if(isGeometry){
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"),
+                            QString("set function for %1").arg(featureName),
                             this, SLOT(on_actionSet_function_triggered()));
-        }
-        if(selectedFeature->getStation().isNull() && selectedFeature->getCoordinateSystem().isNull()){
-            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"), QString("edit measurement config for %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/Measurement Config.png"),
+                            QString("edit measurement config for %1").arg(featureName),
                             this, SLOT(on_actionMeasurement_Configuration_triggered()));
         }
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+
+        menu->addAction(QIcon(":/Images/icons/info_schwarz.PNG"),
+                        QString("show properties of %1").arg(featureName),
                         this, SLOT(showFeatureProperties(bool)));
 
-        // TODO show if feature has observations
-        menu->addAction(QIcon(), QString("enable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(enableObservationsOfActiveFeature()));
-        // TODO show if feature has observations
-        menu->addAction(QIcon(), QString("disable all observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                        this, SLOT(disableObservationsOfActiveFeature()));
-
-        menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/icons/icons/toolbars/standard/recalc.png"),
+                        QString("recalc %1").arg(featureName),
                         &this->control, SLOT(recalcActiveFeature()));
 
-        //if the active feature is a geometry
-        if(!selectedFeature->getGeometry().isNull()){
+        if(showEnableDisableMenuEntries) {
+            menu->addAction(QIcon(":/Images/icons/obs_enable.png"),
+                            QString("enable all observations of %1").arg(featureName),
+                            this, SLOT(enableObservationsOfActiveFeature()));
 
-            menu->addAction(QIcon(":/Images/icons/cancel.png"), QString("remove observations of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                                 this, SLOT(removeObservationOfActiveFeature()));
-            menu->addAction(QIcon(""), QString("aim to feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
-                            &this->control, SLOT(startAim()));
+            menu->addAction(QIcon(":/Images/icons/obs_disable.png"),
+                            QString("disable all observations of %1").arg(featureName),
+                            this, SLOT(disableObservationsOfActiveFeature()));
         }
+        //if the active feature is a geometry
+        if(isGeometry){
 
-        if(!selectedFeature->getStation().isNull()){
+            if(showEnableDisableMenuEntries) {
+                menu->addAction(QIcon(":/Images/icons/cancel.png"),
+                                QString("remove observations of %1").arg(featureName),
+                                this, SLOT(removeObservationOfActiveFeature()));
+            }
 
-            menu->addAction(QString("activate station %1").arg(selectedFeature->getFeature()->getFeatureName()),
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/aim.png"),
+                            QString("aim to feature %1").arg(featureName),
+                            &this->control, SLOT(startAim()));
+        } else if(isStation){
+
+            menu->addAction(QIcon(":/icons/icons/toolbars/standard/activate station.png"),
+                        QString("activate station %1").arg(featureName),
                             this, SLOT(on_actionActivate_station_triggered()));
         }
 
     }
 
+    QList<int> ids;
+    if(multipleFeaturesSelected) {
+        for(QModelIndex idx : selection) {
+            ids.append(sourceModel->getFeatureIdAtIndex(model->mapToSource(idx)));
+        }
+
+        menu->addSeparator();
+
+        QAction *enableObservationssAction = menu->addAction(
+                    QIcon(":/Images/icons/obs_enable.png"),
+                    QString("enable all observations of %1").arg(labelSuffix));
+        connect(enableObservationssAction, &QAction::triggered,
+                        this, [=]() {
+                            for(int id : ids) {
+                                emit this->enableObservations(id);
+                            }
+                        });
+
+        QAction *disableObservationsAction = menu->addAction(
+                    QIcon(":/Images/icons/obs_disable.png"),
+                    QString("disable all observations of %1").arg(labelSuffix));
+        connect(disableObservationsAction, &QAction::triggered,
+                        this, [=]() {
+                            for(int id : ids) {
+                                emit this->disableObservations(id);
+                            }
+                        });
+
+        QAction *removeObservationsAction = menu->addAction(QIcon(":/Images/icons/cancel.png"),
+                        QString("remove observations of %1").arg(labelSuffix));
+        connect(removeObservationsAction, &QAction::triggered,
+                        this, [=]() {
+                            QMessageBox msgBox;
+                            msgBox.setText(QString("Remove observations of %1?").arg(labelSuffix));
+                            msgBox.setInformativeText("");
+                            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                            msgBox.setDefaultButton(QMessageBox::Yes);
+                            switch (msgBox.exec()) {
+                            case QMessageBox::Yes:
+                                for(int id : ids) {
+                                    emit this->removeObservations(id);
+                                }
+                              break;
+                            }
+                        });
+    }
+
+    menu->addSeparator();
+    menu->addAction(QIcon(":/Images/icons/edit_remove.png"),
+                    QString("delete %1").arg(labelSuffix),
+                    this, SLOT(deleteFeatures(bool)));
+
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
+    delete menu;
 }
 
 /*!
@@ -931,7 +1007,7 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
             menu->addAction(QIcon(":/icons/icons/toolbars/standard/function.png"), QString("set function for %1").arg(selectedFeature->getFeature()->getFeatureName()),
                             this, SLOT(on_actionSet_function_triggered()));
         }
-        menu->addAction(QIcon(":/Images/icons/info.png"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
+        menu->addAction(QIcon(":/Images/icons/info_schwarz.PNG"), QString("show properties of feature %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         this, SLOT(showFeatureProperties(bool)));
         menu->addAction(QIcon(":/Images/icons/button_ok.png"), QString("recalc %1").arg(selectedFeature->getFeature()->getFeatureName()),
                         &this->control, SLOT(recalcActiveFeature()));
@@ -940,18 +1016,6 @@ void MainWindow::on_tableView_trafoParams_customContextMenuRequested(const QPoin
 
     menu->exec(this->ui->tableView_features->mapToGlobal(pos));
 
-}
-
-/*!
- * \brief MainWindow::tableViewBundleParamsSelectionChangedByKeyboard
- * \param selected
- * \param deselected
- */
-void MainWindow::tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected)
-{
-    if(selected.isValid() && deselected.isValid()){
-        this->on_tableView_bundleParameter_clicked(selected);
-    }
 }
 
 /*!
@@ -1230,6 +1294,10 @@ void MainWindow::on_actionSave_as_triggered(){
     this->saveProjectAs();
 }
 
+void MainWindow::on_actionSave_as_template_triggered(){
+    this->saveProjectAs(true);
+}
+
 /*!
  * \brief MainWindow::on_actionClose_triggered
  */
@@ -1280,7 +1348,11 @@ void MainWindow::on_actionMeasurement_Configuration_triggered(){
     //check if there is an active feature and pass its config to the measurement config dialog
     QPointer<FeatureWrapper> activeFeature = model.getActiveFeature();
     if(!activeFeature.isNull() && !activeFeature->getGeometry().isNull()){
-        this->measurementConfigDialog.setMeasurementConfiguration(activeFeature->getGeometry()->getMeasurementConfig());
+        this->measurementConfigDialog.setMeasurementConfiguration(
+                    ModelManager::getMeasurementConfigManager()->getConfig(
+                        activeFeature->getGeometry()->getMeasurementConfig()
+                        )
+                    );
     }else{
         this->measurementConfigDialog.setMeasurementConfiguration(MeasurementConfig());
     }
@@ -1359,22 +1431,6 @@ void MainWindow::resizeTableView(){
 }
 
 /*!
- * \brief MainWindow::on_actionRemoveObservations_triggered
- */
-void MainWindow::on_actionRemoveObservations_triggered(){
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("clear observations");
-    msgBox.setText("This action will clear all observations.");
-    msgBox.setInformativeText("Continue?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setDefaultButton(QMessageBox::No);
-
-    if(msgBox.exec() == QMessageBox::Yes){
-      emit this->removeAllObservations();
-    }
-}
-
-/*!
  * \brief MainWindow::removeObservationOfActiveFeature
  */
 void MainWindow::removeObservationOfActiveFeature(){
@@ -1420,93 +1476,6 @@ void MainWindow::on_actionAbout_OpenIndy_triggered(){
  */
 void MainWindow::on_actionShow_Licenses_triggered(){
     showCentered(this->showLicensesDialog);
-}
-/*!
- * \brief MainWindow::on_pushButton_addBundle_clicked
- */
-void MainWindow::on_pushButton_addBundle_clicked(){
-    emit this->addBundleSystem();
-}
-
-/*!
- * \brief MainWindow::on_pushButton_removeBundle_clicked
- */
-void MainWindow::on_pushButton_removeBundle_clicked(){
-
-    //get selected bundle system
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        return;
-    }
-    QModelIndex index = selection.at(0);
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //remove bundle system
-    emit this->removeBundleSystem(id);
-
-}
-
-/*!
- * \brief MainWindow::on_action_RunBundle_triggered
- */
-void MainWindow::on_action_RunBundle_triggered(){
-
-    //get selected bundle system
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    if(selection.size() != 1){
-        return;
-    }
-    QModelIndex index = selection.at(0);
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //get selected bundle parameters
-    //TODO zu verwendende stations ermitteln
-    //TODO zu schätzende Parameter je station ermitteln
-
-    //calculate bundle
-    emit this->runBundle(id);
-
-}
-
-/*!
- * \brief MainWindow::on_pushButton_loadBundleTemplate_clicked
- */
-void MainWindow::on_pushButton_loadBundleTemplate_clicked(){
-
-    //get selected bundle system
-    QModelIndexList bundleSelection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-    if(bundleSelection.size() != 1){
-        return;
-    }
-    QModelIndex index = bundleSelection.at(0);
-
-    //get system id
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
-    //get selected bundle template
-    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
-    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
-    if(bundleTemplate.isEmpty()){
-        return;
-    }
-
-    //load template
-    emit this->loadBundleTemplate(id, bundleTemplate);
-    this->bundleSelectionChanged();
-
 }
 
 /*!
@@ -1611,23 +1580,21 @@ void MainWindow::aimAndMeasureFeatures(){
         return;
     }
 
-    //get selected features
-    this->measureFeatures.clear();
+    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
+    QList<int> measureFeatures;
     QModelIndexList selection = this->ui->tableView_features->selectionModel()->selectedIndexes();
     foreach(const QModelIndex &index, selection){
         int id = sourceModel->getFeatureIdAtIndex(model->mapToSource(index));
-        if(id >= 0 && !this->measureFeatures.contains(id)){
-            this->measureFeatures.append(id);
+        if(id >= 0 && !measureFeatures.contains(id)){
+            measureFeatures.append(id);
         }
     }
 
-    //aim and measure the first feature in the list of selected features
-    if(this->measureFeatures.size() > 0){
-        sourceModel->setActiveFeature(this->measureFeatures[0]);
-        this->measureFeatures.removeAt(0);
-        this->control.startAimAndMeasure();
+    this->measureBehaviorLogicStarted();
+    this->measureBehaviorLogic.init(&control, measureFeatures, sourceModel);
+    if(this->measureBehaviorLogic.next()) {
+        this->measureBehaviorLogic.measure();
     }
-
 }
 
 /*!
@@ -1716,17 +1683,29 @@ void MainWindow::copyToClipboard(){
     //init variables
     QPointer<QAbstractItemModel> model = NULL;
     QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
+    bool isMeasurementConfigColumnSelected = false;
 
     //get selection of the active table view
+    // keep order of if statments
     if(this->ui->dockWidget_differences->underMouse()){ //check if the differences dock widget is under the mouse cursor to copy from this table view
         model = this->ui->tableView_FeatureDifferences->model();
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
-    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
+    }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view: copy displayed values or feature id !
         model = this->ui->tableView_features->model();
         selectionModel = this->ui->tableView_features->selectionModel();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayFunctions == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
+        isMeasurementConfigColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eFeatureDisplayMeasurementConfig == ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
         model = this->ui->tableView_trafoParams->model();
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
+        isFunctionColumnSelected = !selectionModel.isNull()
+                && selectionModel->selectedIndexes().size() == 1
+                && eTrafoParamDisplayFunctions == ModelManager::getTrafoParamTableColumnConfig().getDisplayAttributeAt(selectionModel->selectedIndexes().first().column());
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ // bundle param table view
         model = this->ui->tableView_bundleParameter->model();
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
@@ -1735,7 +1714,25 @@ void MainWindow::copyToClipboard(){
         selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
     }
 
-    clipBoardUtil.copyToClipBoard(model, selectionModel);
+    if(isFunctionColumnSelected) {
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy function","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy function");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
+
+    } else if(isMeasurementConfigColumnSelected) {
+        // copy JSON to clipboard make this copy and paste action clearer: {"action":"copy measurement config","id":8,"type":"feature"}
+        QJsonObject object;
+        object.insert("type", "feature");
+        object.insert("id", this->control.getActiveFeature()->getFeature()->getId());
+        object.insert("action", "copy measurement config");
+        clipBoardUtil.copyToClipBoard(QJsonDocument(object).toJson(QJsonDocument::Compact));
+
+    } else { // common case: copy displayed values
+        clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
+    }
 
 }
 
@@ -1751,109 +1748,117 @@ void MainWindow::copyDifferencesToClipboard()
     model = this->ui->tableView_FeatureDifferences->model();
     selectionModel = this->ui->tableView_FeatureDifferences->selectionModel();
 
-    clipBoardUtil.copyToClipBoard(model, selectionModel);
+    clipBoardUtil.copySelectionAsCsvToClipBoard(model, selectionModel);
 }
 
 /*!
  * \brief MainWindow::pasteFromClipboard
  */
 void MainWindow::pasteFromClipboard(){
+    enum ProxyModelType {
+        eFeatureTable,
+        eTrafoParamTable,
+        eBundleParameterTable
+    };
 
     //init variables
-    QSortFilterProxyModel *model = NULL;
-    QItemSelectionModel *selectionModel = NULL;
-    QModelIndexList selection;
+    QPointer<QSortFilterProxyModel> model = NULL;
+    QPointer<QItemSelectionModel> selectionModel = NULL;
+    bool isFunctionColumnSelected = false;
 
+    ProxyModelType proxyModelType;
     //get models depending on the current tab view
     if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){ //feature table view
-
         model = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_features->selectionModel();
-
+        proxyModelType = ProxyModelType::eFeatureTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_trafoParam){ //trafo param table view
-
         model = static_cast<TrafoParamTableProxyModel *>(this->ui->tableView_trafoParams->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_trafoParams->selectionModel();
-
+        proxyModelType = ProxyModelType::eTrafoParamTable;
     }else if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_bundle){ //bundle param table view
-
         model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-        if(model == NULL){
-            return;
-        }
-
-        //get selection
         selectionModel = this->ui->tableView_bundleParameter->selectionModel();
+        proxyModelType = ProxyModelType::eBundleParameterTable;
     }
 
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
+    if(model.isNull()){
+        qDebug() << "no model selected";
+        return;
+    }
+
+    //get and check destination model (in the sense of copy target) the sourceModel of all upper proxy models is FeatureTableModel
+    QPointer<FeatureTableModel> featureTabelModel = static_cast<FeatureTableModel *>(model->sourceModel());
+    if(featureTabelModel.isNull()){
+        qDebug() << "no destination model avialable";
         return;
     }
 
     //get selected indexes
-    selection = selectionModel->selectedIndexes();
+    QModelIndexList selection = selectionModel->selectedIndexes();
     if(selection.size() <= 0){
         emit this->log("No features selected", eErrorMessage, eMessageBoxMessage);
         return;
     }
+
     qSort(selection);
 
-    if(this->ui->tabWidget_views->currentWidget() == this->ui->tab_features){
-        int functionColumn = ModelManager::getFeatureTableColumnConfig().getDisplayAttributeAt(selection.last().column());
-
-        if(functionColumn == eFeatureDisplayFunctions){
-
-            if(selection.size() > 1){
-                QMessageBox msgBox;
-                msgBox.setText("Only select one feature to paste functions to.");
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setDefaultButton(QMessageBox::Ok);
-                int ret = msgBox.exec();
-                return;
-            }
-        }
-    }
-
     //get values from clipboard, so you can copy them
+    QStringList rows;
     QClipboard *clipboard = QApplication::clipboard();
-    QString copy_table = clipboard->text();
+    QString content = clipboard->text();
 
-    //seperate copy table into columns: only one column is allowed
-    QStringList columns = copy_table.split('\t');
-    if(columns.size() != 1){
-        return;
-    }
+    QJsonDocument document = QJsonDocument::fromJson(content.toUtf8());
+    if(document.isObject()) { // check if content is JSON
+        QJsonObject object = document.object();
+        isFunctionColumnSelected = object.value("action").toString() == "copy function";
+        rows.append(QString::number(object.value("id").toInt()));
 
-    //seperate copy table into rows: either one or selection.size rows are allowed
-    QStringList rows = copy_table.split('\n');
-    if(rows.size() != 2 && rows.size() != selection.size()+1){
-        return;
+    } else { // otherwise the content will be accepted as CSV data
+        //seperate copy table into columns: only one column is allowed
+        QStringList columns = content.split('\t');
+        if(columns.size() != 1){
+            return;
+        }
+
+        //seperate copy table into rows: either one or selection.size rows are allowed
+        rows = content.split('\n');
+        if(rows.size() != 2 && rows.size() != selection.size()+1){
+            return;
+        }
+        rows.removeLast();
     }
-    rows.removeLast();
 
     //edit entries at selected indexes
     if(rows.size() == 1){
+
+        if( proxyModelType == ProxyModelType::eTrafoParamTable
+                && isFunctionColumnSelected) {
+
+            QMessageBox msgBox;
+            msgBox.setText("Do you really want to replace existing functions?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::No);
+            if(QMessageBox::Yes != msgBox.exec()) {
+                return;
+            }
+        }
+
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(0));
+            featureTabelModel->setData( model->mapToSource(currentIndex),
+                                rows.at(0),
+                                Qt::EditRole,
+                                isFunctionColumnSelected
+                                    ? FeatureTableModel::EditMode::eFunctionCopyScalarInputParams | FeatureTableModel::EditMode::eFunctionCopyUsedElements
+                                    : FeatureTableModel::EditMode::eDefault);
+            this->control.recalcActiveFeature();
         }
     }else{
         int i = 0;
         foreach(const QModelIndex &index, selection){
             QModelIndex currentIndex = model->index(index.row(), index.column());
-            sourceModel->setData(model->mapToSource(currentIndex), rows.at(i));
+            featureTabelModel->setData(model->mapToSource(currentIndex), rows.at(i));
             i++;
         }
     }
@@ -1887,44 +1892,24 @@ void MainWindow::bundleSelectionChanged(){
         return;
     }
 
-    //get selection
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-
-    //update visibility depending on current selection
-    if(selection.size() != 1){
-        this->ui->tabWidget_bundle->setEnabled(false);
-        this->ui->pushButton_removeBundle->setEnabled(false);
-        this->ui->pushButton_runBundle->setEnabled(false);
-        return;
-    }else{
-        this->ui->tabWidget_bundle->setEnabled(true);
-        this->ui->pushButton_removeBundle->setEnabled(true);
-        this->ui->pushButton_runBundle->setEnabled(true);
-    }
-
-    //get system id
-    QModelIndex index = selection.at(0);
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
     //reset old parameters
-    this->resetBundleView();
+    this->resetBundleView(); // UI
 
     //get and check bundle plugin and template
-    QJsonObject bundleTemplate = this->control.getBundleTemplate(id);
-    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment(id);
+    QJsonObject bundleTemplate = this->control.getBundleTemplate();
+    QPointer<BundleAdjustment> bundlePlugin = this->control.getBundleAdjustment();
     if(bundlePlugin.isNull()){
         return;
     }
 
     //set up scalar parameters
     ScalarInputParams scalarParams = bundlePlugin->getScalarInputParams();
-    this->bundleParameterWidget->setEnabled(true);
-    this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
-    this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
-    this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+    if(!this->bundleParameterWidget.isNull()) {
+        this->bundleParameterWidget->setEnabled(true);
+        this->bundleParameterWidget->setIntParameter(scalarParams.intParameter);
+        this->bundleParameterWidget->setDoubleParameter(scalarParams.doubleParameter);
+        this->bundleParameterWidget->setStringParameter(bundlePlugin->getStringParameter(), scalarParams.stringParameter);
+    }
 
     //set up input stations
     QJsonArray inputStations;
@@ -1958,8 +1943,8 @@ void MainWindow::bundleSelectionChanged(){
     this->bundleStationsModel->setStations(inputStations);
 
     //set up input geometries
-    inputStations = this->bundleStationsModel->getStations();
-    this->ui->treeView_inputGeometries->setEnabled(true);
+    inputStations = this->bundleStationsModel->getStations(); // does a bit more than just a getter
+    this->ui->treeView_inputGeometries->setEnabled(true); // UI
     this->bundleGeometriesModel->setStations(inputStations);
 
     //set up result
@@ -1972,22 +1957,9 @@ void MainWindow::bundleSelectionChanged(){
  */
 void MainWindow::bundleSettingsChanged(){
 
-    //get selection
-    QModelIndexList selection = this->ui->listView_bundle->selectionModel()->selectedIndexes();
-
-    //get system id
-    if(selection.size() != 1){
-        return;
-    }
-    QModelIndex index = selection.at(0);
-    int id = ModelManager::getBundleSystemsModel().getSelectedBundleSystem(index);
-    if(id < 0){
-        return;
-    }
-
     //create parameter object
     QJsonObject param;
-
+/* TODO bundle scalar parameters remove later
     //set up scalar parameters
     const QMap<QString, int> &intParams = this->bundleParameterWidget->getIntParameter();
     const QMap<QString, double> &doubleParams = this->bundleParameterWidget->getDoubleParameter();
@@ -2017,6 +1989,8 @@ void MainWindow::bundleSettingsChanged(){
     param.insert("integerParameter", integerParameter);
     param.insert("doubleParameter", doubleParameter);
     param.insert("stringParameter", stringParameter);
+*/
+
 
     //set up input stations
     QJsonArray stations = this->bundleStationsModel->getStations();
@@ -2025,8 +1999,7 @@ void MainWindow::bundleSettingsChanged(){
     //update bundle geometries model
     this->bundleGeometriesModel->setStations(stations);
 
-    emit this->updateBundleAdjustment(id, param);
-
+    emit this->updateBundleAdjustment(param);
 }
 
 /*!
@@ -2042,6 +2015,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::sensorConfigurationChanged, &this->control, &Controller::setSensorConfig, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::sensorConfigurationsEdited, &this->control, &Controller::sensorConfigurationsEdited, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::measurementConfigurationChanged, &this->control, &Controller::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::saveUserConfig, &this->control, &Controller::saveUserConfig, Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)()>(&MainWindow::saveProject),
                      &this->control, static_cast<void (Controller::*)()>(&Controller::saveProject), Qt::AutoConnection);
     QObject::connect(this, static_cast<void (MainWindow::*)(const QString&)>(&MainWindow::saveProject),
@@ -2059,7 +2033,7 @@ void MainWindow::connectController(){
     QObject::connect(this, &MainWindow::runBundle, &this->control, &Controller::runBundle, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::runBundle, ModelManager::getBundleGeometriesModel(), &BundleGeometriesModel::updateModel, Qt::AutoConnection);
     QObject::connect(this, &MainWindow::updateBundleAdjustment, &this->control, &Controller::updateBundleAdjustment, Qt::AutoConnection);
-    QObject::connect(this, &MainWindow::loadAndSaveConfigs, &this->control, &Controller::initConfigs, Qt::AutoConnection);
+    QObject::connect(this, &MainWindow::createTemplateFromJob, &this->control, &Controller::createTemplateFromJob, Qt::AutoConnection);
 
     //connect actions triggered by controller to slots in main window
     QObject::connect(&this->control, &Controller::nominalImportStarted, this, &MainWindow::importNominalsStarted, Qt::AutoConnection);
@@ -2077,11 +2051,11 @@ void MainWindow::connectController(){
     QObject::connect(&this->control, &Controller::showMessageBox, this, &MainWindow::showMessageBox, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::showStatusMessage, this, &MainWindow::showStatusMessage, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::sensorStatus, this, &MainWindow::showStatusSensor, Qt::AutoConnection);
+    QObject::connect(&this->control, &Controller::stationStatus, this, &MainWindow::showStatusStation, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::availableGroupsChanged, this, &MainWindow::availableGroupsChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::coordSystemSetChanged, this, &MainWindow::coordSystemSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::featureNameChanged, this, &MainWindow::featureNameChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::currentJobChanged, this, &MainWindow::currentJobChanged, Qt::AutoConnection);
-    QObject::connect(&this->control, &Controller::trafoParamSetChanged, this, &MainWindow::trafoParamSetChanged, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::saveAsTriggered, this, &MainWindow::on_actionSave_as_triggered, Qt::AutoConnection);
     QObject::connect(&this->control, &Controller::activeStationChanged, this, &MainWindow::activeStationChanged, Qt::AutoConnection);
 
@@ -2121,6 +2095,7 @@ void MainWindow::connectDialogs(){
 
     //connect measurement config dialog
     QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::measurementConfigurationChanged, this, &MainWindow::measurementConfigurationChanged, Qt::AutoConnection);
+    QObject::connect(&this->measurementConfigDialog, &MeasurementConfigurationDialog::saveUserConfig, this, &MainWindow::saveUserConfig, Qt::AutoConnection);
 
     //connect move sensor dialog
     QObject::connect(&this->moveSensorDialog, &MoveSensorDialog::moveSensor, &this->control, &Controller::startMove, Qt::AutoConnection);
@@ -2150,9 +2125,6 @@ void MainWindow::connectDialogs(){
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sensorConfigurationChanged, &this->control, &Controller::sensorConfigurationUpdated, Qt::AutoConnection);
     QObject::connect(&this->stationPropertiesDialog, &StationPropertiesDialog::sendMessage, this, &MainWindow::log, Qt::AutoConnection);
 
-    // connect SensorTaskInfo dialog
-    QObject::connect(&this->sensorTaskInfoDialog, &SensorTaskInfoDialog::finishMeasurement, &this->control, &Controller::finishMeasurement, Qt::AutoConnection);
-
 }
 
 /*!
@@ -2169,13 +2141,6 @@ void MainWindow::connectStatusBar(){
  * \brief MainWindow::connectBundleView
  */
 void MainWindow::connectBundleView(){
-
-    //connect bundle selection
-    QObject::connect(this->ui->listView_bundle->selectionModel(), &QItemSelectionModel::selectionChanged,
-                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
-    QObject::connect(&ModelManager::getBundleSystemsModel(), &BundleSystemsModel::layoutChanged,
-                     this, &MainWindow::bundleSelectionChanged, Qt::AutoConnection);
-
     //connect scalar parameters widget
     QObject::connect(this->bundleParameterWidget, &ScalarParameterWidget::scalarParametersChanged,
                      this, &MainWindow::bundleSettingsChanged, Qt::AutoConnection);
@@ -2214,14 +2179,18 @@ void MainWindow::assignModels(){
     this->ui->comboBox_actualNominal->setModel(&ModelManager::getActualNominalFilterModel());
 
     //assign bundle models
-    this->ui->listView_bundle->setModel(&ModelManager::getBundleSystemsModel());
-    this->ui->comboBox_bundleTemplate->setModel(&ModelManager::getBundleTemplatesModel());
     this->bundleStationsModel = ModelManager::getBundleStationsModel(this);
     this->bundleStationsModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputStations->setModel(this->bundleStationsModel);
-    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this);
+
+    this->bundleGeometriesModel = ModelManager::getBundleGeometriesModel(this); // create new instance !
     this->bundleGeometriesModel->setCurrentJob(ModelManager::getCurrentJob());
     this->ui->treeView_inputGeometries->setModel(this->bundleGeometriesModel);
+
+    this->ui->listView_bundleOverview->setModel(this->bundleGeometriesModel); // need one model with station names
+    bundleOverviewDelegate = new BundleOverviewDelegate(this);
+    this->ui->listView_bundleOverview->setItemDelegate(bundleOverviewDelegate);
+    this->ui->listView_bundleOverview->setAlternatingRowColors(true);
 
     QObject::connect(&ModelManager::getFeatureTableModel(),&FeatureTableModel::recalcActiveFeature, &this->control, &Controller::recalcActiveFeature, Qt::AutoConnection);
 
@@ -2253,8 +2222,6 @@ void MainWindow::initFeatureTableViews(){
     //change active feature by using up and down keys
     QObject::connect(this->ui->tableView_features->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewFeaturesSelectionChangedByKeyboard, Qt::AutoConnection);
     QObject::connect(this->ui->tableView_trafoParams->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewTrafoParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-    QObject::connect(this->ui->tableView_bundleParameter->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &MainWindow::tableViewBundleParamsSelectionChangedByKeyboard, Qt::AutoConnection);
-
 }
 
 /*!
@@ -2291,6 +2258,10 @@ void MainWindow::initSensorPad(){
     this->actionCompensation = new QAction(0);
     this->actionCompensation->setText("compensation");
 
+    this->actionSearch = new QAction(0);
+    this->actionSearch->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+    this->actionSearch->setText("search (Alt + S)");
+
     //add the actions to the sensor pad
     this->ui->toolBar_controlPad->addAction(this->actionConnect);
     this->ui->toolBar_controlPad->addAction(this->actionDisconnect);
@@ -2302,6 +2273,7 @@ void MainWindow::initSensorPad(){
     this->ui->toolBar_controlPad->addAction(this->actionChangeMotorState);
     this->ui->toolBar_controlPad->addAction(this->actionToggleSightOrientation);
     this->ui->toolBar_controlPad->addAction(this->actionCompensation);
+    this->ui->toolBar_controlPad->addAction(this->actionSearch);
 
     //disable and hide actions as default
     this->actionConnect->setVisible(false);
@@ -2324,6 +2296,8 @@ void MainWindow::initSensorPad(){
     this->actionToggleSightOrientation->setEnabled(false);
     this->actionCompensation->setVisible(false);
     this->actionCompensation->setEnabled(false);
+    this->actionSearch->setVisible(false);
+    this->actionSearch->setEnabled(false);
 
     //connect actions
     QObject::connect(this->actionConnect, &QAction::triggered, &this->control, &Controller::startConnect, Qt::AutoConnection);
@@ -2336,6 +2310,7 @@ void MainWindow::initSensorPad(){
     QObject::connect(this->actionToggleSightOrientation, &QAction::triggered, &this->control, &Controller::startToggleSight, Qt::AutoConnection);
     QObject::connect(this->actionCompensation, &QAction::triggered, &this->control, &Controller::startCompensation, Qt::AutoConnection);
     QObject::connect(this->actionMove, &QAction::triggered, this, &MainWindow::showMoveSensorDialog, Qt::AutoConnection);
+    QObject::connect(this->actionSearch, &QAction::triggered, &this->control, &Controller::startSearch, Qt::AutoConnection);
 
 }
 
@@ -2386,6 +2361,13 @@ void MainWindow::initFilterComboBoxes(){
     this->updateActualNominalFilterSize();
 }
 
+void MainWindow::initFilterToolBar() {
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_orderBy);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_activeCoordSystem);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_filter);
+    this->ui->toolBar_filter->addWidget(this->ui->groupBox_search);
+}
+
 /*!
  * \brief MainWindow::initStatusBar
  */
@@ -2393,10 +2375,20 @@ void MainWindow::initStatusBar(){
 
     //create GUI elements
     this->label_statusSensor = new QLabel();
+    // "blink" animation
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(this);
+    this->label_statusSensor->setGraphicsEffect(opacityEffect);
+    this->animation_label_statusSensor = new QPropertyAnimation(opacityEffect, "opacity", this);
+    this->animation_label_statusSensor->setStartValue(-1.0);
+    this->animation_label_statusSensor->setEndValue(2.0);
+    this->animation_label_statusSensor->setLoopCount(-1);
+    this->animation_label_statusSensor->setDuration(500);
+    this->animation_label_statusSensor->setEasingCurve(QEasingCurve::OutQuad);
+
+
     this->label_statusUnitMetric = new QLabel();
     this->label_statusUnitAngular = new QLabel();
     this->label_statusUnitTemperature = new QLabel();
-    this->label_statusStablePointMeasurement = new QLabel();
 
     //format GUI elements
     this->label_statusUnitMetric->setMinimumWidth(50);
@@ -2405,11 +2397,13 @@ void MainWindow::initStatusBar(){
     this->label_statusUnitAngular->setAlignment(Qt::AlignHCenter);
     this->label_statusUnitTemperature->setMinimumWidth(50);
     this->label_statusUnitTemperature->setAlignment(Qt::AlignHCenter);
-    this->label_statusStablePointMeasurement->setStyleSheet("QLabel { color : orangered;  font-weight: bold;}");
 
     //add GUI elements to status bar
-    this->ui->statusBar->addPermanentWidget(this->label_statusStablePointMeasurement);
-    this->ui->statusBar->addPermanentWidget(this->label_statusSensor);
+    this->ui->statusBar->addPermanentWidget(this->label_statusSensor); // variable width
+
+    this->stationStatus = new StationStatus();
+    this->ui->statusBar->addPermanentWidget(this->stationStatus);
+
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitMetric);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitAngular);
     this->ui->statusBar->addPermanentWidget(this->label_statusUnitTemperature);
@@ -2425,19 +2419,43 @@ void MainWindow::initStatusBar(){
 void MainWindow::initBundleView(){
 
     //load bundle templates
-    ModelManager::getBundleTemplatesModel().loadTemplates();
-    this->ui->comboBox_bundleTemplate->setCurrentIndex(0);
+    QList<QJsonObject> templates = this->control.loadBundleTemplates();
+    if(templates.isEmpty()){
+        return;
+    }
+    QJsonObject bundleTemplate = templates.first(); // only one should exists
 
-    //set initial visibility
-    this->ui->tabWidget_bundle->setEnabled(false);
-    this->ui->pushButton_removeBundle->setEnabled(false);
-    this->ui->pushButton_runBundle->setEnabled(false);
+    //load template
+    emit this->loadBundleTemplate(bundleTemplate);
+    this->bundleSelectionChanged();
 
     //init bundle parameter widget
     QGridLayout *extraParameterLayout = new QGridLayout();
-    this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
+    // this->ui->widget_bundleParameters->setLayout(extraParameterLayout);
     this->bundleParameterWidget = new ScalarParameterWidget();
     extraParameterLayout->addWidget(this->bundleParameterWidget);
+
+    // init overview
+    bundleOverviewDelegate->maxError = 0.1;
+    bundleOverviewDelegate->maxStdDev = 0.06;
+    bundleOverviewDelegate->maxScaleDev = 0.000020;
+    bundleOverviewDelegate->minCommonPoints = 5;
+
+    QIntValidator *cpValid = new QIntValidator(3, 10000, this);
+    this->ui->lineEdit_atLeastCommonPoints->setText(QString::number(bundleOverviewDelegate->minCommonPoints));
+    this->ui->lineEdit_atLeastCommonPoints->setValidator(cpValid);
+
+    QDoubleValidator *maxErrorValid = new QDoubleValidator(0, 10, 3, this);
+    this->ui->lineEdit_maxError->setText(QString::number(bundleOverviewDelegate->maxError, 'f', 2));
+    this->ui->lineEdit_maxError->setValidator(maxErrorValid);
+
+    QDoubleValidator *stdDevValid = new QDoubleValidator(0, 10, 3, this);
+    this->ui->lineEdit_stdDev->setText(QString::number(bundleOverviewDelegate->maxStdDev, 'f', 3));
+    this->ui->lineEdit_stdDev->setValidator(stdDevValid);
+
+    QDoubleValidator *scaleDevValid = new QDoubleValidator(0, 0.1, 6, this);
+    this->ui->lineEdit_scaleDev->setText(QString::number(bundleOverviewDelegate->maxScaleDev, 'f', 6));
+    this->ui->lineEdit_scaleDev->setValidator(scaleDevValid);
 
 }
 
@@ -2474,6 +2492,8 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
         this->actionToggleSightOrientation->setEnabled(true);
         this->actionCompensation->setVisible(true);
         this->actionCompensation->setEnabled(true);
+        this->actionSearch->setVisible(supportedActions.contains(SensorFunctions::eSearch));
+        this->actionSearch->setEnabled(supportedActions.contains(SensorFunctions::eSearch));
 
         break;
 
@@ -2546,12 +2566,12 @@ void MainWindow::activeSensorTypeChanged(const SensorTypes &type, const QList<Se
 
     //add new self defined actions
     foreach(const QString &action, selfDefinedActions){
-        QRegExp rx("([\\w]+)([\\w\(\\)\\+]*)"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
+        QRegExp rx("([\\w ]+)(\\(([\\w]+\\+[\\w]+)\\))?"); // extract label and shortcut from e.g. "searchSMR(Alt+S)"
         rx.setPatternSyntax(QRegExp::RegExp);
         rx.indexIn(action);
 
-        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(2).replace("(", "").replace(")",""));
-        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(2).isEmpty() ? "" : QString(" %1").arg(rx.cap(2)));
+        QKeySequence actionShortCut = QKeySequence::fromString(rx.cap(3));
+        QString actionLabel = QString("%1%2").arg(rx.cap(1)).arg(actionShortCut.isEmpty() || rx.cap(3).isEmpty() ? "" : " " + rx.cap(2));
         QString actionCommand = rx.cap(1);
 
         QPointer<QAction> customAction = new QAction(0);
@@ -2684,10 +2704,12 @@ void MainWindow::updateActualNominalFilterSize(){
 void MainWindow::resetBundleView(){
 
     //reset scalar parameters
-    this->bundleParameterWidget->blockSignals(true);
-    this->bundleParameterWidget->clearAll();
-    this->bundleParameterWidget->setEnabled(false);
-    this->bundleParameterWidget->blockSignals(false);
+    if(!this->bundleParameterWidget.isNull()) {
+        this->bundleParameterWidget->blockSignals(true);
+        this->bundleParameterWidget->clearAll();
+        this->bundleParameterWidget->setEnabled(false);
+        this->bundleParameterWidget->blockSignals(false);
+    }
 
     //reset input stations
     QJsonArray stations;
@@ -2708,32 +2730,35 @@ void MainWindow::resetBundleView(){
  * \brief MainWindow::saveAsProject
  * creates a file name for save path and emits the signal to save
  */
-void MainWindow::saveProjectAs()
+void MainWindow::saveProjectAs(bool asTemplate)
 {
-    QString filename = QFileDialog::getSaveFileName(this,tr("Choose a filename"), ProjectConfig::getProjectPath(), tr("xml (*.xml)"));
+    QString caption;
+    QString preferedName = ProjectConfig::getProjectPath();
+    if(asTemplate) {
+        caption = "Save template as";
+        preferedName += QDir::separator();
+        preferedName += "_template";
+
+        if ((emit showMessageBox("save current project", MessageTypes::eQuestionMessage) == QMessageBox::Yes)) {
+            emit this->saveProject();
+        } else {
+            this->log("save as template: aborted", eInformationMessage, eConsoleMessage);
+            return;
+        }
+    } else {
+        caption = "Save project as";
+    }
+
+    QString filename = QFileDialog::getSaveFileName(this, caption, preferedName, tr("xml (*.xml)"));
 
     if(!filename.isEmpty()){
         QFileInfo info(filename);
         ProjectConfig::setProjectPath(info.absolutePath());
+        if(asTemplate) {
+            emit this->createTemplateFromJob();
+        }
         emit this->saveProject(filename);
     }
-}
-
-/*!
- * \brief MainWindow::loadDefaultBundlePlugIn
- */
-void MainWindow::loadDefaultBundlePlugIn(int bundleID)
-{
-    //get selected bundle template
-    int templateIndex = this->ui->comboBox_bundleTemplate->currentIndex();
-    QJsonObject bundleTemplate = ModelManager::getBundleTemplatesModel().getBundleTemplate(templateIndex);
-    if(bundleTemplate.isEmpty()){
-        return;
-    }
-
-    //load template
-    emit this->loadBundleTemplate(bundleID, bundleTemplate);
-    this->bundleSelectionChanged();
 }
 
 /*!
@@ -2743,7 +2768,8 @@ void MainWindow::loadDefaultBundlePlugIn(int bundleID)
 void MainWindow::autoSwitchToNextFeature(bool sucessMeasure)
 {
     if(sucessMeasure){
-        if(!this->ui->actiongo_to_next_feature->isChecked()){
+        if(!this->ui->actiongo_to_next_feature->isChecked()
+                && !this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE").isValid()){
             this->ui->tableView_features->selectRow(this->ui->tableView_features->currentIndex().row() + 1);
         }
     }
@@ -2767,24 +2793,6 @@ void MainWindow::createMessageBoxTrafoParamWarning()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     int ret = msgBox.exec();
-}
-
-void MainWindow::on_tableView_bundleParameter_clicked(const QModelIndex &index)
-{
-    //get and check model
-    BundleParameterTableProxyModel *model = static_cast<BundleParameterTableProxyModel *>(this->ui->tableView_bundleParameter->model());
-    if(model == NULL){
-        return;
-    }
-
-    //get and check source model
-    FeatureTableModel *sourceModel = static_cast<FeatureTableModel *>(model->sourceModel());
-    if(sourceModel == NULL){
-        return;
-    }
-
-    //set active feature
-    sourceModel->setActiveFeature(model->mapToSource(index));
 }
 
 /*!
@@ -2838,22 +2846,6 @@ void MainWindow::on_tableView_FeatureDifferences_customContextMenuRequested(cons
 
     menu->addAction("copy to clipboard", this, SLOT(copyDifferencesToClipboard()));
     menu->exec(this->ui->tableView_FeatureDifferences->mapToGlobal(pos));
-}
-
-/*!
- * \brief MainWindow::showEvent
- * \param e
- */
-void MainWindow::showEvent(QShowEvent *e)
-{
-    //load and restore project unit settings
-    ProjectConfig::loadProjectPathConfigFile();
-    //parse them to the model, to display all values in correct unit
-    this->settingsDialog.updateDisplayConfigFromSelection();
-
-    emit loadAndSaveConfigs();
-
-    e->accept();
 }
 
 void MainWindow::startAutoSave() {
@@ -3015,18 +3007,25 @@ void MainWindow::updateCompleter() {
             return;
         }
 
-        int column = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        int featureNameColumn = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayName);
+        int groupNameColumn = model->getFeatureTableColumnConfig().getColumnPosition(eFeatureDisplayGroup);
         QStringList featureNames;
+        QStringList groupNames;
         for(int row=0; row < model->rowCount(); row++) {
-            QString name = model->data(model->index(row,column), Qt::DisplayRole).toString();
-            if(!featureNames.contains(name)) {
-                featureNames.append(name);
+            QString featureName = model->data(model->index(row,featureNameColumn), Qt::DisplayRole).toString();
+            if(!featureNames.contains(featureName)) {
+                featureNames.append(featureName);
+            }
+            QString groupName = model->data(model->index(row,groupNameColumn), Qt::DisplayRole).toString();
+            if(!groupNames.contains(groupName) && !groupName.isNull() && !groupName.isEmpty()) {
+                groupNames.append(groupName);
             }
         }
         QCompleter *completer = new QCompleter(featureNames, this);
         completer->setFilterMode(Qt::MatchContains);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         this->ui->lineEdit_searchFeatureName->setCompleter(completer);
+
     }
 }
 
@@ -3034,7 +3033,7 @@ void MainWindow::on_lineEdit_searchFeatureName_returnPressed()
 {
     QPointer<OiJob> job = ModelManager::getCurrentJob();
     if(!job.isNull()) {
-        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text());
+        foundFeatures = job->getFeaturesByName(this->ui->lineEdit_searchFeatureName->text(), true);
 
         this->ui->pushButton_showNextFoundFeature->setEnabled(foundFeatures.size()>1);
 
@@ -3067,11 +3066,11 @@ void MainWindow::showFoundFeature(int index) {
                 QModelIndex index = model->index(row,column);
                 QString name = model->data(index, Qt::DisplayRole).toString();
                 if(name == feature->getFeature()->getFeatureName()) {
+                    feature->getFeature()->setActiveFeatureState(true);
                     this->ui->tableView_features->scrollTo(index);
+                    this->ui->tableView_features->viewport()->update(); // redraw the viewport so that only the active feature is highlighted
                 }
             }
-
-            sourceModel->setActiveFeature(feature->getFeature()->getId());
 
         }
     }
@@ -3088,6 +3087,12 @@ void MainWindow::on_pushButton_showNextFoundFeature_clicked()
 }
 
 void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg) {
+
+    if(this->animation_label_statusSensor->state() == QVariantAnimation::Running) {
+        this->animation_label_statusSensor->stop();
+        this->label_statusSensor->setVisible(true);
+    }
+
     switch(status){
     case SensorStatus::eReadyForMeasurement:
         this->label_statusSensor->setStyleSheet("QLabel { background-color : lightgreen;}");
@@ -3095,6 +3100,117 @@ void MainWindow::showStatusSensor(const SensorStatus &status, const QString &msg
      case SensorStatus::eNotReadyForMeasurement:
         this->label_statusSensor->setStyleSheet("QLabel { background-color : red;}");
         break;
+     case SensorStatus::eSensorActionInProgress:
+       this->label_statusSensor->setStyleSheet("QLabel { background-color : yellow;}");
+       this->animation_label_statusSensor->start(); // start "blink" animation
+       break;
+     case SensorStatus::eClearStatus:
+        this->label_statusSensor->setStyleSheet("");
+        break;
      }
+
      this->label_statusSensor->setText(msg);
  }
+
+void MainWindow::on_comboBox_sortBy_currentIndexChanged(int index)
+{
+
+    FeatureTableProxyModel *ftmodel = static_cast<FeatureTableProxyModel *>(this->ui->tableView_features->model());
+    if(ftmodel != NULL){
+        ftmodel->setSortingMode((FeatureSorter::SortingMode)index);
+    }
+
+    FeatureDifferenceProxyModel *fdmodel = static_cast<FeatureDifferenceProxyModel *>(this->ui->tableView_FeatureDifferences->model());
+    if(fdmodel != NULL){
+        fdmodel->setSortingMode((FeatureSorter::SortingMode)index);
+    }
+
+}
+
+void MainWindow::measureBehaviorLogicStarted() {
+    QObject::connect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished);
+
+    // disable "go to next feautre"
+    this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", this->ui->actiongo_to_next_feature->isChecked());
+    this->ui->actiongo_to_next_feature->setChecked(false);
+}
+
+void MainWindow::measureBehaviorLogicFinished() {
+    QObject::disconnect(&this->control, &Controller::sensorActionFinished, &this->measureBehaviorLogic, &MeasureBehaviorLogic::sensorActionFinished);
+
+    QVariant value = this->ui->actiongo_to_next_feature->property("PREVIOUS_ISCHECKED_VALUE");
+    this->ui->actiongo_to_next_feature->setProperty("PREVIOUS_ISCHECKED_VALUE", QVariant::Invalid);
+    if(value.isValid()) {
+        this->ui->actiongo_to_next_feature->setChecked(value.toBool());
+    }
+}
+
+void MainWindow::on_actionStation_create_triggered()
+{
+    this->control.createNewStation();
+}
+
+void  MainWindow::showStatusStation(const StationStatusData &data) {
+
+    if(!data.id.isValid()) {
+        this->log("cannot set station status", eWarningMessage);
+        this->stationStatus->reset();
+        return;
+    }
+
+    if(!data.name.isNull()) { // optional
+        this->stationStatus->setName(data.name);
+    }
+
+    this->stationStatus->setBundled(this->control.isStationBundled(data.id.toInt()));
+}
+
+/*!
+ * \brief MainWindow::on_action_RunBundle_triggered
+ */
+void MainWindow::on_action_RunBundle_triggered(){
+
+    //calculate bundle
+    emit this->runBundle();
+
+}
+
+void MainWindow::on_lineEdit_maxError_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxError = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_stdDev_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxStdDev = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_scaleDev_textChanged(const QString &arg1)
+{
+    bool ok;
+    double value = arg1.toDouble(&ok);
+    if(ok) {
+        bundleOverviewDelegate->maxScaleDev = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}
+
+void MainWindow::on_lineEdit_atLeastCommonPoints_textChanged(const QString &arg1)
+{
+    bool ok;
+    int value = arg1.toInt(&ok);
+    if(ok) {
+        bundleOverviewDelegate->minCommonPoints = value;
+        this->ui->listView_bundleOverview->model()->layoutChanged();
+    }
+}

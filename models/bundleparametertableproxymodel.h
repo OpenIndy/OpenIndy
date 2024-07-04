@@ -20,13 +20,6 @@ class BundleParameterTableProxyModel : public QSortFilterProxyModel
 public:
     explicit BundleParameterTableProxyModel(QObject *parent = 0);
 
-    //#########################
-    //get or set display config
-    //#########################
-
-    const TrafoParamTableColumnConfig &getTrafoParamTableColumnConfig() const;
-    void setTrafoParamTableColumnConfig(const TrafoParamTableColumnConfig &config);
-
     //###########################################
     //override methods of sort filter proxy model
     //###########################################
@@ -40,7 +33,7 @@ signals:
     //send messages to OpenIndy
     //#########################
 
-    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
+    void sendMessage(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage) const;
     
 protected:
 
@@ -50,8 +43,6 @@ protected:
 
     bool filterAcceptsRow (int source_row, const QModelIndex &source_parent ) const;
     bool filterAcceptsColumn (int source_column, const QModelIndex &source_parent ) const;
-
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 
 private:
 

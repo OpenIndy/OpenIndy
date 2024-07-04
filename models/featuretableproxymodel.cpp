@@ -3,6 +3,7 @@
 FeatureTableProxyModel::FeatureTableProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
+    this->sort(0);
 }
 
 /*!
@@ -58,10 +59,7 @@ QModelIndex FeatureTableProxyModel::mapFromSource(const QModelIndex &sourceIndex
     //set up new column position (column sorting)
     int columnIndex = sourceIndex.column();
     int columnPosition = this->featureTableColumnConfig.getColumnPosition((FeatureDisplayAttributes)getFeatureDisplayAttributes().at(columnIndex));
-    //proxyIndex = this->createIndex(proxyIndex.row(), columnPosition);
     return this->index(proxyIndex.row(), columnPosition);
-
-    return proxyIndex;
 
 }
 
@@ -96,8 +94,12 @@ QModelIndex FeatureTableProxyModel::mapToSource(const QModelIndex &proxyIndex) c
 
     return source_model->index(sourceIndex.row(), sourceColumn);
 
-    return sourceIndex;
+}
 
+void FeatureTableProxyModel::setSortingMode(FeatureSorter::SortingMode mode)
+{
+    this->sorter.setSortingMode(mode);
+    this->invalidate();
 }
 
 /*!
@@ -173,10 +175,7 @@ bool FeatureTableProxyModel::filterAcceptsColumn(int source_column, const QModel
     }
 
     //check visibility of the attribute
-    if(this->featureTableColumnConfig.getColumnVisibility((FeatureDisplayAttributes)attr)){
-        return true;
-    }
-    return false;
+   return this->featureTableColumnConfig.getColumnVisibility((FeatureDisplayAttributes)attr);
 
 }
 

@@ -31,6 +31,12 @@ public:
     explicit FeatureTableModel(const QPointer<OiJob> &job, QObject *parent = 0);
     explicit FeatureTableModel(QObject *parent = 0);
 
+    enum EditMode { // bit flags
+        eDefault = 0, // do nothing
+        eFunctionCopyScalarInputParams = 1<<0,
+        eFunctionCopyUsedElements = 1<<1,
+    };
+
     //########################################
     //override methods of abstract table model
     //########################################
@@ -44,7 +50,9 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    // extra parameter
+    bool setData(const QModelIndex &index, const QVariant &value, int role, int editMode);
 
     //##############################
     //get id of the feature at index
@@ -132,6 +140,8 @@ private:
 
     void connectJob();
     void disconnectJob();
+
+    QPointer<Function> loadFunctionByName(QString name);
 
 private:
 

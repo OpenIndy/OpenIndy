@@ -51,6 +51,11 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    void filterByActualNominal(ActualNominalFilter filter);
+    void filterByGroup(QString groupName);
+    void filterByFeatureName(QString featureName);
+    void resetFilter();
+
 signals:
 
     //###########################
@@ -107,6 +112,10 @@ private:
     //#######################
 
     QPointer<Function> connectedFunction;
+
+    ActualNominalFilter filterActualNominal;
+    QString filterGroupName;
+    QString filterFeatureName;
 
 };
 

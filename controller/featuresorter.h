@@ -9,13 +9,19 @@
 
 #include "featuretablesortingconfig.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 /*!
  * \brief The FeatureSorter class
  * Sorts features according to sorting settings
  */
-class FeatureSorter
+class OI_MAIN_EXPORT FeatureSorter
 {
 public:
     FeatureSorter();
@@ -32,7 +38,9 @@ public:
     //#############
 
     enum SortingMode{
-        eSortStandard
+        eSortStandard,                  // sort by: id, isNominal
+        eSortBy_Name_ActNom,            // sort by: featureName, isNominal
+        eSortBy_Group_Name_ActNom,      // sort by: groupName, featureName, isNominal
     };
 
     //#################################
@@ -76,6 +84,8 @@ private:
     //##############
 
     bool sortStandard(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
+    bool sortBy_Name_ActNom(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
+    bool sortBy_Group_Name(QPointer<FeatureWrapper> left, QPointer<FeatureWrapper> right) const;
 
 };
 

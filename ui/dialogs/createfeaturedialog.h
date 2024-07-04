@@ -12,6 +12,12 @@
 #include "util.h"
 #include "uiutil.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 namespace Ui {
@@ -21,7 +27,7 @@ class CreateFeatureDialog;
 /*!
  * \brief The CreateFeatureDialog class
  */
-class CreateFeatureDialog : public QDialog
+class OI_MAIN_EXPORT CreateFeatureDialog : public QDialog
 {
     Q_OBJECT
 
@@ -47,6 +53,7 @@ signals:
     //#######################################
 
     void addFeatures(const FeatureAttributes &attributes);
+    void initialized(); // currently used for testing
 
 private slots:
 
@@ -59,7 +66,9 @@ private slots:
     void on_checkBox_nominal_toggled(bool checked);
     void on_checkBox_actual_toggled(bool checked);
 
-    void on_comboBox_entityType_currentIndexChanged(const QString &arg1);
+    void on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName);
+
+    void on_comboBox_function_currentIndexChanged(const int index);
 
 private:
 
@@ -73,6 +82,7 @@ private:
     void initModels();
 
     void initFunctionsModel();
+    void initMeasurementConfigModel();
 
     void toggleActualLabels(bool toggle);
 
@@ -84,7 +94,7 @@ private:
 
     void featureAttributesFromGUI(FeatureAttributes &attributes);
 
-    bool created;
+    void initMeasurementConfigUI(const int functionIndex);
 
 private:
     Ui::CreateFeatureDialog *ui;
@@ -94,13 +104,16 @@ private:
     //#################
 
     FeatureTypes typeOfFeature;
+    QList<ElementTypes> neededElements;
 
     QPointer<AvailableFunctionsListProxyModel> functionListModel;
+    QPointer<MeasurementConfigurationProxyModel> measurementConfigurationModel;
 
     void setDialogName();
 
     QPointer<OiJob> currentJob;
 
+    bool created;
 };
 
 #endif // CREATEFEATUREDIALOG_H

@@ -10,13 +10,19 @@
 #include "util.h"
 #include "measurementconfigmanager.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 /*!
  * \brief The MeasurementConfigurationModel class
  * Model that holds all available measurement configurations
  */
-class MeasurementConfigurationModel : public QAbstractListModel
+class OI_MAIN_EXPORT MeasurementConfigurationModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -46,7 +52,7 @@ public:
 
     MeasurementConfig getMeasurementConfig(const QModelIndex &index) const;
 
-    bool getIsSaved(const QModelIndex &index) const;
+    bool isUserConfig(const QModelIndex &index) const;
 
     //#################################
     //add or remove measurement configs
@@ -55,9 +61,9 @@ public:
     QModelIndex addMeasurementConfig(const MeasurementConfig &mConfig);
     void removeMeasurementConfig(const QModelIndex &index);
 
-    void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
 
-    void cloneMeasurementConfig(const MeasurementConfig &mConfig);
+    MeasurementConfig cloneMeasurementConfig(const MeasurementConfig &mConfig);
 
     //#######################################
     //get or set sensor configuration manager

@@ -39,37 +39,8 @@ bool ReadingProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
  * \return
  */
 bool ReadingProxyModel::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const{
-
     //check visibility of the column
-    if(this->readingTableColumnConfig.getColumnVisibility((ReadingDisplayAttributes)source_column)){
-
-        //get and check source model
-        ReadingModel *sourceModel = static_cast<ReadingModel *>(this->sourceModel());
-        if(sourceModel == NULL){
-            return false;
-        }
-
-        //get and check active feature
-        if(sourceModel->getCurrentJob().isNull()){
-            return false;
-        }
-        QPointer<FeatureWrapper> feature = sourceModel->getCurrentJob()->getActiveFeature();
-        if(feature.isNull() || feature->getGeometry().isNull()){
-            return false;
-        }
-
-        //check each used reading type
-        foreach(const ReadingTypes &type, feature->getGeometry()->getUsedReadingTypes()){
-            if(getReadingDisplayAttributeVisibility((ReadingDisplayAttributes)source_column, type)){
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-    return false;
-
+    return this->readingTableColumnConfig.getColumnVisibility((ReadingDisplayAttributes)source_column);
 }
 
 /*!
@@ -97,7 +68,6 @@ bool ReadingProxyModel::lessThan(const QModelIndex &source_left, const QModelInd
         //fit function
         QPointer<Function> function = source_model->getCurrentJob()->getActiveFeature()->getFeature()->getFunctions().at(0);
         QList<InputElement> inputElem = function->getInputElements().value(0);
-
 
         if( source_right.isValid()
             && source_left.isValid()

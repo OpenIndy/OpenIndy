@@ -11,13 +11,19 @@
 #include "measurementconfig.h"
 #include "console.h"
 
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 /*!
  * \brief The MeasurementConfigManager class
  * Used to save and manage all available measurement configs
  */
-class MeasurementConfigManager : public QObject
+class OI_MAIN_EXPORT MeasurementConfigManager : public QObject
 {
     Q_OBJECT
 
@@ -39,32 +45,31 @@ public:
     //get or set measurement configs
     //##############################
 
-    //check presence of a config
-    bool hasSavedMeasurementConfig(const QString &name);
-    bool hasProjectMeasurementConfig(const QString &name);
-    bool hasSavedMeasurementConfig(const MeasurementConfig &mConfig);
-    bool hasProjectMeasurementConfig(const MeasurementConfig &mConfig);
-
     //get configs
-    MeasurementConfig getSavedMeasurementConfig(const QString &name) const;
-    MeasurementConfig getProjectMeasurementConfig(const QString &name) const;
-    const QList<MeasurementConfig> &getSavedMeasurementConfigs() const;
-    const QList<MeasurementConfig> &getProjectMeasurementConfigs() const;
+    MeasurementConfig getConfig(const MeasurementConfigKey &key) const;
+    MeasurementConfig getUserConfig(const QString &name) const;
+    MeasurementConfig getProjectConfig(const QString &name) const;
+    MeasurementConfig getStandardConfig(const QString &name) const;
+    MeasurementConfig findConfig(const QString &name) const;
+    const QList<MeasurementConfig> getConfigs() const;
+    const QList<MeasurementConfig> getUserConfigs() const;
+    const QList<MeasurementConfig> getProjectConfigs() const;
+    const QList<QString> getUserConfigNames() const;
+    const QList<QString> getProjectConfigNames() const;
 
     //active config
-    MeasurementConfig getActiveMeasurementConfig(const GeometryTypes &type) const;
+    MeasurementConfig getActiveConfig(const GeometryTypes &type) const;
 
     //add or remove configs
-    void addSavedMeasurementConfig(const MeasurementConfig &mConfig);
-    void addProjectMeasurementConfig(const MeasurementConfig &mConfig);
-    void removeSavedMeasurementConfig(const QString &name);
-    void removeProjectMeasurementConfig(const QString &name);
-    void removeAllSavedMeasurementConfigs();
-    void removeAllProjectMeasurementConfigs();
+    void saveUserConfig(const MeasurementConfig &mConfig);
+    void addProjectConfig(const MeasurementConfig &mConfig);
+    void removeUserConfig(const QString &name);
+    void removeProjectConfig(const QString &name);
 
     //replace a config
-    void replaceMeasurementConfig(const QString &name, const MeasurementConfig &mConfig);
+    void replaceMeasurementConfig(const MeasurementConfigKey &oldKey, const MeasurementConfig &mConfig);
 
+    void saveToConfigFolder(const QString &name, const MeasurementConfig &mConfig);
     //load configs from xml
     void loadFromConfigFolder();
 
@@ -78,8 +83,6 @@ signals:
     //#######################################
 
     void measurementConfigurationsChanged();
-    void measurementConfigurationReplaced(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
-    void activeMeasurementConfigurationChanged(const GeometryTypes &type);
 
     //############
     //log messages
@@ -94,29 +97,18 @@ private:
     //##############
 
     //save or remove configs
-    void saveMeasurementConfig(const MeasurementConfig &mConfig);
+    void saveConfig(const MeasurementConfig &mConfig);
     void deleteMeasurementConfig(const QString &name);
-
-    //update geometries when measurement configs change
-    void updateGeometries();
-    void updateGeometries(const MeasurementConfig &oldMConfig, const MeasurementConfig &newMConfig);
 
     //job connects
     void connectJob();
     void disconnectJob();
 
-    //compare two configs
-    bool equals(const MeasurementConfig &mConfigA, const MeasurementConfig &mConfigB);
-
     //########################
     //save measurement configs
     //########################
 
-    QMap<QString, MeasurementConfig> savedMeasurementConfigMap;
-    QMap<QString, MeasurementConfig> projectMeasurementConfigMap;
-
-    QList<MeasurementConfig> savedMeasurementConfigList;
-    QList<MeasurementConfig> projectMeasurementConfigList;
+    QMap<MeasurementConfigKey, MeasurementConfig> configs;
 
     QMap<GeometryTypes, MeasurementConfig> activeMeasurementConfigs;
 

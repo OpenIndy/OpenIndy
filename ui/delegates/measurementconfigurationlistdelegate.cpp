@@ -72,6 +72,6 @@ void MeasurementConfigurationListDelegate::setModelData(QWidget *editor, QAbstra
         return;
     }
 
-    mConfigProxyModel->sourceModel()->setData(index, customEditor->text());
+    mConfigProxyModel->sourceModel()->setData(mConfigProxyModel->mapToSource(index), customEditor->text());
 
 }

@@ -53,8 +53,6 @@ ObservationTableColumnConfig ModelManager::observationTableColumnConfig;
 ReadingTableColumnConfig ModelManager::readingTableColumnConfig;
 QStringListModel ModelManager::scalarEntityTypeNamesModel;
 QStringListModel ModelManager::actualNominalFilterModel;
-BundleSystemsModel ModelManager::bundleSystemsModel;
-BundleTemplatesModel ModelManager::bundleTemplatesModel;
 FunctionWeightsTableModel ModelManager::functionWeightsTableModel;
 FunctionWeightProxyModel ModelManager::functionWeightProxyModel;
 BundleParameterTableProxyModel ModelManager::bundleParameterTableProxyModel;
@@ -90,6 +88,20 @@ void ModelManager::init(){
     ModelManager::initReadingModels();
     ModelManager::initScalarEntityTypesModels();
     ModelManager::initActualNominalFilterModel();
+
+}
+
+void ModelManager::testInit(QStringList entityTypes,
+                            QPointer<MeasurementConfigManager> measurementConfigManager,
+                            QList<sdb::Plugin> plugins) {
+
+    ModelManager::plugins = plugins;
+    ModelManager::functionsListModel.setPlugins(ModelManager::plugins);
+
+    ModelManager::scalarEntityTypeNamesModel.setStringList(entityTypes);
+
+    ModelManager::setMeasurementConfigManager(measurementConfigManager);
+    ModelManager::initMeasurementConfigModels();
 
 }
 
@@ -321,14 +333,6 @@ QStringListModel &ModelManager::getCoordinateSystemsModel(){
  */
 QStringListModel &ModelManager::getNominalSystemsModel(){
     return ModelManager::nominalSystemsModel;
-}
-
-/*!
- * \brief ModelManager::getBundleSystemsModel
- * \return
- */
-BundleSystemsModel &ModelManager::getBundleSystemsModel(){
-    return ModelManager::bundleSystemsModel;
 }
 
 /*!
@@ -568,14 +572,6 @@ ReadingProxyModel &ModelManager::getReadingProxyModel(){
 }
 
 /*!
- * \brief ModelManager::getBundleTemplatesModel
- * \return
- */
-BundleTemplatesModel &ModelManager::getBundleTemplatesModel(){
-    return ModelManager::bundleTemplatesModel;
-}
-
-/*!
  * \brief ModelManager::getExchangeSimpleAsciiNames
  * \param pluginName
  * \return
@@ -743,7 +739,7 @@ QPointer<SensorAccuracyModel> ModelManager::getSensorAccuracyModel(QObject *pare
     QPointer<SensorAccuracyModel> model = new SensorAccuracyModel(parent);
     if(!ModelManager::myInstance.isNull()){
         QObject::connect(ModelManager::myInstance, &ModelManager::parameterDisplayConfigChanged,
-                         model, &SensorAccuracyModel::setParameterDisplayConfig, Qt::AutoConnection);
+                         model, &SensorAccuracyModel::setParameterDisplayConfig);
     }
 
     return model;
@@ -761,7 +757,7 @@ QPointer<SensorParametersModel> ModelManager::getSensorParametersModel(QObject *
     QPointer<SensorParametersModel> model = new SensorParametersModel(parent);
     if(!ModelManager::myInstance.isNull()){
         QObject::connect(ModelManager::myInstance, &ModelManager::parameterDisplayConfigChanged,
-                         model, &SensorParametersModel::setParameterDisplayConfig, Qt::AutoConnection);
+                         model, &SensorParametersModel::setParameterDisplayConfig);
     }
 
     return model;
@@ -797,9 +793,6 @@ void ModelManager::featureSetChanged(){
     if(ModelManager::currentJob.isNull()){
         return;
     }
-
-    //resort table model
-    ModelManager::featureTableProxyModel.sort(0);
 
 }
 
@@ -869,10 +862,6 @@ void ModelManager::featureNameChanged(const int &featureId, const QString &oldNa
         ModelManager::updateCoordinateSystemsModel();
         ModelManager::updateNominalSystemsModel();
     }
-
-    //resort table model
-    //ModelManager::featureTableProxyModel.sort(0);
-
 }
 
 /*!
@@ -907,18 +896,17 @@ void ModelManager::updateJob(){
     ModelManager::availableElementsTreeViewProxyModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::observationModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::readingModel.setCurrentJob(ModelManager::currentJob);
-    ModelManager::bundleSystemsModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::featureDifferenceTableModel.setCurrentJob(ModelManager::currentJob);
     ModelManager::featureDifferenceProxyModel.setCurrentJob(ModelManager::currentJob);
 
     ModelManager::functionWeightsTableModel.setCurrentJob(ModelManager::currentJob);
 
     //connect the job to slots in model manager
-    QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged, Qt::AutoConnection);
-    QObject::connect(ModelManager::currentJob.data(), &OiJob::stationSetChanged, ModelManager::myInstance.data(), &ModelManager::stationSetChanged, Qt::AutoConnection);
-    QObject::connect(ModelManager::currentJob.data(), &OiJob::availableGroupsChanged, ModelManager::myInstance.data(), &ModelManager::availableGroupsChanged, Qt::AutoConnection);
-    QObject::connect(ModelManager::currentJob.data(), &OiJob::featureSetChanged, ModelManager::myInstance.data(), &ModelManager::featureSetChanged, Qt::AutoConnection);
-    QObject::connect(ModelManager::currentJob.data(), &OiJob::featureNameChanged, ModelManager::myInstance.data(), &ModelManager::featureNameChanged, Qt::AutoConnection);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::coordSystemSetChanged, ModelManager::myInstance.data(), &ModelManager::coordSystemSetChanged);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::stationSetChanged, ModelManager::myInstance.data(), &ModelManager::stationSetChanged);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::availableGroupsChanged, ModelManager::myInstance.data(), &ModelManager::availableGroupsChanged);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::featureSetChanged, ModelManager::myInstance.data(), &ModelManager::featureSetChanged);
+    QObject::connect(ModelManager::currentJob.data(), &OiJob::featureNameChanged, ModelManager::myInstance.data(), &ModelManager::featureNameChanged);
 
     //update models
     ModelManager::myInstance->featureSetChanged();
@@ -1103,13 +1091,13 @@ void ModelManager::initFeatureTableModels(){
     ModelManager::featureDifferenceProxyModel.setSourceModel(&ModelManager::featureDifferenceTableModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::featureTableModel, &FeatureTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::featureTableProxyModel, &FeatureTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::trafoParamTableProxyModel, &TrafoParamTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::bundleParameterTableProxyModel, &BundleParameterTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::featureDifferenceTableModel, &FeatureDifferenceTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::featureDifferenceProxyModel, &FeatureDifferenceProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::featureTableModel, &FeatureTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::featureTableProxyModel, &FeatureTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::trafoParamTableProxyModel, &TrafoParamTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::bundleParameterTableProxyModel, &BundleParameterTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::featureDifferenceTableModel, &FeatureDifferenceTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::featureDifferenceProxyModel, &FeatureDifferenceProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
 }
@@ -1125,9 +1113,9 @@ void ModelManager::initFeatureTreeViewModels(){
     ModelManager::functionWeightProxyModel.setSourceModel(&ModelManager::functionWeightsTableModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::featureTreeViewModel, &FeatureTreeViewModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::availableElementsTreeViewProxyModel, &AvailableElementsTreeViewProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::featureTreeViewModel, &FeatureTreeViewModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::availableElementsTreeViewProxyModel, &AvailableElementsTreeViewProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
     //set header data
@@ -1144,9 +1132,9 @@ void ModelManager::initFunctionTableModels(){
     ModelManager::functionTableProxyModel.setSourceModel(&ModelManager::functionTableModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::functionTableModel, &FunctionTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::functionTableProxyModel, &FunctionTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::functionTableModel, &FunctionTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::functionTableProxyModel, &FunctionTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
 }
@@ -1175,9 +1163,9 @@ void ModelManager::initSensorTableModels(){
     ModelManager::sensorTableProxyModel.setSourceModel(&ModelManager::sensorTableModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::sensorTableModel, &SensorTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::sensorTableProxyModel, &SensorTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::sensorTableModel, &SensorTableModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::sensorTableProxyModel, &SensorTableProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
 }
@@ -1191,9 +1179,9 @@ void ModelManager::initSensorListViewModels(){
     ModelManager::sensorConfigurationProxyModel.setSourceModel(&ModelManager::sensorConfigurationModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::sensorConfigurationModel, &SensorConfigurationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::sensorConfigurationProxyModel, &SensorConfigurationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::sensorConfigurationModel, &SensorConfigurationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::sensorConfigurationProxyModel, &SensorConfigurationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 */
 }
@@ -1207,9 +1195,9 @@ void ModelManager::initMeasurementConfigModels(){
     ModelManager::measurementConfigurationProxyModel.setSourceModel(&ModelManager::measurementConfigurationModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::measurementConfigurationModel, &MeasurementConfigurationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::measurementConfigurationProxyModel, &MeasurementConfigurationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::measurementConfigurationModel, &MeasurementConfigurationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::measurementConfigurationProxyModel, &MeasurementConfigurationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
 }
@@ -1358,6 +1346,7 @@ void ModelManager::initReadingTypesModels(){
 
     QStringList readingTypes;
     readingTypes.append(getReadingTypeName(eCartesianReading));
+    readingTypes.append(getReadingTypeName(eCartesianReading6D));
     readingTypes.append(getReadingTypeName(eDistanceReading));
     readingTypes.append(getReadingTypeName(ePolarReading));
     readingTypes.append(getReadingTypeName(eDirectionReading));
@@ -1438,9 +1427,9 @@ void ModelManager::initObservationModels(){
     ModelManager::observationProxyModel.setSourceModel(&ModelManager::observationModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::observationModel, &ObservationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::observationProxyModel, &ObservationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::observationModel, &ObservationModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::observationProxyModel, &ObservationProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
 }
@@ -1454,9 +1443,9 @@ void ModelManager::initReadingModels(){
     ModelManager::readingProxyModel.setSourceModel(&ModelManager::readingModel);
 
     //connect models
-    if(ModelManager::myInstance.isNull()){
-        QObject::connect(&ModelManager::readingModel, &ReadingModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
-        QObject::connect(&ModelManager::readingProxyModel, &ReadingProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage, Qt::AutoConnection);
+    if(!ModelManager::myInstance.isNull()){
+        QObject::connect(&ModelManager::readingModel, &ReadingModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
+        QObject::connect(&ModelManager::readingProxyModel, &ReadingProxyModel::sendMessage, ModelManager::myInstance.data(), &ModelManager::sendMessage);
     }
 
 }

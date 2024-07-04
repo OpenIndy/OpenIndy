@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1081</width>
-    <height>657</height>
+    <width>1120</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,119 +48,255 @@
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>5</number>
+      </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,2,2,0,0,14">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2,2,0,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
         <item>
-         <widget class="QComboBox" name="comboBox_activeCoordSystem">
+         <widget class="QGroupBox" name="groupBox_orderBy">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+          <property name="title">
+           <string>Order by</string>
           </property>
-          <property name="frame">
-           <bool>true</bool>
-          </property>
-          <property name="modelColumn">
-           <number>0</number>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QComboBox" name="comboBox_sortBy">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sort FeatureTable by&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <item>
+              <property name="text">
+               <string>Creation Date</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Feature Name</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Group And Feature Name</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_actualNominal">
+         <widget class="QGroupBox" name="groupBox_activeCoordSystem">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
+          <property name="title">
+           <string>Coordinate System</string>
           </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-          </property>
-          <property name="modelColumn">
-           <number>0</number>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QComboBox" name="comboBox_activeCoordSystem">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <property name="modelColumn">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_groups">
+         <widget class="QGroupBox" name="groupBox_filter">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
+          <property name="title">
+           <string>Filter</string>
           </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-          </property>
-          <property name="minimumContentsLength">
-           <number>0</number>
-          </property>
-          <property name="modelColumn">
-           <number>0</number>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <widget class="QComboBox" name="comboBox_actualNominal">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <property name="modelColumn">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboBox_groups">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <property name="minimumContentsLength">
+              <number>0</number>
+             </property>
+             <property name="modelColumn">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_searchFeatureName">
+         <widget class="QGroupBox" name="groupBox_search">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="placeholderText">
-           <string>search feature by name</string>
+          <property name="title">
+           <string>Search</string>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_showNextFoundFeature">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>show next result</string>
-          </property>
-          <property name="text">
-           <string>&gt;</string>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QLineEdit" name="lineEdit_searchFeatureName">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="placeholderText">
+              <string>search feature by name</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_showNextFoundFeature">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>28</width>
+               <height>28</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>show next result</string>
+             </property>
+             <property name="text">
+              <string>&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
@@ -174,7 +310,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>0</height>
            </size>
           </property>
          </spacer>
@@ -243,208 +379,192 @@ background-position: center center;</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QSplitter" name="splitter">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QTabWidget" name="tabWidget_bundle">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>5</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <widget class="QWidget" name="layoutWidget">
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <spacer name="horizontalSpacer_3">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_removeBundle">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="../res/res.qrc">
-                    <normaloff>:/Images/icons/edit_remove.png</normaloff>:/Images/icons/edit_remove.png</iconset>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_addBundle">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="../res/res.qrc">
-                    <normaloff>:/Images/icons/edit_add.png</normaloff>:/Images/icons/edit_add.png</iconset>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+            <property name="tabShape">
+             <enum>QTabWidget::Triangular</enum>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="tab_bundleOverview">
+             <attribute name="title">
+              <string>overview</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
+               <widget class="QWidget" name="widget" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>230</width>
+                  <height>180</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>250</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_8">
+                 <item>
+                  <widget class="QGroupBox" name="groupBox">
+                   <property name="title">
+                    <string>Configuration</string>
+                   </property>
+                   <widget class="QWidget" name="gridLayoutWidget">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>9</y>
+                      <width>191</width>
+                      <height>151</height>
+                     </rect>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_11">
+                     <property name="leftMargin">
+                      <number>11</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>11</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>11</number>
+                     </property>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="lineEdit_maxError">
+                       <property name="text">
+                        <string>0.1</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_4">
+                       <property name="text">
+                        <string>StdDev [mm]:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="label_2">
+                       <property name="text">
+                        <string>at least common points:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_3">
+                       <property name="text">
+                        <string>Max Error [mm]:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLineEdit" name="lineEdit_scaleDev">
+                       <property name="text">
+                        <string>0.000020</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="label">
+                       <property name="text">
+                        <string>ScaleDev:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="lineEdit_stdDev">
+                       <property name="text">
+                        <string>0.06</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QLineEdit" name="lineEdit_atLeastCommonPoints">
+                       <property name="text">
+                        <string>5</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <spacer name="verticalSpacer">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </widget>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </item>
-              <item>
-               <widget class="QListView" name="listView_bundle"/>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_runBundle">
-                  <property name="text">
-                   <string>run bundle</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+              <item row="0" column="1" rowspan="2">
+               <widget class="QListView" name="listView_bundleOverview"/>
               </item>
              </layout>
             </widget>
-            <widget class="QTabWidget" name="tabWidget_bundle">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>5</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="currentIndex">
-              <number>0</number>
-             </property>
-             <widget class="QWidget" name="tab_bundleGeneralSettings">
-              <attribute name="title">
-               <string>general settings</string>
-              </attribute>
-              <layout class="QGridLayout" name="gridLayout_4">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
-                   <item>
-                    <widget class="QLabel" name="label_bundleTemplate">
-                     <property name="font">
-                      <font>
-                       <weight>75</weight>
-                       <bold>true</bold>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>template</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QComboBox" name="comboBox_bundleTemplate"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="pushButton_loadBundleTemplate">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>50</width>
-                       <height>24</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>load</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_4">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_6">
-                   <item>
-                    <widget class="QWidget" name="widget_bundleParameters" native="true"/>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_6">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_bundleparameter">
-              <attribute name="title">
-               <string>bundle parameter</string>
-              </attribute>
-              <layout class="QGridLayout" name="gridLayout_8">
-               <item row="0" column="0">
-                <widget class="QTableView" name="tableView_bundleParameter"/>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_bundleInputGeometries">
-              <attribute name="title">
-               <string>input geometries</string>
-              </attribute>
-              <layout class="QGridLayout" name="gridLayout_7">
-               <item row="0" column="0">
-                <widget class="QTreeView" name="treeView_inputGeometries"/>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_bundleInputStations">
-              <attribute name="title">
-               <string>input stations</string>
-              </attribute>
-              <layout class="QGridLayout" name="gridLayout_6">
-               <item row="0" column="0">
-                <widget class="QTreeView" name="treeView_inputStations"/>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_bundleResults">
-              <attribute name="title">
-               <string>results</string>
-              </attribute>
-             </widget>
+            <widget class="QWidget" name="tab_bundleparameter">
+             <attribute name="title">
+              <string>bundle parameter</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_8">
+              <item row="0" column="0">
+               <widget class="QTableView" name="tableView_bundleParameter"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_bundleInputGeometries">
+             <attribute name="title">
+              <string>input geometries</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="0" column="0">
+               <widget class="QTreeView" name="treeView_inputGeometries"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_bundleInputStations">
+             <attribute name="title">
+              <string>input stations</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="0" column="0">
+               <widget class="QTreeView" name="treeView_inputStations"/>
+              </item>
+             </layout>
             </widget>
            </widget>
           </item>
@@ -471,8 +591,8 @@ background-position: center center;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1081</width>
-     <height>25</height>
+     <width>1120</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -482,6 +602,7 @@ background-position: center center;</string>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="actionSave_as_template"/>
     <addaction name="actionimport"/>
     <addaction name="actionexport"/>
     <addaction name="actionClose"/>
@@ -521,7 +642,6 @@ background-position: center center;</string>
     <addaction name="actionConsole"/>
     <addaction name="actionShow_hide_feature_toolbar"/>
     <addaction name="actionSimulation"/>
-    <addaction name="actionSensor_real_time_data"/>
     <addaction name="actionMagnify"/>
     <addaction name="actiondifferences"/>
    </widget>
@@ -576,6 +696,9 @@ background-position: center center;</string>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>basic operations</string>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -590,41 +713,16 @@ background-position: center center;</string>
    <addaction name="actionMeasurement_Configuration"/>
    <addaction name="actionSet_function"/>
    <addaction name="actionWatch_window"/>
-   <addaction name="actionShow_help"/>
-   <addaction name="actionSensor_real_time_data"/>
    <addaction name="actionConsole"/>
-   <addaction name="actionRemoveObservations"/>
    <addaction name="actiongo_to_next_feature"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QToolBar" name="toolbarCreateFeature">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
+  <widget class="QStatusBar" name="statusBar">
+   <property name="minimumSize">
     <size>
-     <width>16777215</width>
-     <height>16777215</height>
+     <width>0</width>
+     <height>30</height>
     </size>
    </property>
-   <property name="windowTitle">
-    <string>CreateFeature</string>
-   </property>
-   <property name="toolTip">
-    <string>toolbar for creating new features</string>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::BottomToolBarArea|Qt::RightToolBarArea|Qt::TopToolBarArea</set>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>true</bool>
-   </attribute>
   </widget>
   <widget class="QToolBar" name="toolBar_controlPad">
    <property name="enabled">
@@ -663,7 +761,7 @@ background-position: center center;</string>
     </sizepolicy>
    </property>
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>create features</string>
    </property>
    <property name="iconSize">
     <size>
@@ -792,7 +890,7 @@ background-position: center center;</string>
     <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,1,5">
+    <layout class="QGridLayout" name="gridLayout_2" columnstretch="5,0,0">
      <item row="0" column="2">
       <widget class="QLabel" name="label_magnifyActualNominal">
        <property name="sizePolicy">
@@ -862,6 +960,31 @@ background-position: center center;</string>
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="toolBar_filter">
+   <property name="windowTitle">
+    <string>filter</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_station">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionStation_create"/>
+   <addaction name="actionSpacer"/>
+   <addaction name="action_RunBundle"/>
+  </widget>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../res/res.qrc">
@@ -874,19 +997,10 @@ background-position: center center;</string>
   <action name="actionClose">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/exit.png</normaloff>:/icons/icons/toolbars/standard/exit.png</iconset>
    </property>
    <property name="text">
     <string>close</string>
-   </property>
-  </action>
-  <action name="actionShow_help">
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/icons/icons/toolbars/standard/help.png</normaloff>:/icons/icons/toolbars/standard/help.png</iconset>
-   </property>
-   <property name="text">
-    <string>Show Help</string>
    </property>
   </action>
   <action name="actionControl_pad">
@@ -1042,7 +1156,7 @@ background-position: center center;</string>
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/fileexport.png</normaloff>:/Images/icons/fileexport.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/save_as.png</normaloff>:/icons/icons/toolbars/standard/save_as.png</iconset>
    </property>
    <property name="text">
     <string>save as</string>
@@ -1086,6 +1200,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionActivate_station">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/activate station.png</normaloff>:/icons/icons/toolbars/standard/activate station.png</iconset>
+   </property>
    <property name="text">
     <string>activate station</string>
    </property>
@@ -1188,7 +1306,7 @@ background-position: center center;</string>
   </action>
   <action name="actionPlugin_manager">
    <property name="icon">
-    <iconset resource="../res/res.qrc">
+    <iconset>
      <normaloff>:/Images/icons/pluginmanager.png</normaloff>:/Images/icons/pluginmanager.png</iconset>
    </property>
    <property name="text">
@@ -1202,18 +1320,6 @@ background-position: center center;</string>
    </property>
    <property name="text">
     <string>simulation</string>
-   </property>
-  </action>
-  <action name="actionSensor_real_time_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/streamingLogo.png</normaloff>:/Images/icons/streamingLogo.png</iconset>
-   </property>
-   <property name="text">
-    <string>sensor_real_time_data</string>
    </property>
   </action>
   <action name="action_importMeasurementConfigs">
@@ -1242,6 +1348,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionMagnify">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/magnify.PNG</normaloff>:/Images/icons/magnify.PNG</iconset>
+   </property>
    <property name="text">
     <string>magnify</string>
    </property>
@@ -1282,15 +1392,6 @@ background-position: center center;</string>
     <string>create ellipse</string>
    </property>
   </action>
-  <action name="actionRemoveObservations">
-   <property name="icon">
-    <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/cancel.png</normaloff>:/Images/icons/cancel.png</iconset>
-   </property>
-   <property name="text">
-    <string>removeObservations</string>
-   </property>
-  </action>
   <action name="actionAbout_OpenIndy">
    <property name="icon">
     <iconset resource="../res/res.qrc">
@@ -1301,6 +1402,11 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionStationProperties">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Images/icons/info_schwarz.PNG</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>properties</string>
    </property>
@@ -1309,6 +1415,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="action_RunBundle">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/run bundle.png</normaloff>:/icons/icons/toolbars/standard/run bundle.png</iconset>
+   </property>
    <property name="text">
     <string>run bundle</string>
    </property>
@@ -1331,7 +1441,7 @@ background-position: center center;</string>
    </property>
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/arrow_left.png</normaloff>:/Images/icons/arrow_left.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</normaloff>:/icons/icons/toolbars/standard/import_icon.PNG</iconset>
    </property>
    <property name="text">
     <string>import</string>
@@ -1340,7 +1450,7 @@ background-position: center center;</string>
   <action name="actionexport">
    <property name="icon">
     <iconset resource="../res/res.qrc">
-     <normaloff>:/Images/icons/arrow_right.png</normaloff>:/Images/icons/arrow_right.png</iconset>
+     <normaloff>:/icons/icons/toolbars/standard/export.PNG</normaloff>:/icons/icons/toolbars/standard/export.PNG</iconset>
    </property>
    <property name="text">
     <string>export</string>
@@ -1371,11 +1481,19 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actiondifferences">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/Images/icons/differences.png</normaloff>:/Images/icons/differences.png</iconset>
+   </property>
    <property name="text">
     <string>differences</string>
    </property>
   </action>
   <action name="actionNew_watch_window">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/watch_new.PNG</normaloff>:/icons/icons/toolbars/standard/watch_new.PNG</iconset>
+   </property>
    <property name="text">
     <string>new watch window</string>
    </property>
@@ -1387,6 +1505,10 @@ background-position: center center;</string>
    </property>
   </action>
   <action name="actionWatch_window_nearest_nominal">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/watch_nominal.PNG</normaloff>:/icons/icons/toolbars/standard/watch_nominal.PNG</iconset>
+   </property>
    <property name="text">
     <string>watch window nearest nominal</string>
    </property>
@@ -1402,27 +1524,46 @@ background-position: center center;</string>
     <string>Show Licenses</string>
    </property>
   </action>
+  <action name="actionSave_as_template">
+   <property name="icon">
+    <iconset resource="../res/res.qrc">
+     <normaloff>:/icons/icons/toolbars/standard/save_template.png</normaloff>:/icons/icons/toolbars/standard/save_template.png</iconset>
+   </property>
+   <property name="text">
+    <string>save as template</string>
+   </property>
+   <property name="toolTip">
+    <string>save current project as template with out observations</string>
+   </property>
+  </action>
+  <action name="actionStation_create">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/icons/toolbars/standard/new_station.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>create new station</string>
+   </property>
+   <property name="toolTip">
+    <string>create new station</string>
+   </property>
+  </action>
+  <action name="actionSpacer">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string> </string>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="../res/res.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>pushButton_runBundle</sender>
-   <signal>clicked()</signal>
-   <receiver>action_RunBundle</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>325</x>
-     <y>353</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

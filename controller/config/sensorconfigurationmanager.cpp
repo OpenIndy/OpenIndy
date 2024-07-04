@@ -67,9 +67,9 @@ bool SensorConfigurationManager::hasSavedSensorConfig(const SensorConfiguration 
     }
 
     //get saved config and compare it to the given one
-    SensorConfiguration savedConfig = this->savedSensorConfigsMap.value(sConfig.getName());
+    SensorConfiguration userConfig = this->savedSensorConfigsMap.value(sConfig.getName());
 
-    return this->equals(sConfig, savedConfig);
+    return this->equals(sConfig, userConfig);
 
 }
 
@@ -399,28 +399,28 @@ void SensorConfigurationManager::loadFromConfigFolder(){
         }
 
         //try to parse the file to a SensorConfiguration object
-        SensorConfiguration savedConfig;
+        SensorConfiguration userConfig;
         QDomElement sConfigTag = sConfigXml.documentElement();
-        if(!savedConfig.fromOpenIndyXML(sConfigTag)){
+        if(!userConfig.fromOpenIndyXML(sConfigTag)){
             continue;
         }
-        savedConfig.setIsSaved(true);
+        userConfig.setIsSaved(true);
 
         //check if a sensor config with the same name has been loaded before
-        if(sConfigNames.contains(savedConfig.getName())){
+        if(sConfigNames.contains(userConfig.getName())){
 
             //delete the config file permanently
             sConfigFile.remove();
             continue;
 
         }
-        sConfigNames.append(savedConfig.getName());
-        this->addSavedSensorConfig(savedConfig);
+        sConfigNames.append(userConfig.getName());
+        this->addSavedSensorConfig(userConfig);
 
         //add the loaded sensor config to the list of saved configs
-        if(!this->savedSensorConfigsMap.contains(savedConfig.getName())){
-            this->savedSensorConfigsMap.insert(savedConfig.getName(), savedConfig);
-            this->savedSensorConfigsList.append(savedConfig);
+        if(!this->savedSensorConfigsMap.contains(userConfig.getName())){
+            this->savedSensorConfigsMap.insert(userConfig.getName(), userConfig);
+            this->savedSensorConfigsList.append(userConfig);
         }
     }
 
@@ -450,9 +450,9 @@ void SensorConfigurationManager::synchronize(const SensorConfigurationManager &o
     this->removeAllProjectSensorConfigs();
 
     //add new configs
-    QList<SensorConfiguration> savedConfigs = other.getSavedSensorConfigs();
+    QList<SensorConfiguration> userConfigs = other.getSavedSensorConfigs();
     QList<SensorConfiguration> projectConfigs = other.getProjectSensorConfigs();
-    foreach(const SensorConfiguration &sConfig, savedConfigs){
+    foreach(const SensorConfiguration &sConfig, userConfigs){
         this->addSavedSensorConfig(sConfig);
     }
     foreach(const SensorConfiguration &sConfig, projectConfigs){

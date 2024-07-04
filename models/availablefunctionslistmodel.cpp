@@ -19,9 +19,7 @@ int AvailableFunctionsListModel::rowCount(const QModelIndex &parent) const{
 
     //get the number of function plugins
     foreach(const sdb::Plugin &plugin, this->plugins){
-        foreach(const sdb::Function &function, plugin.functions){
-            rowCount++;
-        }
+        rowCount += plugin.functions.size();
     }
 
     return rowCount;
@@ -131,15 +129,6 @@ QPair<QString, QString> AvailableFunctionsListModel::getDefaultFunction(const Fe
 
     return QPair<QString, QString>();
 
-}
-
-/*!
- * \brief AvailableFunctionsListModel::setDefaultFunction
- * \param type
- * \param function
- */
-void AvailableFunctionsListModel::setDefaultFunction(const FeatureTypes &type, const QPair<QString, QString> &function){
-    SystemDbManager::setDefaultFunction(type, function.first, function.second);
 }
 
 /*!

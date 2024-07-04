@@ -9,11 +9,16 @@
 #include <QSignalMapper>
 #include <QClipboard>
 #include <QCloseEvent>
-#include "QWindow"
-#include "QScreen"
-#include "QDialog"
+#include <QWindow>
+#include <QScreen>
+#include <QDialog>
 #include <QCompleter>
 #include <QList>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QGraphicsOpacityEffect>
 
 #include "controller.h"
 #include "featureattributes.h"
@@ -45,11 +50,25 @@
 #include "featuretabledelegate.h"
 #include "trafoparamtabledelegate.h"
 #include "bundlestationsmodel.h"
+#include "bundleoverviewdelegate.h"
 
 #include "projectconfig.h"
 #include "clipboardutil.h"
 
+#include "measurebehaviorlogic.h"
+
+#include "stationstatus.h"
+
+#if ENABLE_SOUND
 #include <QSound>
+#endif
+
+#if defined(OI_MAIN_LIB)
+#  define OI_MAIN_EXPORT Q_DECL_EXPORT
+#else
+#  define OI_MAIN_EXPORT Q_DECL_IMPORT
+#endif
+
 using namespace oi;
 
 namespace Ui {
@@ -59,7 +78,7 @@ class MainWindow;
 /*!
  * \brief The MainWindow class
  */
-class MainWindow : public QMainWindow
+class OI_MAIN_EXPORT MainWindow : public QMainWindow
 {
     Q_OBJECT
     
@@ -68,7 +87,6 @@ public:
     ~MainWindow();
 
     void loadProjectFile(QString file);
-
 signals:
 
     //###################################
@@ -99,6 +117,7 @@ signals:
 
     //set measurement configuration for active feature
     void measurementConfigurationChanged(const MeasurementConfig &mConfig);
+    void saveUserConfig(const MeasurementConfig &mConfig);
 
     //recalculation of features
     void recalcAll();
@@ -115,9 +134,9 @@ signals:
     void removeBundleSystem(const int &bundleId);
 
     //load or calculate bundle
-    void updateBundleAdjustment(const int &bundleId, const QJsonObject &param);
-    void loadBundleTemplate(const int &bundleId, const QJsonObject &bundleTemplate);
-    void runBundle(const int &bundleId);
+    void updateBundleAdjustment(const QJsonObject &param);
+    void loadBundleTemplate(const QJsonObject &bundleTemplate);
+    void runBundle();
 
     //save or load projects
     void saveProject();
@@ -127,8 +146,7 @@ signals:
     //log messages
     void log(const QString &msg, const MessageTypes &msgType, const MessageDestinations &msgDest = eConsoleMessage);
 
-    //load sensorconfigs and measurementconfigs from folders and store in databas
-    void loadAndSaveConfigs();
+    void createTemplateFromJob();
 
 private slots:
 
@@ -151,12 +169,9 @@ private slots:
 
     //feature(s) added or removed
     void coordSystemSetChanged();
-    void stationSetChanged();
-    void trafoParamSetChanged();
 
     //group(s) added or removed
     void availableGroupsChanged();
-    void activeGroupChanged();
 
     //feature specific attributes changed
     void featureNameChanged(const int &featureId, const QString &oldName);
@@ -168,15 +183,17 @@ private slots:
     void currentJobChanged();
 
     //sensor actions
-    void sensorActionStarted(const QString &name, const bool enableFinishButton = false);
-    void sensorActionFinished(const bool &success, const QString &msg);
+    void sensorActionStarted(const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind, const bool enableFinishButton = false);
+    void sensorActionFinished(const bool &success, const QString &msg, const SensorAction sensorAction = SensorAction::eSensorActionUndefind);
+    void closeAllSensorTaskDialogs();
     void measurementCompleted();
     void measurementDone(bool success);
 
     //display messages
-    void showMessageBox(const QString &msg, const MessageTypes &msgType);
+    int showMessageBox(const QString &msg, const MessageTypes &msgType);
     void showStatusMessage(const QString &msg, const MessageTypes &msgType);
     void showStatusSensor(const SensorStatus &code, const QString &msg);
+    void showStatusStation(const StationStatusData &data);
 
     //#########################
     //actions triggered by user
@@ -214,8 +231,6 @@ private slots:
     void on_tableView_trafoParams_doubleClicked(const QModelIndex &index);
     void tableViewTrafoParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
     void on_tableView_trafoParams_customContextMenuRequested(const QPoint &pos);
-    void tableViewBundleParamsSelectionChangedByKeyboard(const QModelIndex &selected, const QModelIndex &deselected);
-    void on_tableView_bundleParameter_clicked(const QModelIndex &index);
 
     //function dialog
     void on_actionSet_function_triggered();
@@ -243,6 +258,7 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
     void on_actionSave_as_triggered();
+    void on_actionSave_as_template_triggered();
 
     //close OpenIndy
     void on_actionClose_triggered();
@@ -261,20 +277,14 @@ private slots:
     void resizeTableView();
 
     //remove observations
-    void on_actionRemoveObservations_triggered();
     void on_actionShow_Licenses_triggered();
     void removeObservationOfActiveFeature();
 
     //show about dialog
     void on_actionAbout_OpenIndy_triggered();
 
-    //add or remove bundle system
-    void on_pushButton_addBundle_clicked();
-    void on_pushButton_removeBundle_clicked();
-
     //load or calculate bundle
     void on_action_RunBundle_triggered();
-    void on_pushButton_loadBundleTemplate_clicked();
 
     //##############
     //helper methods
@@ -310,8 +320,6 @@ private slots:
 
     void on_tableView_FeatureDifferences_customContextMenuRequested(const QPoint &pos);
 
-    void showEvent(QShowEvent *e);
-
     void enableObservationsOfActiveFeature();
     void disableObservationsOfActiveFeature();
 
@@ -326,6 +334,20 @@ private slots:
     void on_lineEdit_searchFeatureName_returnPressed();
 
     void on_pushButton_showNextFoundFeature_clicked();
+
+    void on_comboBox_sortBy_currentIndexChanged(int index);
+
+    void measureBehaviorLogicFinished();
+
+    void on_actionStation_create_triggered();
+
+    void on_lineEdit_maxError_textChanged(const QString &arg1);
+
+    void on_lineEdit_stdDev_textChanged(const QString &arg1);
+
+    void on_lineEdit_scaleDev_textChanged(const QString &arg1);
+
+    void on_lineEdit_atLeastCommonPoints_textChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -354,6 +376,7 @@ private:
     void initFilterComboBoxes();
     void initStatusBar();
     void initBundleView();
+    void initFilterToolBar();
 
     //##############################
     //methods to update GUI elements
@@ -374,10 +397,7 @@ private:
     void resetBundleView();
 
     //save project help function
-    void saveProjectAs();
-
-    //load default bundle plugin
-    void loadDefaultBundlePlugIn(int bundleID);
+    void saveProjectAs(bool asTemplate = false);
 
     //go automatically to next feature
     void autoSwitchToNextFeature(bool sucessMeasure);
@@ -399,7 +419,7 @@ private:
     FeatureFunctionsDialog featureFunctionsDialog;
     SensorConfigurationDialog sensorConfigurationDialog;
     MoveSensorDialog moveSensorDialog;
-    SensorTaskInfoDialog sensorTaskInfoDialog;
+    QMap<SensorAction, QPointer<SensorTaskInfoDialog>> sensorTaskInfoDialogs;
     PluginManagerDialog pluginManagerDialog;
     QMap<QVariant, QPointer<WatchWindowDialog> > watchWindowDialogs;
     MeasurementConfigurationDialog measurementConfigDialog;
@@ -412,7 +432,7 @@ private:
     StationPropertiesDialog stationPropertiesDialog;
 
     //widget with scalar input parameters
-    ScalarParameterWidget *bundleParameterWidget;
+    QPointer<ScalarParameterWidget> bundleParameterWidget;
 
     //##########
     //sensor pad
@@ -429,6 +449,7 @@ private:
     QAction *actionChangeMotorState;
     QAction *actionToggleSightOrientation;
     QAction *actionCompensation;
+    QAction *actionSearch;
     QList<QPointer<QAction> > selfDefinedActions;
 
     QPointer<QSignalMapper> customActionMapper;
@@ -441,7 +462,8 @@ private:
     QLabel *label_statusUnitAngular;
     QLabel *label_statusUnitTemperature;
     QLabel *label_statusSensor;
-    QLabel *label_statusStablePointMeasurement;
+    QPropertyAnimation *animation_label_statusSensor;
+    StationStatus *stationStatus;
 
     //######
     //models
@@ -454,9 +476,6 @@ private:
     //helper attributes
     //#################
 
-    //ordered list of feature id's that are currently aimed and measured (ALT + F3)
-    QList<int> measureFeatures;
-
     void enableOrDisableObservationsOfActiveFeature(bool);
 
     void showCentered(QDialog &dialog);
@@ -468,6 +487,14 @@ private:
     int showFoundFeatureIndex;
 
     ClipBoardUtil clipBoardUtil;
+
+    MeasureBehaviorLogic measureBehaviorLogic;
+
+    void measureBehaviorLogicStarted();
+
+    QModelIndex getBundleIndex();
+
+    BundleOverviewDelegate *bundleOverviewDelegate;
 };
 
 #endif // MAINWINDOW_H

@@ -10,9 +10,7 @@ CreateFeatureDialog::CreateFeatureDialog(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
-    //init GUI elements and assign models
-    this->initGUI();
-    this->initModels();
+    initModels();
 }
 
 /*!
@@ -79,24 +77,6 @@ void CreateFeatureDialog::on_toolButton_ok_clicked(){
         return;
     }
 
-    //get and cast source model
-    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
-    if(source_model == NULL){
-        if(this->created){
-            this->close();
-        }
-        return;
-    }
-
-    //set default function
-    QPair<QString, QString> functionPlugin;
-    functionPlugin.first = function.name;
-    functionPlugin.second = function.plugin.file_path;
-    source_model->setDefaultFunction(this->typeOfFeature, functionPlugin);
-
-    //set default measurement config
-    SystemDbManager::setDefaultMeasurementConfig(attributes.mConfig , getFeatureTypeName(this->typeOfFeature));
-
     if(this->created){
         this->close();
     }
@@ -135,21 +115,28 @@ void CreateFeatureDialog::on_checkBox_actual_toggled(bool checked){
  */
 void CreateFeatureDialog::showEvent(QShowEvent *event){
 
-    //init GUI elements based on the current feature type
-    this->initGUI();
-
-    //init function models based on the current feature type
-    this->initFunctionsModel();
+    this->setDialogName();
 
     this->ui->comboBox_entityType->setCurrentText(getFeatureTypeName(this->typeOfFeature));
 
-    this->setDialogName();
+    // init function models based on the current feature type
+    this->initFunctionsModel();
 
-    //get default mConfig in combobox
+    // init initial GUI elements based on the current function, may changed by initGUI() !
+    this->initMeasurementConfigUI(this->ui->comboBox_function->currentIndex());
+
+    // init GUI elements based on the current feature type
+    this->initGUI();
+
+    this->initMeasurementConfigModel();
+
+    // get default mConfig in combobox
     QString elementConfigName = SystemDbManager::getDefaultMeasurementConfig(getElementTypeName(getElementTypeEnum(this->typeOfFeature)));
     if(!elementConfigName.isEmpty()){
         this->ui->comboBox_mConfig->setCurrentText(elementConfigName);
     }
+
+    emit initialized();
 
     event->accept();
 }
@@ -256,8 +243,8 @@ void CreateFeatureDialog::initGUI(){
         this->ui->checkBox_common->setVisible(true);
         this->ui->label_entityType->setVisible(true);
         this->ui->comboBox_entityType->setVisible(true);
-        this->ui->label_mConfig->setVisible(true);
-        this->ui->comboBox_mConfig->setVisible(true);
+        this->ui->label_mConfig->setVisible(false);
+        this->ui->comboBox_mConfig->setVisible(false);
 
         //set checked state
         this->ui->checkBox_actual->setChecked(true);
@@ -311,6 +298,11 @@ void CreateFeatureDialog::initModels(){
     int sizeNominal = getDropDownMenuSize(ModelManager::getNominalSystemsModel().stringList(), this->ui->comboBox_nominalSystem->width());
     this->ui->comboBox_nominalSystem->view()->setMinimumWidth(sizeNominal);
 
+    //set model for available measurement configs
+    this->measurementConfigurationModel = &ModelManager::getMeasurementConfigurationProxyModel();
+    this->measurementConfigurationModel->setFilter(true); // show all
+    this->ui->comboBox_mConfig->setModel(measurementConfigurationModel);
+
     //set model for available functions
     this->functionListModel = ModelManager::getAvailableFunctionsProxyModel();
     this->ui->comboBox_function->setModel(this->functionListModel);
@@ -320,9 +312,6 @@ void CreateFeatureDialog::initModels(){
 
     //set model for available scalar entities
     this->ui->comboBox_entityType->setModel(&ModelManager::getScalarEntityTypeNamesModel());
-
-    //set model for available measurement configs
-    this->ui->comboBox_mConfig->setModel(&ModelManager::getMeasurementConfigurationModel());
 
 }
 
@@ -345,6 +334,17 @@ void CreateFeatureDialog::initFunctionsModel(){
     this->ui->comboBox_function->setCurrentText(source_model->getDefaultFunction(this->typeOfFeature).first);
 
 }
+
+void CreateFeatureDialog::initMeasurementConfigModel(){
+    AvailableFunctionsListModel *source_model = dynamic_cast<AvailableFunctionsListModel *>(this->functionListModel->sourceModel());
+    if(source_model == NULL){
+        return;
+    }
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(this->ui->comboBox_function->currentIndex());
+
+    this->measurementConfigurationModel->setFilter(this->neededElements, this->typeOfFeature, function.applicableFor);
+}
+
 /*!
  * \brief CreateFeatureDialog::toggleActualLabels
  * \param toggle
@@ -395,7 +395,6 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        attributes.mConfig = this->ui->comboBox_mConfig->currentText();
 
     }else if(this->typeOfFeature != eCoordinateSystemFeature
              && this->typeOfFeature != eStationFeature){
@@ -404,8 +403,11 @@ void CreateFeatureDialog::featureAttributesFromGUI(FeatureAttributes &attributes
         attributes.isNominal = this->ui->checkBox_nominal->isChecked();
         attributes.isCommon = this->ui->checkBox_common->isChecked();
         attributes.nominalSystem = this->ui->comboBox_nominalSystem->currentText();
-        attributes.mConfig = this->ui->comboBox_mConfig->currentText();
-
+        if(!this->neededElements.isEmpty()) {
+                attributes.measurementConfig = this->measurementConfigurationModel->getMeasurementConfig(
+                measurementConfigurationModel->index(this->ui->comboBox_mConfig->currentIndex(), 0)
+            );
+        }
     }
 
     //fill selected function plugin
@@ -425,11 +427,51 @@ void CreateFeatureDialog::setDialogName()
 
 /*!
  * \brief CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged check if the type of the scalar entity changed
- * \param arg1
+ * \param entityTypeName
  */
-void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &arg1)
+void CreateFeatureDialog::on_comboBox_entityType_currentIndexChanged(const QString &entityTypeName)
 {
-    this-> typeOfFeature = getFeatureTypeEnum(arg1);
-    this->initModels();
-    this->initFunctionsModel();
+    if(!entityTypeName.isEmpty()) {
+        this->typeOfFeature = getFeatureTypeEnum(entityTypeName);
+
+        this->initFunctionsModel();
+
+        for(int i=0; i<this->functionListModel->rowCount(); i++) {
+            sdb::Function function = this->functionListModel->getFunctionAtIndex(i);
+            if(this->ui->comboBox_function->currentText() == function.name) {
+                this->neededElements.clear();
+                this->neededElements.append(function.neededElements);
+                break;
+            }
+        }
+        this->initMeasurementConfigModel();
+
+        this->initGUI();
+    }
+
+}
+
+void CreateFeatureDialog::on_comboBox_function_currentIndexChanged(const int index)
+{
+    this->initMeasurementConfigUI(index);
+    this->initMeasurementConfigModel();
+}
+
+void CreateFeatureDialog::initMeasurementConfigUI(const int functionIndex) {
+    sdb::Function function = this->functionListModel->getFunctionAtIndex(functionIndex);
+    if( function.iid.startsWith("de.openIndy.plugin.function.constructFunction")
+        || function.iid.startsWith("de.openIndy.plugin.function.objectTransformation")
+        || function.iid.startsWith("de.openIndy.plugin.function.specialFunction")
+        || function.name.contains("FromPoints") // fitfunction
+        ) {
+        this->neededElements.clear();
+        this->neededElements.append(ElementTypes::eUndefinedElement);
+        this->ui->comboBox_mConfig->setVisible(false);
+        this->ui->label_mConfig->setVisible(false);
+    } else {
+        this->neededElements.clear();
+        this->neededElements.append(function.neededElements);
+        this->ui->comboBox_mConfig->setVisible(true);
+        this->ui->label_mConfig->setVisible(true);
+    }
 }
