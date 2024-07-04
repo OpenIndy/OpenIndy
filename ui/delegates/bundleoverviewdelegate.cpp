@@ -42,6 +42,7 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 
     int numberOfCommonGeometries = 0;
     double maxError = 0; // max v
+    QString maxErrorGeometry = "";
     double stdDev = 0.0;
     if(isSolved) {
         double sum_vv = 0.0;
@@ -66,7 +67,12 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
                             OiVec xyz = observation->getXYZ();
                             xyz.removeLast();
                             double v = (xyz - actual).length();
-                            maxError = v > maxError ? v : maxError;
+
+                            if(v > maxError) {
+                                maxError = v;
+                                maxErrorGeometry = tg->getFeatureName();
+                            }
+
                             sum_vv += v * v;
                         }
                     }
@@ -119,8 +125,9 @@ void BundleOverviewDelegate::paint(QPainter* painter, const QStyleOptionViewItem
                       .arg(stationName));
     if(isSolved) {
         painter->drawText(option.rect.topLeft() += QPoint(5, 40),
-                          QString("Max. Error:\t\t%1 [mm]")
-                          .arg(QString::number(convertFromDefault(maxError, eUnitMilliMeter), 'f', 3)));
+                          QString("Max. Error:\t\t%1 [mm]\t%2")
+                          .arg(QString::number(convertFromDefault(maxError, eUnitMilliMeter), 'f', 3))
+                          .arg(maxErrorGeometry));
 
         painter->drawText(option.rect.topLeft() += QPoint(5, 60),
                           QString("StdDev:\t\t%1 [mm]")
