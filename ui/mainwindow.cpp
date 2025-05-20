@@ -509,7 +509,8 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->control._startMeasurement(true);
         break;
 
-    case Qt::Key_A: //aim
+    case Qt::Key_A:  //aim
+    case Qt::Key_F6: //aim
 
         if(e->modifiers() == Qt::AltModifier){
             this->control.startAim();
