@@ -126,6 +126,8 @@ private slots:
 
     void on_checkBox_showLastMeasurement_clicked();
 
+    void keyPressEvent(QKeyEvent * e);
+
 private:
 
     //##################################
