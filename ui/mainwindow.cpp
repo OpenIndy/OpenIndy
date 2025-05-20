@@ -2976,7 +2976,7 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
         } // switch
 
         if(!watchWindowDialogs.contains(watchWindowKey)) {
-            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, features);
+            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, features, this);
             watchWindowDialog->setWindowTitle(watchWindowDialog->windowTitle() + windowTitleSuffix);
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 
