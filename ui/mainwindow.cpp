@@ -509,13 +509,14 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
             this->control._startMeasurement(true);
         break;
 
-    case Qt::Key_A: //aim
-
+    case Qt::Key_A:  //aim with Alt-A
         if(e->modifiers() == Qt::AltModifier){
             this->control.startAim();
         }
         break;
-
+    case Qt::Key_F6: //aim with F6
+        this->control.startAim();
+        break;
     case Qt::Key_F7:{ //delete observations
 
         //get and check the active feature
@@ -2975,7 +2976,8 @@ void MainWindow::openWatchWindow(WatchWindowBehavior behavior) {
         } // switch
 
         if(!watchWindowDialogs.contains(watchWindowKey)) {
-            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, features);
+            QPointer<WatchWindowDialog> watchWindowDialog = new WatchWindowDialog(behavior, job, features, this);
+            watchWindowDialog->setModal(false);
             watchWindowDialog->setWindowTitle(watchWindowDialog->windowTitle() + windowTitleSuffix);
             watchWindowDialogs[watchWindowKey] = watchWindowDialog;
 

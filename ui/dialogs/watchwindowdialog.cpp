@@ -618,3 +618,9 @@ QPointer<FeatureWrapper> WatchWindowDialog::getFeature(OiVec trackerXYZ){
 
     return QPointer<FeatureWrapper>();
 }
+
+void WatchWindowDialog::keyPressEvent(QKeyEvent * e) {
+    if(parentWidget()) {
+        QCoreApplication::sendEvent(parentWidget(), e);
+    }
+}
