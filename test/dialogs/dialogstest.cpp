@@ -480,7 +480,8 @@ void DialogsTest::measurementConfigXML_RW() {
     xml.appendChild(root);
 
     MeasurementConfig fromXML;
-    fromXML.fromOpenIndyXML(xml.documentElement());
+    QDomElement xmlRoot = xml.documentElement();
+    fromXML.fromOpenIndyXML(xmlRoot);
 
     QVERIFY(config.getMeasurementMode() == fromXML.getMeasurementMode());
     QVERIFY(config.getMeasurementType() == fromXML.getMeasurementType());
