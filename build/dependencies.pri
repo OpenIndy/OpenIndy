@@ -2,7 +2,7 @@
 include($$PWD/../appui/includes.pri)
 DEPENDPATH  += $$PWD/../appui
 
-linux: LIBS = -lGLU
+linux: LIBS += -lGLU
 
 # openIndy
 win32 {
@@ -55,8 +55,8 @@ win32 {
 }
 linux {
     CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy26
+        LIBS += -L$$PWD/../appui/bin/debug -lopenIndy
     } else {
-        LIBS += -L$$PWD/../appui/bin/release -lopenIndy26
+        LIBS += -L$$PWD/../appui/bin/release -lopenIndy
     }
 }
