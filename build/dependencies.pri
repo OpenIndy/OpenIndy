@@ -2,7 +2,7 @@
 include($$PWD/../appui/includes.pri)
 DEPENDPATH  += $$PWD/../appui
 
-linux: LIBS = -lGLU
+linux: LIBS += -lGLU
 
 # openIndy
 win32 {
