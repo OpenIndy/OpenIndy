@@ -16,7 +16,7 @@ OpenIndy is developed with the Qt framework (Qt libs + Qt Creator IDE). You can 
 
 ### Ubuntu
 
-Tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8)
+Tested with Ubuntu 18.04 (Qt 5.9.5), Ubuntu 20.04 (Qt 5.12.8), Ubuntu 24.04.4 LTS (Qt 5.15.13)
 
 #### install dependencies
 
